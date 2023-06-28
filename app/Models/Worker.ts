@@ -1,8 +1,8 @@
 import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
 export default class Worker extends BaseModel {
-  public static table = "FND_FONDOS";
+  public static table = "TRA_TRABAJADORES";
 
-  @column({ isPrimary: true, columnName: "FND_CODIGO", serializeAs: "id" })
+  @column({ isPrimary: true, columnName: "TRA_CODIGO", serializeAs: "id" })
   public id: number;
 }

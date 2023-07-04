@@ -1,16 +1,16 @@
 import { DateTime } from "luxon";
 import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
-import TypesContractsWithDrawal from "./TypesContractsWithDrawal";
+import TypesContractsWithDrawal from "./ReasonsForWithdrawal";
 import Charge from "./Charge";
 
-export default class Job extends BaseModel {
+export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
 
   @column({ isPrimary: true, columnName: "EMP_CODIGO", serializeAs: "id" })
   public id: number;
 
-  @column({ columnName: "EMP_CODTRA_TRABAJADOR", serializeAs: "codWorker" })
-  public codWorker: number;
+  @column({ columnName: "EMP_CODTRA_TRABAJADOR", serializeAs: "workerId" })
+  public workerId: number;
 
   @column({
     columnName: "EMP_CODCRG_CARGO",

@@ -18,8 +18,13 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
-    const WorkerRepository = await import(
-      "App/Repositories/WorkerRepository"
+    const WorkerRepository = await import("App/Repositories/WorkerRepository");
+    const EmploymentRepository = await import(
+      "App/Repositories/EmploymentRepository"
+    );
+
+    const RelativeRepository = await import(
+      "App/Repositories/RelativeRepository"
     );
 
     /**************************************************************************/
@@ -28,7 +33,12 @@ export default class AppProvider {
 
     this.app.container.singleton(
       "core.WorkerProvider",
-      () => new WorkerService.default(new WorkerRepository.default())
+      () =>
+        new WorkerService.default(
+          new WorkerRepository.default(),
+          new RelativeRepository.default(),
+          new EmploymentRepository.default()
+        )
     );
   }
 

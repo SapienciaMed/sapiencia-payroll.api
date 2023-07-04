@@ -8,7 +8,7 @@ import {
 } from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
 import Relative from "./Relative";
-import Job from "./Job";
+import Employment from "./Employment";
 
 export default class Worker extends BaseModel {
   public static table = "TRA_TRABAJADORES";
@@ -157,13 +157,13 @@ export default class Worker extends BaseModel {
 
   @hasMany(() => Relative, {
     localKey: "id",
-    foreignKey: "codWorker",
+    foreignKey: "workerId",
   })
   public relatives: HasMany<typeof Relative>;
 
-  @hasOne(() => Job, {
+  @hasOne(() => Employment, {
     localKey: "id",
-    foreignKey: "codWorker",
+    foreignKey: "workerId",
   })
-  public job: HasOne<typeof Job>;
+  public job: HasOne<typeof Employment>;
 }

@@ -7,8 +7,8 @@ export default class Relative extends BaseModel {
   @column({ isPrimary: true, columnName: "FAM_CODIGO", serializeAs: "id" })
   public id: number;
 
-  @column({ columnName: "FAM_CODTRA_TRABAJADOR", serializeAs: "codWorker" })
-  public codWorker: number;
+  @column({ columnName: "FAM_CODTRA_TRABAJADOR", serializeAs: "workerId" })
+  public workerId: number;
 
   @column({ columnName: "FAM_NOMBRE", serializeAs: "name" })
   public name: string;

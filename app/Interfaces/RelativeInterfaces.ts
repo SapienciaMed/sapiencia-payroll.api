@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 export interface IRelative {
   id: number;
-  codWorker: number;
+  workerId: number;
   name: string;
   relationship: string;
   gender: string;

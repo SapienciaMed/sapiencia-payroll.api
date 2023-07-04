@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
 
-export interface IJob {
+export interface IEmployment {
   id: number;
-  codWorker: number;
+  workerId: number;
   codCharge: number;
   contractNumber: string;
   startDate: DateTime;

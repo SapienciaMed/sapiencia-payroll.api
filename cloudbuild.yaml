@@ -12,4 +12,4 @@ steps:
   # Deploy container image to Cloud Run demo
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk' 
     entrypoint: gcloud 
-    args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY_NAME/$_IMAGE_NAME', '--region', 'us-central1','--port','9003']
+    args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY_NAME/$_IMAGE_NAME', '--region', 'us-central1','--port','$_PORT']

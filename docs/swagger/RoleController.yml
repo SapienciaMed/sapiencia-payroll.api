@@ -1,0 +1,100 @@
+/api/v1/role/get-paginated:
+    get:
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: number
+        required: true
+        description: Id del usuario
+      tags:
+      - Roles
+      summary: Permite la consulta de un roles por filtros y paginado
+      produces:
+      - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+              examples:
+                Action:
+                  value:
+                    {
+                      "data": [
+                        {
+                          "id": 1,
+                          "documentType": "Cédula de ciudadanía",
+                          "documentNumber": "797940",
+                          "names": "Usuario",
+                          "surnames": "Test",
+                          "email": "pro39df@gmail.com",
+                          "gender": "m",
+                          "contactNumber1": null,
+                          "contactNumber2": null,
+                          "deparment": "Antioquia",
+                          "municipality": "Medellin",
+                          "district": "Altavista",
+                          "address": null,
+                          "createdDate": "2023-03-02T14:22:00.347Z",
+                          "modifiedDate": null
+                        }
+                      ],
+                      "operation": {
+                        "code": "OK",
+                        "message": ""
+                      }
+                    }
+                    
+      security:
+        - apiAuth: []
+
+components:
+  schemas:
+    user:
+      type: object
+      properties:
+        documentType:
+          type: string
+          example: "CC"
+        documentNumber:
+          type: string
+          example: "234556677"
+        names:
+          type: string
+          example: "Diana"
+        surnames:
+          type: string
+          example: Perez
+        email:
+          type: string
+          example: "diana@buencom.com"
+        gender:
+          type: string
+          example: "Femenino"
+        contactNumber1:
+          type: string
+          example: ""
+        contactNumber2:
+          type: string
+          example: ""
+        deparment:
+          type: string
+          example: "1"
+        municipality:
+          type: string
+          example: "1"
+        district:
+          type: string
+          example: "1"
+        address:
+          type: string
+          example: "Cra 38"
+        createdDate:
+          type: string
+          example: ""
+        modifiedDate:
+          type: string
+          example: ""

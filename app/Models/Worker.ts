@@ -110,10 +110,22 @@ export default class Worker extends BaseModel {
   public socioEconomic: string;
 
   @column({
+    columnName: "TRA_EPS",
+    serializeAs: "eps",
+  })
+  public eps: string;
+
+  @column({
     columnName: "TRA_FONDO_CESANTIAS",
     serializeAs: "severanceFund",
   })
   public severanceFund: string;
+
+  @column({
+    columnName: "TRA_ARL",
+    serializeAs: "arl",
+  })
+  public arl: string;
 
   @column({
     columnName: "TRA_NIVEL_RIESGO",

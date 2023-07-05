@@ -14,9 +14,9 @@ export default class Employment extends BaseModel {
 
   @column({
     columnName: "EMP_CODCRG_CARGO",
-    serializeAs: "codCharge",
+    serializeAs: "idCharge",
   })
-  public codCharge: number;
+  public idCharge: number;
 
   @column({
     columnName: "EMP_NUMERO_CONTRATO",
@@ -44,9 +44,9 @@ export default class Employment extends BaseModel {
 
   @column({
     columnName: "EMP_CODTMR_MOTIVO_RETIRO",
-    serializeAs: "codReasonRetirement",
+    serializeAs: "idReasonRetirement",
   })
-  public codReasonRetirement: number;
+  public idReasonRetirement: number;
 
   @column({
     columnName: "EMP_USUARIO_MODIFICO",
@@ -69,7 +69,7 @@ export default class Employment extends BaseModel {
   public userCreate: string;
 
   @column.dateTime({
-    autoUpdate: true,
+    autoCreate: true,
     columnName: "EMP_FECHA_CREO",
     serializeAs: "dateCreate",
     prepare: () => DateTime.now().toSQL(),

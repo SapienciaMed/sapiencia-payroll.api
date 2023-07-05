@@ -1,16 +1,16 @@
 import { DateTime } from "luxon";
 
 export interface IEmployment {
-  id: number;
-  workerId: number;
-  codCharge: number;
+  id?: number;
+  workerId?: number;
+  idCharge: number;
   contractNumber: string;
   startDate: DateTime;
   endDate: DateTime;
   state: string;
-  codReasonRetirement: number;
+  idReasonRetirement: number;
   userModified: string;
-  dateModified: DateTime;
+  dateModified?: DateTime;
   userCreate: string;
-  dateCreate: DateTime;
+  dateCreate?: DateTime;
 }

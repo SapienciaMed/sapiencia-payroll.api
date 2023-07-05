@@ -7,7 +7,7 @@ import { IEmploymentRepository } from "App/Repositories/EmploymentRepository";
 
 export interface IWorkerService {
   getWorkerById(id: number): Promise<ApiResponse<IWorker>>;
-  cerateWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>>;
+  createWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>>;
 }
 
 export default class WorkerService implements IWorkerService {
@@ -31,21 +31,21 @@ export default class WorkerService implements IWorkerService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async cerateWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>> {
+  async createWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>> {
     const worker = await this.workerRepository.createWorker(data.worker);
 
     await this.relativeRepository.createManyRelatives(
       data.relatives.map((i) => {
         return {
           ...i,
-          workerId: worker.id,
+          workerId: worker.id!,
         };
       })
     );
 
     await this.employmentRepository.createEmployment({
       ...data.employment,
-      workerId: worker.id,
+      workerId: worker.id!,
     });
 
     return new ApiResponse(

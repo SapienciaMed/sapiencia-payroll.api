@@ -27,6 +27,13 @@ export default class AppProvider {
       "App/Repositories/RelativeRepository"
     );
 
+    const TypesChargesRepository = await import(
+      "App/Repositories/TypesChargesRepository"
+    );
+    const TypesContractsRepository = await import(
+      "App/Repositories/TypesContractsRepository"
+    );
+
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
@@ -37,7 +44,9 @@ export default class AppProvider {
         new WorkerService.default(
           new WorkerRepository.default(),
           new RelativeRepository.default(),
-          new EmploymentRepository.default()
+          new EmploymentRepository.default(),
+          new TypesContractsRepository.default(),
+          new TypesChargesRepository.default()
         )
     );
   }

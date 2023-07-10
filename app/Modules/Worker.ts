@@ -4,3 +4,6 @@ declare module "@ioc:core.WorkerProvider" {
   const WorkerProvider: IWorkerService;
   export default WorkerProvider;
 }
+
+
+

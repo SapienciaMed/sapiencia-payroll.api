@@ -1,0 +1,15 @@
+steps:
+  # #Build the container image 
+
+  - name: 'gcr.io/cloud-builders/docker' 
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY_NAME/$_IMAGE_NAME', '.'] 
+
+  # Push the container image to Container Registry 
+
+  - name: 'gcr.io/cloud-builders/docker' 
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY_NAME/$_IMAGE_NAME'] 
+
+  # Deploy container image to Cloud Run demo
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk' 
+    entrypoint: gcloud 
+    args: ['run', 'deploy', '$_SERVICE_NAME', '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY_NAME/$_IMAGE_NAME', '--region', 'us-central1','--port','$_PORT']

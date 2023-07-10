@@ -50,7 +50,7 @@ export default class CreateAndUpdateWorkerValidator {
       userCreate: schema.string.optional([rules.maxLength(15)]),
     }),
     relatives: schema.array().members(
-      schema.object().members({
+      schema.object.optional().members({
         name: schema.string([rules.maxLength(150)]),
         relationship: schema.string([rules.maxLength(10)]),
         gender: schema.string([rules.maxLength(10)]),

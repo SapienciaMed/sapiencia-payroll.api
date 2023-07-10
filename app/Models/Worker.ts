@@ -146,6 +146,12 @@ export default class Worker extends BaseModel {
   public housingType: string;
 
   @column({
+    columnName: "TRA_FONDO_PENSION",
+    serializeAs: "FundPension",
+  })
+  public fundPension: string;
+
+  @column({
     columnName: "TRA_USUARIO_MODIFICO",
     serializeAs: "userModified",
   })

@@ -19,6 +19,18 @@ export default class Employment extends BaseModel {
   public idCharge: number;
 
   @column({
+    columnName: "EMP_CORREO_INSTITUCIONAL",
+    serializeAs: "institutionalMail",
+  })
+  public institutionalMail: string;
+
+  @column({
+    columnName: "EMP_CODTCO_TIPO_CONTRATO",
+    serializeAs: "idTypeContract",
+  })
+  public idTypeContract: number;
+
+  @column({
     columnName: "EMP_NUMERO_CONTRATO",
     serializeAs: "contractNumber",
   })

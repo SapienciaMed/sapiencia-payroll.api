@@ -82,6 +82,9 @@ export default class extends BaseSchema {
         .comment("Fondo de cesantias (Listados Genericos)");
       table.string("TRA_ARL", 10).comment("Arl (Listados Genericos)");
       table
+        .string("TRA_FONDO_PENSION", 10)
+        .comment("Fondo de pension (Listados Genericos)");
+      table
         .string("TRA_NIVEL_RIESGO", 10)
         .comment("Nivel de riesgo (Listados Genericos)");
       table

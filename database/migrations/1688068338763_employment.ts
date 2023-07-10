@@ -20,6 +20,16 @@ export default class extends BaseSchema {
         .inTable("CRG_CARGOS")
         .comment("codigo del cargo (FK CRG_CARGOS)");
       table
+        .integer("EMP_CODTCO_TIPO_CONTRATO")
+        .notNullable()
+        .comment("Tipo de contrato de vinculacionn del empleado")
+        .references("TCO_CODIGO")
+        .inTable("TCO_TIPOS_CONTRATO");
+      table
+        .string("EMP_CORREO_INSTITUCIONAL", 50)
+        .notNullable()
+        .comment("Correon institucional ");
+      table
         .string("EMP_NUMERO_CONTRATO", 10)
         .notNullable()
         .comment("Numero del contrato ");

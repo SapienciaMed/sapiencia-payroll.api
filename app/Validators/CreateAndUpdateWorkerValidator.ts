@@ -46,11 +46,12 @@ export default class CreateAndUpdateWorkerValidator {
       severanceFund: schema.string.optional([rules.maxLength(10)]),
       riskLevel: schema.string.optional([rules.maxLength(10)]),
       housingType: schema.string.optional([rules.maxLength(10)]),
+      fundPension: schema.string.optional([rules.maxLength(10)]),
       userModified: schema.string.optional([rules.maxLength(15)]),
       userCreate: schema.string.optional([rules.maxLength(15)]),
     }),
     relatives: schema.array().members(
-      schema.object.optional().members({
+      schema.object().members({
         name: schema.string([rules.maxLength(150)]),
         relationship: schema.string([rules.maxLength(10)]),
         gender: schema.string([rules.maxLength(10)]),
@@ -60,12 +61,14 @@ export default class CreateAndUpdateWorkerValidator {
     employment: schema.object().members({
       idCharge: schema.number(),
       contractNumber: schema.string([rules.maxLength(10)]),
+      idTypeContract: schema.number(),
       startDate: schema.date(),
-      endDate: schema.date(),
+      endDate: schema.date.optional(),
+      institutionalMail: schema.string([rules.maxLength(50), rules.email()]),
       state: schema.string([rules.maxLength(10)]),
-      idReasonRetirement: schema.number(),
-      userModified: schema.string([rules.maxLength(10)]),
-      userCreate: schema.string([rules.maxLength(15)]),
+      idReasonRetirement: schema.number.optional(),
+      userModified: schema.string.optional([rules.maxLength(10)]),
+      userCreate: schema.string.optional([rules.maxLength(15)]),
     }),
   });
 

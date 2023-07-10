@@ -12,7 +12,7 @@ export interface IWorker {
   secondSurname?: string;
   gender: string;
   bloodType: string;
-  birthDate: Date;
+  birthDate: DateTime;
   nationality: string;
   email?: string;
   contactNumber: string;
@@ -26,6 +26,7 @@ export interface IWorker {
   arl?: string;
   riskLevel?: string;
   housingType?: string;
+  fundPension?: string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

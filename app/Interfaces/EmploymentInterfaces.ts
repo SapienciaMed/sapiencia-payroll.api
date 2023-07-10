@@ -4,13 +4,15 @@ export interface IEmployment {
   id?: number;
   workerId?: number;
   idCharge: number;
+  institutionalMail: string;
   contractNumber: string;
   startDate: DateTime;
-  endDate: DateTime;
+  endDate?: DateTime;
   state: string;
-  idReasonRetirement: number;
-  userModified: string;
+  idTypeContract: number;
+  idReasonRetirement?: number;
+  userModified?: string;
   dateModified?: DateTime;
-  userCreate: string;
+  userCreate?: string;
   dateCreate?: DateTime;
 }

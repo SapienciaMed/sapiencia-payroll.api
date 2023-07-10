@@ -25,6 +25,5 @@ Route.get("/", async () => {
 });
 
 Route.group(() => {
-  Route.get("/get-by-id/:id", "WorkerController.getWorkerById");
-}).prefix("/api/v1/worker");
-// .middleware("auth");
+  Route.post("/", "EmploymentController.createWorker");
+}).prefix("/api/v1/employment");

@@ -33,6 +33,7 @@ export default class CreateAndUpdateWorkerValidator {
       secondSurname: schema.string.optional([rules.maxLength(50)]),
       gender: schema.string([rules.maxLength(10)]),
       bloodType: schema.string([rules.maxLength(10)]),
+      birthDate: schema.date(),
       nationality: schema.string([rules.maxLength(10)]),
       email: schema.string.optional([rules.email(), rules.maxLength(50)]),
       contactNumber: schema.string([rules.maxLength(10)]),

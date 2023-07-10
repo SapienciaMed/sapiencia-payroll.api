@@ -62,6 +62,12 @@ export default class Worker extends BaseModel {
   public bloodType: string;
 
   @column({
+    columnName: "TRA_FECHA_NACIMIENTO",
+    serializeAs: "birthDate",
+  })
+  public birthDate: Date;
+
+  @column({
     columnName: "TRA_NACIONALIDAD",
     serializeAs: "nationality",
   })

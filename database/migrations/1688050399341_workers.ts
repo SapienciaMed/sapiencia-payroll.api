@@ -43,6 +43,10 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Tipo de sangre");
       table
+        .timestamp("TRA_FECHA_NACIMIENTO")
+        .notNullable()
+        .comment("Fecha de nacimiento");
+      table
         .string("TRA_NACIONALIDAD", 10)
         .notNullable()
         .comment("Nacionalidad del colaborador (Listados Genericos)");

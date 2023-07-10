@@ -12,6 +12,7 @@ export interface IWorker {
   secondSurname?: string;
   gender: string;
   bloodType: string;
+  birthDate: Date;
   nationality: string;
   email?: string;
   contactNumber: string;

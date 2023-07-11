@@ -65,7 +65,7 @@ export default class Worker extends BaseModel {
     columnName: "TRA_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
   })
-  public birthDate: Date;
+  public birthDate: DateTime;
 
   @column({
     columnName: "TRA_NACIONALIDAD",

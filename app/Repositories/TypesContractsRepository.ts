@@ -1,4 +1,4 @@
-import { ITypesContracts } from "App/Interfaces/TypesContracts";
+import { ITypesContracts } from "App/Interfaces/TypesContractsInterfaces";
 import TypesContract from "App/Models/TypesContract";
 
 export interface ITypesContractsRepository {

@@ -28,9 +28,9 @@ export default class EmploymentController {
     }
   }
 
-  public async getTypesCharges({ response }: HttpContextContract) {
+  public async getCharges({ response }: HttpContextContract) {
     try {
-      return response.send(await WorkerProvider.getTypesChargesList());
+      return response.send(await WorkerProvider.getChargesList());
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

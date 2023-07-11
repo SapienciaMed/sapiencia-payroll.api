@@ -4,27 +4,20 @@ import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
 import { IRelativeRepository } from "App/Repositories/RelativeRepository";
 import { IEmploymentRepository } from "App/Repositories/EmploymentRepository";
-import { ITypesCharges } from "App/Interfaces/TypesChargesInterfaces";
-import { ITypesContracts } from "App/Interfaces/TypesContracts";
+import { ITypesContracts } from "App/Interfaces/TypesContractsInterfaces";
 import { ITypesContractsRepository } from "App/Repositories/TypesContractsRepository";
-import { ITypesChargesRepository } from "App/Repositories/TypesChargesRepository";
+import { IChargesRepository } from "App/Repositories/ChargesRepository";
+import { ICharge } from "App/Interfaces/ChargeInterfaces";
 
 export interface IWorkerService {
   getWorkerById(id: number): Promise<ApiResponse<IWorker>>;
   createWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>>;
   getTypeContractsById(id: number): Promise<ApiResponse<ITypesContracts>>;
   getTypesContractsList(): Promise<ApiResponse<ITypesContracts[]>>;
-  getTypeChargeById(id: number): Promise<ApiResponse<ITypesCharges>>;
-  getTypesChargesList(): Promise<ApiResponse<ITypesCharges[]>>;
+  getChargeById(id: number): Promise<ApiResponse<ICharge>>;
+  getChargesList(): Promise<ApiResponse<ICharge[]>>;
 }
 
-export interface ITypesChargesService {
-
-}
-
-export interface ITypesContractsService {
-  
-}
 
 export default class WorkerService implements IWorkerService {
   constructor(
@@ -32,7 +25,7 @@ export default class WorkerService implements IWorkerService {
     private relativeRepository: IRelativeRepository,
     private employmentRepository: IEmploymentRepository,
     private TypesContractsRepository: ITypesContractsRepository,
-    private typesChargesRepository: ITypesChargesRepository
+    private typesChargesRepository: IChargesRepository
   ) {}
 
   async getWorkerById(id: number): Promise<ApiResponse<IWorker>> {
@@ -73,12 +66,12 @@ export default class WorkerService implements IWorkerService {
     );
   }
 
-  async getTypeChargeById(id: number): Promise<ApiResponse<ITypesCharges>> {
-    const res = await this.typesChargesRepository.getTypeChargeById(id);
+  async getChargeById(id: number): Promise<ApiResponse<ICharge>> {
+    const res = await this.typesChargesRepository.getChargeById(id);
 
     if (!res) {
       return new ApiResponse(
-        {} as ITypesCharges,
+        {} as ICharge,
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );
@@ -101,12 +94,12 @@ export default class WorkerService implements IWorkerService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getTypesChargesList(): Promise<ApiResponse<ITypesCharges[]>> {
-    const res = await this.typesChargesRepository.getTypesChargesList();
+  async getChargesList(): Promise<ApiResponse<ICharge[]>> {
+    const res = await this.typesChargesRepository.getChargesList();
 
     if (!res) {
       return new ApiResponse(
-        {} as ITypesCharges[],
+        {} as ICharge[],
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );

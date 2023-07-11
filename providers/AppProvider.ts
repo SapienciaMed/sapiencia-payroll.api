@@ -27,8 +27,8 @@ export default class AppProvider {
       "App/Repositories/RelativeRepository"
     );
 
-    const TypesChargesRepository = await import(
-      "App/Repositories/TypesChargesRepository"
+    const ChargesRepository = await import(
+      "App/Repositories/ChargesRepository"
     );
     const TypesContractsRepository = await import(
       "App/Repositories/TypesContractsRepository"
@@ -46,7 +46,7 @@ export default class AppProvider {
           new RelativeRepository.default(),
           new EmploymentRepository.default(),
           new TypesContractsRepository.default(),
-          new TypesChargesRepository.default()
+          new ChargesRepository.default()
         )
     );
   }

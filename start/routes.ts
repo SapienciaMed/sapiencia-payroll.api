@@ -27,5 +27,5 @@ Route.get("/", async () => {
 Route.group(() => {
   Route.post("/", "EmploymentController.createWorker");
   Route.get("/typesContracts", "EmploymentController.getTypesContracts");
-  Route.get("/typesCharges", "EmploymentController.getTypesCharges");
+  Route.get("/charges", "EmploymentController.getCharges");
 }).prefix("/api/v1/employment");

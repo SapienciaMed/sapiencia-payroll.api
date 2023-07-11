@@ -51,7 +51,7 @@ export default class Charge extends BaseModel {
   public dateModified: DateTime;
 
   @column({
-    columnName: "TRA_USUARIO_CREO",
+    columnName: "CRG_USUARIO_CREO",
     serializeAs: "userCreate",
   })
   public userCreate: string;

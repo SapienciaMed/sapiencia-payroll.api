@@ -51,7 +51,7 @@ export default class WorkerService implements IWorkerService {
 
   async createWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>> {
     const worker = await this.workerRepository.createWorker(data.worker);
-
+    console.log(worker.id!)
     await this.relativeRepository.createManyRelatives(
       data.relatives.map((i) => {
         return {

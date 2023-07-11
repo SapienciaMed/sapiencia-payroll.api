@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import TypesContractsWithDrawal from "./ReasonsForWithdrawal";
 import Charge from "./Charge";
+import TypesContract from "./TypesContract";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -99,4 +100,10 @@ export default class Employment extends BaseModel {
     foreignKey: "id",
   })
   public typesContractsWithDrawals: HasMany<typeof TypesContractsWithDrawal>;
+
+  @hasMany(() => TypesContract, {
+    localKey: "idTypeContract",
+    foreignKey: "id",
+  })
+  public typesContracts: HasMany<typeof TypesContract>;
 }

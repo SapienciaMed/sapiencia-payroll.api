@@ -12,7 +12,6 @@ export default class extends BaseSchema {
       table.increments("TRA_CODIGO").primary().comment("Llave primaria");
       table
         .string("TRA_TIPO_DOCUMENTO", 4)
-        .unique()
         .notNullable()
         .comment("Tipo de documento del usuario (Listados Genericos)");
       table

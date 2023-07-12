@@ -152,6 +152,24 @@ export default class Worker extends BaseModel {
   public fundPension: string;
 
   @column({
+    columnName: "TRA_BANCO",
+    serializeAs: "bank",
+  })
+  public bank: string;
+  
+  @column({
+    columnName: "TRA_TIPO_CUENTA_BANCARIA",
+    serializeAs: "accountBankType",
+  })
+  public accountType: string;
+
+  @column({
+    columnName: "TRA_CUENTA_BANCARIA",
+    serializeAs: "accountBankNumber",
+  })
+  public accountNumber: string;
+
+  @column({
     columnName: "TRA_USUARIO_MODIFICO",
     serializeAs: "userModified",
   })

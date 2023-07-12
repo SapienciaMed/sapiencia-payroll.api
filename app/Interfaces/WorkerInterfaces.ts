@@ -27,6 +27,9 @@ export interface IWorker {
   riskLevel?: string;
   housingType?: string;
   fundPension?: string;
+  bank?: string;
+  accountType?: string;
+  accountNumber?: string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

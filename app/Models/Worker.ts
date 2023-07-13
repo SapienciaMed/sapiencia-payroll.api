@@ -9,6 +9,7 @@ import {
 import { DateTime } from "luxon";
 import Relative from "./Relative";
 import Employment from "./Employment";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class Worker extends BaseModel {
   public static table = "TRA_TRABAJADORES";
@@ -187,7 +188,7 @@ export default class Worker extends BaseModel {
     columnName: "TRA_USUARIO_CREO",
     serializeAs: "userCreate",
   })
-  public userCreate: string;
+  public userCreate: string | undefined = Env.get("USER_ID");
 
   @column.dateTime({
     autoCreate: true,

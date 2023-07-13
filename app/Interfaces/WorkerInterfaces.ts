@@ -41,3 +41,9 @@ export interface ICreateWorker {
   relatives: IRelative[];
   employment: IEmployment;
 }
+
+export interface IGetWorker {
+  worker: IWorker;
+  relative: IRelative[] | null;
+  employment: IEmployment | null;
+}

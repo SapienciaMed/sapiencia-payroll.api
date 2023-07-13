@@ -1,4 +1,8 @@
-import { ICreateWorker, IWorker } from "App/Interfaces/WorkerInterfaces";
+import {
+  ICreateWorker,
+  IGetWorker,
+  IWorker,
+} from "App/Interfaces/WorkerInterfaces";
 import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
@@ -8,16 +12,20 @@ import { ITypesContracts } from "App/Interfaces/TypesContractsInterfaces";
 import { ITypesContractsRepository } from "App/Repositories/TypesContractsRepository";
 import { IChargesRepository } from "App/Repositories/ChargesRepository";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 
 export interface IWorkerService {
-  getWorkerById(id: number): Promise<ApiResponse<IWorker>>;
-  createWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>>;
+  getWorkers(): Promise<ApiResponse<IWorker[]>>;
+  getWorkerById(id: number): Promise<ApiResponse<IGetWorker>>;
+  createWorker(
+    data: ICreateWorker,
+    trx: TransactionClientContract
+  ): Promise<ApiResponse<IWorker>>;
   getTypeContractsById(id: number): Promise<ApiResponse<ITypesContracts>>;
   getTypesContractsList(): Promise<ApiResponse<ITypesContracts[]>>;
   getChargeById(id: number): Promise<ApiResponse<ICharge>>;
   getChargesList(): Promise<ApiResponse<ICharge[]>>;
 }
-
 
 export default class WorkerService implements IWorkerService {
   constructor(
@@ -28,36 +36,65 @@ export default class WorkerService implements IWorkerService {
     private typesChargesRepository: IChargesRepository
   ) {}
 
-  async getWorkerById(id: number): Promise<ApiResponse<IWorker>> {
-    const res = await this.workerRepository.getWorkerById(id);
+  async getWorkers(): Promise<ApiResponse<IWorker[]>> {
+    const workers = await this.workerRepository.getWorkers();
 
-    if (!res) {
+    return new ApiResponse(workers, EResponseCodes.OK);
+  }
+
+  async getWorkerById(id: number): Promise<ApiResponse<IGetWorker>> {
+    const worker = await this.workerRepository.getWorkerById(id);
+
+    if (!worker?.id) {
       return new ApiResponse(
-        {} as IWorker,
+        {} as IGetWorker,
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );
     }
 
+    const relative = await this.relativeRepository.getRelativeWorkerById(
+      worker.id
+    );
+
+    const employment = await this.employmentRepository.getEmploymentWorkerById(
+      worker.id
+    );
+
+    const res = {
+      worker,
+      relative,
+      employment,
+    } as IGetWorker;
+
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async createWorker(data: ICreateWorker): Promise<ApiResponse<IWorker>> {
-    const worker = await this.workerRepository.createWorker(data.worker);
-    console.log(worker.id!)
+  async createWorker(
+    data: ICreateWorker,
+    trx: TransactionClientContract
+  ): Promise<ApiResponse<IWorker>> {
+    const worker = await this.workerRepository.createWorker(data.worker, trx);
+
     await this.relativeRepository.createManyRelatives(
       data.relatives.map((i) => {
         return {
           ...i,
           workerId: worker.id!,
         };
-      })
+      }),
+      trx
     );
 
-    await this.employmentRepository.createEmployment({
-      ...data.employment,
-      workerId: worker.id!,
-    });
+    await this.employmentRepository.createEmployment(
+      {
+        ...data.employment,
+        workerId: worker.id!,
+      },
+      trx
+    );
+
+    await trx.commit();
 
     return new ApiResponse(
       worker,
@@ -80,7 +117,9 @@ export default class WorkerService implements IWorkerService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getTypeContractsById(id: number): Promise<ApiResponse<ITypesContracts>> {
+  async getTypeContractsById(
+    id: number
+  ): Promise<ApiResponse<ITypesContracts>> {
     const res = await this.TypesContractsRepository.getTypeContractsById(id);
 
     if (!res) {
@@ -121,5 +160,4 @@ export default class WorkerService implements IWorkerService {
 
     return new ApiResponse(res, EResponseCodes.OK);
   }
-
 }

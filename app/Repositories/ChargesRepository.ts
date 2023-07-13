@@ -15,6 +15,6 @@ export default class ChargesRepository implements IChargesRepository {
 
   async getChargesList(): Promise<ICharge[]> {
     const res = await Charge.all();
-    return res as ICharge[]
+    return res as ICharge[];
   }
 }

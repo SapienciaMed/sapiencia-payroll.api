@@ -35,15 +35,3 @@ export interface IWorker {
   userCreate?: string;
   dateCreate?: DateTime;
 }
-
-export interface ICreateWorker {
-  worker: IWorker;
-  relatives: IRelative[];
-  employment: IEmployment;
-}
-
-export interface IGetWorker {
-  worker: IWorker;
-  relative: IRelative[] | null;
-  employment: IEmployment | null;
-}

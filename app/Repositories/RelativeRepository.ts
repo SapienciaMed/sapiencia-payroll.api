@@ -7,6 +7,10 @@ export interface IRelativeRepository {
     relatives: IRelative[],
     trx: TransactionClientContract
   ): Promise<boolean>;
+  editOrInsertMany(
+    relatives: IRelative[],
+    trx: TransactionClientContract
+  ): Promise<boolean>;
   getRelativeWorkerById(id: number): Promise<IRelative[] | null>;
 }
 
@@ -18,8 +22,38 @@ export default class RelativeRepository implements IRelativeRepository {
     return res as IRelative[];
   }
 
-  async createManyRelatives(relatives: IRelative[], trx): Promise<boolean> {
+  async createManyRelatives(
+    relatives: IRelative[],
+    trx: TransactionClientContract
+  ): Promise<boolean> {
     Relative.createMany(relatives, trx);
+    return true;
+  }
+
+  public async editOrInsertMany(
+    relatives: IRelative[],
+    trx: TransactionClientContract
+  ): Promise<boolean> {
+    await Promise.all(
+      relatives.map(async ({ id, ...relativeData }) => {
+        const toUpdate = await Relative.findBy("id", id);
+
+        if (toUpdate) {
+          toUpdate.fill({ ...relativeData }).useTransaction(trx);
+          await toUpdate.save();
+
+          return toUpdate.serialize() as IRelative;
+        } else {
+          const toCreate = new Relative();
+
+          toCreate.fill({ ...relativeData }).useTransaction(trx);
+          await toCreate.save();
+
+          return toCreate.serialize() as IRelative;
+        }
+      })
+    );
+
     return true;
   }
 }

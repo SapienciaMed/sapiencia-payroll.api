@@ -9,7 +9,7 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** SERVICES ********************************/
     /**************************************************************************/
-    const WorkerService = await import("App/Services/WorkerService");
+    const VinculationProvider = await import("App/Services/VinculationService");
 
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
@@ -39,9 +39,9 @@ export default class AppProvider {
     /**************************************************************************/
 
     this.app.container.singleton(
-      "core.WorkerProvider",
+      "core.VinculationProvider",
       () =>
-        new WorkerService.default(
+        new VinculationProvider.default(
           new WorkerRepository.default(),
           new RelativeRepository.default(),
           new EmploymentRepository.default(),

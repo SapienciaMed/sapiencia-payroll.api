@@ -1,23 +1,68 @@
 import { IWorker } from "App/Interfaces/WorkerInterfaces";
 import Worker from "../Models/Worker";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import {
+  IFilterVinculation,
+  IGetVinculation,
+} from "App/Interfaces/VinculationInterfaces";
+import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IWorkerRepository {
-  getWorkers(): Promise<IWorker[]>;
+  getVinculation(
+    filters: IFilterVinculation
+  ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
   createWorker(
     worker: IWorker,
     trx: TransactionClientContract
   ): Promise<IWorker>;
+  editWorker(
+    worker: IWorker,
+    trx: TransactionClientContract
+  ): Promise<IWorker | null>;
 }
 
 export default class WorkerRepository implements IWorkerRepository {
   constructor() {}
 
-  async getWorkers(): Promise<IWorker[]> {
-    const res = await Worker.all();
+  async getVinculation(
+    filters: IFilterVinculation
+  ): Promise<IPagingData<IGetVinculation>> {
+    const res = Worker.query();
 
-    return res as IWorker[];
+    if (filters.name) {
+      res.whereLike("firstName", filters.name);
+    }
+
+    if (filters.lastName) {
+      res.whereLike("surName", filters.lastName);
+    }
+
+    if (filters.documentNumber) {
+      res.whereLike("numberDocument", filters.documentNumber);
+    }
+
+    res.preload("employment", (query) => {
+      if (filters.state) {
+        query.where("state", filters.state);
+      }
+
+      if (filters.vinculationType) {
+        query.where("idTypeContract", filters.vinculationType);
+      }
+    });
+
+    const workerEmploymentPaginated = await res.paginate(
+      filters.page,
+      filters.perPage
+    );
+
+    const { data, meta } = workerEmploymentPaginated.serialize();
+
+    return {
+      array: data as IGetVinculation[],
+      meta,
+    };
   }
 
   async getWorkerById(id: number): Promise<IWorker | null> {
@@ -34,5 +79,22 @@ export default class WorkerRepository implements IWorkerRepository {
     toCreate.fill({ ...worker });
     await toCreate.save();
     return toCreate.serialize() as IWorker;
+  }
+
+  async editWorker(
+    worker: IWorker,
+    trx: TransactionClientContract
+  ): Promise<IWorker | null> {
+    const toUpdate = await Worker.find(worker.id);
+
+    if (!toUpdate) {
+      return null;
+    }
+
+    toUpdate.fill({ ...worker }).useTransaction(trx);
+
+    await toUpdate.save();
+
+    return toUpdate.serialize() as IWorker;
   }
 }

@@ -157,7 +157,7 @@ export default class Worker extends BaseModel {
     serializeAs: "bank",
   })
   public bank: string;
-  
+
   @column({
     columnName: "TRA_TIPO_CUENTA_BANCARIA",
     serializeAs: "accountBankType",
@@ -208,5 +208,5 @@ export default class Worker extends BaseModel {
     localKey: "id",
     foreignKey: "workerId",
   })
-  public job: HasOne<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
 }

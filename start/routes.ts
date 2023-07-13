@@ -25,9 +25,10 @@ Route.get("/", async () => {
 });
 
 Route.group(() => {
-  Route.get("/typesContracts", "EmploymentController.getTypesContracts");
-  Route.get("/charges", "EmploymentController.getCharges");
-  Route.get("/:id", "EmploymentController.getWorkerById");
-  Route.get("/", "EmploymentController.getWorkers");
-  Route.post("/", "EmploymentController.createWorker");
+  Route.get("/typesContracts", "VinculationController.getTypesContracts");
+  Route.get("/charges", "VinculationController.getCharges");
+  Route.get("/:id", "VinculationController.getVinculationById");
+  Route.put("/", "VinculationController.updateVinculation");
+  Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
+  Route.post("/", "VinculationController.createVinculation");
 }).prefix("/api/v1/employment");

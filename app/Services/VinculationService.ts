@@ -1,10 +1,12 @@
 import {
-  ICreateWorker,
-  IGetWorker,
-  IWorker,
-} from "App/Interfaces/WorkerInterfaces";
+  ICreateOrUpdateVinculation,
+  IGetByVinculation,
+  IGetVinculation,
+  IFilterVinculation,
+} from "App/Interfaces/VinculationInterfaces";
+
 import { IWorkerRepository } from "App/Repositories/WorkerRepository";
-import { ApiResponse } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
 import { IRelativeRepository } from "App/Repositories/RelativeRepository";
 import { IEmploymentRepository } from "App/Repositories/EmploymentRepository";
@@ -13,21 +15,28 @@ import { ITypesContractsRepository } from "App/Repositories/TypesContractsReposi
 import { IChargesRepository } from "App/Repositories/ChargesRepository";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import { IWorker } from "App/Interfaces/WorkerInterfaces";
 
-export interface IWorkerService {
-  getWorkers(): Promise<ApiResponse<IWorker[]>>;
-  getWorkerById(id: number): Promise<ApiResponse<IGetWorker>>;
-  createWorker(
-    data: ICreateWorker,
+export interface IVinculationService {
+  getVinculationPaginate(
+    filters: IFilterVinculation
+  ): Promise<ApiResponse<IPagingData<IGetVinculation>>>;
+  getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
+  createVinculation(
+    data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
   ): Promise<ApiResponse<IWorker>>;
   getTypeContractsById(id: number): Promise<ApiResponse<ITypesContracts>>;
   getTypesContractsList(): Promise<ApiResponse<ITypesContracts[]>>;
   getChargeById(id: number): Promise<ApiResponse<ICharge>>;
   getChargesList(): Promise<ApiResponse<ICharge[]>>;
+  editVinculation(
+    data: ICreateOrUpdateVinculation,
+    trx: TransactionClientContract
+  ): Promise<ApiResponse<IWorker | null>>;
 }
 
-export default class WorkerService implements IWorkerService {
+export default class VinculationService implements IVinculationService {
   constructor(
     private workerRepository: IWorkerRepository,
     private relativeRepository: IRelativeRepository,
@@ -36,18 +45,22 @@ export default class WorkerService implements IWorkerService {
     private typesChargesRepository: IChargesRepository
   ) {}
 
-  async getWorkers(): Promise<ApiResponse<IWorker[]>> {
-    const workers = await this.workerRepository.getWorkers();
+  async getVinculationPaginate(
+    filters: IFilterVinculation
+  ): Promise<ApiResponse<IPagingData<IGetVinculation>>> {
+    const workers = await this.workerRepository.getVinculation(filters);
 
     return new ApiResponse(workers, EResponseCodes.OK);
   }
 
-  async getWorkerById(id: number): Promise<ApiResponse<IGetWorker>> {
+  async getVinculationById(
+    id: number
+  ): Promise<ApiResponse<IGetByVinculation>> {
     const worker = await this.workerRepository.getWorkerById(id);
 
     if (!worker?.id) {
       return new ApiResponse(
-        {} as IGetWorker,
+        {} as IGetByVinculation,
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );
@@ -65,13 +78,13 @@ export default class WorkerService implements IWorkerService {
       worker,
       relative,
       employment,
-    } as IGetWorker;
+    } as IGetByVinculation;
 
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async createWorker(
-    data: ICreateWorker,
+  async createVinculation(
+    data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
   ): Promise<ApiResponse<IWorker>> {
     const worker = await this.workerRepository.createWorker(data.worker, trx);
@@ -99,7 +112,7 @@ export default class WorkerService implements IWorkerService {
     return new ApiResponse(
       worker,
       EResponseCodes.OK,
-      "El trabajador ha sido vinculado exitosamente."
+      "La vinculacion ha sido registrada exitosamente."
     );
   }
 
@@ -159,5 +172,46 @@ export default class WorkerService implements IWorkerService {
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async editVinculation(
+    data: ICreateOrUpdateVinculation,
+    trx: TransactionClientContract
+  ): Promise<ApiResponse<IWorker>> {
+    const worker = await this.workerRepository.editWorker(data.worker, trx);
+
+    if (!worker) {
+      return new ApiResponse(
+        {} as IWorker,
+        EResponseCodes.OK,
+        "La vinculacion no se encuentra en el sistema"
+      );
+    }
+
+    await this.relativeRepository.editOrInsertMany(
+      data.relatives.map((i) => {
+        return {
+          ...i,
+          workerId: worker?.id!,
+        };
+      }),
+      trx
+    );
+
+    await this.employmentRepository.createEmployment(
+      {
+        ...data.employment,
+        workerId: worker?.id!,
+      },
+      trx
+    );
+
+    await trx.commit();
+
+    return new ApiResponse(
+      worker,
+      EResponseCodes.OK,
+      "La vinculacion ha sido registrada exitosamente."
+    );
   }
 }

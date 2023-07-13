@@ -1,7 +1,7 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Database from "@ioc:Adonis/Lucid/Database";
 
-import VinculationProvider from "@ioc:core.Vinculation";
+import VinculationProvider from "@ioc:core.VinculationProvider";
 
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";

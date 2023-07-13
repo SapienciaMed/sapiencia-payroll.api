@@ -1,4 +1,4 @@
-declare module "@ioc:core.Vinculation" {
+declare module "@ioc:core.VinculationProvider" {
   import { IVinculationService } from "App/Services/VinculationService";
 
   const VinculationProvider: IVinculationService;

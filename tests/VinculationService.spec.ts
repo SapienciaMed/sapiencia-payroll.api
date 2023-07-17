@@ -1,10 +1,10 @@
 // import test from "japa";
 // import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
-// import WorkerService from "App/Services/WorkerService";
 // import { WorkerRepositoryFake } from "./FakeClass/WorkerRepositoryFake";
 // import { ApiResponse } from "App/Utils/ApiResponses";
+// import VinculationService from "App/Services/VinculationService";
 
-// const service = new WorkerService(new WorkerRepositoryFake());
+// const service = new VinculationService(new WorkerRepositoryFake());
 
 // test.group("RolService TEST for getWorkerById", () => {
 //   test("class service must have a method getWorkerById with a return", async (assert) => {

@@ -7,15 +7,15 @@ export interface IEmploymentRepository {
     employment: IEmployment,
     trx: TransactionClientContract
   ): Promise<IEmployment>;
-  getEmploymentWorkerById(id: number): Promise<IEmployment | null>;
+  getEmploymentWorkerById(id: number): Promise<IEmployment[] | null>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
   constructor() {}
 
-  async getEmploymentWorkerById(id: number): Promise<IEmployment | null> {
-    const res = await Employment.findBy("workerId", id);
-    return res as IEmployment;
+  async getEmploymentWorkerById(id: number): Promise<IEmployment[] | null> {
+    const res = await Employment.query().where("workerId", id);
+    return res as IEmployment[];
   }
 
   async createEmployment(

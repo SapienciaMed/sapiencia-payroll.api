@@ -62,6 +62,22 @@ export default class Employment extends BaseModel {
   public idReasonRetirement: number;
 
   @column({
+    columnName: "EMP_SALARIO",
+    serializeAs: "salary",
+  })
+  public salary: number;
+  @column({
+    columnName: "EMP_VALOR_TOTAL",
+    serializeAs: "totalValue",
+  })
+  public totalValue: number;
+  @column({
+    columnName: "EMP_OBSERVACION",
+    serializeAs: "observation",
+  })
+  public observation: string;
+
+  @column({
     columnName: "EMP_USUARIO_MODIFICO",
     serializeAs: "userModified",
   })

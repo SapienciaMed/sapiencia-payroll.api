@@ -42,7 +42,7 @@ export default class Worker extends BaseModel {
     columnName: "TRA_PRIMER_APELLIDO",
     serializeAs: "surname",
   })
-  public surName: string;
+  public surname: string;
 
   @column({
     columnName: "TRA_SEGUNDO_APELLIDO",
@@ -148,7 +148,7 @@ export default class Worker extends BaseModel {
 
   @column({
     columnName: "TRA_FONDO_PENSION",
-    serializeAs: "FundPension",
+    serializeAs: "fundPension",
   })
   public fundPension: string;
 
@@ -162,13 +162,13 @@ export default class Worker extends BaseModel {
     columnName: "TRA_TIPO_CUENTA_BANCARIA",
     serializeAs: "accountBankType",
   })
-  public accountType: string;
+  public accountBankType: string;
 
   @column({
     columnName: "TRA_CUENTA_BANCARIA",
     serializeAs: "accountBankNumber",
   })
-  public accountNumber: string;
+  public accountBankNumber: string;
 
   @column({
     columnName: "TRA_USUARIO_MODIFICO",

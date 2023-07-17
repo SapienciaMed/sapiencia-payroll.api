@@ -8,7 +8,7 @@ export interface IWorker {
   numberDocument: string;
   firstName: string;
   secondName?: string;
-  surName: string;
+  surname: string;
   secondSurname?: string;
   gender: string;
   bloodType: string;
@@ -28,8 +28,8 @@ export interface IWorker {
   housingType?: string;
   fundPension?: string;
   bank?: string;
-  accountType?: string;
-  accountNumber?: string;
+  accountBankType?: string;
+  accountBankNumber?: string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

@@ -51,6 +51,20 @@ export default class extends BaseSchema {
         .inTable("TMR_TIPOS_MOTIVOS_RETIRO")
         .comment("codigo del motivo de retiro (FK TMR_TIPOS_MOTIVOS_RETIRO)");
       table
+        .decimal("EMP_SALARIO", 10, 2)
+        .comment("salario del empleado vinculado")
+        .defaultTo(0)
+        .nullable();
+      table
+        .decimal("EMP_VALOR_TOTAL", 10, 2)
+        .comment("valor del contrato asignado al contratista")
+        .defaultTo(0)
+        .nullable();
+      table
+        .string("EMP_OBSERVACION", 1000)
+        .comment("observación al contrato de un contratista")
+        .nullable();
+      table
         .string("EMP_USUARIO_MODIFICO", 10)
         .comment(
           "Numero del documento del ultimo usuario que hizo una modificacion"

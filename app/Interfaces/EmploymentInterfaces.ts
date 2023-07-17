@@ -11,6 +11,9 @@ export interface IEmployment {
   state: string;
   idTypeContract: number;
   idReasonRetirement?: number;
+  observation?:string;
+  salary?:number;
+  totalValue?:number;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

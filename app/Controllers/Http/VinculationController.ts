@@ -4,6 +4,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import VinculationProvider from "@ioc:core.VinculationProvider";
 
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
+import { IFilterEmployment } from "App/Interfaces/EmploymentInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import CreateAndUpdateWorkerValidator from "App/Validators/CreateAndUpdateVinculationValidator";
@@ -49,6 +50,22 @@ export default class VinculationController {
       const data = request.body() as IFilterVinculation;
       return response.send(
         await VinculationProvider.getVinculationPaginate(data)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async getEmploymentPaginate({
+    response,
+    request,
+  }: HttpContextContract) {
+    try {
+      const data = request.body() as IFilterEmployment;
+      return response.send(
+        await VinculationProvider.getEmploymentPaginate(data)
       );
     } catch (err) {
       return response.badRequest(

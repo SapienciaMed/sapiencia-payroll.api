@@ -19,3 +19,9 @@ export interface IEmployment {
   userCreate?: string;
   dateCreate?: DateTime;
 }
+
+export interface IFilterEmployment {
+  page: number;
+  perPage: number;
+  workerId?: number;
+}

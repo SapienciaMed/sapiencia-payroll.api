@@ -16,11 +16,18 @@ import { IChargesRepository } from "App/Repositories/ChargesRepository";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { IWorker } from "App/Interfaces/WorkerInterfaces";
+import {
+  IEmployment,
+  IFilterEmployment,
+} from "App/Interfaces/EmploymentInterfaces";
 
 export interface IVinculationService {
   getVinculationPaginate(
     filters: IFilterVinculation
   ): Promise<ApiResponse<IPagingData<IGetVinculation>>>;
+  getEmploymentPaginate(
+    filters: IFilterEmployment
+  ): Promise<ApiResponse<IPagingData<IEmployment>>>;
   getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
   createVinculation(
     data: ICreateOrUpdateVinculation,
@@ -51,6 +58,15 @@ export default class VinculationService implements IVinculationService {
     const workers = await this.workerRepository.getVinculation(filters);
 
     return new ApiResponse(workers, EResponseCodes.OK);
+  }
+
+  async getEmploymentPaginate(
+    filters: IFilterEmployment
+  ): Promise<ApiResponse<IPagingData<IEmployment>>> {
+    const Employments = await this.employmentRepository.getEmploymentWorker(
+      filters
+    );
+    return new ApiResponse(Employments, EResponseCodes.OK);
   }
 
   async getVinculationById(

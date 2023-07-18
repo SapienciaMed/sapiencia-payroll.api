@@ -31,4 +31,5 @@ Route.group(() => {
   Route.put("/", "VinculationController.updateVinculation");
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
   Route.post("/", "VinculationController.createVinculation");
+  Route.post("/employment/get-paginated","VinculationController.getEmploymentPaginate");
 }).prefix("/api/v1/employment");

@@ -31,26 +31,27 @@ export default class WorkerRepository implements IWorkerRepository {
     const res = Worker.query();
 
     if (filters.name) {
-      res.whereLike("firstName", filters.name);
+      res.whereILike("firstName", filters.name).orWhereILike("secondName", `%${filters.name}%`);
     }
 
     if (filters.lastName) {
-      res.whereLike("surName", filters.lastName);
+      res.whereILike("surname", filters.lastName).orWhereILike("secondSurname", `%${filters.lastName}%`);
     }
 
     if (filters.documentNumber) {
-      res.whereLike("numberDocument", filters.documentNumber);
+      res.whereILike("numberDocument", `%${filters.documentNumber}%`);
     }
 
-    res.preload("employment", (query) => {
-      if (filters.state) {
-        query.where("state", filters.state);
-      }
+    if (filters.state) {
+      res.preload("employment").where("state", filters.state);
+    }
 
-      if (filters.vinculationType) {
-        query.where("idTypeContract", filters.vinculationType);
-      }
-    });
+    else if (filters.vinculationType) {
+      res.preload("employment").where("idTypeContract", filters.vinculationType);
+    }
+    else{
+      res.preload("employment")
+    }
 
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
@@ -58,9 +59,10 @@ export default class WorkerRepository implements IWorkerRepository {
     );
 
     const { data, meta } = workerEmploymentPaginated.serialize();
+    const dataArray = data ?? [];
 
     return {
-      array: data as IGetVinculation[],
+      array: dataArray as IGetVinculation[],
       meta,
     };
   }

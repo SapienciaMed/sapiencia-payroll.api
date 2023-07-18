@@ -1,6 +1,4 @@
 import { DateTime } from "luxon";
-import { IRelative } from "./RelativeInterfaces";
-import { IEmployment } from "./EmploymentInterfaces";
 
 export interface IWorker {
   id?: number;

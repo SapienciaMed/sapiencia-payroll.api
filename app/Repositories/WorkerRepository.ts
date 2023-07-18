@@ -28,39 +28,41 @@ export default class WorkerRepository implements IWorkerRepository {
   async getVinculation(
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>> {
-    const res = Worker.query();
-
-    if (filters.name) {
-      res.whereILike("firstName", filters.name).orWhereILike("secondName", `%${filters.name}%`);
-    }
-
-    if (filters.lastName) {
-      res.whereILike("surname", filters.lastName).orWhereILike("secondSurname", `%${filters.lastName}%`);
-    }
-
-    if (filters.documentNumber) {
-      res.whereILike("numberDocument", `%${filters.documentNumber}%`);
-    }
-
-    if (filters.state) {
-      res.preload("employment").where("state", filters.state);
-    }
-
-    else if (filters.vinculationType) {
-      res.preload("employment").where("idTypeContract", filters.vinculationType);
-    }
-    else{
-      res.preload("employment")
-    }
-
-    const workerEmploymentPaginated = await res.paginate(
-      filters.page,
-      filters.perPage
-    );
-
+    const { name, lastName, documentNumber, state, vinculationType, page, perPage } = filters;
+  
+    const query = Worker.query()
+      .where((builder) => {
+        if (name) {
+          builder.whereILike("firstName", name).orWhereILike("secondName", `%${name}%`);
+        }
+        if (lastName) {
+          builder.whereILike("surname", lastName).orWhereILike("secondSurname", `%${lastName}%`);
+        }
+        if (documentNumber) {
+          builder.whereILike("numberDocument", `%${documentNumber}%`);
+        }
+      })
+      .whereHas("employment", (employmentQuery) => {
+        if (state) {
+          employmentQuery.where("state", state);
+        }
+        if (vinculationType) {
+          employmentQuery.where("idTypeContract", vinculationType);
+        }
+      })
+      .preload("employment", (query) => {
+        if (state) {
+          query.where("state", state);
+        }
+        if (vinculationType) {
+          query.where("idTypeContract", vinculationType);
+        }
+      });
+  
+    const workerEmploymentPaginated = await query.paginate(page, perPage);
     const { data, meta } = workerEmploymentPaginated.serialize();
     const dataArray = data ?? [];
-
+  
     return {
       array: dataArray as IGetVinculation[],
       meta,

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-export interface IRelative {
+export interface IRelatives {
   id?: number;
   workerId?: number;
   name: string;

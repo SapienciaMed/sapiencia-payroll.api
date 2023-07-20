@@ -82,7 +82,7 @@ export default class VinculationService implements IVinculationService {
       );
     }
 
-    const relative = await this.relativeRepository.getRelativeWorkerById(
+    const relatives = await this.relativeRepository.getRelativeWorkerById(
       worker.id
     );
 
@@ -92,7 +92,7 @@ export default class VinculationService implements IVinculationService {
 
     const res = {
       worker,
-      relative,
+      relatives,
       employment,
     } as IGetByVinculation;
 

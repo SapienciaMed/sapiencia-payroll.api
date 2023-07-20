@@ -1,16 +1,16 @@
 import { IEmployment } from "./EmploymentInterfaces";
-import { IRelative } from "./RelativeInterfaces";
+import { IRelatives } from "./RelativeInterfaces";
 import { IWorker } from "./WorkerInterfaces";
 
 export interface ICreateOrUpdateVinculation {
   worker: IWorker;
-  relatives: IRelative[];
+  relatives: IRelatives[];
   employment: IEmployment;
 }
 
 export interface IGetByVinculation {
   worker: IWorker;
-  relative: IRelative[] | null;
+  relatives: IRelatives[] | null;
   employment: IEmployment | null;
 }
 export interface IGetVinculation {

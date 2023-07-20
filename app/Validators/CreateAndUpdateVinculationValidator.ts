@@ -25,6 +25,7 @@ export default class CreateAndUpdateWorkerValidator {
    */
   public schema = schema.create({
     worker: schema.object().members({
+      id:schema.number.optional(),
       typeDocument: schema.string([rules.maxLength(4)]),
       numberDocument: schema.string([rules.maxLength(15)]),
       firstName: schema.string([rules.maxLength(50)]),
@@ -56,6 +57,7 @@ export default class CreateAndUpdateWorkerValidator {
     }),
     relatives: schema.array().members(
       schema.object().members({
+        id: schema.number.optional(),
         name: schema.string([rules.maxLength(150)]),
         relationship: schema.string([rules.maxLength(10)]),
         gender: schema.string([rules.maxLength(10)]),
@@ -63,6 +65,7 @@ export default class CreateAndUpdateWorkerValidator {
       })
     ),
     employment: schema.object().members({
+      id: schema.number.optional(),
       idCharge: schema.number(),
       contractNumber: schema.string([rules.maxLength(10)]),
       idTypeContract: schema.number(),

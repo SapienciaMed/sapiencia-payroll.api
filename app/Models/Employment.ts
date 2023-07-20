@@ -106,7 +106,7 @@ export default class Employment extends BaseModel {
   public dateCreate: DateTime;
 
   @hasMany(() => Charge, {
-    localKey: "codCharge",
+    localKey: "idCharge",
     foreignKey: "id",
   })
   public charges: HasMany<typeof Charge>;

@@ -1,5 +1,7 @@
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
 import EmploymentRepository from "App/Repositories/EmploymentRepository";
+import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 
 const employmentFake: IEmployment = {
@@ -39,6 +41,17 @@ export class EmploymentRepositoryFake implements EmploymentRepository {
   createEmployment(_worker: IEmployment): Promise<IEmployment> {
     return new Promise((res) => {
       res(employmentFake);
+    });
+  }
+
+  getEmploymentWorker(
+    _filters: IFilterVinculation
+  ): Promise<IPagingData<IEmployment>> {
+    return new Promise((res) => {
+      res({
+        array: [{ ...employmentFake }],
+        meta: { total: 100 },
+      });
     });
   }
 }

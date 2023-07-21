@@ -29,3 +29,8 @@ Route.group(() => {
   Route.get("/typesContracts", "EmploymentController.getTypesContracts");
   Route.get("/charges", "EmploymentController.getCharges");
 }).prefix("/api/v1/employment");
+
+Route.group(() => {
+  Route.post("/", "VacationsController.getVacations");
+
+}).prefix("/api/v1/vacations");

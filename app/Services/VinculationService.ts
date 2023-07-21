@@ -214,14 +214,6 @@ export default class VinculationService implements IVinculationService {
       trx
     );
 
-    await this.employmentRepository.createEmployment(
-      {
-        ...data.employment,
-        workerId: worker?.id!,
-      },
-      trx
-    );
-
     await trx.commit();
 
     return new ApiResponse(

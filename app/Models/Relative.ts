@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
-export default class Relatives extends BaseModel {
+export default class Relative extends BaseModel {
   public static table = "FAM_FAMILIARES";
 
   @column({ isPrimary: true, columnName: "FAM_CODIGO", serializeAs: "id" })

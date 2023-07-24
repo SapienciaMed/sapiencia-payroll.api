@@ -33,3 +33,8 @@ Route.group(() => {
   Route.post("/", "VinculationController.createVinculation");
   Route.post("/employment/get-paginated","VinculationController.getEmploymentPaginate");
 }).prefix("/api/v1/employment");
+
+Route.group(() => {
+  Route.post("/", "VacationsController.getVacations");
+
+}).prefix("/api/v1/vacations");

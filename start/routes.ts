@@ -36,5 +36,7 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post("/", "VacationsController.getVacations");
+  Route.post("/create", "VacationsController.createVacation");
+  Route.post("/update", "VacationsController.updateVacation");
 
 }).prefix("/api/v1/vacations");

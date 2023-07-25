@@ -5,7 +5,9 @@ import { ApiResponse } from "App/Utils/ApiResponses";
 
 
 export interface IVacationService {
-  getVacations(): Promise<ApiResponse<IVacation[]>>;
+    getVacations(): Promise<ApiResponse<IVacation[]>>;
+    createVacation(vacation: IVacation): Promise<ApiResponse<IVacation>>;
+    updateVacation(vacation: IVacation, id: number): Promise<ApiResponse<IVacation | null>>;
 }
 
 export default class VacationService implements IVacationService {
@@ -26,5 +28,31 @@ export default class VacationService implements IVacationService {
         }
         return new ApiResponse(res, EResponseCodes.OK);
     } 
+
+    async createVacation(vacation: IVacation): Promise<ApiResponse<IVacation>>{
+        const res = await this.vacationRepository.createVacation(vacation);
+
+        if (!res) {
+        return new ApiResponse(
+            {} as IVacation ,
+            EResponseCodes.FAIL,
+            "Ocurrió un error en su Transacción "
+        );
+        }
+        return new ApiResponse(res, EResponseCodes.OK);
+    }
+
+    async updateVacation(vacation: IVacation, id: number) {
+        const res = await this.vacationRepository.updateVacation(vacation, id);
+
+        if (!res) {
+        return new ApiResponse(
+            {} as IVacation ,
+            EResponseCodes.FAIL,
+            "Ocurrió un error en su Transacción "
+        );
+        }
+        return new ApiResponse(res, EResponseCodes.OK); 
+    }
 
 }

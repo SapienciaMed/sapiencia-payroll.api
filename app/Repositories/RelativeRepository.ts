@@ -35,7 +35,7 @@ export default class RelativeRepository implements IRelativeRepository {
     relatives: IRelative[],
     trx: TransactionClientContract
   ): Promise<boolean> {
-    Relative.createMany(relatives, trx);
+    await Relative.createMany(relatives, trx);
     return true;
   }
 

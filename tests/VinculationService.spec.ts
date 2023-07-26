@@ -317,3 +317,31 @@ test.group("VinculationService TEST for getTypeContractsById", () => {
     assert.isTrue(result.operation.code === EResponseCodes.OK);
   });
 });
+
+test.group("VinculationService TEST for getEmploymentPaginate", () => {
+  const filters = {
+    page: 1,
+    perPage: 2,
+    workerId: 1,
+  };
+
+  test("class service must have a method getEmploymentPaginate with a return", async (assert) => {
+    const result = await service.getEmploymentPaginate(filters);
+    assert.isNotNull(result);
+  });
+
+  test("the method getEmploymentPaginate must be a promise", async (assert) => {
+    const result = service.getEmploymentPaginate(filters);
+    assert.typeOf(result, "Promise");
+  });
+
+  test("the method getEmploymentPaginate must return a ApiResponse", async (assert) => {
+    const result = await service.getEmploymentPaginate(filters);
+    assert.instanceOf(result, ApiResponse);
+  });
+
+  test("the method getEmploymentPaginate must return a OK code ", async (assert) => {
+    const result = await service.getEmploymentPaginate(filters);
+    assert.isTrue(result.operation.code === EResponseCodes.OK);
+  });
+});

@@ -5,6 +5,6 @@ export interface IRelative {
   workerId?: number;
   name: string;
   relationship: string;
-  gender: string;
-  birthDate: DateTime;
+  gender?: string;
+  birthDate?: DateTime;
 }

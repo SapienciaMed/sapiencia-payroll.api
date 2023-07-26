@@ -17,7 +17,10 @@ export default class Worker extends BaseModel {
   @column({ isPrimary: true, columnName: "TRA_CODIGO", serializeAs: "id" })
   public id: number;
 
-  @column({ columnName: "TRA_TIPO_DOCUMENTO", serializeAs: "typeDocument" })
+  @column({
+    columnName: "TRA_TIPO_DOCUMENTO",
+    serializeAs: "typeDocument",
+  })
   public typeDocument: string;
 
   @column({
@@ -35,6 +38,7 @@ export default class Worker extends BaseModel {
   @column({
     columnName: "TRA_SEGUNDO_NOMBRE",
     serializeAs: "secondName",
+    serialize: (value) => (!value ? "" : value),
   })
   public secondName: string;
 
@@ -47,6 +51,7 @@ export default class Worker extends BaseModel {
   @column({
     columnName: "TRA_SEGUNDO_APELLIDO",
     serializeAs: "secondSurname",
+    serialize: (value) => (!value ? "" : value),
   })
   public secondSurname: string;
 

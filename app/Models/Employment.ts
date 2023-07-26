@@ -40,12 +40,16 @@ export default class Employment extends BaseModel {
   @column.dateTime({
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
+    // serialize: (value) =>
+    //   !value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public startDate: DateTime;
 
   @column.dateTime({
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
+    // serialize: (value) =>
+    //   !value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public endDate: DateTime;
 

@@ -31,12 +31,18 @@ Route.group(() => {
   Route.put("/", "VinculationController.updateVinculation");
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
   Route.post("/", "VinculationController.createVinculation");
-  Route.post("/employment/get-paginated","VinculationController.getEmploymentPaginate");
+  Route.post(
+    "/employment/get-paginated",
+    "VinculationController.getEmploymentPaginate"
+  );
 }).prefix("/api/v1/employment");
 
 Route.group(() => {
   Route.post("/", "VacationsController.getVacations");
   Route.post("/create", "VacationsController.createVacation");
   Route.post("/update", "VacationsController.updateVacation");
-
 }).prefix("/api/v1/vacations");
+
+Route.group(() => {
+  Route.post("/create", "IncapacityController.createIncapacity");
+}).prefix("/api/v1/incapacity");

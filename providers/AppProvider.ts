@@ -11,7 +11,7 @@ export default class AppProvider {
     /**************************************************************************/
     const VinculationProvider = await import("App/Services/VinculationService");
     const VacationService = await import("App/Services/VacationService");
-
+    const IncapacityService = await import("App/Services/IncapacityService");
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
@@ -20,7 +20,12 @@ export default class AppProvider {
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
     const WorkerRepository = await import("App/Repositories/WorkerRepository");
-      const VacationRepository = await import("App/Repositories/VacationRepository");
+    const IncapacityRepository = await import(
+      "App/Repositories/IncapacityRepository"
+    );
+    const VacationRepository = await import(
+      "App/Repositories/VacationRepository"
+    );
     const EmploymentRepository = await import(
       "App/Repositories/EmploymentRepository"
     );
@@ -52,9 +57,14 @@ export default class AppProvider {
         )
     );
 
-       this.app.container.singleton(
+    this.app.container.singleton(
       "core.VacationProvider",
       () => new VacationService.default(new VacationRepository.default())
+    );
+
+    this.app.container.singleton(
+      "core.IncapacityProvider",
+      () => new IncapacityService.default(new IncapacityRepository.default())
     );
   }
 

@@ -12,6 +12,7 @@ export interface IWorkerRepository {
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
+  getActivesWorkers(): Promise<IWorker[]>
   createWorker(
     worker: IWorker,
     trx: TransactionClientContract
@@ -20,6 +21,7 @@ export interface IWorkerRepository {
     worker: IWorker,
     trx: TransactionClientContract
   ): Promise<IWorker | null>;
+  
 }
 
 export default class WorkerRepository implements IWorkerRepository {
@@ -81,6 +83,13 @@ export default class WorkerRepository implements IWorkerRepository {
   async getWorkerById(id: number): Promise<IWorker | null> {
     const res = await Worker.find(id);
     return res ? (res.serialize() as IWorker) : null;
+  }
+
+  async getActivesWorkers(): Promise<IWorker[]> {
+    const res = await Worker.query().whereHas("employment", (employmentQuery)=>{
+      employmentQuery.where("state", "1");
+    })
+    return res as IWorker[];
   }
 
   async createWorker(

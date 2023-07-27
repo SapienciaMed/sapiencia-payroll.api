@@ -27,16 +27,20 @@ Route.get("/", async () => {
 Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
   Route.get("/charges", "VinculationController.getCharges");
+  Route.get("/worker", "VinculationController.getActiveWorkers");
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.put("/", "VinculationController.updateVinculation");
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
   Route.post("/", "VinculationController.createVinculation");
-  Route.post("/employment/get-paginated","VinculationController.getEmploymentPaginate");
-}).prefix("/api/v1/employment");
+  Route.post(
+    "/employment/get-paginated",
+    "VinculationController.getEmploymentPaginate"
+  );
+}).prefix("/api/v1/vinculation");
 
 Route.group(() => {
   Route.post("/", "VacationsController.getVacations");
-  Route.post("/create", "VacationsController.createVacation");
+  Route.post("/create", "VacationsController.createVacationDays");
   Route.post("/update", "VacationsController.updateVacation");
-
+  Route.post("/workerVacation", "VacationsController.getVacationsByParams");
 }).prefix("/api/v1/vacations");

@@ -7,11 +7,15 @@ export interface IRelativeRepository {
     relatives: IRelative[],
     trx: TransactionClientContract
   ): Promise<boolean>;
-  editOrInsertMany(
-    relatives: IRelative[],
-    trx: TransactionClientContract
-  ): Promise<boolean>;
   getRelativeWorkerById(id: number): Promise<IRelative[] | null>;
+  createRelative(
+    data: IRelative,
+    trx?: TransactionClientContract
+  ): Promise<IRelative>;
+  deleteManyRelativeByWorker(
+    id: number,
+    trx?: TransactionClientContract
+  ): Promise<boolean>;
 }
 
 export default class RelativeRepository implements IRelativeRepository {
@@ -26,33 +30,37 @@ export default class RelativeRepository implements IRelativeRepository {
     relatives: IRelative[],
     trx: TransactionClientContract
   ): Promise<boolean> {
-    Relative.createMany(relatives, trx);
+    await Relative.createMany(relatives, { client: trx });
     return true;
   }
 
-  public async editOrInsertMany(
-    relatives: IRelative[],
-    trx: TransactionClientContract
-  ): Promise<boolean> {
-    await Promise.all(
-      relatives.map(async ({ id, ...relativeData }) => {
-        const toUpdate = await Relative.findBy("id", id);
+  async createRelative(
+    relative: IRelative,
+    trx?: TransactionClientContract
+  ): Promise<IRelative> {
+    const toCreate = new Relative();
 
-        if (toUpdate) {
-          toUpdate.fill({ ...relativeData }).useTransaction(trx);
-          await toUpdate.save();
+    toCreate.fill({ ...relative });
 
-          return toUpdate.serialize() as IRelative;
-        } else {
-          const toCreate = new Relative();
+    if (trx) {
+      toCreate.useTransaction(trx);
+    }
 
-          toCreate.fill({ ...relativeData }).useTransaction(trx);
-          await toCreate.save();
+    await toCreate.save();
+    return toCreate.serialize() as IRelative;
+  }
 
-          return toCreate.serialize() as IRelative;
-        }
-      })
-    );
+  async deleteManyRelativeByWorker(
+    id: number,
+    trx?: TransactionClientContract
+  ) {
+    const queryDeleteRelative = Relative.query().where("workerId", id).delete();
+
+    if (trx) {
+      queryDeleteRelative.useTransaction(trx);
+    }
+
+    await queryDeleteRelative;
 
     return true;
   }

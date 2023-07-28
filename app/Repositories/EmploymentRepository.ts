@@ -26,6 +26,8 @@ export default class EmploymentRepository implements IEmploymentRepository {
     const res = Employment.query();
 
     res.preload("typesContracts");
+    res.preload("charges");
+    res.where("workerId",filters.workerId)
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

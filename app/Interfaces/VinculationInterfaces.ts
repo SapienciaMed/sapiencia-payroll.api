@@ -10,7 +10,7 @@ export interface ICreateOrUpdateVinculation {
 
 export interface IGetByVinculation {
   worker: IWorker;
-  relative: IRelative[] | null;
+  relatives: IRelative[] | null;
   employment: IEmployment | null;
 }
 export interface IGetVinculation {

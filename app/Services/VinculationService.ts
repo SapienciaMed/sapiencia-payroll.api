@@ -82,7 +82,7 @@ export default class VinculationService implements IVinculationService {
       );
     }
 
-    const relative = await this.relativeRepository.getRelativeWorkerById(
+    const relatives = await this.relativeRepository.getRelativeWorkerById(
       worker.id
     );
 
@@ -92,7 +92,7 @@ export default class VinculationService implements IVinculationService {
 
     const res = {
       worker,
-      relative,
+      relatives,
       employment,
     } as IGetByVinculation;
 
@@ -196,7 +196,7 @@ export default class VinculationService implements IVinculationService {
   ): Promise<ApiResponse<IWorker>> {
     const worker = await this.workerRepository.editWorker(data.worker, trx);
 
-    if (!worker) {
+    if (!worker?.id) {
       return new ApiResponse(
         {} as IWorker,
         EResponseCodes.OK,
@@ -204,21 +204,15 @@ export default class VinculationService implements IVinculationService {
       );
     }
 
-    await this.relativeRepository.editOrInsertMany(
+    await this.relativeRepository.deleteManyRelativeByWorker(worker.id, trx);
+
+    await this.relativeRepository.createManyRelatives(
       data.relatives.map((i) => {
         return {
           ...i,
           workerId: worker?.id!,
         };
       }),
-      trx
-    );
-
-    await this.employmentRepository.createEmployment(
-      {
-        ...data.employment,
-        workerId: worker?.id!,
-      },
       trx
     );
 

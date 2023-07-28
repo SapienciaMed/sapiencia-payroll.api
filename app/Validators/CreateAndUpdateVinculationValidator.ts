@@ -25,6 +25,7 @@ export default class CreateAndUpdateWorkerValidator {
    */
   public schema = schema.create({
     worker: schema.object().members({
+      id: schema.number.optional(),
       typeDocument: schema.string([rules.maxLength(4)]),
       numberDocument: schema.string([rules.maxLength(15)]),
       firstName: schema.string([rules.maxLength(50)]),
@@ -56,13 +57,15 @@ export default class CreateAndUpdateWorkerValidator {
     }),
     relatives: schema.array().members(
       schema.object().members({
+        id: schema.number.optional(),
         name: schema.string([rules.maxLength(150)]),
         relationship: schema.string([rules.maxLength(10)]),
-        gender: schema.string([rules.maxLength(10)]),
-        birthDate: schema.date(),
+        gender: schema.string.optional([rules.maxLength(10)]),
+        birthDate: schema.date.optional(),
       })
     ),
     employment: schema.object().members({
+      id: schema.number.optional(),
       idCharge: schema.number(),
       contractNumber: schema.string([rules.maxLength(10)]),
       idTypeContract: schema.number(),
@@ -71,9 +74,9 @@ export default class CreateAndUpdateWorkerValidator {
       institutionalMail: schema.string([rules.maxLength(50), rules.email()]),
       state: schema.string([rules.maxLength(10)]),
       idReasonRetirement: schema.number.optional(),
-      observation:schema.string.optional(),
-      salary:schema.number.optional(),
-      totalValue:schema.number.optional(),
+      observation: schema.string.optional(),
+      salary: schema.number.optional(),
+      totalValue: schema.number.optional(),
       userModified: schema.string.optional([rules.maxLength(10)]),
       userCreate: schema.string.optional([rules.maxLength(15)]),
     }),

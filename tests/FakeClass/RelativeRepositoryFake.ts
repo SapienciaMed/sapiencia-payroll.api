@@ -38,25 +38,20 @@ export class RelativeRepositoryFake implements IRelativeRepository {
     });
   }
 
-  editOrInsertMany(relatives: IRelative[]): Promise<boolean> {
-    const data: IRelative[] = [];
+  createRelative(relative: IRelative): Promise<IRelative> {
+    const data: IRelative[] = [{ ...relative }];
 
+    return new Promise((res) => {
+      data.push(relativeFake);
+      return res(relativeFake);
+    });
+  }
+
+  deleteManyRelativeByWorker(id: number): Promise<boolean> {
     const list = [{ ...relativeFake }] as IRelative[];
 
     return new Promise((res) => {
-      relatives.forEach((relativeMap) => {
-        const relativeFind = list.find(
-          (relative) => relative.id === relativeMap.id
-        );
-
-        if (relativeFind) {
-          relativeFind.name = "Carlos manana";
-
-          data.push(relativeFind);
-        } else {
-          data.push(relativeFake);
-        }
-      });
+      list.splice(id, 1);
 
       return res(true);
     });

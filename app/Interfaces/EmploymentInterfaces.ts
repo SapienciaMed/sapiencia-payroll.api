@@ -11,9 +11,9 @@ export interface IEmployment {
   state: string;
   idTypeContract: number;
   idReasonRetirement?: number;
-  observation?:string;
-  salary?:number;
-  totalValue?:number;
+  observation?: string;
+  salary?: number;
+  totalValue?: number;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;
@@ -23,5 +23,5 @@ export interface IEmployment {
 export interface IFilterEmployment {
   page: number;
   perPage: number;
-  workerId?: number;
+  workerId: number;
 }

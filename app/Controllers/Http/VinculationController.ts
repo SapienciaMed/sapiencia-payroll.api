@@ -104,4 +104,14 @@ export default class VinculationController {
       );
     }
   }
+
+  public async getActiveWorkers({ response }: HttpContextContract) {
+    try {
+      return response.send(await VinculationProvider.getActiveWorkers());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

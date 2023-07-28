@@ -40,6 +40,6 @@ export default class Vacation extends BaseModel {
     localKey: "codEmployment",
     foreignKey: "id",
   })
-  public typeCharge: HasOne<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
 
 }

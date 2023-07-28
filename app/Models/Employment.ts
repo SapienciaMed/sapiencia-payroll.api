@@ -1,8 +1,9 @@
 import { DateTime } from "luxon";
-import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import TypesContractsWithDrawal from "./ReasonsForWithdrawal";
 import Charge from "./Charge";
 import TypesContract from "./TypesContract";
+import Worker from "./Worker";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -126,4 +127,12 @@ export default class Employment extends BaseModel {
     foreignKey: "id",
   })
   public typesContracts: HasMany<typeof TypesContract>;
+
+  @hasOne(() => Worker, {
+    localKey: "workerId",
+    foreignKey: "id",
+  })
+  public worker: HasOne<typeof Worker>;
 }
+
+

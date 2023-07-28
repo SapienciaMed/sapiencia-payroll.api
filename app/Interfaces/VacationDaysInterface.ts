@@ -1,0 +1,19 @@
+import { DateTime } from "luxon";
+
+export interface IVacationDay{
+  id?: number;
+  codVacation: number;
+  dateFrom: DateTime;
+  dateUntil: DateTime;
+  enjoyedDays: number;
+  paid: boolean;
+  codForm?: number;
+  userModified?: string;
+  dateModified?: DateTime;
+  userCreate?: string;
+  dateCreate?: DateTime;
+}
+
+export interface IVacationDayValidator{
+vacationDay: IVacationDay[]
+}

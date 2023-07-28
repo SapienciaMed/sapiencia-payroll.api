@@ -4,6 +4,8 @@ import { ApiResponse } from "App/Utils/ApiResponses";
 import VacationProvider from "@ioc:core.VacationProvider";
 import CreateAndUpdateVacationValidator from "App/Validators/CreateAndUpdateVacationValidator";
 import { IVacation } from 'App/Interfaces/VacationsInterfaces';
+import { IVacationDay } from 'App/Interfaces/VacationDaysInterface';
+import VacationDay from 'App/Models/VacationDay';
 
 
 export default class VacationsController {
@@ -12,6 +14,16 @@ export default class VacationsController {
   public async getVacations({ response }: HttpContextContract) {
     try {
       return response.send(await VacationProvider.getVacations());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+  public async getVacationsByParams({request, response }: HttpContextContract) {
+    const params = request.all()
+    try {
+      return response.send(await VacationProvider.getVacationsByParams(params));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
@@ -34,8 +46,17 @@ export default class VacationsController {
   public async updateVacation({ request, response }: HttpContextContract) {
     try {
       const { id } = request.params();
-      const vacation = await request.validate(CreateAndUpdateVacationValidator)
+      const {vacation} = await request.params();
       return response.send(await VacationProvider.updateVacation(vacation, id))
+    } catch (err) {
+      new ApiResponse(null, EResponseCodes.FAIL, String(err));
+    }
+  }
+
+  public async createVacationDays({request, response}:HttpContextContract){
+    try {
+      const data = await request.validate(CreateAndUpdateVacationValidator);
+      return response.send(await VacationProvider.createManyVacation(data))
     } catch (err) {
       new ApiResponse(null, EResponseCodes.FAIL, String(err));
     }

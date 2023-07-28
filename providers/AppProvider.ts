@@ -20,7 +20,13 @@ export default class AppProvider {
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
     const WorkerRepository = await import("App/Repositories/WorkerRepository");
-      const VacationRepository = await import("App/Repositories/VacationRepository");
+    const VacationRepository = await import(
+      "App/Repositories/VacationRepository"
+    );
+    const VacationDaysRepository = await import(
+      "App/Repositories/VacationDaysRepository"
+    );
+
     const EmploymentRepository = await import(
       "App/Repositories/EmploymentRepository"
     );
@@ -52,9 +58,13 @@ export default class AppProvider {
         )
     );
 
-       this.app.container.singleton(
+    this.app.container.singleton(
       "core.VacationProvider",
-      () => new VacationService.default(new VacationRepository.default())
+      () =>
+        new VacationService.default(
+          new VacationRepository.default(),
+          new VacationDaysRepository.default()
+        )
     );
   }
 

@@ -4,9 +4,6 @@ import { ApiResponse } from "App/Utils/ApiResponses";
 import VacationProvider from "@ioc:core.VacationProvider";
 import CreateAndUpdateVacationValidator from "App/Validators/CreateAndUpdateVacationValidator";
 import { IVacation } from 'App/Interfaces/VacationsInterfaces';
-import { IVacationDay } from 'App/Interfaces/VacationDaysInterface';
-import VacationDay from 'App/Models/VacationDay';
-
 
 export default class VacationsController {
 

@@ -52,6 +52,12 @@ const employmentFake: IEmployment = {
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
+  getActivesWorkers(): Promise<IWorker[]> {
+    return new Promise((res) => {
+      res([]);
+    });
+  }
+
   getWorkerById(id: number): Promise<IWorker | null> {
     const list = [{ ...workerFake }];
 

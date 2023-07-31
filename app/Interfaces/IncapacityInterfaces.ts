@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-export interface IIncapacity {
-  id?: number;
-  employmentId: number;
-}
-
-export interface IIncapacityFilters {
-  page: number;
-  perPage: number;
-  employmentId: number;
-=======
 import { DateTime } from "luxon";
 import { IEmployment } from "./EmploymentInterfaces";
 import { IWorker } from "./WorkerInterfaces";
@@ -27,7 +16,6 @@ export interface IIncapacity {
   userCreate?: string;
   dateCreate?: DateTime;
 
->>>>>>> S3-NOM014
 }
 
 export interface IGetIncapacity {

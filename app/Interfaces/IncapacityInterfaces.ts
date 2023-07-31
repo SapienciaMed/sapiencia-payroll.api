@@ -1,4 +1,6 @@
 import { DateTime } from "luxon";
+import { IEmployment } from "./EmploymentInterfaces";
+import { IWorker } from "./WorkerInterfaces";
 
 export interface IIncapacity {
 
@@ -14,4 +16,15 @@ export interface IIncapacity {
   userCreate?: string;
   dateCreate?: DateTime;
 
+}
+
+export interface IGetIncapacity {
+  worker: IWorker;
+  employment: IEmployment;
+}
+
+export interface IFilterIncapacity {
+  page: number;
+  perPage: number;
+  idEmployee?: number;
 }

@@ -1,4 +1,5 @@
 import type { ApplicationContract } from "@ioc:Adonis/Core/Application";
+import VacationDaysRepository from "App/Repositories/VacationDaysRepository";
 
 export default class AppProvider {
   constructor(protected app: ApplicationContract) {}
@@ -22,6 +23,7 @@ export default class AppProvider {
     /**************************************************************************/
     const WorkerRepository = await import("App/Repositories/WorkerRepository");
     const VacationRepository = await import("App/Repositories/VacationRepository");
+      const VacationDaysRepository = await import("App/Repositories/VacationDaysRepository");
     const EmploymentRepository = await import("App/Repositories/EmploymentRepository");
     const RelativeRepository = await import("App/Repositories/RelativeRepository");
     const ChargesRepository = await import("App/Repositories/ChargesRepository");
@@ -46,7 +48,8 @@ export default class AppProvider {
 
     this.app.container.singleton(
       "core.VacationProvider",
-      () => new VacationService.default(new VacationRepository.default())
+      () => new VacationService.default(new VacationRepository.default(),
+      new VacationDaysRepository.default())
     );
 
     this.app.container.singleton(

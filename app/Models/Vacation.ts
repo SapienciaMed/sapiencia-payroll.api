@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, HasOne, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import Employment from './Employment';
+import VacationDay from './VacationDay';
 
 export default class Vacation extends BaseModel {
 
@@ -18,7 +19,7 @@ export default class Vacation extends BaseModel {
   @column.dateTime({ autoCreate: false,columnName: "VAC_FECHA_DESDE", serializeAs: "dateFrom"})
   public dateFrom: DateTime;
 
-  @column.dateTime({ autoCreate: false,columnName: "  VAC_FECHA_HASTA", serializeAs: "dateUntil"})
+  @column.dateTime({ autoCreate: false,columnName: "VAC_FECHA_HASTA", serializeAs: "dateUntil"})
   public dateUntil: DateTime;
 
   @column({ columnName: "VAC_PERIODO_ANTERIOR", serializeAs: "periodFormer" })
@@ -40,6 +41,12 @@ export default class Vacation extends BaseModel {
     localKey: "codEmployment",
     foreignKey: "id",
   })
-  public typeCharge: HasOne<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
+
+  @hasMany(() => VacationDay, {
+    localKey: "id",
+    foreignKey: "codVacation",
+  })
+  public vacationDay: HasMany<typeof VacationDay>;
 
 }

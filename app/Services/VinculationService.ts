@@ -29,6 +29,7 @@ export interface IVinculationService {
     filters: IFilterEmployment
   ): Promise<ApiResponse<IPagingData<IEmployment>>>;
   getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
+  getActiveWorkers(): Promise<ApiResponse<IWorker[]>>;
   createVinculation(
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
@@ -146,6 +147,18 @@ export default class VinculationService implements IVinculationService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  async getActiveWorkers(): Promise<ApiResponse<IWorker[]>> {
+    const res = await this.workerRepository.getActivesWorkers();
+    if (!res) {
+      return new ApiResponse(
+        {} as IWorker[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
   async getTypeContractsById(
     id: number
   ): Promise<ApiResponse<ITypesContracts>> {

@@ -1,7 +1,7 @@
 import { schema, CustomMessages } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
-export default class WorkerValidator {
+export default class CreateAndUpdateVacationValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   /*
@@ -24,16 +24,22 @@ export default class WorkerValidator {
    *    ```
    */
   public schema = schema.create({
-    id: schema.number.optional(),
-    codEmployment: schema.string(),
-    period: schema.string(),
-    dateFrom: schema.date(),
-    dateUntil: schema.date(),
-    periodFormer: schema.string(),
-    enjoyed: schema.string(),
-    available: schema.string(),
-    days: schema.string(),
-    periodClosed: schema.boolean(),
+    vacationDay: schema.array().members(
+      schema.object().members({
+        id: schema.number.optional(),
+        codVacation: schema.number(),
+        dateFrom: schema.date(),
+        dateUntil: schema.date.optional(),
+        enjoyedDays: schema.number(),
+        paid: schema.boolean(),
+        codForm: schema.number.optional(),
+        observation: schema.string.optional(),
+        userModified: schema.string.optional(),
+        dateModified: schema.date.optional(),
+        userCreate: schema.string.optional(),
+        dateCreate: schema.date.optional(),
+      })
+    ),
   });
 
   /**
@@ -47,5 +53,5 @@ export default class WorkerValidator {
    * }
    *
    */
-  public messages: CustomMessages = {"err":"error"};
+  public messages: CustomMessages = { err: "error" };
 }

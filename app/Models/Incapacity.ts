@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
-
-export default class Incapacity extends BaseModel {
-  public static table = "INC_INCAPACIDADES";
-
-  @column({ isPrimary: true, columnName: "INC_CODIGO", serializeAs: "id" })
-  public id: number;
-
-  @column({
-    isPrimary: true,
-    columnName: "INC_CODEMP_EMPLEO",
-    serializeAs: "employmentId",
-  })
-  public employmentId: number;
-=======
 import { DateTime } from 'luxon';
 import { BaseModel, HasOne, column, hasOne } from '@ioc:Adonis/Lucid/Orm';
 import Env from "@ioc:Adonis/Core/Env";
@@ -78,5 +62,4 @@ export default class Incapacity extends BaseModel {
   })
   public typeIncapacity: HasOne<typeof TypesIncapacity>;
 
->>>>>>> S3-NOM014
 }

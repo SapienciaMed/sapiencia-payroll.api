@@ -45,8 +45,4 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post("/create", "IncapacityController.createIncapacity");
-<<<<<<< HEAD
-=======
-  Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate"); //TODO: Pendiente
->>>>>>> S3-NOM014
 }).prefix("/api/v1/incapacity");

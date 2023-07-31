@@ -4,9 +4,3 @@ declare module "@ioc:core.IncapacityProvider" {
   const IncapacityProvider: IIncapacityService;
   export default IncapacityProvider;
 }
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> S3-NOM014

@@ -10,6 +10,8 @@ export interface IIncapacityFilters {
   employmentId: number;
 =======
 import { DateTime } from "luxon";
+import { IEmployment } from "./EmploymentInterfaces";
+import { IWorker } from "./WorkerInterfaces";
 
 export interface IIncapacity {
 
@@ -26,4 +28,15 @@ export interface IIncapacity {
   dateCreate?: DateTime;
 
 >>>>>>> S3-NOM014
+}
+
+export interface IGetIncapacity {
+  worker: IWorker;
+  employment: IEmployment;
+}
+
+export interface IFilterIncapacity {
+  page: number;
+  perPage: number;
+  idEmployee?: number;
 }

@@ -1,9 +1,9 @@
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IVacationDay, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
-import { IVacation } from "App/Interfaces/VacationsInterfaces";
+import { IVacation, IVacationFilters } from "App/Interfaces/VacationsInterfaces";
 import { IVacationDaysRepository } from "App/Repositories/VacationDaysRepository";
 import { IVacationRepository } from "App/Repositories/VacationRepository";
-import { ApiResponse } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 
 export interface IVacationService {
@@ -11,7 +11,8 @@ export interface IVacationService {
     createVacation(vacation: IVacation): Promise<ApiResponse<IVacation>>;
     updateVacation(vacation: IVacation, id: number): Promise<ApiResponse<IVacation | null>>;
     getVacationsByParams(params): Promise<ApiResponse<IVacation | null>>;
-    createManyVacation(vacation: IVacationDayValidator): Promise<ApiResponse<IVacationDay[]>>;
+    createManyVacation(vacations: IVacationDayValidator): Promise<ApiResponse<IVacationDay[]>>;
+    getVacationPaginate(filters: IVacationFilters): Promise<ApiResponse<IPagingData<IVacation>>>
 }
 
 export default class VacationService implements IVacationService {
@@ -85,5 +86,14 @@ export default class VacationService implements IVacationService {
         }
         return new ApiResponse(res, EResponseCodes.OK);
     }
+    async getVacationPaginate(
+        filters: IVacationFilters
+      ): Promise<ApiResponse<IPagingData<IVacation>>> {
+        const vacations = await this.vacationRepository.getVacation(
+          filters
+        );
+        return new ApiResponse(vacations, EResponseCodes.OK);
+      }
+
 
 }

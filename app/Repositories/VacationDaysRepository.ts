@@ -28,7 +28,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
   }
 
   async createManyVacation(vacations: IVacationDayValidator): Promise<IVacationDay[]> {
-    const res = await VacationDay.createMany(vacations.vacationDay);
+    const res = await VacationDay.createMany(vacations.vacationDay)
     return res as IVacationDay[];
   }
 

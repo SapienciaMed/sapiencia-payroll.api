@@ -4,10 +4,11 @@ export interface IVacationDay{
   id?: number;
   codVacation: number;
   dateFrom: DateTime;
-  dateUntil: DateTime;
+  dateUntil?: DateTime;
   enjoyedDays: number;
   paid: boolean;
   codForm?: number;
+  observation?:string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

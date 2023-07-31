@@ -1,20 +1,29 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { DateTime } from "luxon";
+import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
+import Vacation from "./Vacation";
 
 export default class VacationDay extends BaseModel {
   public static table = "DVA_DIAS_VACACIONES";
-  
-  @column({ isPrimary: true, columnName: "DVA_CODIGO", serializeAs: "id", })
+
+  @column({ isPrimary: true, columnName: "DVA_CODIGO", serializeAs: "id" })
   public id: number;
 
   @column({ columnName: "DVA_CODVAC_VACACION", serializeAs: "codVacation" })
   public codVacation: number;
-  
-  @column.dateTime({ autoCreate: false,columnName: "DVA_FECHA_DESDE", serializeAs: "dateFrom"})
+
+  @column.dateTime({
+    autoCreate: false,
+    columnName: "DVA_FECHA_DESDE",
+    serializeAs: "dateFrom",
+  })
   public dateFrom: DateTime;
 
-  @column.dateTime({ autoCreate: false,columnName: "DVA_FECHA_HASTA", serializeAs: "dateUntil"})
+  @column.dateTime({
+    autoCreate: false,
+    columnName: "DVA_FECHA_HASTA",
+    serializeAs: "dateUntil",
+  })
   public dateUntil: DateTime;
 
   @column({ columnName: "DVA_DIAS", serializeAs: "enjoyedDays" })
@@ -26,6 +35,8 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_CODPPL_PLANILLA", serializeAs: "codForm" })
   public codForm: number;
 
+  @column({ columnName: "DVA_OBSERVACION", serializeAs: "observation" })
+  public observation: string;
 
   @column({
     columnName: "DVA_USUARIO_CREO",
@@ -60,4 +71,9 @@ export default class VacationDay extends BaseModel {
   // })
   // public typeCharge: HasOne<typeof Employment>;
 
+  @hasOne(() => Vacation, {
+    localKey: "codVacation",
+    foreignKey: "id",
+  })
+  public vacation: HasOne<typeof Vacation>;
 }

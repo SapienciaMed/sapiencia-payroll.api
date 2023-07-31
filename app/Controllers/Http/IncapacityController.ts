@@ -41,15 +41,15 @@ export default class IncapacityController {
   }
 
   //?Obtener incapacidad por ID
-  // public async getIncapacityById({ response, request }: HttpContextContract) {
-  //   try {
-  //     const { id } = request.params();
-  //     return response.send(await IncapacityProvider.getIncapacityById(id));
-  //   } catch (err) {
-  //     return response.badRequest(
-  //       new ApiResponse(null, EResponseCodes.FAIL, String(err))
-  //     );
-  //   }
-  // }
+  public async getIncapacityById({ response, request }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await IncapacityProvider.getIncapacityById(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 
 }

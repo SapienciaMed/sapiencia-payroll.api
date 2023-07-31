@@ -5,12 +5,14 @@ import { IPagingData } from "App/Utils/ApiResponses";
 export interface IIncapacityRepository {
   createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>;
   getIncapacity( filters: IFilterIncapacity ): Promise<IPagingData<IGetIncapacity>>;
+  getIncapacityById(id: number): Promise<IIncapacity | null>;
 }
 
 export default class IncapacityRepository implements IIncapacityRepository {
 
   constructor() { }
 
+  //?CREAR INCAPACIDAD
   async createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>{
 
     const toCreate = new Incapacity();
@@ -21,6 +23,7 @@ export default class IncapacityRepository implements IIncapacityRepository {
 
   }
 
+  //?BUSCAR INCAPACIDAD PAGINADO
   async getIncapacity( filters: IFilterIncapacity ): Promise<IPagingData<IGetIncapacity>> {
 
     const res = Incapacity.query();
@@ -38,6 +41,14 @@ export default class IncapacityRepository implements IIncapacityRepository {
       array: dataArray as IGetIncapacity[],
       meta,
     };
+  }
+
+  //?BUSCAR INCAPACIDAD POR ID
+  async getIncapacityById(id: number): Promise<IIncapacity | null> {
+
+    const res = await Incapacity.find(id);
+    return res ? (res.serialize() as Incapacity) : null;
+
   }
 
 

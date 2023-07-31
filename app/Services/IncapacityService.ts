@@ -7,6 +7,7 @@ export interface IIncapacityService {
 
   createIncapacity(incapacity: IIncapacity): Promise<ApiResponse<IIncapacity>>;
   getIncapacityPaginate( filters: IFilterIncapacity ): Promise<ApiResponse<IPagingData<IGetIncapacity>>>;
+  getIncapacityById(id: number): Promise<ApiResponse<IIncapacity>>;
 
 }
 
@@ -36,6 +37,24 @@ export default class IncapacityService implements IIncapacityService {
 
     const workers = await this.incapacityRepository.getIncapacity(filters);
     return new ApiResponse(workers, EResponseCodes.OK);
+
+  }
+
+  //?BUSCAR INCAPACIDAD POR ID
+  async getIncapacityById(id: number): Promise<ApiResponse<IIncapacity>> {
+
+    const incapacity = await this.incapacityRepository.getIncapacityById(id);
+
+    if (!incapacity?.id) {
+      return new ApiResponse(
+        {} as IIncapacity,
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    const res = incapacity as IIncapacity;
+    return new ApiResponse(res, EResponseCodes.OK);
 
   }
 

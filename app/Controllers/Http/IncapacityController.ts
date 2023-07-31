@@ -7,6 +7,7 @@ import { IIncapacity , IFilterIncapacity } from 'App/Interfaces/IncapacityInterf
 
 export default class IncapacityController {
 
+  //?Crear incapacidad
   public async createIncapacity({ request, response }: HttpContextContract){
 
     try {
@@ -23,6 +24,7 @@ export default class IncapacityController {
 
   }
 
+  //?Obtener incapacidad (Con/Sin Filtro)
   public async getIncapacityPaginate({ response, request}: HttpContextContract) {
 
     try {
@@ -37,5 +39,17 @@ export default class IncapacityController {
     }
 
   }
+
+  //?Obtener incapacidad por ID
+  // public async getIncapacityById({ response, request }: HttpContextContract) {
+  //   try {
+  //     const { id } = request.params();
+  //     return response.send(await IncapacityProvider.getIncapacityById(id));
+  //   } catch (err) {
+  //     return response.badRequest(
+  //       new ApiResponse(null, EResponseCodes.FAIL, String(err))
+  //     );
+  //   }
+  // }
 
 }

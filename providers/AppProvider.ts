@@ -28,6 +28,7 @@ export default class AppProvider {
     const ChargesRepository = await import("App/Repositories/ChargesRepository");
     const TypesContractsRepository = await import("App/Repositories/TypesContractsRepository");
     const IncapacityRepository = await import("App/Repositories/IncapacityRepository");
+    const TypesIncapacityRepository = await import("App/Repositories/IncapacityTypesRepository");
 
     /**************************************************************************/
     /******************************** CORE  ***********************************/
@@ -36,13 +37,13 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.VinculationProvider",
       () =>
-        new VinculationProvider.default(
-          new WorkerRepository.default(),
-          new RelativeRepository.default(),
-          new EmploymentRepository.default(),
-          new TypesContractsRepository.default(),
-          new ChargesRepository.default()
-        )
+          new VinculationProvider.default(
+            new WorkerRepository.default(),
+            new RelativeRepository.default(),
+            new EmploymentRepository.default(),
+            new TypesContractsRepository.default(),
+            new ChargesRepository.default()
+          )
     );
 
     this.app.container.singleton(
@@ -53,7 +54,11 @@ export default class AppProvider {
 
     this.app.container.singleton(
       "core.IncapacityProvider",
-      () => new IncapacityService.default(new IncapacityRepository.default())
+      () =>
+        new IncapacityService.default(
+          new IncapacityRepository.default(),
+          new TypesIncapacityRepository.default(),
+        )
     );
 
   }

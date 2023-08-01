@@ -25,7 +25,7 @@ export default class IncapacityController {
   }
 
   //?Obtener incapacidad (Con/Sin Filtro)
-  public async getIncapacityPaginate({ response, request}: HttpContextContract) {
+  public async getIncapacityPaginate({ response, request }: HttpContextContract) {
 
     try {
 
@@ -42,6 +42,7 @@ export default class IncapacityController {
 
   //?Obtener incapacidad por ID
   public async getIncapacityById({ response, request }: HttpContextContract) {
+
     try {
       const { id } = request.params();
       return response.send(await IncapacityProvider.getIncapacityById(id));
@@ -49,6 +50,55 @@ export default class IncapacityController {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
       );
+    }
+  }
+
+  //?Obtener el listado de tipos de incapacidad
+  public async getIncapacityTypes({ response }: HttpContextContract) {
+
+    try {
+
+      return response.send(await IncapacityProvider.getIncapacityTypes());
+
+    } catch (err) {
+
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+
+    }
+  }
+
+  //?Obtener incapacidad (Con/Sin Filtro) -> Relacionadas JOIN
+  public async getIncapacityPaginateRelational({ response, request }: HttpContextContract) {
+
+    try {
+
+      const data = request.body() as IFilterIncapacity;
+      return response.send( await IncapacityProvider.getIncapacityPaginateRelational(data) );
+
+    } catch (err) {
+
+      return response.badRequest( new ApiResponse(null, EResponseCodes.FAIL, String(err)) );
+
+    }
+
+  }
+
+  //?Obtener incapacidad por ID -> Relationadas JOIN
+  public async getIncapacityByIdRelational({ response, request }: HttpContextContract) {
+
+    try {
+
+      const { idr } = request.params();
+      return response.send(await IncapacityProvider.getIncapacityByIdRelational(idr));
+
+    } catch (err) {
+
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+
     }
   }
 

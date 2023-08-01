@@ -47,7 +47,7 @@ Route.group(() => {
 }).prefix("/api/v1/vacations");
 
 Route.group(() => {
-  Route.get("/:id", "IncapacityController.getIncapacityById");
+  Route.get("/incapacity-types", "IncapacityController.getIncapacityTypes");
   Route.post("/create", "IncapacityController.createIncapacity");
-  Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate"); //TODO: Pendiente
+  Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
 }).prefix("/api/v1/incapacity");

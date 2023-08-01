@@ -1,105 +1,66 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import IncapacityProvider from "@ioc:core.IncapacityProvider";
 import CreateAndUpdateIncapacityValidator from "App/Validators/CreateAndUpdateIncapacityValidator";
-import { IIncapacity , IFilterIncapacity } from 'App/Interfaces/IncapacityInterfaces';
+import {
+  IIncapacity,
+  IFilterIncapacity,
+} from "App/Interfaces/IncapacityInterfaces";
 
 export default class IncapacityController {
-
   //?Crear incapacidad
-  public async createIncapacity({ request, response }: HttpContextContract){
-
+  public async createIncapacity({ request, response }: HttpContextContract) {
     try {
-
       //const incapacity = request.body() as IIncapacity;
-      const incapacityValidate = await request.validate(CreateAndUpdateIncapacityValidator) as IIncapacity;
-      return response.send(await IncapacityProvider.createIncapacity(incapacityValidate))
-
-    } catch (err) {
-
-      return new ApiResponse(null, EResponseCodes.FAIL, String(err.messages));
-
-    }
-
-  }
-
-  //?Obtener incapacidad (Con/Sin Filtro)
-  public async getIncapacityPaginate({ response, request }: HttpContextContract) {
-
-    try {
-
-      const data = request.body() as IFilterIncapacity;
-      return response.send( await IncapacityProvider.getIncapacityPaginate(data) );
-
-    } catch (err) {
-
-      return response.badRequest( new ApiResponse(null, EResponseCodes.FAIL, String(err)) );
-
-    }
-
-  }
-
-  //?Obtener incapacidad por ID
-  public async getIncapacityById({ response, request }: HttpContextContract) {
-
-    try {
-      const { id } = request.params();
-      return response.send(await IncapacityProvider.getIncapacityById(id));
-    } catch (err) {
-      return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      const incapacityValidate = (await request.validate(
+        CreateAndUpdateIncapacityValidator
+      )) as IIncapacity;
+      return response.send(
+        await IncapacityProvider.createIncapacity(incapacityValidate)
       );
+    } catch (err) {
+      return new ApiResponse(null, EResponseCodes.FAIL, String(err.messages));
     }
   }
 
   //?Obtener el listado de tipos de incapacidad
   public async getIncapacityTypes({ response }: HttpContextContract) {
-
     try {
-
       return response.send(await IncapacityProvider.getIncapacityTypes());
-
     } catch (err) {
-
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
       );
-
     }
   }
 
   //?Obtener incapacidad (Con/Sin Filtro) -> Relacionadas JOIN
-  public async getIncapacityPaginateRelational({ response, request }: HttpContextContract) {
-
+  public async getIncapacityPaginate({
+    response,
+    request,
+  }: HttpContextContract) {
     try {
-
       const data = request.body() as IFilterIncapacity;
-      return response.send( await IncapacityProvider.getIncapacityPaginateRelational(data) );
-
+      return response.send(
+        await IncapacityProvider.getIncapacityPaginate(data)
+      );
     } catch (err) {
-
-      return response.badRequest( new ApiResponse(null, EResponseCodes.FAIL, String(err)) );
-
-    }
-
-  }
-
-  //?Obtener incapacidad por ID -> Relationadas JOIN
-  public async getIncapacityByIdRelational({ response, request }: HttpContextContract) {
-
-    try {
-
-      const { idr } = request.params();
-      return response.send(await IncapacityProvider.getIncapacityByIdRelational(idr));
-
-    } catch (err) {
-
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
       );
-
     }
   }
 
+  //?Obtener incapacidad por ID -> Relationadas JOIN
+  public async getIncapacityById({ response, request }: HttpContextContract) {
+    try {
+      const { idr } = request.params();
+      return response.send(await IncapacityProvider.getIncapacityById(idr));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

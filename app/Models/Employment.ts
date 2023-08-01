@@ -127,6 +127,14 @@ export default class Employment extends BaseModel {
     foreignKey: "id",
   })
   public typesContracts: HasMany<typeof TypesContract>;
+
+  //? !!!
+  @belongsTo(() => Worker, {
+    localKey: "id",         //?PK DE WORKER
+    foreignKey: "workerId", //?FK
+  })
+  public workerEmployment: BelongsTo<typeof Worker>;
+
 }
 
 

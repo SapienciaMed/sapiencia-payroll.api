@@ -42,7 +42,10 @@ Route.group(() => {
 }).prefix("/api/v1/vacations");
 
 Route.group(() => {
-  Route.get("/:id", "IncapacityController.getIncapacityById");
+  Route.get("/incapacity-types", "IncapacityController.getIncapacityTypes");
   Route.post("/create", "IncapacityController.createIncapacity");
   Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
+  Route.post("/get-paginated-relational", "IncapacityController.getIncapacityPaginateRelational");
+  Route.get("/get-by-id/:id", "IncapacityController.getIncapacityById");
+  Route.get("/get-by-id-relational/:idr", "IncapacityController.getIncapacityByIdRelational");
 }).prefix("/api/v1/incapacity");

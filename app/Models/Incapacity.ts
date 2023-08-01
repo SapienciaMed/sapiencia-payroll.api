@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { BaseModel, HasOne, column, hasOne } from '@ioc:Adonis/Lucid/Orm';
 import Env from "@ioc:Adonis/Core/Env";
 import TypesIncapacity from "./TypesIncapacity";
+import Employment from "./Employment";
 
 export default class Incapacity extends BaseModel {
 
@@ -61,5 +62,14 @@ export default class Incapacity extends BaseModel {
     foreignKey: "id",
   })
   public typeIncapacity: HasOne<typeof TypesIncapacity>;
+
+  @hasOne(() => Employment, {
+    localKey: "codEmployee",
+    foreignKey: "id",
+  })
+  public incapcityEmployee: HasOne<typeof Employment>;
+
+
+
 
 }

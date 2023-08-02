@@ -2,7 +2,7 @@ import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import {
   IIncapacity,
   IFilterIncapacity,
-  IGetIncapacityList,
+  IGetIncapacity,
 } from "App/Interfaces/IncapacityInterfaces";
 
 import { IIncapacityTypes } from "App/Interfaces/TypesIncapacityInterface";
@@ -16,8 +16,8 @@ export interface IIncapacityService {
   createIncapacity(incapacity: IIncapacity): Promise<ApiResponse<IIncapacity>>;
   getIncapacityPaginate(
     filters: IFilterIncapacity
-  ): Promise<ApiResponse<IPagingData<IGetIncapacityList>>>;
-  getIncapacityById(idr: number): Promise<ApiResponse<IGetIncapacityList>>;
+  ): Promise<ApiResponse<IPagingData<IGetIncapacity>>>;
+  getIncapacityById(idr: number): Promise<ApiResponse<IGetIncapacity>>;
   getIncapacityTypes(): Promise<ApiResponse<IIncapacityTypes[]>>;
 }
 
@@ -59,25 +59,21 @@ export default class IncapacityService implements IIncapacityService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  //?BUSCAR INCAPACIDAD PAGINADO Y RELACIONAL
   async getIncapacityPaginate(
     filters: IFilterIncapacity
-  ): Promise<ApiResponse<IPagingData<any>>> {
+  ): Promise<ApiResponse<IPagingData<IGetIncapacity>>> {
     const incapacities = await this.incapacityRepository.getIncapacityPaginate(
       filters
     );
     return new ApiResponse(incapacities, EResponseCodes.OK);
   }
 
-  //?BUSCAR INCAPACIDAD POR ID RELACIONAL
-  async getIncapacityById(
-    id: number
-  ): Promise<ApiResponse<IGetIncapacityList>> {
+  async getIncapacityById(id: number): Promise<ApiResponse<IGetIncapacity>> {
     const incapacity = await this.incapacityRepository.getIncapacityById(id);
 
     if (!incapacity) {
       return new ApiResponse(
-        {} as IGetIncapacityList,
+        {} as IGetIncapacity,
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );

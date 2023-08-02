@@ -16,8 +16,8 @@ export default class Incapacity extends BaseModel {
   })
   public codIncapacityType: number;
 
-  @column({ columnName: "INC_CODEMP_EMPLEO", serializeAs: "codEmployee" })
-  public codEmployee: number;
+  @column({ columnName: "INC_CODEMP_EMPLEO", serializeAs: "codEmployment" })
+  public codEmployment: number;
 
   @column.dateTime({
     columnName: "INC_FECHA_INICIO",
@@ -63,8 +63,8 @@ export default class Incapacity extends BaseModel {
   public typeIncapacity: HasOne<typeof TypesIncapacity>;
 
   @hasOne(() => Employment, {
-    localKey: "codEmployee",
+    localKey: "codEmployment",
     foreignKey: "id",
   })
-  public incapacityEmployee: HasOne<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
 }

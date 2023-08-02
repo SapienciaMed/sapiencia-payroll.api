@@ -89,6 +89,7 @@ export default class WorkerRepository implements IWorkerRepository {
     const res = await Worker.query().whereHas("employment", (employmentQuery)=>{
       employmentQuery.where("state", "1");
     })
+    .preload("employment")
     return res as IWorker[];
   }
 

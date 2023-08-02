@@ -2,7 +2,7 @@ import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import {
   IIncapacity,
   IFilterIncapacity,
-  IGetIncapacity,
+  IGetIncapacityList,
 } from "App/Interfaces/IncapacityInterfaces";
 
 import { IIncapacityTypes } from "App/Interfaces/TypesIncapacityInterface";
@@ -58,21 +58,25 @@ export default class IncapacityService implements IIncapacityService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  //?BUSCAR INCAPACIDAD PAGINADO Y RELACIONAL
   async getIncapacityPaginate(
     filters: IFilterIncapacity
-  ): Promise<ApiResponse<IPagingData<IGetIncapacity>>> {
+  ): Promise<ApiResponse<IPagingData<any>>> {
     const incapacities = await this.incapacityRepository.getIncapacityPaginate(
       filters
     );
     return new ApiResponse(incapacities, EResponseCodes.OK);
   }
 
-  async getIncapacityById(id: number): Promise<ApiResponse<IGetIncapacity>> {
+  //?BUSCAR INCAPACIDAD POR ID RELACIONAL
+  async getIncapacityById(
+    id: number
+  ): Promise<ApiResponse<IGetIncapacityList>> {
     const incapacity = await this.incapacityRepository.getIncapacityById(id);
 
     if (!incapacity) {
       return new ApiResponse(
-        {} as IGetIncapacity,
+        {} as IGetIncapacityList,
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );

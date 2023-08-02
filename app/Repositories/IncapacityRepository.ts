@@ -1,7 +1,7 @@
 import {
   IIncapacity,
   IFilterIncapacity,
-  IGetIncapacity,
+  IGetIncapacityList,
 } from "App/Interfaces/IncapacityInterfaces";
 
 import Incapacity from "App/Models/Incapacity";
@@ -18,6 +18,7 @@ export interface IIncapacityRepository {
 export default class IncapacityRepository implements IIncapacityRepository {
   constructor() {}
 
+  //?CREAR INCAPACIDAD
   async createIncapacity(incapacity: IIncapacity): Promise<IIncapacity> {
     const toCreate = new Incapacity();
     toCreate.fill({ ...incapacity });
@@ -26,40 +27,45 @@ export default class IncapacityRepository implements IIncapacityRepository {
     return toCreate.serialize() as IIncapacity;
   }
 
+  //?BUSCAR INCAPACIDAD PAGINADO -LISTADO RELACIONAL
+
   async getIncapacityPaginate(
     filters: IFilterIncapacity
-  ): Promise<IPagingData<IGetIncapacity>> {
+  ): Promise<IPagingData<IGetIncapacityList>> {
     const res = Incapacity.query();
 
-    const { workerId } = filters;
+    res.select(
+      "id",
+      "codIncapacityType",
+      "codEmployee",
+      "dateInitial",
+      "dateFinish",
+      "comments"
+    );
 
-    if (workerId) {
-      res.whereHas("employment", (queryEmployment) => {
-        queryEmployment.where("workerId", workerId);
-      });
-    }
-
-    res.preload("typeIncapacity");
-
-    res.preload("employment", (queryEmployment) => {
-      queryEmployment
-        .select("id", "workerId")
-        .preload("worker", (queryWorker) => {
-          queryWorker.select(
-            "id",
-            "typeDocument",
-            "numberDocument",
-            "firstName",
-            "secondName",
-            "surname",
-            "secondSurname"
-          );
-
-          if (workerId) {
-            queryWorker.where("id", workerId);
-          }
-        });
+    res.preload("typeIncapacity", (query) => {
+      query.select("name");
     });
+
+    res.preload("incapacityEmployee", (query) => {
+      query.select("id", "workerId", "institutionalMail");
+
+      query.preload("workerEmployment", (query) => {
+        query.select(
+          "id",
+          "typeDocument",
+          "numberDocument",
+          "firstName",
+          "secondName",
+          "surname",
+          "secondSurname"
+        );
+      });
+    });
+
+    if (filters.idEmployee) {
+      res.where("codEmployee", filters.idEmployee);
+    }
 
     const incapacityEmploymentPaginated = await res.paginate(
       filters.page,
@@ -70,7 +76,7 @@ export default class IncapacityRepository implements IIncapacityRepository {
     const dataArray = data ?? [];
 
     return {
-      array: dataArray as IGetIncapacity[],
+      array: dataArray as IGetIncapacityList[],
       meta,
     };
   }
@@ -100,4 +106,23 @@ export default class IncapacityRepository implements IIncapacityRepository {
 
     return res ? (res.serialize() as IGetIncapacityList) : null;
   }
+
+  //?ACTUALIZAR INCAPACIDAD - ID Y ELEMENTOS POR BODY
+  async updateIncapacity(incapacity: IIncapacity, id: number): Promise<IIncapacity | null>{
+
+    const toUpdate = await Incapacity.find(id);
+
+    if (!toUpdate) {
+      return null;
+    }
+
+    toUpdate.fill({ ...incapacity });
+
+    await toUpdate.save();
+
+    return toUpdate.serialize() as Incapacity;
+
+  }
+
+
 }

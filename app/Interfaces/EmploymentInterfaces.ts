@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { IWorker } from "./WorkerInterfaces";
 
 export interface IEmployment {
   id?: number;
@@ -18,6 +19,10 @@ export interface IEmployment {
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
+}
+
+export interface IEmploymentWorker extends IEmployment {
+  worker: IWorker;
 }
 
 export interface IFilterEmployment {

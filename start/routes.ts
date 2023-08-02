@@ -49,6 +49,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get("/incapacity-types", "IncapacityController.getIncapacityTypes");
   Route.post("/create", "IncapacityController.createIncapacity");
+  Route.put("/update", "IncapacityController.updateIncapacity");
   Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
   Route.get("/get-by-id/:id", "IncapacityController.getIncapacityById");
 }).prefix("/api/v1/incapacity");

@@ -14,18 +14,17 @@ import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IIncapacityService {
   createIncapacity(incapacity: IIncapacity): Promise<ApiResponse<IIncapacity>>;
-  getIncapacityPaginate(
-    filters: IFilterIncapacity
-  ): Promise<ApiResponse<IPagingData<IGetIncapacityList>>>;
+  getIncapacityPaginate(filters: IFilterIncapacity): Promise<ApiResponse<IPagingData<IGetIncapacityList>>>;
   getIncapacityById(idr: number): Promise<ApiResponse<IGetIncapacityList>>;
   getIncapacityTypes(): Promise<ApiResponse<IIncapacityTypes[]>>;
+  updateIncapacity(incapacity: IIncapacity, id: number): Promise<ApiResponse<IIncapacity | null>>;
 }
 
 export default class IncapacityService implements IIncapacityService {
   constructor(
     private incapacityRepository: IIncapacityRepository,
     private incapacityTypesRepository: IIncapacityTypesRepository
-  ) {}
+  ) { }
 
   //?CREAR INCAPACIDAD
   async createIncapacity(
@@ -85,4 +84,20 @@ export default class IncapacityService implements IIncapacityService {
 
     return new ApiResponse(incapacity, EResponseCodes.OK);
   }
+
+  //?ACTUALIZAR INCAPACIDAD CON ID - TODO CON BODY
+  async updateIncapacity(incapacity: IIncapacity, id: number): Promise<ApiResponse<IIncapacity | null>> {
+
+    const res = await this.incapacityRepository.updateIncapacity(incapacity, id);
+
+    if (!res) {
+
+      return new ApiResponse({} as IIncapacity, EResponseCodes.FAIL, "Ocurrió un error en su Transacción ");
+
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+
+  }
+
 }

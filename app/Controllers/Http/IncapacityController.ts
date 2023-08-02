@@ -63,4 +63,20 @@ export default class IncapacityController {
       );
     }
   }
+
+  //?Actualizar -> Obtengo ID por desde Body petición
+  public async updateIncapacity({ request, response }: HttpContextContract) {
+    try {
+
+      const incapacityValidate = (await request.validate(CreateAndUpdateIncapacityValidator)) as IIncapacity;
+      const { id } = incapacityValidate;
+
+      return response.send(await IncapacityProvider.updateIncapacity(incapacityValidate, Number(id)));
+
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

@@ -10,10 +10,9 @@ import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IIncapacityRepository {
   createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>;
-  getIncapacityPaginate(
-    filters: IFilterIncapacity
-  ): Promise<IPagingData<IGetIncapacityList>>;
+  getIncapacityPaginate(filters: IFilterIncapacity): Promise<IPagingData<IGetIncapacityList>>;
   getIncapacityById(idr: number): Promise<IGetIncapacityList | null>;
+  updateIncapacity(incapacity: IIncapacity, id: number): Promise<IIncapacity | null>;
 }
 
 export default class IncapacityRepository implements IIncapacityRepository {
@@ -107,4 +106,23 @@ export default class IncapacityRepository implements IIncapacityRepository {
 
     return res ? (res.serialize() as IGetIncapacityList) : null;
   }
+
+  //?ACTUALIZAR INCAPACIDAD - ID Y ELEMENTOS POR BODY
+  async updateIncapacity(incapacity: IIncapacity, id: number): Promise<IIncapacity | null>{
+
+    const toUpdate = await Incapacity.find(id);
+
+    if (!toUpdate) {
+      return null;
+    }
+
+    toUpdate.fill({ ...incapacity });
+
+    await toUpdate.save();
+
+    return toUpdate.serialize() as Incapacity;
+
+  }
+
+
 }

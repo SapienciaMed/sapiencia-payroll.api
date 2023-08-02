@@ -7,7 +7,7 @@ export interface IIncapacity {
 
   id? : number;
   codIncapacityType: number;
-  codEmployee: number;
+  codEmployment: number;
   dateInitial: DateTime;
   dateFinish: DateTime;
   comments?: string;

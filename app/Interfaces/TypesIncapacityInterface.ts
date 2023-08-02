@@ -1,4 +1,4 @@
 export interface IIncapacityTypes {
-  id? : number;
+  id?: number;
   name?: string;
 }

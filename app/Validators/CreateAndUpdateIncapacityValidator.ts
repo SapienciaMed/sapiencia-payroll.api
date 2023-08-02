@@ -1,9 +1,7 @@
-import { schema, CustomMessages , rules } from "@ioc:Adonis/Core/Validator";
+import { schema, CustomMessages, rules } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 
-
 export default class IncapacityValidator {
-
   /**
    *
    *
@@ -25,16 +23,16 @@ export default class IncapacityValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-     id : schema.number.optional(),
-     codIncapacityType : schema.number(),
-     codEmployee : schema.number(),
-     dateInitial : schema.date(),
-     dateFinish : schema.date(),
-     comments : schema.string([rules.maxLength(100)]),
-     isExtension : schema.boolean.optional(),
-     userModified : schema.string.optional([rules.maxLength(15)]),
-     userCreate : schema.string.optional([rules.maxLength(15)])
-  })
+    id: schema.number.optional(),
+    codIncapacityType: schema.number(),
+    codEmployment: schema.number(),
+    dateInitial: schema.date(),
+    dateFinish: schema.date(),
+    comments: schema.string([rules.maxLength(100)]),
+    isExtension: schema.boolean.optional(),
+    userModified: schema.string.optional([rules.maxLength(15)]),
+    userCreate: schema.string.optional([rules.maxLength(15)]),
+  });
 
   // public schema = schema.create({
   //   id: schema.number.optional(),
@@ -49,6 +47,5 @@ export default class IncapacityValidator {
   //   periodClosed: schema.boolean(),
   // });
 
-  public messages: CustomMessages = {"err":"error"};
-
+  public messages: CustomMessages = { err: "error" };
 }

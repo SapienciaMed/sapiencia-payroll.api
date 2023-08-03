@@ -55,8 +55,8 @@ export default class IncapacityController {
   //?Obtener incapacidad por ID -> Relationadas JOIN
   public async getIncapacityById({ response, request }: HttpContextContract) {
     try {
-      const { idr } = request.params();
-      return response.send(await IncapacityProvider.getIncapacityById(idr));
+      const { id } = request.params();
+      return response.send(await IncapacityProvider.getIncapacityById(id));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
@@ -67,12 +67,18 @@ export default class IncapacityController {
   //?Actualizar -> Obtengo ID por desde Body petición
   public async updateIncapacity({ request, response }: HttpContextContract) {
     try {
+      const incapacityValidate = (await request.validate(
+        CreateAndUpdateIncapacityValidator
+      )) as IIncapacity;
 
-      const incapacityValidate = (await request.validate(CreateAndUpdateIncapacityValidator)) as IIncapacity;
       const { id } = incapacityValidate;
 
-      return response.send(await IncapacityProvider.updateIncapacity(incapacityValidate, Number(id)));
-
+      return response.send(
+        await IncapacityProvider.updateIncapacity(
+          incapacityValidate,
+          Number(id)
+        )
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

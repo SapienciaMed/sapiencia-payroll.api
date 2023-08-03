@@ -1,7 +1,7 @@
 import {
   IIncapacity,
   IFilterIncapacity,
-  IGetIncapacityList,
+  IGetIncapacity,
 } from "App/Interfaces/IncapacityInterfaces";
 
 import Incapacity from "App/Models/Incapacity";
@@ -10,9 +10,14 @@ import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IIncapacityRepository {
   createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>;
-  getIncapacityPaginate(filters: IFilterIncapacity): Promise<IPagingData<IGetIncapacityList>>;
-  getIncapacityById(idr: number): Promise<IGetIncapacityList | null>;
-  updateIncapacity(incapacity: IIncapacity, id: number): Promise<IIncapacity | null>;
+  getIncapacityPaginate(
+    filters: IFilterIncapacity
+  ): Promise<IPagingData<IGetIncapacity>>;
+  getIncapacityById(idr: number): Promise<IGetIncapacity | null>;
+  updateIncapacity(
+    incapacity: IIncapacity,
+    id: number
+  ): Promise<IIncapacity | null>;
 }
 
 export default class IncapacityRepository implements IIncapacityRepository {
@@ -31,27 +36,26 @@ export default class IncapacityRepository implements IIncapacityRepository {
 
   async getIncapacityPaginate(
     filters: IFilterIncapacity
-  ): Promise<IPagingData<IGetIncapacityList>> {
+  ): Promise<IPagingData<IGetIncapacity>> {
     const res = Incapacity.query();
 
-    res.select(
-      "id",
-      "codIncapacityType",
-      "codEmployee",
-      "dateInitial",
-      "dateFinish",
-      "comments"
-    );
+    const { workerId } = filters;
 
-    res.preload("typeIncapacity", (query) => {
-      query.select("name");
-    });
+    if (workerId) {
+      res.whereHas("employment", (queryEmployment) => {
+        queryEmployment.where("id", workerId);
+      });
+    }
 
-    res.preload("incapacityEmployee", (query) => {
-      query.select("id", "workerId", "institutionalMail");
+    res.preload("typeIncapacity");
 
-      query.preload("workerEmployment", (query) => {
-        query.select(
+    res.preload("employment", (queryEmployment) => {
+      queryEmployment.select("id", "workerId");
+
+      if (workerId) queryEmployment.where("id", workerId);
+
+      queryEmployment.preload("worker", (queryWorker) => {
+        queryWorker.select(
           "id",
           "typeDocument",
           "numberDocument",
@@ -62,10 +66,6 @@ export default class IncapacityRepository implements IIncapacityRepository {
         );
       });
     });
-
-    if (filters.idEmployee) {
-      res.where("codEmployee", filters.idEmployee);
-    }
 
     const incapacityEmploymentPaginated = await res.paginate(
       filters.page,
@@ -73,26 +73,28 @@ export default class IncapacityRepository implements IIncapacityRepository {
     );
 
     const { data, meta } = incapacityEmploymentPaginated.serialize();
+
     const dataArray = data ?? [];
 
     return {
-      array: dataArray as IGetIncapacityList[],
+      array: dataArray as IGetIncapacity[],
       meta,
     };
   }
 
   //?BUSCAR INCAPACIDAD POR ID - Relacional
-  async getIncapacityById(id: number): Promise<IGetIncapacityList | null> {
+  async getIncapacityById(id: number): Promise<IGetIncapacity | null> {
     const res = await Incapacity.find(id);
 
     await res!.load("typeIncapacity", (query) => {
       query.select("name");
     });
 
-    await res!.load("incapacityEmployee", (query) => {
-      query.select("id", "workerId", "institutionalMail");
-      query.preload("workerEmployment", (query) => {
-        query.select(
+    await res!.load("employment", (queryEmployment) => {
+      queryEmployment.select("id", "workerId");
+
+      queryEmployment.preload("worker", (queryWorker) => {
+        queryWorker.select(
           "id",
           "typeDocument",
           "numberDocument",
@@ -104,12 +106,14 @@ export default class IncapacityRepository implements IIncapacityRepository {
       });
     });
 
-    return res ? (res.serialize() as IGetIncapacityList) : null;
+    return res ? (res.serialize() as IGetIncapacity) : null;
   }
 
   //?ACTUALIZAR INCAPACIDAD - ID Y ELEMENTOS POR BODY
-  async updateIncapacity(incapacity: IIncapacity, id: number): Promise<IIncapacity | null>{
-
+  async updateIncapacity(
+    incapacity: IIncapacity,
+    id: number
+  ): Promise<IIncapacity | null> {
     const toUpdate = await Incapacity.find(id);
 
     if (!toUpdate) {
@@ -121,8 +125,5 @@ export default class IncapacityRepository implements IIncapacityRepository {
     await toUpdate.save();
 
     return toUpdate.serialize() as Incapacity;
-
   }
-
-
 }

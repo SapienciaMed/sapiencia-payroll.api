@@ -63,8 +63,8 @@ export default class Incapacity extends BaseModel {
   public typeIncapacity: HasOne<typeof TypesIncapacity>;
 
   @hasOne(() => Employment, {
-    localKey: "codEmployee",
+    localKey: "codEmployment",
     foreignKey: "id",
   })
-  public incapacityEmployee: HasOne<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
 }

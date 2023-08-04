@@ -24,22 +24,15 @@ export default class CreateAndUpdateVacationValidator {
    *    ```
    */
   public schema = schema.create({
-    vacationDay: schema.array().members(
-      schema.object().members({
-        id: schema.number.optional(),
-        codVacation: schema.number(),
-        dateFrom: schema.date(),
-        dateUntil: schema.date.optional(),
-        enjoyedDays: schema.number(),
-        paid: schema.boolean(),
-        codForm: schema.number.optional(),
-        observation: schema.string.optional(),
-        userModified: schema.string.optional(),
-        dateModified: schema.date.optional(),
-        userCreate: schema.string.optional(),
-        dateCreate: schema.date.optional(),
-      })
-    ),
+    id: schema.number(),
+    idVacationDay: schema.number(),
+    dateFrom: schema.date(),
+    dateUntil: schema.date(),
+    observation: schema.string.optional(),
+    available: schema.number(),
+    refundTypes: schema.string(),
+    refund: schema.number(),
+    enjoyed: schema.number(),
   });
 
   /**

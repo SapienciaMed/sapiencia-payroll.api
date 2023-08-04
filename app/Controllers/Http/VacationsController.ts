@@ -2,11 +2,15 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import VacationProvider from "@ioc:core.VacationProvider";
-import CreateAndUpdateVacationValidator from "App/Validators/CreateAndUpdateVacationValidator";
-import { IVacation, IVacationFilters } from 'App/Interfaces/VacationsInterfaces';
-import { IVacationDay } from 'App/Interfaces/VacationDaysInterface';
-import VacationDay from 'App/Models/VacationDay';
-
+import CreateAndUpdateVacationValidator from "App/Validators/CreateVacationValidator";
+import UpdateVacationValidator from "App/Validators/UpdateVacationValidator";
+import {
+  IVacation,
+  IVacationFilters,
+} from "App/Interfaces/VacationsInterfaces";
+import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
+import VacationDay from "App/Models/VacationDay";
+import Database from "@ioc:Adonis/Lucid/Database";
 
 export default class VacationsController {
   // get all vactions
@@ -19,8 +23,11 @@ export default class VacationsController {
       );
     }
   }
-  public async getVacationsByParams({request, response }: HttpContextContract) {
-    const params = request.all()
+  public async getVacationsByParams({
+    request,
+    response,
+  }: HttpContextContract) {
+    const params = request.all();
     try {
       return response.send(await VacationProvider.getVacationsByParams(params));
     } catch (err) {
@@ -42,11 +49,29 @@ export default class VacationsController {
   }
 
   //update vacation
+  public async updateVacationPeriod({
+    request,
+    response,
+  }: HttpContextContract) {
+    await Database.transaction(async (trx) => {
+    try {
+      const  vacationEdit  = await request.validate(UpdateVacationValidator);
+      return response.send(await VacationProvider.updateVacation(vacationEdit as IEditVacation,trx));
+    } catch (err) {
+      await trx.rollback();
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  })
+  }
+
   public async updateVacation({ request, response }: HttpContextContract) {
     try {
-      const { id } = request.params();
-      const {vacation} = await request.params();
-      return response.send(await VacationProvider.updateVacation(vacation, id))
+      const data = await request.params();
+      return response.send(
+        await VacationProvider.updateVacationDay(data as IVacationDay)
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
@@ -54,26 +79,28 @@ export default class VacationsController {
     }
   }
 
-  public async createVacationDays({request, response}:HttpContextContract){
-    try {
-      const data = await request.validate(CreateAndUpdateVacationValidator);
-      return response.send(await VacationProvider.createManyVacation(data))
-    } catch (err) {
-      return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
-      );
-    }
+  public async createVacationDays({ request, response }: HttpContextContract) {
+    await Database.transaction(async (trx) => {
+      try {
+        const data = await request.validate(CreateAndUpdateVacationValidator);
+        return response.send(
+          await VacationProvider.createManyVacation(data, trx)
+        );
+      } catch (err) {
+        await trx.rollback();
+        return response.badRequest(
+          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        );
+      }
+    });
   }
-
   public async getVacationsPaginate({
     response,
     request,
   }: HttpContextContract) {
     try {
       const data = request.body() as IVacationFilters;
-      return response.send(
-        await VacationProvider.getVacationPaginate(data)
-      );
+      return response.send(await VacationProvider.getVacationPaginate(data));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

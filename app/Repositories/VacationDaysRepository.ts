@@ -1,14 +1,15 @@
-import { IVacationDay, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import { IEditVacation, IVacationDay, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
 import VacationDay from "App/Models/VacationDay";
 
 export interface IVacationDaysRepository {
   getVacationDays(): Promise<IVacationDay[]>;
   createVacation(vacation: IVacationDay): Promise<IVacationDay>;
-  updateVacation(
-    vacation: IVacationDay,
-    id: number
+  updateVacationDay(
+    data: IVacationDay
   ): Promise<IVacationDay | null>;
-  createManyVacation(vacations: IVacationDayValidator) :Promise<IVacationDay[]>;
+  updateVacationRefund(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacationDay | null>
+  createManyVacation(vacations: IVacationDay[],trx: TransactionClientContract) :Promise<IVacationDay[]>;
 }
 
 export default class VacationDaysRepository implements IVacationDaysRepository {
@@ -27,23 +28,45 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
     return toCreate.serialize() as VacationDay;
   }
 
-  async createManyVacation(vacations: IVacationDayValidator): Promise<IVacationDay[]> {
-    const res = await VacationDay.createMany(vacations.vacationDay)
+  async createManyVacation(vacations: IVacationDay[],trx: TransactionClientContract): Promise<IVacationDay[]> {
+    const res = await VacationDay.createMany(vacations,{ client: trx })
     return res as IVacationDay[];
   }
 
-  async updateVacation(
-    vacation: VacationDay,
-    id: number
-  ): Promise<VacationDay | null> {
-    const toUpdate = await VacationDay.find(id);
-
+  async updateVacationDay(
+    data: IVacationDay,
+  ): Promise<IVacationDay | null> {
+    const toUpdate = await VacationDay.find(data.id);
     if (!toUpdate) {
       return null;
     }
 
-    toUpdate.fill({ ...vacation });
+    toUpdate.merge({ ...data });
     await toUpdate.save();
     return toUpdate.serialize() as VacationDay;
+  }
+
+  async updateVacationRefund(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacationDay | null> {
+    const toUpdate = await VacationDay.findOrFail(daysVacation.idVacationDay);
+    if (!toUpdate) {
+      return null;
+    }
+    if (daysVacation.dateFrom) {
+      toUpdate.dateFrom = daysVacation.dateFrom;
+    }
+    if (daysVacation.dateUntil) {
+      toUpdate.dateUntil = daysVacation.dateUntil;
+    }
+    if (daysVacation.refundTypes) {
+      toUpdate.refundType = daysVacation.refundTypes;
+    }
+    if(daysVacation.enjoyed){
+      toUpdate.enjoyedDays = daysVacation.enjoyed;
+    }
+    if(daysVacation.observation){
+      toUpdate.observation = daysVacation.observation;
+    }
+    (await toUpdate.save()).useTransaction(trx);
+    return toUpdate.serialize() as IVacationDay;
   }
 }

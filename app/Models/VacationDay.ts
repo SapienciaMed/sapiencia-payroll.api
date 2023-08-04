@@ -38,6 +38,9 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_OBSERVACION", serializeAs: "observation" })
   public observation: string;
 
+  @column({ columnName: "DVA_TIPO_REINTEGRO", serializeAs: "refundType" })
+  public refundType: string;
+
   @column({
     columnName: "DVA_USUARIO_CREO",
     serializeAs: "userModified",

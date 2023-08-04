@@ -11,10 +11,10 @@ export default class Vacation extends BaseModel {
   public id: number;
 
   @column({ columnName: "VAC_CODEMP_EMPLEO", serializeAs: "codEmployment" })
-  public codEmployment: string;
+  public codEmployment: number;
 
   @column({ columnName: "VAC_PERIODO", serializeAs: "period" })
-  public period: string;
+  public period: number;
   
   @column.dateTime({ autoCreate: false,columnName: "VAC_FECHA_DESDE", serializeAs: "dateFrom"})
   public dateFrom: DateTime;
@@ -23,16 +23,19 @@ export default class Vacation extends BaseModel {
   public dateUntil: DateTime;
 
   @column({ columnName: "VAC_PERIODO_ANTERIOR", serializeAs: "periodFormer" })
-  public periodFormer: string;
+  public periodFormer: number;
 
   @column({ columnName: "VAC_DISFRUTADOS", serializeAs: "enjoyed" })
-  public enjoyed: string;
+  public enjoyed: number;
+
+  @column({ columnName: "VAC_DIAS_REINTEGRADOS", serializeAs: "refund" })
+  public refund: number;
 
   @column({ columnName: "VAC_DISPONIBLES", serializeAs: "available" })
-  public available: string;
+  public available: number;
 
   @column({ columnName: "VAC_DIAS", serializeAs: "days" })
-  public days: string;
+  public days: number;
 
   @column({ columnName: "VAC_PERIODO_CERRADO", serializeAs: "periodClosed" })
   public periodClosed: boolean;

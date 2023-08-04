@@ -1,3 +1,8 @@
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import {
+  IEditVacation,
+  IVacationDayValidator,
+} from "App/Interfaces/VacationDaysInterface";
 import {
   IVacation,
   IVacationFilters,
@@ -8,7 +13,10 @@ import { IPagingData } from "App/Utils/ApiResponses";
 export interface IVacationRepository {
   getVacations(): Promise<IVacation[]>;
   createVacation(vacation: IVacation): Promise<IVacation>;
-  updateVacation(vacation: IVacation, id: number): Promise<IVacation | null>;
+  updateVacation(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacation | null>;
+  updateVacationDays(
+    daysVacation: IVacationDayValidator
+  ): Promise<IVacation | null>;
   getVacationsByParams(params): Promise<IVacation | null>;
   getVacation(filters: IVacationFilters): Promise<IPagingData<IVacation>>;
 }
@@ -24,12 +32,14 @@ export default class VacationRepository implements IVacationRepository {
   async getVacationsByParams(params): Promise<IVacation | null> {
     const res = await Vacation.query()
       .whereHas("employment", (employmentQuery) => {
-        employmentQuery.whereHas("worker", (workerQuery) => {
-          workerQuery.where("id", params.workerId);
-        });
+        employmentQuery.where("id", params.workerId);
       })
       .andWhere("period", params.period)
       .andWhere("periodClosed", false)
+      .preload("vacationDay")
+      .preload("employment", (employmentQuery) => {
+        employmentQuery.preload("worker");
+      })
       .first();
     return res ? (res.serialize() as IVacation) : null;
   }
@@ -44,19 +54,17 @@ export default class VacationRepository implements IVacationRepository {
     }
     res.preload("vacationDay");
     res.whereHas("employment", (employmentQuery) => {
-      employmentQuery.whereHas("worker", (workerQuery) => {
-        if (filters.workerId) {
-          workerQuery.where("id", filters.workerId);
-        }
-      });
+      if (filters.workerId) {
+        employmentQuery.where("id", filters.workerId);
+      }
     });
+
     res.preload("employment", (employmentQuery) => {
       employmentQuery.preload("charges");
-      employmentQuery.preload("worker", (workerQuery) => {
-        if (filters.workerId) {
-          workerQuery.where("id", filters.workerId);
-        }
-      });
+      if (filters.workerId) {
+        employmentQuery.where("id", filters.workerId);
+      }
+      employmentQuery.preload("worker");
     });
 
     const workerEmploymentPaginated = await res.paginate(
@@ -81,17 +89,42 @@ export default class VacationRepository implements IVacationRepository {
     return toCreate.serialize() as IVacation;
   }
 
-  async updateVacation(
-    vacation: IVacation,
-    id: number
-  ): Promise<IVacation | null> {
-    const toUpdate = await Vacation.find(id);
-
+  async updateVacation(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacation | null> {
+    const toUpdate = await Vacation.findOrFail(daysVacation.id);
     if (!toUpdate) {
       return null;
     }
+    if (daysVacation.enjoyed) {
+      toUpdate.enjoyed = daysVacation.enjoyed;
+    }
+    if (daysVacation.available) {
+      toUpdate.available = daysVacation.available;
+    }
+    if (daysVacation.refund) {
+      toUpdate.refund = daysVacation.refund;
+    }
+    (await toUpdate.save()).useTransaction(trx);
+    return toUpdate.serialize() as IVacation;
+  }
 
-    toUpdate.fill({ ...vacation });
+  async updateVacationDays(
+    daysVacation: IVacationDayValidator
+  ): Promise<IVacation | null> {
+    const toUpdate = await Vacation.findOrFail(
+      daysVacation.vacationDay[0].codVacation
+    );
+    if (!toUpdate) {
+      return null;
+    }
+    if (daysVacation.enjoyedDays) {
+      toUpdate.enjoyed = daysVacation.enjoyedDays;
+    }
+    if (daysVacation.avaibleDays) {
+      toUpdate.available = daysVacation.avaibleDays;
+    }
+    if (daysVacation.refundDays) {
+      toUpdate.refund = daysVacation.refundDays;
+    }
     await toUpdate.save();
     return toUpdate.serialize() as IVacation;
   }

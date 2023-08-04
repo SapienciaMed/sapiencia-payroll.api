@@ -1,16 +1,19 @@
-import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import BaseSchema from "@ioc:Adonis/Lucid/Schema";
 
 export default class extends BaseSchema {
-  protected tableName = 'VAC_VACACIONES'
+  protected tableName = "VAC_VACACIONES";
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
-
       table.comment(
         "Tabla que almacena los periodos de vacaciones de los trabajadores "
       );
 
-      table.increments("VAC_CODIGO").primary().comment("Llave primaria").unique();
+      table
+        .increments("VAC_CODIGO")
+        .primary()
+        .comment("Llave primaria")
+        .unique();
       table
         .integer("VAC_CODEMP_EMPLEO")
         .references("EMP_CODIGO")
@@ -41,18 +44,22 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Segundo apellido del colaborador");
       table
-        .integer("VAC_DISPONIBLES",)
+        .integer("VAC_DIAS_REINTEGRADOS")
+        .notNullable()
+        .comment("Numero de dias reintegrados")
+        .defaultTo(0);
+      table
+        .integer("VAC_DISPONIBLES")
         .notNullable()
         .comment("Dias disponibles de vacaciones");
       table
         .boolean("VAC_PERIODO_CERRADO")
         .notNullable()
         .comment("Indicador de que si el periodo se encuentra cerrado");
-
-    })
+    });
   }
 
-  public async down () {
-    this.schema.dropTable(this.tableName)
+  public async down() {
+    this.schema.dropTable(this.tableName);
   }
 }

@@ -41,7 +41,7 @@ Route.group(() => {
 Route.group(() => {
   Route.post("/", "VacationsController.getVacations");
   Route.post("/create", "VacationsController.createVacationDays");
-  Route.post("/update", "VacationsController.updateVacation");
+  Route.put("/", "VacationsController.updateVacationPeriod");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
   Route.post("/get-paginated", "VacationsController.getVacationsPaginate");
 }).prefix("/api/v1/vacations");

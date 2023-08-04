@@ -48,6 +48,13 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Observaciones sobre el periodo de vacaciones");
       table
+        .string("DVA_TIPO_REINTEGRO", 15)
+        .nullable()
+        .comment(
+          "Indica si las vacaciones han sido reintegradas (General, Incapacaidad o null)"
+        )
+        .defaultTo(null);
+      table
         .string("DVA_USUARIO_MODIFICO", 15)
         .comment(
           "Numero del documento del ultimo usuario que hizo una modificacion"

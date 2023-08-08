@@ -20,29 +20,23 @@ const vacationDayFake: IVacationDay[] = [{
 
 export class VacationDaysRepositoryFake implements VacationDaysRepository {
     updateVacationRefund(_daysVacation: IEditVacation, _trx: TransactionClientContract): Promise<IVacationDay | null> {
-        throw new Error("Method not implemented.");
+        const list = vacationDayFake;
+
+    return Promise.resolve(list.find((i) => i.id == _daysVacation.id) || null);
     }
     getVacationDays(): Promise<IVacationDay[]> {
-        return new Promise((res) => {
-            res(vacationDayFake);
-          });
+        return Promise.resolve(vacationDayFake);
     }
     createVacation(_vacation: IVacationDay): Promise<IVacationDay> {
-        return new Promise((res) => {
-            res(vacationDayFake[0]);
-          });
+        return Promise.resolve(vacationDayFake[0]);
     }
     createManyVacation(_vacations: IVacationDay[], _trx: TransactionClientContract): Promise<IVacationDay[]> {
-        return new Promise((res) => {
-            res(vacationDayFake);
-          });
+        return Promise.resolve(vacationDayFake);
     }
     updateVacationDay(_data: IVacationDay): Promise<IVacationDay | null> {
         const list = vacationDayFake;
 
-    return new Promise((res) => {
-      res(list.find((i) => i.id == _data.id) || null);
-    });
+    return Promise.resolve(list.find((i) => i.id == _data.id) || null);
     }
   
   

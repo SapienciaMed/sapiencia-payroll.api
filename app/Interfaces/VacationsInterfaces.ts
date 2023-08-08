@@ -20,3 +20,8 @@ export interface IVacationFilters {
   page: number;
   perPage: number;
 }
+
+export interface IVacationSearchParams{
+  workerId: number;
+  period: number;
+}

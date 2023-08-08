@@ -1,4 +1,5 @@
-import { IIncapacityTypes } from 'App/Interfaces/TypesIncapacityInterface';
+import { IGetIncapacity } from "App/Interfaces/IncapacityInterfaces";
+import { IIncapacityTypes } from "App/Interfaces/TypesIncapacityInterface";
 import TypesIncapacity from "App/Models/TypesIncapacity";
 
 export interface IIncapacityTypesRepository {
@@ -6,8 +7,9 @@ export interface IIncapacityTypesRepository {
   getIncapacityTypes(): Promise<IIncapacityTypes[]>;
 }
 
-export default class IncapacityTypesRepository implements IIncapacityTypesRepository {
-
+export default class IncapacityTypesRepository
+  implements IIncapacityTypesRepository
+{
   constructor() {}
 
   async getIncapacityTypesById(id: number): Promise<IIncapacityTypes | null> {
@@ -19,5 +21,4 @@ export default class IncapacityTypesRepository implements IIncapacityTypesReposi
     const res = await TypesIncapacity.all();
     return res as IIncapacityTypes[];
   }
-
 }

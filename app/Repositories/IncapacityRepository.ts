@@ -7,6 +7,7 @@ import {
 import Incapacity from "App/Models/Incapacity";
 
 import { IPagingData } from "App/Utils/ApiResponses";
+import { DateTime } from "luxon";
 
 export interface IIncapacityRepository {
   createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>;
@@ -18,6 +19,9 @@ export interface IIncapacityRepository {
     incapacity: IIncapacity,
     id: number
   ): Promise<IIncapacity | null>;
+  getIncapacityDateCodEmployment(
+    incapacity: IIncapacity
+  ): Promise<IGetIncapacity[]>;
 }
 
 export default class IncapacityRepository implements IIncapacityRepository {
@@ -125,5 +129,16 @@ export default class IncapacityRepository implements IIncapacityRepository {
     await toUpdate.save();
 
     return toUpdate.serialize() as Incapacity;
+  }
+
+  async getIncapacityDateCodEmployment(
+    incapacity: IIncapacity
+  ): Promise<IGetIncapacity[]> {
+    const incapacityFind = await Incapacity.query()
+      .where("codEmployment", incapacity.codEmployment)
+      .where("dateInitial", incapacity.dateInitial.toString())
+      .where("dateFinish", incapacity.dateFinish.toString());
+
+    return incapacityFind as IGetIncapacity[];
   }
 }

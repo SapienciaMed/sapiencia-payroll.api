@@ -35,6 +35,19 @@ export default class IncapacityService implements IIncapacityService {
   async createIncapacity(
     incapacity: IIncapacity
   ): Promise<ApiResponse<IIncapacity>> {
+    const incapacityFind =
+      await this.incapacityRepository.getIncapacityDateCodEmployment(
+        incapacity
+      );
+
+    if (incapacityFind.length > 0) {
+      return new ApiResponse(
+        {} as IIncapacity,
+        EResponseCodes.FAIL,
+        "El empleado ya tiene registrada una incapacidad con las mismas fechas"
+      );
+    }
+
     const res = await this.incapacityRepository.createIncapacity(incapacity);
 
     if (!res) {

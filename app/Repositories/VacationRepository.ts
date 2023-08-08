@@ -6,6 +6,7 @@ import {
 import {
   IVacation,
   IVacationFilters,
+  IVacationSearchParams,
 } from "App/Interfaces/VacationsInterfaces";
 import Vacation from "App/Models/Vacation";
 import { IPagingData } from "App/Utils/ApiResponses";
@@ -17,7 +18,7 @@ export interface IVacationRepository {
   updateVacationDays(
     daysVacation: IVacationDayValidator
   ): Promise<IVacation | null>;
-  getVacationsByParams(params): Promise<IVacation | null>;
+  getVacationsByParams(params: IVacationSearchParams): Promise<IVacation | null>;
   getVacation(filters: IVacationFilters): Promise<IPagingData<IVacation>>;
 }
 
@@ -29,7 +30,7 @@ export default class VacationRepository implements IVacationRepository {
     return res as IVacation[];
   }
 
-  async getVacationsByParams(params): Promise<IVacation | null> {
+  async getVacationsByParams(params:IVacationSearchParams): Promise<IVacation | null> {
     const res = await Vacation.query()
       .whereHas("employment", (employmentQuery) => {
         employmentQuery.where("id", params.workerId);

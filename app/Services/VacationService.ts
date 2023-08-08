@@ -1,7 +1,7 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IEditVacation, IVacationDay, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
-import { IVacation, IVacationFilters } from "App/Interfaces/VacationsInterfaces";
+import { IVacation, IVacationFilters, IVacationSearchParams } from "App/Interfaces/VacationsInterfaces";
 import { IVacationDaysRepository } from "App/Repositories/VacationDaysRepository";
 import { IVacationRepository } from "App/Repositories/VacationRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
@@ -12,7 +12,7 @@ export interface IVacationService {
     createVacation(vacation: IVacation): Promise<ApiResponse<IVacation>>;
     updateVacation(vacationEdit: IEditVacation,trx: TransactionClientContract): Promise<ApiResponse<IVacation>> 
     updateVacationDay(data: IVacationDay): Promise<ApiResponse<IVacationDay | null>>
-    getVacationsByParams(params): Promise<ApiResponse<IVacation | null>>;
+    getVacationsByParams(params: IVacationSearchParams): Promise<ApiResponse<IVacation | null>>;
     createManyVacation(vacations: IVacationDayValidator,trx: TransactionClientContract): Promise<ApiResponse<IVacationDay[]>>;
     getVacationPaginate(filters: IVacationFilters): Promise<ApiResponse<IPagingData<IVacation>>>
 }
@@ -37,7 +37,7 @@ export default class VacationService implements IVacationService {
         return new ApiResponse(res, EResponseCodes.OK);
     } 
 
-    async getVacationsByParams(params): Promise<ApiResponse<IVacation>> {
+    async getVacationsByParams(params : IVacationSearchParams): Promise<ApiResponse<IVacation>> {
         const res = await this.vacationRepository.getVacationsByParams(params);
 
         if (!res) {

@@ -7,6 +7,7 @@ import UpdateVacationValidator from "App/Validators/UpdateVacationValidator";
 import {
   IVacation,
   IVacationFilters,
+  IVacationSearchParams,
 } from "App/Interfaces/VacationsInterfaces";
 import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
 import Database from "@ioc:Adonis/Lucid/Database";
@@ -28,7 +29,7 @@ export default class VacationsController {
   }: HttpContextContract) {
     const params = request.all();
     try {
-      return response.send(await VacationProvider.getVacationsByParams(params));
+      return response.send(await VacationProvider.getVacationsByParams(params as IVacationSearchParams));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

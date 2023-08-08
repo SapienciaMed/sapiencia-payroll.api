@@ -1,6 +1,6 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { IEditVacation, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
-import { IVacation,IVacationFilters } from "App/Interfaces/VacationsInterfaces";
+import { IVacation,IVacationFilters, IVacationSearchParams } from "App/Interfaces/VacationsInterfaces";
 import vacationRepository from "App/Repositories/VacationRepository";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
@@ -34,17 +34,15 @@ const vacationFake: IVacation[] = [{
 
 
 
-export class vacationRepositoryFake implements vacationRepository {
+export class VacationRepositoryFake implements vacationRepository {
     getVacations(): Promise<IVacation[]> {
-        return new Promise((res) => {
-            res(vacationFake);
-          });
+        return Promise.resolve(vacationFake);
     }
-    getVacationsByParams(params: any): Promise<IVacation | null> {
+    getVacationsByParams(_params: IVacationSearchParams): Promise<IVacation | null> {
         const list = vacationFake;
 
     return new Promise((res) => {
-      const vacation = list.find((vacation) =>  vacation.codEmployment === params.employmentId);
+      const vacation = list.find((vacation) =>  vacation.codEmployment === _params.workerId);
 
       if (!vacation) {
         return res(null);
@@ -54,29 +52,21 @@ export class vacationRepositoryFake implements vacationRepository {
     });
     }
     getVacation(_filters: IVacationFilters): Promise<IPagingData<IVacation>> {
-        return new Promise((res) => {
-            res({ array: vacationFake, meta: { total: 100 } });
-          });
+        return Promise.resolve({ array: vacationFake, meta: { total: 100 } });
     }
     createVacation(_user: IVacation): Promise<IVacation> {
-        return new Promise((res) => {
-            res(vacationFake[0]);
-          });
+        return Promise.resolve(vacationFake[0]);
     }
     updateVacation(_daysVacation: IEditVacation, _trx: TransactionClientContract): Promise<IVacation | null> {
         const list = vacationFake;
 
-    return new Promise((res) => {
-      res(list.find((i) => i.id == _daysVacation.id) || null);
-    });
+    return Promise.resolve(list.find((i) => i.id == _daysVacation.id) || null);
   }
     
     updateVacationDays(_daysVacation: IVacationDayValidator): Promise<IVacation | null> {
         const list = vacationFake;
 
-    return new Promise((res) => {
-      res(list.find((i) => i.id == _daysVacation.vacationDay[0].codVacation) || null);
-    });
+    return Promise.resolve(list.find((i) => i.id == _daysVacation.vacationDay[0].codVacation) || null);
     }
 
 }

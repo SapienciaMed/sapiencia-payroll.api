@@ -17,7 +17,7 @@ export default class extends BaseSchema {
       table
         .integer("DVA_CODVAC_VACACION")
         .references("VAC_CODIGO")
-        .inTable("VAC_VACACIONES")
+        .inTable("VAC_VACACIONES").unsigned()
         .comment("codigo del periodo de vacaciones (FK VAC_VACIONES)");
       table
         .timestamp("DVA_FECHA_DESDE")
@@ -32,7 +32,7 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Numero de dias disfrutados");
       table
-        .integer("DVA_PAGADAS")
+        .boolean("DVA_PAGADAS")
         .notNullable()
         .comment(
           "Indicador de que el disfrute de vacacion es pago o en tiempo"
@@ -43,6 +43,17 @@ export default class extends BaseSchema {
         .inTable("VAC_VACACIONES")
         .nullable()
         .comment("codigo del periodo de vacaciones (FK PPL_PERIODOS_PLANILLA)");
+      table
+        .string("DVA_OBSERVACIONES", 500)
+        .notNullable()
+        .comment("Observaciones sobre el periodo de vacaciones");
+      table
+        .string("DVA_TIPO_REINTEGRO", 15)
+        .nullable()
+        .comment(
+          "Indica si las vacaciones han sido reintegradas (General, Incapacaidad o null)"
+        )
+        .defaultTo(null);
       table
         .string("DVA_USUARIO_MODIFICO", 15)
         .comment(

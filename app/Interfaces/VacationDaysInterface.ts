@@ -4,10 +4,12 @@ export interface IVacationDay{
   id?: number;
   codVacation: number;
   dateFrom: DateTime;
-  dateUntil: DateTime;
+  dateUntil?: DateTime;
   enjoyedDays: number;
   paid: boolean;
   codForm?: number;
+  observation?:string;
+  refundType?:string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;
@@ -16,4 +18,21 @@ export interface IVacationDay{
 
 export interface IVacationDayValidator{
 vacationDay: IVacationDay[]
+enjoyedDays: number;
+avaibleDays: number;
+refundDays?: number;
 }
+
+export interface IEditVacation {
+  id: number;
+  idVacationDay: number;
+  dateFrom: DateTime;
+  dateUntil: DateTime;
+  observation?: string;
+  available: number;
+  refundTypes: string;
+  refund: number;
+  enjoyed: number;
+
+}
+  

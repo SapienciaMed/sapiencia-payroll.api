@@ -41,6 +41,15 @@ Route.group(() => {
 Route.group(() => {
   Route.post("/", "VacationsController.getVacations");
   Route.post("/create", "VacationsController.createVacationDays");
-  Route.post("/update", "VacationsController.updateVacation");
+  Route.put("/", "VacationsController.updateVacationPeriod");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
+  Route.post("/get-paginated", "VacationsController.getVacationsPaginate");
 }).prefix("/api/v1/vacations");
+
+Route.group(() => {
+  Route.get("/incapacity-types", "IncapacityController.getIncapacityTypes");
+  Route.post("/create", "IncapacityController.createIncapacity");
+  Route.put("/update", "IncapacityController.updateIncapacity");
+  Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
+  Route.get("/get-by-id/:id", "IncapacityController.getIncapacityById");
+}).prefix("/api/v1/incapacity");

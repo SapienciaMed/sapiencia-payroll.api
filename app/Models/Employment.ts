@@ -1,5 +1,12 @@
 import { DateTime } from "luxon";
-import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  HasMany,
+  column,
+  hasMany,
+  belongsTo,
+  BelongsTo,
+} from "@ioc:Adonis/Lucid/Orm";
 import TypesContractsWithDrawal from "./ReasonsForWithdrawal";
 import Charge from "./Charge";
 import TypesContract from "./TypesContract";
@@ -42,7 +49,7 @@ export default class Employment extends BaseModel {
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
     // serialize: (value) =>
-    //   !value ? "" : DateTime.fromISO(value).toLocaleString(),
+    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public startDate: DateTime;
 
@@ -50,7 +57,7 @@ export default class Employment extends BaseModel {
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
     // serialize: (value) =>
-    //   !value ? "" : DateTime.fromISO(value).toLocaleString(),
+    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public endDate: DateTime;
 
@@ -128,11 +135,9 @@ export default class Employment extends BaseModel {
   })
   public typesContracts: HasMany<typeof TypesContract>;
 
-  @hasOne(() => Worker, {
-    localKey: "workerId",
-    foreignKey: "id",
+  @belongsTo(() => Worker, {
+    localKey: "id",
+    foreignKey: "workerId",
   })
-  public worker: HasOne<typeof Worker>;
+  public worker: BelongsTo<typeof Worker>;
 }
-
-

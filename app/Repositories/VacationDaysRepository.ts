@@ -1,5 +1,5 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
-import { IEditVacation, IVacationDay, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
+import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
 import VacationDay from "App/Models/VacationDay";
 
 export interface IVacationDaysRepository {

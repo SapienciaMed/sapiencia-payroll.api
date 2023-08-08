@@ -1,4 +1,5 @@
-import { IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import { IEditVacation, IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
 import { IVacation,IVacationFilters } from "App/Interfaces/VacationsInterfaces";
 import vacationRepository from "App/Repositories/VacationRepository";
 import { IPagingData } from "App/Utils/ApiResponses";
@@ -62,11 +63,11 @@ export class vacationRepositoryFake implements vacationRepository {
             res(vacationFake[0]);
           });
     }
-    updateVacation(_vacation: IVacation, _id: number): Promise<IVacation | null> {
+    updateVacation(_daysVacation: IEditVacation, _trx: TransactionClientContract): Promise<IVacation | null> {
         const list = vacationFake;
 
     return new Promise((res) => {
-      res(list.find((i) => i.id == _id) || null);
+      res(list.find((i) => i.id == _daysVacation.id) || null);
     });
   }
     

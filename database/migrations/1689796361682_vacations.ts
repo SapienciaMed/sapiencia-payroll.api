@@ -17,7 +17,7 @@ export default class extends BaseSchema {
       table
         .integer("VAC_CODEMP_EMPLEO")
         .references("EMP_CODIGO")
-        .inTable("EMP_EMPLEOS")
+        .inTable("EMP_EMPLEOS").unsigned()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
       table
         .integer("VAC_PERIODO")

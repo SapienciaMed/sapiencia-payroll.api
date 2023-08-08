@@ -1,6 +1,5 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
-import { IVacationDay,IVacationDayValidator } from "App/Interfaces/VacationDaysInterface";
-import VacationDay from "App/Models/VacationDay";
+import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
 import VacationDaysRepository from "App/Repositories/VacationDaysRepository";
 import { DateTime } from "luxon";
 
@@ -20,6 +19,9 @@ const vacationDayFake: IVacationDay[] = [{
 }];
 
 export class VacationDaysRepositoryFake implements VacationDaysRepository {
+    updateVacationRefund(_daysVacation: IEditVacation, _trx: TransactionClientContract): Promise<IVacationDay | null> {
+        throw new Error("Method not implemented.");
+    }
     getVacationDays(): Promise<IVacationDay[]> {
         return new Promise((res) => {
             res(vacationDayFake);

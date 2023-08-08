@@ -35,7 +35,7 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_CODPPL_PLANILLA", serializeAs: "codForm" })
   public codForm: number;
 
-  @column({ columnName: "DVA_OBSERVACION", serializeAs: "observation" })
+  @column({ columnName: "DVA_OBSERVACIONES", serializeAs: "observation" })
   public observation: string;
 
   @column({ columnName: "DVA_TIPO_REINTEGRO", serializeAs: "refundType" })
@@ -56,14 +56,14 @@ export default class VacationDay extends BaseModel {
   public dateModified: DateTime;
 
   @column({
-    columnName: "DVA_FECHA_CREO",
+    columnName: "DVA_USUARIO_CREO",
     serializeAs: "userCreate",
   })
   public userCreate: string | undefined = Env.get("USER_ID");
 
   @column.dateTime({
     autoCreate: true,
-    columnName: "DVA_USUARIO_CREO",
+    columnName: "DVA_FECHA_CREO",
     serializeAs: "dateCreate",
     prepare: () => DateTime.now().toSQL(),
   })

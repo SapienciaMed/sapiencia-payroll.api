@@ -17,7 +17,7 @@ export default class extends BaseSchema {
       table
         .integer("PPL_CODTPL_TIPO_PLANILLA")
         .references("TPL_CODIGO")
-        .inTable("TPL_TIPOS_PLANILLA")
+        .inTable("TPL_TIPOS_PLANILLA").unsigned()
         .comment("codigo del tipo de planilla (FK TPL_TIPOS_PLANILLA)");
       table
         .string("PPL_ESTADO", 10)

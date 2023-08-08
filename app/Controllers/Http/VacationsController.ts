@@ -9,7 +9,6 @@ import {
   IVacationFilters,
 } from "App/Interfaces/VacationsInterfaces";
 import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
-import VacationDay from "App/Models/VacationDay";
 import Database from "@ioc:Adonis/Lucid/Database";
 
 export default class VacationsController {

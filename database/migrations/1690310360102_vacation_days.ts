@@ -17,7 +17,7 @@ export default class extends BaseSchema {
       table
         .integer("DVA_CODVAC_VACACION")
         .references("VAC_CODIGO")
-        .inTable("VAC_VACACIONES")
+        .inTable("VAC_VACACIONES").unsigned()
         .comment("codigo del periodo de vacaciones (FK VAC_VACIONES)");
       table
         .timestamp("DVA_FECHA_DESDE")

@@ -45,6 +45,9 @@ test.group("VacationService TEST for createVacationEnjoyed", () => {
     ],
     enjoyedDays: 10,
     avaibleDays: 5,
+    formedDays:1,
+    periodId:1,
+    refundDays:2,
   };
 
   test("class service must have a method createManyVacation with a return", async (assert) => {

@@ -1,6 +1,5 @@
 import { schema, CustomMessages } from "@ioc:Adonis/Core/Validator";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import Schema from "@ioc:Adonis/Lucid/Schema";
 
 export default class CreateAndUpdateVacationValidator {
   constructor(protected ctx: HttpContextContract) {}

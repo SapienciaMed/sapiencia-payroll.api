@@ -7,7 +7,7 @@ import {
 import Incapacity from "App/Models/Incapacity";
 
 import { IPagingData } from "App/Utils/ApiResponses";
-import { DateTime } from "luxon";
+
 
 export interface IIncapacityRepository {
   createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>;

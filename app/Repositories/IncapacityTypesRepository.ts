@@ -1,4 +1,3 @@
-import { IGetIncapacity } from "App/Interfaces/IncapacityInterfaces";
 import { IIncapacityTypes } from "App/Interfaces/TypesIncapacityInterface";
 import TypesIncapacity from "App/Models/TypesIncapacity";
 

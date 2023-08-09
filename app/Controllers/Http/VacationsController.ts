@@ -68,7 +68,7 @@ export default class VacationsController {
 
   public async updateVacation({ request, response }: HttpContextContract) {
     try {
-      const data = await request.params();
+      const data = request.params();
       return response.send(
         await VacationProvider.updateVacationDay(data as IVacationDay)
       );

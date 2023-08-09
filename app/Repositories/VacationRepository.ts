@@ -14,11 +14,16 @@ import { IPagingData } from "App/Utils/ApiResponses";
 export interface IVacationRepository {
   getVacations(): Promise<IVacation[]>;
   createVacation(vacation: IVacation): Promise<IVacation>;
-  updateVacation(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacation | null>;
+  updateVacation(
+    daysVacation: IEditVacation,
+    trx: TransactionClientContract
+  ): Promise<IVacation | null>;
   updateVacationDays(
     daysVacation: IVacationDayValidator
   ): Promise<IVacation | null>;
-  getVacationsByParams(params: IVacationSearchParams): Promise<IVacation | null>;
+  getVacationsByParams(
+    params: IVacationSearchParams
+  ): Promise<IVacation | null>;
   getVacation(filters: IVacationFilters): Promise<IPagingData<IVacation>>;
 }
 
@@ -30,7 +35,9 @@ export default class VacationRepository implements IVacationRepository {
     return res as IVacation[];
   }
 
-  async getVacationsByParams(params:IVacationSearchParams): Promise<IVacation | null> {
+  async getVacationsByParams(
+    params: IVacationSearchParams
+  ): Promise<IVacation | null> {
     const res = await Vacation.query()
       .whereHas("employment", (employmentQuery) => {
         employmentQuery.where("id", params.workerId);
@@ -90,7 +97,10 @@ export default class VacationRepository implements IVacationRepository {
     return toCreate.serialize() as IVacation;
   }
 
-  async updateVacation(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacation | null> {
+  async updateVacation(
+    daysVacation: IEditVacation,
+    trx: TransactionClientContract
+  ): Promise<IVacation | null> {
     const toUpdate = await Vacation.findOrFail(daysVacation.id);
     if (!toUpdate) {
       return null;
@@ -111,20 +121,21 @@ export default class VacationRepository implements IVacationRepository {
   async updateVacationDays(
     daysVacation: IVacationDayValidator
   ): Promise<IVacation | null> {
-    const toUpdate = await Vacation.findOrFail(
-      daysVacation.vacationDay[0].codVacation
-    );
+    const toUpdate = await Vacation.findOrFail(daysVacation.periodId);
     if (!toUpdate) {
       return null;
     }
     if (daysVacation.enjoyedDays) {
-      toUpdate.enjoyed = daysVacation.enjoyedDays;
+      toUpdate.enjoyed += daysVacation.enjoyedDays;
     }
-    if (daysVacation.avaibleDays) {
+    if (typeof daysVacation.avaibleDays === "number") {
       toUpdate.available = daysVacation.avaibleDays;
     }
-    if (daysVacation.refundDays) {
+    if (typeof daysVacation.refundDays === "number") {
       toUpdate.refund = daysVacation.refundDays;
+    }
+    if (typeof daysVacation.formedDays === "number") {
+      toUpdate.periodFormer = daysVacation.formedDays;
     }
     await toUpdate.save();
     return toUpdate.serialize() as IVacation;

@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-export interface IVacationDay{
+export interface IVacationDay {
   id?: number;
   codVacation: number;
   dateFrom: DateTime;
@@ -8,19 +8,21 @@ export interface IVacationDay{
   enjoyedDays: number;
   paid: boolean;
   codForm?: number;
-  observation?:string;
-  refundType?:string;
+  observation?: string;
+  refundType?: string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
 }
 
-export interface IVacationDayValidator{
-vacationDay: IVacationDay[]
-enjoyedDays: number;
-avaibleDays: number;
-refundDays?: number;
+export interface IVacationDayValidator {
+  vacationDay: IVacationDay[];
+  periodId: number;
+  enjoyedDays: number;
+  avaibleDays: number;
+  refundDays?: number;
+  formedDays?: number;
 }
 
 export interface IEditVacation {
@@ -33,6 +35,4 @@ export interface IEditVacation {
   refundTypes: string;
   refund: number;
   enjoyed: number;
-
 }
-  

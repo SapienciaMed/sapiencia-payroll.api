@@ -32,12 +32,36 @@ export default class WorkerRepository implements IWorkerRepository {
   ): Promise<IPagingData<IGetVinculation>> {
     const res = Worker.query();
 
-    if (filters.name) {
-      res.whereILike("firstName", filters.name).orWhereILike("secondName", `%${filters.name}%`);
+    if (filters.firtsName) {
+      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.firtsName}`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.firtsName}`]);
     }
 
-    if (filters.lastName) {
-      res.whereILike("surname", filters.lastName).orWhereILike("secondSurname", `%${filters.lastName}%`);
+    if (filters.secondName) {
+      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.secondName}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.secondName}%`]);
+    }
+
+    if (filters.surname) {
+      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.surname}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.surname}%`]);
+    }
+
+    if (filters.secondSurname) {
+      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.secondSurname}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
+      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+      [`%${filters.secondSurname}%`]);
     }
 
     if (filters.documentNumber) {

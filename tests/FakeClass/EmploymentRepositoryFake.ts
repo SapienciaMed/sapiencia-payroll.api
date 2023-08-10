@@ -19,6 +19,9 @@ const employmentFake: IEmployment = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  getEmploymentById(_id: number): Promise<IEmployment | null> {
+    throw new Error("Method not implemented.");
+  }
   getEmploymentWorkerById(workerId: number): Promise<IEmployment[] | null> {
     const list = [
       { ...employmentFake },

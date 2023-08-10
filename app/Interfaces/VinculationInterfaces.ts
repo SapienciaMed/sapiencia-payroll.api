@@ -26,4 +26,8 @@ export interface IFilterVinculation {
   vinculationType?: string;
   name?: string;
   lastName?: string;
+  firtsName?: string;
+  secondName?:string;
+  surname?:string;
+  secondSurname?:string;
 }

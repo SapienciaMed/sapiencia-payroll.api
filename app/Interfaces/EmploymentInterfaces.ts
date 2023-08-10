@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { IWorker } from "./WorkerInterfaces";
+import { ITypesContracts } from "./TypesContractsInterfaces";
 
 export interface IEmployment {
   id?: number;
@@ -20,6 +21,7 @@ export interface IEmployment {
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
+  typesContracts?: ITypesContracts[];
 }
 
 export interface IEmploymentWorker extends IEmployment {
@@ -30,4 +32,16 @@ export interface IFilterEmployment {
   page: number;
   perPage: number;
   workerId: number;
+}
+
+export interface IReasonsForWithdrawal {
+  id: number;
+  name: string;
+}
+
+export interface IRetirementEmployment {
+  idReasonRetirement: number;
+  retirementDate: DateTime;
+  observation: string;
+  idEmployment: number;
 }

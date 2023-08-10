@@ -8,6 +8,7 @@ import { IFilterEmployment } from "App/Interfaces/EmploymentInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import CreateAndUpdateWorkerValidator from "App/Validators/CreateAndUpdateVinculationValidator";
+import RetirementEmploymentValidator from "App/Validators/RetirementEmploymentValidator";
 
 export default class VinculationController {
   public async createVinculation({ request, response }: HttpContextContract) {
@@ -40,6 +41,22 @@ export default class VinculationController {
         );
       }
     });
+  }
+
+  public async retirementEmployment({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const data = await request.validate(RetirementEmploymentValidator);
+      return response.send(
+        await VinculationProvider.retirementEmployment(data)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
   }
 
   public async getVinculationsPaginate({
@@ -119,6 +136,18 @@ export default class VinculationController {
   public async getActiveWorkers({ response }: HttpContextContract) {
     try {
       return response.send(await VinculationProvider.getActiveWorkers());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async getReasonsForWithdrawalList({ response }: HttpContextContract) {
+    try {
+      return response.send(
+        await VinculationProvider.getReasonsForWithdrawalList()
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

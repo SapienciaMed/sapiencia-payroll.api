@@ -1,9 +1,13 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import {
   IEmployment,
+  IEmploymentWorker,
   IFilterEmployment,
+  IReasonsForWithdrawal,
+  IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
 import Employment from "App/Models/Employment";
+import ReasonsForWithdrawal from "App/Models/ReasonsForWithdrawal";
 import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IEmploymentRepository {
@@ -15,7 +19,11 @@ export interface IEmploymentRepository {
   getEmploymentWorker(
     filters: IFilterEmployment
   ): Promise<IPagingData<IEmployment>>;
-  getEmploymentById(id: number): Promise<IEmployment | null>;
+  getEmploymentById(id: number): Promise<IEmploymentWorker[] | null>;
+  getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]>;
+  retirementEmployment(
+    data: IRetirementEmployment
+  ): Promise<IEmployment | null>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
@@ -47,14 +55,19 @@ export default class EmploymentRepository implements IEmploymentRepository {
     return res as IEmployment[];
   }
 
-  async getEmploymentById(id: number): Promise<IEmployment | null> {
-    const res = await Employment.find(id);
+  async getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
+    const res = Employment.query().where("id", id);
 
-    if (!res) {
+    res.preload("worker");
+    res.preload("typesContracts");
+
+    const data = await res;
+
+    if (!data) {
       return null;
     }
 
-    return res.serialize() as IEmployment;
+    return data as IEmploymentWorker[];
   }
 
   async createEmployment(
@@ -66,5 +79,24 @@ export default class EmploymentRepository implements IEmploymentRepository {
     toCreate.fill({ ...employment });
     await toCreate.save();
     return toCreate.serialize() as IEmployment;
+  }
+
+  async retirementEmployment(
+    data: IRetirementEmployment
+  ): Promise<IEmployment | null> {
+    const { idEmployment, ...dataRetirement } = data;
+
+    const toUpdate = await Employment.find(idEmployment);
+
+    if (!toUpdate) return null;
+
+    await toUpdate.merge({ ...dataRetirement }).save();
+
+    return toUpdate.serialize() as IEmployment;
+  }
+
+  async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
+    const res = await ReasonsForWithdrawal.all();
+    return res as IReasonsForWithdrawal[];
   }
 }

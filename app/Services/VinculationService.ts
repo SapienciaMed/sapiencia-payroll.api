@@ -18,7 +18,10 @@ import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { IWorker } from "App/Interfaces/WorkerInterfaces";
 import {
   IEmployment,
+  IEmploymentWorker,
   IFilterEmployment,
+  IReasonsForWithdrawal,
+  IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
 
 export interface IVinculationService {
@@ -42,7 +45,11 @@ export interface IVinculationService {
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
   ): Promise<ApiResponse<IWorker | null>>;
-  getEmploymentById(id: number): Promise<ApiResponse<IEmployment>>;
+  getEmploymentById(id: number): Promise<ApiResponse<IEmployment[]>>;
+  getReasonsForWithdrawalList(): Promise<ApiResponse<IReasonsForWithdrawal[]>>;
+  retirementEmployment(
+    data: IRetirementEmployment
+  ): Promise<ApiResponse<IEmployment>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -239,8 +246,42 @@ export default class VinculationService implements IVinculationService {
     );
   }
 
-  async getEmploymentById(id: number): Promise<ApiResponse<IEmployment>> {
+  async getEmploymentById(
+    id: number
+  ): Promise<ApiResponse<IEmploymentWorker[]>> {
     const res = await this.employmentRepository.getEmploymentById(id);
+
+    if (!res) {
+      return new ApiResponse(
+        {} as IEmploymentWorker[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getReasonsForWithdrawalList(): Promise<
+    ApiResponse<IReasonsForWithdrawal[]>
+  > {
+    const res = await this.employmentRepository.getReasonsForWithdrawalList();
+
+    if (!res) {
+      return new ApiResponse(
+        {} as IReasonsForWithdrawal[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async retirementEmployment(
+    data: IRetirementEmployment
+  ): Promise<ApiResponse<IEmployment>> {
+    const res = await this.employmentRepository.retirementEmployment(data);
 
     if (!res) {
       return new ApiResponse(

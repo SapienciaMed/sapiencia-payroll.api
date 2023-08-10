@@ -12,6 +12,7 @@ export interface IEmployment {
   state: string;
   idTypeContract: number;
   idReasonRetirement?: number;
+  retirementDate?: DateTime;
   observation?: string;
   salary?: number;
   totalValue?: number;

@@ -74,6 +74,7 @@ export default class CreateAndUpdateWorkerValidator {
       institutionalMail: schema.string([rules.maxLength(50), rules.email()]),
       state: schema.string([rules.maxLength(10)]),
       idReasonRetirement: schema.number.optional(),
+      retirementDate: schema.date.optional(),
       observation: schema.string.optional(),
       salary: schema.number.optional(),
       totalValue: schema.number.optional(),

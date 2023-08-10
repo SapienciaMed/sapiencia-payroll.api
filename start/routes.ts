@@ -36,6 +36,7 @@ Route.group(() => {
     "/employment/get-paginated",
     "VinculationController.getEmploymentPaginate"
   );
+  Route.get("/employment/:id", "VinculationController.getEmploymentById");
 }).prefix("/api/v1/vinculation");
 
 Route.group(() => {

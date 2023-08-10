@@ -105,6 +105,17 @@ export default class VinculationController {
     }
   }
 
+  public async getEmploymentById({ response, request }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await VinculationProvider.getEmploymentById(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
   public async getActiveWorkers({ response }: HttpContextContract) {
     try {
       return response.send(await VinculationProvider.getActiveWorkers());

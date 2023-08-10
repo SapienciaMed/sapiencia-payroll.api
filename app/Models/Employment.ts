@@ -73,6 +73,14 @@ export default class Employment extends BaseModel {
   })
   public idReasonRetirement: number;
 
+  @column.dateTime({
+    columnName: "EMP_FECHA_RETIRO",
+    serializeAs: "retirementDate",
+    // serialize: (value) =>
+    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
+  })
+  public retirementDate: DateTime;
+
   @column({
     columnName: "EMP_SALARIO",
     serializeAs: "salary",

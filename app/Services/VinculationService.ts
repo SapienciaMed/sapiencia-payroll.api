@@ -42,6 +42,7 @@ export interface IVinculationService {
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
   ): Promise<ApiResponse<IWorker | null>>;
+  getEmploymentById(id: number): Promise<ApiResponse<IEmployment>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -236,5 +237,19 @@ export default class VinculationService implements IVinculationService {
       EResponseCodes.OK,
       "La vinculacion ha sido registrada exitosamente."
     );
+  }
+
+  async getEmploymentById(id: number): Promise<ApiResponse<IEmployment>> {
+    const res = await this.employmentRepository.getEmploymentById(id);
+
+    if (!res) {
+      return new ApiResponse(
+        {} as IEmployment,
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
   }
 }

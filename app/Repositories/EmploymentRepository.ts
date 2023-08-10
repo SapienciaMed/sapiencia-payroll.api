@@ -15,6 +15,7 @@ export interface IEmploymentRepository {
   getEmploymentWorker(
     filters: IFilterEmployment
   ): Promise<IPagingData<IEmployment>>;
+  getEmploymentById(id: number): Promise<IEmployment | null>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
@@ -27,7 +28,7 @@ export default class EmploymentRepository implements IEmploymentRepository {
 
     res.preload("typesContracts");
     res.preload("charges");
-    res.where("workerId",filters.workerId)
+    res.where("workerId", filters.workerId);
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage
@@ -44,6 +45,16 @@ export default class EmploymentRepository implements IEmploymentRepository {
   async getEmploymentWorkerById(id: number): Promise<IEmployment[] | null> {
     const res = await Employment.query().where("workerId", id);
     return res as IEmployment[];
+  }
+
+  async getEmploymentById(id: number): Promise<IEmployment | null> {
+    const res = await Employment.find(id);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.serialize() as IEmployment;
   }
 
   async createEmployment(

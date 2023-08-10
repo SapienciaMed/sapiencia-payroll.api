@@ -53,3 +53,8 @@ Route.group(() => {
   Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
   Route.get("/get-by-id/:id", "IncapacityController.getIncapacityById");
 }).prefix("/api/v1/incapacity");
+
+
+Route.group(() => {
+  Route.post("/", "LicencesController.createLicence");
+}).prefix("/api/v1/licence");

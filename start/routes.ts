@@ -27,6 +27,10 @@ Route.get("/", async () => {
 Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
   Route.get("/charges", "VinculationController.getCharges");
+  Route.get(
+    "/reasonsForWithdrawal",
+    "VinculationController.getReasonsForWithdrawalList"
+  );
   Route.get("/worker", "VinculationController.getActiveWorkers");
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.put("/", "VinculationController.updateVinculation");
@@ -35,6 +39,10 @@ Route.group(() => {
   Route.post(
     "/employment/get-paginated",
     "VinculationController.getEmploymentPaginate"
+  );
+  Route.put(
+    "/employment/retirement",
+    "VinculationController.retirementEmployment"
   );
   Route.get("/employment/:id", "VinculationController.getEmploymentById");
 }).prefix("/api/v1/vinculation");
@@ -54,7 +62,6 @@ Route.group(() => {
   Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
   Route.get("/get-by-id/:id", "IncapacityController.getIncapacityById");
 }).prefix("/api/v1/incapacity");
-
 
 Route.group(() => {
   Route.post("/", "LicencesController.createLicence");

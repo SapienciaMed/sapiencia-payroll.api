@@ -1,4 +1,9 @@
-import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IEmployment,
+  IEmploymentWorker,
+  IReasonsForWithdrawal,
+  IRetirementEmployment,
+} from "App/Interfaces/EmploymentInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
 import EmploymentRepository from "App/Repositories/EmploymentRepository";
 import { IPagingData } from "App/Utils/ApiResponses";
@@ -18,9 +23,27 @@ const employmentFake: IEmployment = {
   totalValue: 400000,
 };
 
+const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
+  id: 1,
+  name: "Prueba",
+};
+
 export class EmploymentRepositoryFake implements EmploymentRepository {
-  getEmploymentById(_id: number): Promise<IEmployment | null> {
-    throw new Error("Method not implemented.");
+  getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
+    const list = [
+      { ...employmentFake },
+      { ...employmentFake },
+    ] as IEmployment[];
+
+    return new Promise((res) => {
+      const employment = list.find((employment) => employment.id === id);
+
+      if (!employment) {
+        return res(null);
+      }
+
+      return res([employment] as IEmploymentWorker[]);
+    });
   }
   getEmploymentWorkerById(workerId: number): Promise<IEmployment[] | null> {
     const list = [
@@ -55,6 +78,34 @@ export class EmploymentRepositoryFake implements EmploymentRepository {
         array: [{ ...employmentFake }],
         meta: { total: 100 },
       });
+    });
+  }
+
+  async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
+    return new Promise((res) => {
+      res([reasonsForWithdrawalFake]);
+    });
+  }
+
+  async retirementEmployment(
+    data: IRetirementEmployment
+  ): Promise<IEmployment | null> {
+    const { idEmployment, ...dataRetirement } = data;
+
+    const list = [employmentFake];
+
+    return new Promise(() => {
+      const employment = list.find(
+        (employment) => employment.id === idEmployment
+      );
+
+      if (!employment) {
+        return null;
+      }
+
+      const toUpdate = { ...employment, ...dataRetirement };
+
+      return toUpdate;
     });
   }
 }

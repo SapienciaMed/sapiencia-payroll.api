@@ -35,9 +35,9 @@ export default class WorkerRepository implements IWorkerRepository {
     if (filters.firtsName) {
       res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
       TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.firtsName}`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
+      [`%${filters.firtsName}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
       TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.firtsName}`]);
+      [`%${filters.firtsName}%`]);
     }
 
     if (filters.secondName) {

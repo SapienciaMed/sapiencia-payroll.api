@@ -44,4 +44,5 @@ export interface IRetirementEmployment {
   retirementDate: DateTime;
   observation: string;
   idEmployment: number;
+  state: string;
 }

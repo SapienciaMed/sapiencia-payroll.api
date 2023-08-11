@@ -28,6 +28,7 @@ export default class RetirementEmploymentValidator {
     retirementDate: schema.date(),
     observation: schema.string([rules.maxLength(1000)]),
     idEmployment: schema.number(),
+    state: schema.string(),
   });
 
   /**

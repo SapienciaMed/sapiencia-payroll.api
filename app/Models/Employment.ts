@@ -7,7 +7,6 @@ import {
   belongsTo,
   BelongsTo,
 } from "@ioc:Adonis/Lucid/Orm";
-import TypesContractsWithDrawal from "./ReasonsForWithdrawal";
 import Charge from "./Charge";
 import TypesContract from "./TypesContract";
 import Worker from "./Worker";

@@ -1,10 +1,12 @@
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ILicence } from "App/Interfaces/LicenceInterfaces";
+import { ILicenceType } from "App/Interfaces/LicenceTypesInterface";
 import { ILicenceRepository } from "App/Repositories/LicenceRepository";
 import { ApiResponse } from "App/Utils/ApiResponses";
 
 export interface ILicenceService {
     createLicence(licence: ILicence): Promise<ApiResponse<ILicence>>;
+    getLicenceTypes(): Promise<ApiResponse<ILicenceType[]>>;
   }
   
   export default class LicenceService implements ILicenceService {
@@ -39,7 +41,20 @@ export interface ILicenceService {
   
       return new ApiResponse(res, EResponseCodes.OK);
     }
-  
+
+    //obtener tipos de licencias
+  async getLicenceTypes():Promise<ApiResponse<ILicenceType[]>>{
+    const res = await this.licenceRepository.getLicenceTypes();
+    if (!res) {
+      return new ApiResponse(
+        {} as ILicenceType[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
     
   }
   

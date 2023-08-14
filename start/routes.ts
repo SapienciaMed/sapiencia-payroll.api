@@ -65,4 +65,5 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post("/", "LicencesController.createLicence");
+  Route.get("/types","LicencesController.getLicenceTypes")
 }).prefix("/api/v1/licence");

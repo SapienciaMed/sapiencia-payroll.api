@@ -1,9 +1,12 @@
 import { ILicence } from "App/Interfaces/LicenceInterfaces";
+import { ILicenceType } from "App/Interfaces/LicenceTypesInterface";
 import Licence from "App/Models/Licence";
+import LicenceType from "App/Models/LicenceType";
 
 export interface ILicenceRepository {
   createLicence(licence: ILicence): Promise<ILicence>;
   getLicenceDateCodEmployment(licence: ILicence): Promise<ILicence[]>;
+  getLicenceTypes():Promise<ILicenceType[]>;
 }
 
 export default class LicenceRepository implements ILicenceRepository {
@@ -24,5 +27,10 @@ export default class LicenceRepository implements ILicenceRepository {
       .where("dateEnd", licence.dateEnd.toString());
 
     return incapacityFind as ILicence[];
+  }
+
+  async getLicenceTypes():Promise<ILicenceType[]>{
+    const licenceTypes = await LicenceType.all()
+    return licenceTypes as ILicenceType[];
   }
 }

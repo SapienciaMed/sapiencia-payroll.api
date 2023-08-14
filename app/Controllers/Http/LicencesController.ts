@@ -18,4 +18,14 @@ export default class LicencesController {
           return new ApiResponse(null, EResponseCodes.FAIL, String(err.messages));
         }
       }
+
+    public async getLicenceTypes({response}:HttpContextContract){
+      try {
+        return response.send(await LicenceProvider.getLicenceTypes());
+      } catch (err) {
+        return response.badRequest(
+          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        );
+      }
+    }
 }

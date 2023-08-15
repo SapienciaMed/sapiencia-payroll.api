@@ -37,4 +37,15 @@ export default class LicencesController {
       );
     }
   }
+
+  public async getLicenseById({ request, response }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await LicenceProvider.getLicenceById(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

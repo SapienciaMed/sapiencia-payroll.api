@@ -10,6 +10,7 @@ export interface ILicenceService {
   getLicencePaginate(
     filters: ILicenceFilters
   ): Promise<ApiResponse<IPagingData<ILicence>>>;
+  getLicenceById(id: number): Promise<ApiResponse<ILicence[]>>;
 }
 
 export default class LicenceService implements ILicenceService {
@@ -60,5 +61,19 @@ export default class LicenceService implements ILicenceService {
   ): Promise<ApiResponse<IPagingData<ILicence>>> {
     const vacations = await this.licenceRepository.getLicencePaginate(filters);
     return new ApiResponse(vacations, EResponseCodes.OK);
+  }
+
+  async getLicenceById(id: number): Promise<ApiResponse<ILicence[]>> {
+    const res = await this.licenceRepository.getLicenceById(id);
+
+    if (!res) {
+      return new ApiResponse(
+        {} as ILicence[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
   }
 }

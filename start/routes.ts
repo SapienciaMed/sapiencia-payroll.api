@@ -66,4 +66,5 @@ Route.group(() => {
 Route.group(() => {
   Route.post("/", "LicencesController.createLicence");
   Route.get("/types","LicencesController.getLicenceTypes")
+  Route.post("/get-paginated","LicencesController.getLicencePaginate")
 }).prefix("/api/v1/licence");

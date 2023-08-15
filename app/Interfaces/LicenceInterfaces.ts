@@ -9,3 +9,11 @@ export interface ILicence {
   licenceState: string;
   observation?: string;
 }
+
+export interface ILicenceFilters {
+  codEmployment?: number;
+  state?: string;
+  idLicenceType?: number;
+  page: number;
+  perPage: number;
+}

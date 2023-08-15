@@ -48,5 +48,5 @@ export default class Licence extends BaseModel {
     localKey: "idLicenceType",
     foreignKey: "id",
   })
-  public vacationDay: HasMany<typeof LicenceType>;
+  public licenceType: HasMany<typeof LicenceType>;
 }

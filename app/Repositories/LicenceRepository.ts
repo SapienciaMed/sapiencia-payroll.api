@@ -9,6 +9,7 @@ export interface ILicenceRepository {
   getLicenceDateCodEmployment(licence: ILicence): Promise<ILicence[]>;
   getLicenceTypes(): Promise<ILicenceType[]>;
   getLicencePaginate(filters: ILicenceFilters): Promise<IPagingData<ILicence>>;
+  getLicenceById(id: number): Promise<ILicence[] | null>;
 }
 
 export default class LicenceRepository implements ILicenceRepository {
@@ -40,7 +41,7 @@ export default class LicenceRepository implements ILicenceRepository {
     filters: ILicenceFilters
   ): Promise<IPagingData<ILicence>> {
     const res = Licence.query();
-    
+
     if (filters.codEmployment) {
       res.whereHas("employment", (employmentQuery) => {
         if (filters.codEmployment) {
@@ -62,7 +63,7 @@ export default class LicenceRepository implements ILicenceRepository {
       }
       employmentQuery.preload("worker");
     });
-    res.preload("licenceType")
+    res.preload("licenceType");
 
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
@@ -76,5 +77,23 @@ export default class LicenceRepository implements ILicenceRepository {
       array: dataArray as ILicence[],
       meta,
     };
+  }
+
+  async getLicenceById(id: number): Promise<ILicence[] | null> {
+    const queryLicence = Licence.query().where("id", id);
+
+    queryLicence.preload("licenceType");
+
+    queryLicence.preload("employment", (employmentQuery) => {
+      employmentQuery.preload("worker");
+    });
+
+    const licence = await queryLicence;
+
+    if (!licence) {
+      return null;
+    }
+
+    return licence as ILicence[];
   }
 }

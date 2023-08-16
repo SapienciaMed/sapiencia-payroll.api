@@ -13,4 +13,10 @@ export default class LicenceType extends BaseModel {
     serializeAs: "numberDays",
   })
   public numberDays: number;
+
+  @column({
+    columnName: "TLC_TIPO_DIAS",
+    serializeAs: "daysType",
+  })
+  public daysType: string;
 }

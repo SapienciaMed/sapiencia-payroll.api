@@ -7,6 +7,7 @@ export interface ILicence {
   dateStart: DateTime;
   dateEnd: DateTime;
   licenceState: string;
+  resolutionNumber:string;
   observation?: string;
 }
 

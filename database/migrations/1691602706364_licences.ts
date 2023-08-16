@@ -34,6 +34,10 @@ export default class extends BaseSchema {
         .timestamp("LIC_FECHA_FIN")
         .notNullable()
         .comment("fecha de finalizacion de la licencia");
+        table
+        .string("LIC_NUMERO_RESOLUCION",50)
+        .notNullable()
+        .comment("número de resolución de la licencia");
       table
         .string("LIC_ESTADO", 20)
         .notNullable()

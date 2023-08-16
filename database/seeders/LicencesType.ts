@@ -7,30 +7,32 @@ export default class extends BaseSeeder {
 
     await LicenceType.createMany([
       {
-        name:"Licencia de maternidad prenatal",
-        numberDays: 98 
-      },
-      {
-       name:"Licencia de maternidad postnatal",
-       numberDays:56
+       name:"Licencia de maternidad",
+       numberDays:126,
+       daysType:"Calendario"
       },
       {
         name:"Licencia de paternidad",
-        numberDays: 8
+        numberDays: 30,
+        daysType:"Calendario"
       },
       {
         name:"Licencia de luto",
-        numberDays: 5
+        numberDays: 5,
+        daysType:"Habil"
       },
       {
         name:"Licencia por calamida domestica",
-        numberDays: 3
+        numberDays: 3,
+        daysType:"Habil"
       },
       {
         name:"permiso no remunerado",
+        daysType:"Habil"
       },
       {
         name:"permiso remunerado",
+        daysType:"Habil"
       },
     ]);
   }

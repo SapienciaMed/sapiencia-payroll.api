@@ -19,6 +19,10 @@ export default class extends BaseSchema {
         .integer("TLC_NUMERO_DIAS")
         .nullable()
         .comment("Numero de dias de las licencias");
+      table
+        .string("TLC_TIPO_DIAS",20)
+        .nullable()
+        .comment("Tipo de días de las licencias");
     });
   }
 

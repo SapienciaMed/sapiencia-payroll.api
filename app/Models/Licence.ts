@@ -32,6 +32,9 @@ export default class Licence extends BaseModel {
   })
   public dateEnd: DateTime;
 
+  @column({ columnName: "LIC_NUMERO_RESOLUCION", serializeAs: "resolutionNumber" })
+  public resolutionNumber: string;
+
   @column({ columnName: "LIC_ESTADO", serializeAs: "licenceState" })
   public licenceState: string;
 

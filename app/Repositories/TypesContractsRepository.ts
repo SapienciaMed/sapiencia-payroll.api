@@ -6,7 +6,9 @@ export interface ITypesContractsRepository {
   getTypesContractsList(): Promise<ITypesContracts[]>;
 }
 
-export default class TypesContractsRepository implements ITypesContractsRepository {
+export default class TypesContractsRepository
+  implements ITypesContractsRepository
+{
   constructor() {}
   async getTypeContractsById(id: number): Promise<ITypesContracts | null> {
     const res = await TypesContract.find(id);
@@ -15,6 +17,6 @@ export default class TypesContractsRepository implements ITypesContractsReposito
 
   async getTypesContractsList(): Promise<ITypesContracts[]> {
     const res = await TypesContract.all();
-    return res as ITypesContracts[]
+    return res as ITypesContracts[];
   }
 }

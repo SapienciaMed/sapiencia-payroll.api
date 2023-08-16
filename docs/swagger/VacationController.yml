@@ -1,0 +1,414 @@
+/api/v1/vacations/create:
+  post:
+    tags:
+      - Vacation
+    summary: Permite la creación de periodos disfrutados de vacaciones.
+    description: Crea un periodo disfrutado.
+    operationId: createVacation
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/vacation"
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "vacationDay":
+                            [
+                              {
+                                "id": 1,
+                                "codVacation": 1,
+                                "dateFrom": DateTime.fromISO("02/08/2023"),
+                                "dateUntil": DateTime.fromISO("02/16/2023"),
+                                "enjoyedDays": 5,
+                                "paid": false,
+                                "codForm": 1,
+                                "observation": "test",
+                              },
+                              {
+                                "id": 2,
+                                "codVacation": 1,
+                                "dateFrom": DateTime.fromISO("02/08/2023"),
+                                "enjoyedDays": 2,
+                                "paid": true,
+                                "codForm": 1,
+                                "observation": "test",
+                              },
+                            ],
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/vacations/:
+  put:
+    tags:
+      - Vacation
+    summary: Permite la creación de un reintegro a un periodo de vacaciones.
+    description: Crea un reintegro a partir de los campos requeridos.
+    operationId: updateVacation
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RefundVacation"
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 1,
+                          "codEmployment": 1,
+                          "period": 2023,
+                          "dateFrom": "2023-07-11T13:48:28.204-05:00",
+                          "dateUntil": "2023-07-15T13:48:28.204-05:00",
+                          "periodFormer": 2,
+                          "enjoyed": 3,
+                          "refund": 3,
+                          "available": 3,
+                          "days": 9,
+                          "periodClosed": false,
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/vacations/workerVacation:
+  post:
+    tags:
+      - Vacation
+    summary: Obtener la información de vacaciones de un trabajador.
+    description: Obtiene los periodos de vacaciones de un trabajador.
+    operationId: getWorkerVacation
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              workerId:
+                type: number
+                example: 1
+                description: ID del trabajador.
+                required: true
+              period:
+                type: number
+                example: 2023
+                description: Año del período de vacaciones.
+                required: true
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      codEmployment: 1
+                      period: 2023
+                      dateFrom: "2023-07-11T13:48:28.204-05:00"
+                      dateUntil: "2023-07-15T13:48:28.204-05:00"
+                      periodFormer: 2
+                      enjoyed: 3
+                      refund: 3
+                      available: 3
+                      days: 9
+                      periodClosed: false
+                      vacationDay:
+                        - userCreate: ""
+                          id: 5
+                          codVacation: 2
+                          dateFrom: "2023-08-08T00:00:00.000-05:00"
+                          dateUntil: ""
+                          enjoyedDays: 1
+                          paid: true
+                          codForm: ""
+                          observation: "pruebas"
+                          refundType: ""
+                          dateModified: "2023-08-08T16:11:17.137-05:00"
+                          dateCreate: "2023-08-08T16:11:17.137-05:00"
+                        - userCreate: ""
+                          id: 4
+                          codVacation: 2
+                          dateFrom: "2023-08-08T00:00:00.000-05:00"
+                          dateUntil: "2023-08-17T00:00:00.000-05:00"
+                          enjoyedDays: 8
+                          paid: false
+                          codForm: ""
+                          observation: "pruebas, pruebas, pruebas"
+                          refundType: "general"
+                          dateModified: "2023-08-08T16:14:23.502-05:00"
+                          dateCreate: "2023-08-08T16:11:17.102-05:00"
+                      employment:
+                        id: 1
+                        workerId: 3
+                        idCharge: 5
+                        idTypeContract: 3
+                        institutionalMail: "jhon.doe@institutional.com"
+                        contractNumber: "908763512"
+                        startDate: "2023-07-14T00:00:00.000-05:00"
+                        endDate: "2023-08-03T00:00:00.000-05:00"
+                        state: "1"
+                        idReasonRetirement: ""
+                        salary: "5000000.00"
+                        totalValue: "0.00"
+                        observation: ""
+                        userModified: ""
+                        dateModified: "2023-08-04T09:37:54.544-05:00"
+                        userCreate: ""
+                        dateCreate: "2023-08-04T09:37:54.545-05:00"
+                        worker:
+                          userCreate: ""
+                          id: 3
+                          typeDocument: "CC"
+                          numberDocument: "123456789"
+                          firstName: "Jhon"
+                          secondName: "James"
+                          surname: "Doe"
+                          secondSurname: "Smith"
+                          gender: "M"
+                          bloodType: "7"
+                          birthDate: "1990-01-26T05:00:00.000Z"
+                          nationality: "COL"
+                          email: "jhon.doe@example.co"
+                          contactNumber: "3012345678"
+                          department: "5"
+                          municipality: "1"
+                          neighborhood: "20"
+                          address: "cl 98 28 29"
+                          socioEconomic: "4"
+                          eps: "7"
+                          severanceFund: "5"
+                          arl: "1"
+                          fundPension: "2"
+                          riskLevel: "riesgo-3"
+                          housingType: "2"
+                          bank: "null"
+                          accountBankType: ""
+                          accountBankNumber: "7717170011"
+                          userModified: ""
+                          dateModified: "2023-08-04T09:37:54.306-05:00"
+                          dateCreate: "2023-08-04T09:37:54.306-05:00"
+                  operation: { code: "OK", message: "" }
+
+/api/v1/vacations/get-paginated:
+  post:
+    tags:
+      - Vacation
+    summary: Obtener la información de vacaciones de un trabajador.
+    description: Obtiene los periodos de vacaciones según los filtros.
+    operationId: get-paginated-WorkerVacation
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              workerId:
+                type: number
+                example: 1
+                description: ID del trabajador.
+                required: false
+              period:
+                type: number
+                example: 2023
+                description: Año del período de vacaciones.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      codEmployment: 1
+                      period: 2023
+                      dateFrom: "2023-07-11T13:48:28.204-05:00"
+                      dateUntil: "2023-07-15T13:48:28.204-05:00"
+                      periodFormer: 2
+                      enjoyed: 3
+                      refund: 3
+                      available: 3
+                      days: 9
+                      periodClosed: false
+                      vacationDay:
+                        - userCreate: ""
+                          id: 5
+                          codVacation: 2
+                          dateFrom: "2023-08-08T00:00:00.000-05:00"
+                          dateUntil: ""
+                          enjoyedDays: 1
+                          paid: true
+                          codForm: ""
+                          observation: "pruebas"
+                          refundType: ""
+                          dateModified: "2023-08-08T16:11:17.137-05:00"
+                          dateCreate: "2023-08-08T16:11:17.137-05:00"
+                        - userCreate: ""
+                          id: 4
+                          codVacation: 2
+                          dateFrom: "2023-08-08T00:00:00.000-05:00"
+                          dateUntil: "2023-08-17T00:00:00.000-05:00"
+                          enjoyedDays: 8
+                          paid: false
+                          codForm: ""
+                          observation: "pruebas, pruebas, pruebas"
+                          refundType: "general"
+                          dateModified: "2023-08-08T16:14:23.502-05:00"
+                          dateCreate: "2023-08-08T16:11:17.102-05:00"
+                      employment:
+                        id: 1
+                        workerId: 3
+                        idCharge: 5
+                        idTypeContract: 3
+                        institutionalMail: "jhon.doe@institutional.com"
+                        contractNumber: "908763512"
+                        startDate: "2023-07-14T00:00:00.000-05:00"
+                        endDate: "2023-08-03T00:00:00.000-05:00"
+                        state: "1"
+                        idReasonRetirement: ""
+                        salary: "5000000.00"
+                        totalValue: "0.00"
+                        observation: ""
+                        userModified: ""
+                        dateModified: "2023-08-04T09:37:54.544-05:00"
+                        userCreate: ""
+                        dateCreate: "2023-08-04T09:37:54.545-05:00"
+                        worker:
+                          userCreate: ""
+                          id: 3
+                          typeDocument: "CC"
+                          numberDocument: "123456789"
+                          firstName: "Jhon"
+                          secondName: "James"
+                          surname: "Doe"
+                          secondSurname: "Smith"
+                          gender: "M"
+                          bloodType: "7"
+                          birthDate: "1990-01-26T05:00:00.000Z"
+                          nationality: "COL"
+                          email: "jhon.doe@example.co"
+                          contactNumber: "3012345678"
+                          department: "5"
+                          municipality: "1"
+                          neighborhood: "20"
+                          address: "cl 98 28 29"
+                          socioEconomic: "4"
+                          eps: "7"
+                          severanceFund: "5"
+                          arl: "1"
+                          fundPension: "2"
+                          riskLevel: "riesgo-3"
+                          housingType: "2"
+                          bank: "null"
+                          accountBankType: ""
+                          accountBankNumber: "7717170011"
+                          userModified: ""
+                          dateModified: "2023-08-04T09:37:54.306-05:00"
+                          dateCreate: "2023-08-04T09:37:54.306-05:00"
+                  operation: { code: "OK", message: "" }
+
+components:
+  schemas:
+    vacation:
+      type: object
+      properties:
+        vacationDay:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+                example: 1
+              codVacation:
+                type: number
+                example: 1
+              dateFrom:
+                type: date
+                example: "2023-07-11T09:40:02.350-05:00"
+              dateUntil:
+                type: date
+                example: "2023-07-11T09:40:02.350-05:00"
+              enjoyedDays:
+                type: number
+                example: 5
+              paid:
+                type: boolean
+                example: false
+              codForm:
+                type: number
+                example: 1
+              observation:
+                type: string
+                example: "test"
+        periodId:
+          type: number
+          example: 1
+        enjoyedDays:
+          type: number
+          example: 5
+        avaibleDays:
+          type: number
+          example: 10
+        refundDays:
+          type: number
+          example: 3
+        formedDays:
+          type: number
+          example: 2
+    RefundVacation:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        idVacationDay:
+          type: number
+          example: 1
+        dateFrom:
+          type: date
+          example: "2023-08-11T09:40:02.350-05:00"
+        dateUntil:
+          type: date
+          example: "2023-08-15T09:40:02.350-05:00"
+        observation:
+          type: string
+          example: "test"
+        available:
+          type: number
+          example: 10
+        refundTypes:
+          type: string
+          example: "General"
+        refund:
+          type: number
+          example: 2
+        enjoyed:
+          type: number
+          example: 5

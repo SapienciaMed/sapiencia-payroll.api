@@ -17,6 +17,10 @@ export default class extends BaseSeeder {
         name:"Carrera Administrativa",
         temporary: false
       },
+      {
+        name:"Prestación de servicios",
+        temporary: true
+      },
     ]);
   }
 

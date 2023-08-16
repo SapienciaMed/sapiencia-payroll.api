@@ -1,8 +1,16 @@
 import { DateTime } from "luxon";
-import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
-import TypesContractsWithDrawal from "./ReasonsForWithdrawal";
+import {
+  BaseModel,
+  HasMany,
+  column,
+  hasMany,
+  belongsTo,
+  BelongsTo,
+} from "@ioc:Adonis/Lucid/Orm";
 import Charge from "./Charge";
 import TypesContract from "./TypesContract";
+import Worker from "./Worker";
+import ReasonsForWithdrawal from "./ReasonsForWithdrawal";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -40,12 +48,16 @@ export default class Employment extends BaseModel {
   @column.dateTime({
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
+    // serialize: (value) =>
+    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public startDate: DateTime;
 
   @column.dateTime({
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
+    // serialize: (value) =>
+    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public endDate: DateTime;
 
@@ -60,6 +72,30 @@ export default class Employment extends BaseModel {
     serializeAs: "idReasonRetirement",
   })
   public idReasonRetirement: number;
+
+  @column.dateTime({
+    columnName: "EMP_FECHA_RETIRO",
+    serializeAs: "retirementDate",
+    // serialize: (value) =>
+    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
+  })
+  public retirementDate: DateTime;
+
+  @column({
+    columnName: "EMP_SALARIO",
+    serializeAs: "salary",
+  })
+  public salary: number;
+  @column({
+    columnName: "EMP_VALOR_TOTAL",
+    serializeAs: "totalValue",
+  })
+  public totalValue: number;
+  @column({
+    columnName: "EMP_OBSERVACION",
+    serializeAs: "observation",
+  })
+  public observation: string;
 
   @column({
     columnName: "EMP_USUARIO_MODIFICO",
@@ -90,20 +126,26 @@ export default class Employment extends BaseModel {
   public dateCreate: DateTime;
 
   @hasMany(() => Charge, {
-    localKey: "codCharge",
+    localKey: "idCharge",
     foreignKey: "id",
   })
   public charges: HasMany<typeof Charge>;
 
-  @hasMany(() => TypesContractsWithDrawal, {
-    localKey: "codReasonRetirement",
+  @hasMany(() => ReasonsForWithdrawal, {
+    localKey: "idReasonRetirement",
     foreignKey: "id",
   })
-  public typesContractsWithDrawals: HasMany<typeof TypesContractsWithDrawal>;
+  public reasonsForWithdrawal: HasMany<typeof ReasonsForWithdrawal>;
 
   @hasMany(() => TypesContract, {
     localKey: "idTypeContract",
     foreignKey: "id",
   })
   public typesContracts: HasMany<typeof TypesContract>;
+
+  @belongsTo(() => Worker, {
+    localKey: "id",
+    foreignKey: "workerId",
+  })
+  public worker: BelongsTo<typeof Worker>;
 }

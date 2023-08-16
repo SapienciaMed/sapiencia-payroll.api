@@ -1,0 +1,277 @@
+/api/v1/employment/:
+  post:
+    tags:
+      - Payroll
+    summary: Permite la creación de una vinculación de un trabajador.
+    description: Crea una vinculación a partir de los campos requeridos.
+    operationId: createWorker
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/createWorker"
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "FundPension": 1,
+                          "address": "cl 98 28 29",
+                          "birthDate": "2000-01-12T00:00:00.000-05:00",
+                          "bloodType": "O+",
+                          "contactNumber": "908637216",
+                          "dateCreate": "2023-07-11T13:48:28.204-05:00",
+                          "dateModified": "2023-07-11T13:48:28.204-05:00",
+                          "department": "Antioquia",
+                          "email": "jane.doe@example.co",
+                          "eps": "Sura",
+                          "firstName": "Jane",
+                          "gender": "F",
+                          "housingType": "Propia",
+                          "id": 7,
+                          "municipality": "Medellín",
+                          "nationality": "COL",
+                          "neighborhood": "Aranjuez",
+                          "numberDocument": "098765",
+                          "riskLevel": "riesgo-3",
+                          "secondSurname": "smith",
+                          "severanceFund": "Protección",
+                          "socioEconomic": "2",
+                          "surname": "doe",
+                          "typeDocument": "TI",
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/employment/charges:
+  get:
+    tags:
+      - Payroll
+    summary: Permite la consulta de los cargos.
+    description: Permite la consulta de la lista de los cargos.
+    operationId: getCharges
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 8,
+                          "name": "Secretaria",
+                          "codUnit": 1,
+                          "codChargeType": 1,
+                          "baseSalary": "0.00",
+                          "state": "Activo",
+                          "userModify": null,
+                          "dateModified": "2023-07-11T08:38:48.212-05:00",
+                          "userCreate": "test",
+                          "dateCreate": "2023-07-11T08:38:48.212-05:00",
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/employment/typesContracts:
+  get:
+    tags:
+      - Payroll
+    summary: Permite la consulta de los tipos de contratos.
+    description: Permite la consulta de la lista de los tipos de contratos.
+    operationId: getTypesContracts
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 1,
+                          "name": "Libre Nombramiento y Remoción",
+                          "temporary": false,
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+components:
+  schemas:
+    createWorker:
+      type: object
+      properties:
+        worker:
+          type: object
+          properties:
+            id:
+              type: number
+              example: 1
+            typeDocument:
+              type: string
+              example: "CC"
+            numberDocument:
+              type: string
+              example: "1357902468"
+            firstName:
+              type: string
+              example: "Jhon"
+            secondName:
+              type: string
+              example: "James"
+            surName:
+              type: string
+              example: "Doe"
+            secondSurname:
+              type: string
+              example: "Smith"
+            gender:
+              type: string
+              example: "F"
+            bloodType:
+              type: string
+              example: "2"
+            birthDate:
+              type: date
+              example: "2000-06-27T09:40:02.350-05:00"
+            nationality:
+              type: string
+              example: "Col"
+            email:
+              type: string
+              example: "jhon.doe@example.com"
+            contactNumber:
+              type: string
+              example: "3123456789"
+            department:
+              type: string
+              example: "5"
+            municipality:
+              type: string
+              example: "1"
+            neighborhood:
+              type: string
+              example: "101"
+            address:
+              type: string
+              example: "Calle 50 45 60"
+            socioEconomic:
+              type: string
+              example: "2"
+            eps:
+              type: string
+              example: "3"
+            severanceFund:
+              type: string
+              example: "2"
+            arl:
+              type: string
+              example: "3"
+            riskLevel:
+              type: string
+              example: "1"
+            housingType:
+              type: string
+              example: "2"
+            fundPension:
+              type: string
+              example: "1"
+            userModified:
+              type: string
+              example: "test"
+            dateModified:
+              type: date
+              example: "2023-07-11T09:40:02.350-05:00"
+            userCreate:
+              type: string
+              example: "test"
+            dateCreate:
+              type: date
+              example: "2023-07-11T09:40:02.350-05:00"
+        relatives:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+                example: 1
+              workerId:
+                type: number
+                example: 1
+              name:
+                type: string
+                example: "jane doe smith"
+              relationship:
+                type: string
+                example: "1"
+              gender:
+                type: string
+                example: "F"
+              birthDate:
+                type: date
+                example: "2023-07-11T09:40:02.350-05:00"
+        employment:
+          type: object
+          properties:
+            id:
+              type: number
+              example: 1
+            workerId:
+              type: number
+              example: 1
+            idCharge:
+              type: number
+              example: 1
+            institutionalMail:
+              type: string
+              example: "jhonDoe@institutional.com"
+            contractNumber:
+              type: string
+              example: "12345678"
+            startDate:
+              type: date
+              example: "2023-06-27T09:40:02.350-05:00"
+            endDate:
+              type: date
+              example: "2023-07-11T09:40:02.350-05:00"
+            state:
+              type: string
+              example: "1"
+            idTypeContract:
+              type: number
+              example: 1
+            userModified:
+              type: string
+              example: "test"
+            dateModified:
+              type: date
+              example: "2023-07-11T09:40:02.350-05:00"
+            userCreate:
+              type: string
+              example: "test"
+            dateCreate:
+              type: date
+              example: "2023-07-11T09:40:02.350-05:00"

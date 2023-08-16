@@ -1,6 +1,4 @@
 import { DateTime } from "luxon";
-import { IRelative } from "./RelativeInterfaces";
-import { IEmployment } from "./EmploymentInterfaces";
 
 export interface IWorker {
   id?: number;
@@ -8,7 +6,7 @@ export interface IWorker {
   numberDocument: string;
   firstName: string;
   secondName?: string;
-  surName: string;
+  surname: string;
   secondSurname?: string;
   gender: string;
   bloodType: string;
@@ -27,14 +25,11 @@ export interface IWorker {
   riskLevel?: string;
   housingType?: string;
   fundPension?: string;
+  bank?: string;
+  accountBankType?: string;
+  accountBankNumber?: string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
-}
-
-export interface ICreateWorker {
-  worker: IWorker;
-  relatives: IRelative[];
-  employment: IEmployment;
 }

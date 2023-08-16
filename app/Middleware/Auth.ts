@@ -4,7 +4,6 @@ import Env from "@ioc:Adonis/Core/Env";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ApiResponse } from "App/Utils/ApiResponses";
 
-
 export interface IDecodedToken {
   id: number;
 }
@@ -30,7 +29,7 @@ export default class Auth {
         Env.get("APP_KEY")
       ) as IDecodedToken;
 
-      request["idUser"] = id;
+      Env.set("USER_ID", id);
 
       await next();
     } catch (error) {
@@ -40,4 +39,3 @@ export default class Auth {
     }
   }
 }
-

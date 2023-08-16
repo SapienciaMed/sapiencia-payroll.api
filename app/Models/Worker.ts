@@ -9,6 +9,7 @@ import {
 import { DateTime } from "luxon";
 import Relative from "./Relative";
 import Employment from "./Employment";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class Worker extends BaseModel {
   public static table = "TRA_TRABAJADORES";
@@ -16,7 +17,10 @@ export default class Worker extends BaseModel {
   @column({ isPrimary: true, columnName: "TRA_CODIGO", serializeAs: "id" })
   public id: number;
 
-  @column({ columnName: "TRA_TIPO_DOCUMENTO", serializeAs: "typeDocument" })
+  @column({
+    columnName: "TRA_TIPO_DOCUMENTO",
+    serializeAs: "typeDocument",
+  })
   public typeDocument: string;
 
   @column({
@@ -34,6 +38,7 @@ export default class Worker extends BaseModel {
   @column({
     columnName: "TRA_SEGUNDO_NOMBRE",
     serializeAs: "secondName",
+    serialize: (value) => (!value ? "" : value),
   })
   public secondName: string;
 
@@ -41,11 +46,12 @@ export default class Worker extends BaseModel {
     columnName: "TRA_PRIMER_APELLIDO",
     serializeAs: "surname",
   })
-  public surName: string;
+  public surname: string;
 
   @column({
     columnName: "TRA_SEGUNDO_APELLIDO",
     serializeAs: "secondSurname",
+    serialize: (value) => (!value ? "" : value),
   })
   public secondSurname: string;
 
@@ -147,9 +153,27 @@ export default class Worker extends BaseModel {
 
   @column({
     columnName: "TRA_FONDO_PENSION",
-    serializeAs: "FundPension",
+    serializeAs: "fundPension",
   })
   public fundPension: string;
+
+  @column({
+    columnName: "TRA_BANCO",
+    serializeAs: "bank",
+  })
+  public bank: string;
+
+  @column({
+    columnName: "TRA_TIPO_CUENTA_BANCARIA",
+    serializeAs: "accountBankType",
+  })
+  public accountBankType: string;
+
+  @column({
+    columnName: "TRA_CUENTA_BANCARIA",
+    serializeAs: "accountBankNumber",
+  })
+  public accountBankNumber: string;
 
   @column({
     columnName: "TRA_USUARIO_MODIFICO",
@@ -169,7 +193,7 @@ export default class Worker extends BaseModel {
     columnName: "TRA_USUARIO_CREO",
     serializeAs: "userCreate",
   })
-  public userCreate: string;
+  public userCreate: string | undefined = Env.get("USER_ID");
 
   @column.dateTime({
     autoCreate: true,
@@ -189,5 +213,5 @@ export default class Worker extends BaseModel {
     localKey: "id",
     foreignKey: "workerId",
   })
-  public job: HasOne<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
 }

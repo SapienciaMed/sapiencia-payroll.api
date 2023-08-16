@@ -14,13 +14,13 @@ export default class extends BaseSchema {
       table
         .integer("CRG_CODUNI_UNIDAD")
         .notNullable()
-        .references("UNI_CODIGO")
+        .unsigned().references("UNI_CODIGO")
         .inTable("UNI_UNIDADES")
         .comment("codigo de la unidad (FK UNI_UNIDADES)");
       table
         .integer("CRG_CODTCG_TIPO_CARGO")
         .notNullable()
-        .references("TCG_CODIGO")
+        .unsigned().references("TCG_CODIGO")
         .inTable("TCG_TIPOS_CARGOS")
         .comment("codigo del tipo de cargo (FK TCG_TIPOS_CARGOS)");
       table

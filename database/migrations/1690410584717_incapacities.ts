@@ -16,13 +16,13 @@ export default class extends BaseSchema {
 
       table
         .integer("INC_CODTIN_TIPO_INCAPACIDAD")
-        .references("TIN_CODIGO")
+        .unsigned().references("TIN_CODIGO")
         .inTable("TIN_TIPOS_INCAPACIDAD")
         .comment("Código del tipo de incapacidad (FK TIN_TIPOS_INCAPACIDAD)");
 
       table
         .integer("INC_CODEMP_EMPLEO")
-        .references("EMP_CODIGO")
+        .unsigned().references("EMP_CODIGO")
         .inTable("EMP_EMPLEOS")
         .comment("Código del empleo (FK EMP_EMPLEOS)");
 

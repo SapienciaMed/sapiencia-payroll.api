@@ -14,14 +14,14 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("LIC_CODEMP_EMPLEO")
-        .references("EMP_CODIGO")
+        .unsigned().references("EMP_CODIGO")
         .inTable("EMP_EMPLEOS")
         .unsigned()
         .notNullable()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
       table
         .integer("LIC_CODTLC_TIPO_LICENCIA")
-        .references("TLC_CODIGO")
+        .unsigned().references("TLC_CODIGO")
         .inTable("TLC_TIPOS_LICENCIAS")
         .unsigned()
         .nullable()

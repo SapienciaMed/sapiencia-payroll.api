@@ -10,20 +10,20 @@ export default class extends BaseSchema {
       table
         .integer("EMP_CODTRA_TRABAJADOR")
         .notNullable()
-        .references("TRA_CODIGO")
+        .unsigned().references("TRA_CODIGO")
         .inTable("TRA_TRABAJADORES")
         .comment("codigo del expediente (FK TRA_TRABAJADORES)");
       table
         .integer("EMP_CODCRG_CARGO")
         .notNullable()
-        .references("CRG_CODIGO")
+        .unsigned().references("CRG_CODIGO")
         .inTable("CRG_CARGOS")
         .comment("codigo del cargo (FK CRG_CARGOS)");
       table
         .integer("EMP_CODTCO_TIPO_CONTRATO")
         .notNullable()
         .comment("Tipo de contrato de vinculacionn del empleado")
-        .references("TCO_CODIGO")
+        .unsigned().references("TCO_CODIGO")
         .inTable("TCO_TIPOS_CONTRATO");
       table
         .string("EMP_CORREO_INSTITUCIONAL", 50)
@@ -47,7 +47,7 @@ export default class extends BaseSchema {
         .comment("Estado del empleos");
       table
         .integer("EMP_CODTMR_MOTIVO_RETIRO")
-        .references("TMR_CODIGO")
+        .unsigned().references("TMR_CODIGO")
         .inTable("TMR_TIPOS_MOTIVOS_RETIRO")
         .comment("codigo del motivo de retiro (FK TMR_TIPOS_MOTIVOS_RETIRO)");
       table

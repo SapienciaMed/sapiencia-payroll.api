@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table
         .integer("FAM_CODTRA_TRABAJADOR")
         .notNullable()
-        .references("TRA_CODIGO")
+        .unsigned().references("TRA_CODIGO")
         .inTable("TRA_TRABAJADORES")
         .comment("Codigo del expediente (FK TRA_TRABAJADORES)");
       table

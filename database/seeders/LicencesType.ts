@@ -22,7 +22,7 @@ export default class extends BaseSeeder {
         daysType:"Habil"
       },
       {
-        name:"Licencia por calamida domestica",
+        name:"Licencia por calamidad doméstica",
         numberDays: 3,
         daysType:"Habil"
       },

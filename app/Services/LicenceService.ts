@@ -1,7 +1,9 @@
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ILicence, ILicenceFilters } from "App/Interfaces/LicenceInterfaces";
 import { ILicenceType } from "App/Interfaces/LicenceTypesInterface";
+import { IIncapacityRepository } from "App/Repositories/IncapacityRepository";
 import { ILicenceRepository } from "App/Repositories/LicenceRepository";
+import { IVacationDaysRepository } from "App/Repositories/VacationDaysRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface ILicenceService {
@@ -14,19 +16,49 @@ export interface ILicenceService {
 }
 
 export default class LicenceService implements ILicenceService {
-  constructor(private licenceRepository: ILicenceRepository) {}
+  constructor(
+    private licenceRepository: ILicenceRepository,
+    private vacationDaysRepository: IVacationDaysRepository,
+    private incapacityRepository: IIncapacityRepository
+  ) {}
 
   //crear licencia
   async createLicence(licence: ILicence): Promise<ApiResponse<ILicence>> {
-    const incapacityFind =
-      await this.licenceRepository.getLicenceDateCodEmployment(licence);
-
-    if (incapacityFind.length > 0) {
-      return new ApiResponse(
-        {} as ILicence,
-        EResponseCodes.FAIL,
-        "El empleado ya tiene registrada una licencia con las mismas fechas"
+    const licenceFind =
+      await this.licenceRepository.getLicenceDateCodEmployment(
+        licence.codEmployment,
+        licence.dateStart,
+        licence.dateEnd
       );
+    const vacationDayFind =
+      await this.vacationDaysRepository.getVacationDateCodEmployment(
+        licence.codEmployment,
+        licence.dateStart,
+        licence.dateEnd
+      );
+    const incapacityFind =
+      await this.incapacityRepository.getIncapacityDateCodEmployment(
+        licence.codEmployment,
+        licence.dateStart,
+        licence.dateEnd
+      );
+    let message = "";
+    if (licenceFind.length > 0) {
+      message =
+        "El empleado ya tiene registrada una licencia con las mismas fechas";
+    } else if (vacationDayFind.length > 0) {
+      message =
+        "El empleado tiene un periodo de vacaciones con las mismas fechas";
+    } else {
+      message =
+        "El empleado tiene registrada una incapacidad con las mismas fechas";
+    }
+    if (
+      licenceFind.length > 0 ||
+      vacationDayFind.length > 0 ||
+      incapacityFind.length > 0
+    ) {
+      return new ApiResponse({} as ILicence, EResponseCodes.FAIL, message);
     }
 
     const res = await this.licenceRepository.createLicence(licence);

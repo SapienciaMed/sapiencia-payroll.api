@@ -1,6 +1,7 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
 import VacationDay from "App/Models/VacationDay";
+import { DateTime } from "luxon";
 
 export interface IVacationDaysRepository {
   getVacationDays(): Promise<IVacationDay[]>;
@@ -10,6 +11,7 @@ export interface IVacationDaysRepository {
   ): Promise<IVacationDay | null>;
   updateVacationRefund(daysVacation: IEditVacation,trx: TransactionClientContract): Promise<IVacationDay | null>
   createManyVacation(vacations: IVacationDay[],trx: TransactionClientContract) :Promise<IVacationDay[]>;
+  getVacationDateCodEmployment(codEmployment:number,dateStart:DateTime,dateEnd:DateTime): Promise<IVacationDay[]>
 }
 
 export default class VacationDaysRepository implements IVacationDaysRepository {
@@ -68,5 +70,16 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
     }
     (await toUpdate.save()).useTransaction(trx);
     return toUpdate.serialize() as IVacationDay;
+  }
+
+  async getVacationDateCodEmployment(codEmployment:number,dateStart:DateTime,dateEnd:DateTime): Promise<IVacationDay[]> {
+    const vacationFind = await VacationDay.query()
+    .preload("vacation", (vacationQuery) => {
+      vacationQuery.where("codEmployment", codEmployment)
+    }).andWhereBetween("dateFrom", [dateStart.toString(),dateEnd.toString()])
+      .andWhereBetween("dateUntil", [dateStart.toString(),dateEnd.toString()])
+      .andWhere("paid",false);
+
+    return vacationFind as IVacationDay[];
   }
 }

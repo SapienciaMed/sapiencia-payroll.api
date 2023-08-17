@@ -84,7 +84,12 @@ export default class AppProvider {
 
     this.app.container.singleton(
       "core.LicenceProvider",
-      () => new LicenceService.default(new LicenceRepository.default())
+      () =>
+        new LicenceService.default(
+          new LicenceRepository.default(),
+          new VacationDaysRepository.default(),
+          new IncapacityRepository.default()
+        )
     );
   }
 

@@ -37,7 +37,7 @@ export default class IncapacityService implements IIncapacityService {
   ): Promise<ApiResponse<IIncapacity>> {
     const incapacityFind =
       await this.incapacityRepository.getIncapacityDateCodEmployment(
-        incapacity
+        incapacity.codEmployment,incapacity.dateInitial,incapacity.dateFinish
       );
 
     if (incapacityFind.length > 0) {

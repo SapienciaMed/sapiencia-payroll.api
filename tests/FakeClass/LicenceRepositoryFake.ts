@@ -7,8 +7,8 @@ import { DateTime } from "luxon";
 const licenceFake: ILicence = {
   id: 1,
   codEmployment: 1,
-  dateStart: DateTime.fromISO("01/08/2023"),
-  dateEnd: DateTime.fromISO("01/08/2023"),
+  dateStart: DateTime.fromFormat("01/07/2023", "dd/MM/yyyy"),
+  dateEnd: DateTime.fromFormat("01/07/2023", "dd/MM/yyyy"),
   idLicenceType: 1,
   licenceState: "En progreso",
   resolutionNumber: "12345 de julio",
@@ -24,12 +24,21 @@ export class LicenceRepositoryFake implements LicenceRepository {
   createLicence(_licence: ILicence): Promise<ILicence> {
     return Promise.resolve(licenceFake);
   }
-  getLicenceDateCodEmployment(_codEmployment:number,_dateStart:DateTime,_dateEnd:DateTime): Promise<ILicence[]> {
+  getLicenceDateCodEmployment(
+    _codEmployment: number,
+    _dateStart: DateTime,
+    _dateEnd: DateTime
+  ): Promise<ILicence[]> {
     const list = [licenceFake];
 
     return new Promise((res) => {
       const licences = list.find(
-        (licence) => licence.codEmployment === _codEmployment
+        (licence) =>
+          licence.codEmployment === _codEmployment &&
+          licence.dateStart >= _dateStart &&
+          licence.dateStart <= _dateEnd &&
+          licence.dateEnd >= _dateStart &&
+          licence.dateEnd <= _dateEnd
       );
 
       if (!licences) {

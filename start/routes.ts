@@ -73,3 +73,7 @@ Route.group(() => {
 Route.group(() => {
   
 }).prefix("/api/v1/payroll");
+
+Route.group(() => {
+  
+}).prefix("/api/v1/salaryIncrease");

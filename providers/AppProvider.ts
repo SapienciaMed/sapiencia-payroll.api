@@ -13,7 +13,16 @@ export default class AppProvider {
     const VacationService = await import("App/Services/VacationService");
     const IncapacityService = await import("App/Services/IncapacityService");
     const LicenceService = await import("App/Services/LicenceService");
-    const FormPeriodService = await import("App/Services/FormPeriodService")
+    const FormPeriodService = await import("App/Services/FormPeriodService");
+    const ContractSuspensionService = await import(
+      "App/Services/ContractSuspensionService"
+    );
+    const SalaryHistoryService = await import(
+      "App/Services/SalaryHistoryService"
+    );
+    const SalaryIncrementService = await import(
+      "App/Services/SalaryIncrementService"
+    );
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
@@ -49,9 +58,16 @@ export default class AppProvider {
     const LicenceRepository = await import(
       "App/Repositories/LicenceRepository"
     );
-    const FormPeriodRepository = await import(
-      "App/Repositories/FormsPeriod"
-    )
+    const FormPeriodRepository = await import("App/Repositories/FormsPeriod");
+    const ContractSuspensionRepository = await import(
+      "App/Repositories/ContractSuspensionRepository"
+    );
+    const SalaryIncrementRepository = await import(
+      "App/Repositories/SalaryIncrementRepository"
+    );
+    const SalaryHistoryRepository = await import(
+      "App/Repositories/SalaryHistoryRepository"
+    );
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
@@ -98,10 +114,29 @@ export default class AppProvider {
 
     this.app.container.singleton(
       "core.FormPeriodProvider",
+      () => new FormPeriodService.default(new FormPeriodRepository.default())
+    );
+
+    this.app.container.singleton(
+      "core.ContractSuspensionProvider",
       () =>
-        new FormPeriodService.default(
-          new FormPeriodRepository.default(),
+        new ContractSuspensionService.default(
+          new ContractSuspensionRepository.default()
         )
+    );
+
+    this.app.container.singleton(
+      "core.SalaryIncrementProvider",
+      () =>
+        new SalaryIncrementService.default(
+          new SalaryIncrementRepository.default()
+        )
+    );
+
+    this.app.container.singleton(
+      "core.SalaryHistoryProvider",
+      () =>
+        new SalaryHistoryService.default(new SalaryHistoryRepository.default())
     );
   }
 

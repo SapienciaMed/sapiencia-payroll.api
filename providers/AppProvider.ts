@@ -13,6 +13,7 @@ export default class AppProvider {
     const VacationService = await import("App/Services/VacationService");
     const IncapacityService = await import("App/Services/IncapacityService");
     const LicenceService = await import("App/Services/LicenceService");
+    const FormPeriodService = await import("App/Services/FormPeriodService")
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
@@ -48,6 +49,9 @@ export default class AppProvider {
     const LicenceRepository = await import(
       "App/Repositories/LicenceRepository"
     );
+    const FormPeriodRepository = await import(
+      "App/Repositories/FormsPeriod"
+    )
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
@@ -89,6 +93,14 @@ export default class AppProvider {
           new LicenceRepository.default(),
           new VacationDaysRepository.default(),
           new IncapacityRepository.default()
+        )
+    );
+
+    this.app.container.singleton(
+      "core.FormPeriodProvider",
+      () =>
+        new FormPeriodService.default(
+          new FormPeriodRepository.default(),
         )
     );
   }

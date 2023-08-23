@@ -69,3 +69,7 @@ Route.group(() => {
   Route.get("/types", "LicencesController.getLicenceTypes");
   Route.get("/:id", "LicencesController.getLicenseById");
 }).prefix("/api/v1/licence");
+
+Route.group(() => {
+  
+}).prefix("/api/v1/payroll");

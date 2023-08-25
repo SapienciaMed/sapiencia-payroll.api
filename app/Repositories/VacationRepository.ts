@@ -111,6 +111,9 @@ export default class VacationRepository implements IVacationRepository {
     if (daysVacation.available) {
       toUpdate.available = daysVacation.available;
     }
+    if(daysVacation.days){
+      toUpdate.days = daysVacation.days
+    }
     if (daysVacation.refund) {
       toUpdate.refund = daysVacation.refund;
     }

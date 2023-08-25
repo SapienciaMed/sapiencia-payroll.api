@@ -31,6 +31,7 @@ export interface IEditVacation {
   dateFrom: DateTime;
   dateUntil: DateTime;
   observation?: string;
+  days?: number;
   available: number;
   refundTypes: string;
   refund: number;

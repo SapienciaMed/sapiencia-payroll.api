@@ -1,7 +1,10 @@
 import { DateTime } from "luxon";
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import Employment from "./Employment";
+import SalaryIncrement from "./SalaryIncrement";
 
 export default class SalaryHistory extends BaseModel {
+  public static table = "HSA_HISTORICOS_SALARIALES";
   @column({ isPrimary: true, columnName: "HPA_CODIGO", serializeAs: "id" })
   public id: number;
 
@@ -36,5 +39,17 @@ export default class SalaryHistory extends BaseModel {
     serializeAs: "effectiveDate",
   })
   public effectiveDate: DateTime;
+
+  @hasOne(() => Employment, {
+    localKey: "codEmployment",
+    foreignKey: "id",
+  })
+  public employment: HasOne<typeof Employment>;
+
+  @hasOne(() => SalaryIncrement, {
+    localKey: "codIncrement",
+    foreignKey: "id",
+  })
+  public salaryIncrement: HasOne<typeof SalaryIncrement>;
   
 }

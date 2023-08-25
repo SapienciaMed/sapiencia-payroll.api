@@ -129,7 +129,10 @@ export default class AppProvider {
       "core.SalaryIncrementProvider",
       () =>
         new SalaryIncrementService.default(
-          new SalaryIncrementRepository.default()
+          new SalaryIncrementRepository.default(),
+          new SalaryHistoryRepository.default(),
+          new EmploymentRepository.default(),
+          new ChargesRepository.default(),
         )
     );
 

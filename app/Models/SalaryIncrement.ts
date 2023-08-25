@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
+import Charge from "./Charge";
 
 export default class SalaryIncrement extends BaseModel {
   public static table = "ISA_INCREMENTOS_SALARIALES";
@@ -69,4 +70,10 @@ export default class SalaryIncrement extends BaseModel {
     prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
+
+  @hasOne(() => Charge, {
+    localKey: "codCharge",
+    foreignKey: "id",
+  })
+  public charge: HasOne<typeof Charge>;
 }

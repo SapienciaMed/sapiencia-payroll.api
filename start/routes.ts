@@ -75,5 +75,7 @@ Route.group(() => {
 }).prefix("/api/v1/payroll");
 
 Route.group(() => {
-  
+  Route.post("/","SalaryIncrementsController.createSalaryIncrements")
+  Route.post("get-paginated","SalaryIncrementsController.getSalaryHistoriesPaginate")
+  Route.put("/","SalaryIncrementsController.updateSalaryIncrements")
 }).prefix("/api/v1/salaryIncrease");

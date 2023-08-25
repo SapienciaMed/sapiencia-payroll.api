@@ -20,6 +20,7 @@ export interface IEmploymentRepository {
     filters: IFilterEmployment
   ): Promise<IPagingData<IEmployment>>;
   getEmploymentById(id: number): Promise<IEmploymentWorker[] | null>;
+  getEmploymentsbyCharge(idCharge:number): Promise<IEmployment[]>
   getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]>;
   retirementEmployment(
     data: IRetirementEmployment
@@ -55,6 +56,10 @@ export default class EmploymentRepository implements IEmploymentRepository {
     return res as IEmployment[];
   }
 
+  async getEmploymentsbyCharge(idCharge:number): Promise<IEmployment[]>{
+    const res = await Employment.query().where("state", 1).andWhere("idCharge",idCharge);
+    return res as IEmployment[];
+  }
   async getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
     const res = Employment.query().where("id", id);
 

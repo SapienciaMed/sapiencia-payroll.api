@@ -1,3 +1,4 @@
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import ChargesRepository from "App/Repositories/ChargesRepository";
 
@@ -11,6 +12,9 @@ const chargeFake: ICharge = {
 };
 
 export class ChargesRepositoryFake implements ChargesRepository {
+  updateChargeSalary(_id: number, _salary: number, _trx: TransactionClientContract): Promise<ICharge | null> {
+    throw new Error("Method not implemented.");
+  }
   getChargeById(id: number): Promise<ICharge | null> {
     const list = [{ ...chargeFake }];
 

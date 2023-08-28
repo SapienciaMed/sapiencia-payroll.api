@@ -41,6 +41,7 @@ export default class CreateAndUpdateVacationValidator {
       })
     ),
     periodId: schema.number(),
+    days: schema.number(),
     enjoyedDays: schema.number(),
     avaibleDays: schema.number(),
     refundDays: schema.number(),

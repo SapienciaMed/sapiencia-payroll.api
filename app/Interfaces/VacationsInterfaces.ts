@@ -10,7 +10,7 @@ export interface IVacation {
   enjoyed: number;
   refund: number;
   available: number;
-  days: number;
+  days?: number;
   periodClosed: boolean;
 }
 

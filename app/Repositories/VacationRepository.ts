@@ -111,8 +111,8 @@ export default class VacationRepository implements IVacationRepository {
     if (daysVacation.available) {
       toUpdate.available = daysVacation.available;
     }
-    if(daysVacation.days){
-      toUpdate.days = daysVacation.days
+    if (daysVacation.days) {
+      toUpdate.days = daysVacation.days;
     }
     if (daysVacation.refund) {
       toUpdate.refund = daysVacation.refund;
@@ -136,6 +136,9 @@ export default class VacationRepository implements IVacationRepository {
     }
     if (typeof daysVacation.refundDays === "number") {
       toUpdate.refund = daysVacation.refundDays;
+    }
+    if (typeof daysVacation.days === "number") {
+      toUpdate.days = daysVacation.days;
     }
     if (typeof daysVacation.formedDays === "number") {
       toUpdate.periodFormer = daysVacation.formedDays;

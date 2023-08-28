@@ -72,9 +72,9 @@ export default class SalaryHistoryRepository
       }
 
       if (filters.numberActApproval) {
-        salaryIncrementQuery.where(
+        salaryIncrementQuery.whereILike(
           "numberActApproval",
-          filters.numberActApproval
+          `%${filters.numberActApproval}%`
         );
       }
     });

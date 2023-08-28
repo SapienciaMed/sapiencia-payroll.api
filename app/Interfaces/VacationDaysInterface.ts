@@ -22,6 +22,7 @@ export interface IVacationDayValidator {
   enjoyedDays: number;
   avaibleDays: number;
   refundDays?: number;
+  days?: number;
   formedDays?: number;
 }
 

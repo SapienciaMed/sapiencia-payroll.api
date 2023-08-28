@@ -23,6 +23,9 @@ export interface ISalaryIncrementService {
   getSalaryHistoriesPaginate(
     filters: ISalaryIncrementsFilters
   ): Promise<ApiResponse<IPagingData<ISalaryHistory>>>;
+  getSalaryIncrementById(
+    id: number
+  ): Promise<ApiResponse<ISalaryEditIncrement | null>>;
 }
 
 export default class SalaryIncrementService implements ISalaryIncrementService {
@@ -109,5 +112,21 @@ export default class SalaryIncrementService implements ISalaryIncrementService {
     const salaryHistories =
       await this.SalaryHistoryRepository.getSalaryHistoriesPaginate(filters);
     return new ApiResponse(salaryHistories, EResponseCodes.OK);
+  }
+
+  async getSalaryIncrementById(
+    id: number
+  ): Promise<ApiResponse<ISalaryEditIncrement | null>> {
+    const salaryIncrement =
+      await this.salaryIncrementRepository.getSalaryIncrementById(id);
+
+    if (!salaryIncrement?.id) {
+      return new ApiResponse(
+        {} as ISalaryEditIncrement,
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+    return new ApiResponse(salaryIncrement, EResponseCodes.OK);
   }
 }

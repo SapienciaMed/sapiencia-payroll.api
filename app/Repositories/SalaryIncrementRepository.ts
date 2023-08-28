@@ -14,6 +14,9 @@ export interface ISalaryIncrementRepository {
     salaryIncrement: ISalaryEditIncrement,
     trx: TransactionClientContract
   ): Promise<ISalaryEditIncrement | null>;
+  getSalaryIncrementById(
+    id: number
+  ): Promise<ISalaryEditIncrement | null>
 }
 
 export default class SalaryIncrementRepository
@@ -46,5 +49,13 @@ export default class SalaryIncrementRepository
     await toUpdate.save();
 
     return toUpdate.serialize() as ISalaryEditIncrement;
+  }
+
+  async getSalaryIncrementById(
+    id: number
+  ): Promise<ISalaryEditIncrement | null> {
+    const res = await SalaryIncrement.find(id);
+
+    return res ? (res.serialize() as ISalaryEditIncrement) : null;
   }
 }

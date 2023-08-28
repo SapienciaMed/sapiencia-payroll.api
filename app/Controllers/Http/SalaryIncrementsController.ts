@@ -70,4 +70,20 @@ export default class SalaryIncrementsController {
       );
     }
   }
+
+  public async getSalaryIncrementById({
+    response,
+    request,
+  }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(
+        await salaryIncrementProvider.getSalaryIncrementById(id)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

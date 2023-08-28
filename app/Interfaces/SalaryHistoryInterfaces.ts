@@ -9,4 +9,3 @@ export interface ISalaryHistory {
   validity: boolean;
   effectiveDate: DateTime;
 }
-

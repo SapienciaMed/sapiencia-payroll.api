@@ -12,8 +12,22 @@ const chargeFake: ICharge = {
 };
 
 export class ChargesRepositoryFake implements ChargesRepository {
-  updateChargeSalary(_id: number, _salary: number, _trx: TransactionClientContract): Promise<ICharge | null> {
-    throw new Error("Method not implemented.");
+  updateChargeSalary(
+    _id: number,
+    _salary: number,
+    _trx: TransactionClientContract
+  ): Promise<ICharge | null> {
+    const list = [{ ...chargeFake }];
+
+    return new Promise((res) => {
+      let charge = list.find((charge) => charge.id === _id);
+      if (charge) charge = { ...charge, baseSalary: _salary };
+      if (!charge) {
+        return res(null);
+      }
+
+      return res(charge);
+    });
   }
   getChargeById(id: number): Promise<ICharge | null> {
     const list = [{ ...chargeFake }];

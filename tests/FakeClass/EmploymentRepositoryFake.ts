@@ -30,7 +30,20 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
   getEmploymentsbyCharge(_idCharge: number): Promise<IEmployment[]> {
-    throw new Error("Method not implemented.");
+    const list = [
+      { ...employmentFake },
+      { ...employmentFake },
+    ] as IEmployment[];
+
+    return new Promise((res) => {
+      const employment = list.find((employment) => employment.idCharge === _idCharge);
+
+      if (!employment) {
+        return res([]);
+      }
+
+      return res([employment] as IEmploymentWorker[]);
+    });
   }
   getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
     const list = [

@@ -18,6 +18,7 @@ export interface ISalaryHistoryRepository {
   getSalaryHistoriesPaginate(
     filters: ISalaryIncrementsFilters
   ): Promise<IPagingData<ISalaryHistory>>;
+  updateStatusSalaryHistory(chargeId: number): Promise<boolean> 
 }
 
 export default class SalaryHistoryRepository
@@ -50,6 +51,19 @@ export default class SalaryHistoryRepository
       client: trx,
     });
     return true;
+  }
+
+  async updateStatusSalaryHistory(chargeId: number): Promise<boolean> {
+    try {
+      await SalaryHistory.query()
+        .preload("employment", (employmentQuery) => {
+          employmentQuery.where("idCharge", chargeId);
+        })
+        .update({ validity: false });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
   async getSalaryHistories(
     idSalaryIncrement: number
@@ -94,9 +108,12 @@ export default class SalaryHistoryRepository
 
     res.preload("employment", (employmentQuery) => {
       employmentQuery.where("state",1)
-      employmentQuery.preload("worker");
+      employmentQuery.preload("worker", (workerQuery)=>{
+        workerQuery.orderBy("firstName","asc")
+      });
     });
 
+    
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

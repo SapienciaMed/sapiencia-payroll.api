@@ -90,7 +90,7 @@ export default class extends BaseSchema {
         .string("TRA_TIPO_VIVIENDA", 10)
         .comment("Tipo de vivienda (Listados Genericos)");
       table
-        .string("TRA_BANCO", 10)
+        .string("TRA_BANCO", 50)
         .comment("Codigo del Banco (Listados Genericos)");
       table
         .string("TRA_TIPO_CUENTA_BANCARIA", 10)

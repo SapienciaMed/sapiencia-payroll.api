@@ -22,27 +22,37 @@ export class SalaryHistoryRepositoryFake implements SalaryHistoryRepository {
     _salaryHistories: ISalaryHistory[],
     _trx: TransactionClientContract
   ): Promise<boolean> {
-    return Promise.resolve(salaryHistoryFake ? true : false);
+    return Promise.resolve(!!salaryHistoryFake);
   }
   updateManySalaryHistory(
     _salaryHistories: ISalaryHistory[],
     _trx: TransactionClientContract
   ): Promise<boolean> {
     const list = [salaryHistoryFake];
-    const salaryHistory = Promise.resolve((list.find((i) => i.id == _salaryHistories[0].id))?true:false) 
+    const salaryHistory = Promise.resolve(
+      !!list.find((i) => i.id == _salaryHistories[0].id)
+    );
     return salaryHistory;
   }
   updateStatusSalaryHistory(_chargeId: number): Promise<boolean> {
     const list = [salaryHistoryFake];
-    const salaryHistory = Promise.resolve((list.find((i) => i.id == _chargeId))?true:false) 
+    const salaryHistory = Promise.resolve(
+      !!list.find((i) => i.id == _chargeId)
+    );
     return salaryHistory;
   }
   getSalaryHistories(_idSalaryIncrement: number): Promise<ISalaryHistory[]> {
-    throw new Error("Method not implemented.");
+    const list = [salaryHistoryFake];
+    return Promise.resolve(
+      list.filter((i) => i.codIncrement == _idSalaryIncrement)
+    );
   }
   getSalaryHistoriesPaginate(
     _filters: ISalaryIncrementsFilters
   ): Promise<IPagingData<ISalaryHistory>> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve({
+      array: [salaryHistoryFake],
+      meta: { total: 100 },
+    });
   }
 }

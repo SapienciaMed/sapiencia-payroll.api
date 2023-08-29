@@ -1,0 +1,309 @@
+paths:
+  /api/v1/salaryIncrease:
+    post:
+      tags:
+        - SalaryIncrease
+      summary: Permite la creación de un Incremento Salarial.
+      description: Crea un Incremento Salarial.
+      operationId: createSalaryIncrement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/salaryIncrement"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    data:
+                      - codCharge: 6
+                        effectiveDate: "2023-08-25T09:40:02.350-05:00"
+                        numberActApproval: "123 de 25 agosto"
+                        porcentualIncrement: false
+                        incrementValue: 2000
+                        newSalary: 890000
+                        observation: "test"
+                        userModified: "12345678"
+                        userCreate: "12345678"
+                        dateModified: "2023-08-29T12:07:42.015-05:00"
+                        dateCreate: "2023-08-29T12:07:42.015-05:00"
+                        id: 16
+                    operation: { code: "OK", message: "" }
+
+    put:
+      tags:
+        - SalaryIncrease
+      summary: Permite la actualización de un Incremento Salarial.
+      description: Actualiza un Incremento Salarial.
+      operationId: UpdateSalaryIncrement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/salaryIncrementEdit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    data:
+                      - codCharge: 6
+                        effectiveDate: "2023-08-25T09:40:02.350-05:00"
+                        numberActApproval: "123 de 25 agosto"
+                        porcentualIncrement: false
+                        incrementValue: 2000
+                        newSalary: 890000
+                        observation: "test"
+                        userModified: "12345678"
+                        userCreate: "12345678"
+                        dateModified: "2023-08-29T12:07:42.015-05:00"
+                        dateCreate: "2023-08-29T12:07:42.015-05:00"
+                        id: 16
+                    operation: { code: "OK", message: "" }
+
+  /api/v1/salaryIncrease/{id}:
+    get:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: number
+            example: 1
+          required: true
+          description: Id del incremento
+      tags:
+        - SalaryIncrease
+      summary: Obtener la información de un Incremento Salarial.
+      description: Obtiene un Incremento Salarial por id.
+      operationId: get-SalaryIncrease-Byid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    data:
+                      - userCreate: "12345678"
+                        id: 5
+                        codCharge: 2
+                        effectiveDate: "2023-08-25T09:40:02.350-05:00"
+                        numberActApproval: "123 de 25 agosto"
+                        porcentualIncrement: false
+                        incrementValue: "45000.00"
+                        previousSalary: "0.00"
+                        newSalary: "45000.00"
+                        observation: "test"
+                        userModified: "12345678"
+                        dateModified: "2023-08-25T10:29:15.423-05:00"
+                        dateCreate: "2023-08-25T10:29:15.423-05:00"
+                    operation: { code: "OK", message: "" }
+
+  /api/v1/salaryIncrease/get-paginated:
+    post:
+      tags:
+        - SalaryIncrease
+      summary: Obtener la información de Incremento Salarial.
+      description: Obtiene los incrementos salariales según los filtros.
+      operationId: get-paginated-salaryIncrease
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numberActApproval:
+                  type: string
+                  example: "123"
+                  description: Acta de aprobación.
+                  required: false
+                codCharge:
+                  type: number
+                  example: 1
+                  description: Código del cargo.
+                  required: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    data:
+                      - id: 1
+                        codEmployment: 12
+                        codIncrement: 10
+                        previousSalary: "0.00"
+                        salary: "50000.00"
+                        effectiveDate: "2023-08-25T09:40:02.350-05:00"
+                        validity: false
+                        salaryIncrement:
+                          userCreate: "12345678"
+                          id: 10
+                          codCharge: 6
+                          effectiveDate: "2023-08-25T09:40:02.350-05:00"
+                          numberActApproval: "123 de 25 agosto"
+                          porcentualIncrement: false
+                          incrementValue: "2000.00"
+                          previousSalary: "10000.00"
+                          newSalary: "50000.00"
+                          observation: "test"
+                          userModified: "12345678"
+                          dateModified: "2023-08-25T10:50:02.124-05:00"
+                          dateCreate: "2023-08-25T10:50:02.124-05:00"
+                          charge:
+                            id: 6
+                            name: "Jefe de Control Interno"
+                            codUnit: 1
+                            codChargeType: 1
+                            baseSalary: "1780000.00"
+                            state: "Activo"
+                            userModify: null
+                            dateModified: "2023-08-29T16:29:35.835-05:00"
+                            userCreate: "test"
+                            dateCreate: "2023-08-10T11:39:35.251-05:00"
+                        employment:
+                          id: 12
+                          workerId: 16
+                          idCharge: 6
+                          idTypeContract: 7
+                          institutionalMail: "pruebas@pruebas.com"
+                          contractNumber: "33321"
+                          startDate: "2023-08-18T00:00:00.000-05:00"
+                          endDate: "2023-12-31T00:00:00.000-05:00"
+                          state: "1"
+                          idReasonRetirement: null
+                          retirementDate: null
+                          salary: "5600000.00"
+                          totalValue: "0.00"
+                          observation: null
+                          userModified: null
+                          dateModified: "2023-08-18T09:41:14.217-05:00"
+                          userCreate: null
+                          dateCreate: "2023-08-18T09:41:14.217-05:00"
+                          worker:
+                            userCreate: null
+                            id: 16
+                            typeDocument: "CC"
+                            numberDocument: "1141119966"
+                            firstName: "Usuario"
+                            secondName: "pruebas"
+                            surname: "gonzalez"
+                            secondSurname: "sanchez"
+                            gender: "F"
+                            bloodType: "2"
+                            birthDate: "2000-05-23T05:00:00.000Z"
+                            nationality: "COL"
+                            email: "JEISSONGM@HOTMAIL.COM"
+                            contactNumber: "3183606968"
+                            department: "5"
+                            municipality: "1"
+                            neighborhood: "3"
+                            address: "cra 24 c # 9 sur 79"
+                            socioEconomic: "3"
+                            eps: null
+                            severanceFund: null
+                            arl: null
+                            fundPension: null
+                            riskLevel: null
+                            housingType: "1"
+                            bank: null
+                            accountBankType: null
+                            accountBankNumber: null
+                            userModified: null
+                            dateModified: "2023-08-18T09:41:14.162-05:00"
+                            dateCreate: "2023-08-18T09:41:14.164-05:00"
+                    operation: { code: "OK", message: "" }
+
+components:
+  schemas:
+    salaryIncrement:
+      type: object
+      properties:
+        codCharge:
+          type: number
+          example: 1
+        effectiveDate:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+        numberActApproval:
+          type: string
+          example: "xxxx de 29 agosto"
+        porcentualIncrement:
+          type: boolean
+          example: true
+        incrementValue:
+          type: number
+          example: 1000000
+        newSalary:
+          type: number
+          example: 12000000
+        observation:
+          type: string
+          example: "test observation"
+        userModified:
+          type: string
+          example: "12345467"
+        dateModified:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+        userCreate:
+          type: string
+          example: "12345467"
+        dateCreate:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+    salaryIncrementEdit:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        codCharge:
+          type: number
+          example: 1
+        effectiveDate:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+        numberActApproval:
+          type: string
+          example: "xxxx de 29 agosto"
+        porcentualIncrement:
+          type: boolean
+          example: true
+        incrementValue:
+          type: number
+          example: 1000000
+        newSalary:
+          type: number
+          example: 12000000
+        observation:
+          type: string
+          example: "test observation"
+        userModified:
+          type: string
+          example: "12345467"
+        dateModified:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+        userCreate:
+          type: string
+          example: "12345467"
+        dateCreate:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"

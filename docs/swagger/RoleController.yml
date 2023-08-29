@@ -1,29 +1,31 @@
 /api/v1/role/get-paginated:
-    get:
-      parameters:
+  get:
+    parameters:
       - in: path
         name: id
         schema:
           type: number
+          example: 1
         required: true
         description: Id del usuario
-      tags:
+    tags:
       - Roles
-      summary: Permite la consulta de un roles por filtros y paginado
-      produces:
+    summary: Permite la consulta de un roles por filtros y paginado
+    produces:
       - application/json
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user'
-              examples:
-                Action:
-                  value:
-                    {
-                      "data": [
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user"
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
                         {
                           "id": 1,
                           "documentType": "Cédula de ciudadanía",
@@ -39,17 +41,14 @@
                           "district": "Altavista",
                           "address": null,
                           "createdDate": "2023-03-02T14:22:00.347Z",
-                          "modifiedDate": null
-                        }
+                          "modifiedDate": null,
+                        },
                       ],
-                      "operation": {
-                        "code": "OK",
-                        "message": ""
-                      }
-                    }
-                    
-      security:
-        - apiAuth: []
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+    security:
+      - apiAuth: []
 
 components:
   schemas:

@@ -29,6 +29,9 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  updateContractDate(_idEmployment: number, _date: DateTime): Promise<IEmployment | null> {
+    throw new Error("Method not implemented.");
+  }
   getEmploymentsbyCharge(_idCharge: number): Promise<IEmployment[]> {
     const list = [
       { ...employmentFake },

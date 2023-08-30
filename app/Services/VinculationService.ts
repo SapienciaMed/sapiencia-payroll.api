@@ -141,7 +141,10 @@ export default class VinculationService implements IVinculationService {
       await this.contractSuspensionRepository.createContractSuspension(
         contractSuspension
       );
-
+    await this.employmentRepository.updateContractDate(
+      contractSuspension.codEmployment,
+      contractSuspension.newDateEnd
+    );
     if (!res) {
       return new ApiResponse(
         {} as IcontractSuspension,

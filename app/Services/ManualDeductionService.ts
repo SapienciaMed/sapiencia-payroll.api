@@ -2,7 +2,7 @@ import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
 import { IManualDeductionRepository } from "App/Repositories/ManualDeductionRepository";
-import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
+import { ApiResponse } from "App/Utils/ApiResponses";
 
 export interface IManualDeductionService {
   createManualDeduction(
@@ -12,7 +12,7 @@ export interface IManualDeductionService {
   getManualDeductionById(id: number): Promise<ApiResponse<IManualDeduction[]>>;
 }
 
-export default class manualDeductionService implements IManualDeductionService {
+export default class ManualDeductionService implements IManualDeductionService {
   constructor(private manualDeductionRepository: IManualDeductionRepository) {}
 
   //crear dedudcción manual

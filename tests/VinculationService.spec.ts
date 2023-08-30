@@ -10,13 +10,15 @@ import { ChargesRepositoryFake } from "./FakeClass/ChargesRepositoryFake";
 import { ICreateOrUpdateVinculation } from "App/Interfaces/VinculationInterfaces";
 import { DateTime } from "luxon";
 import Database from "@ioc:Adonis/Lucid/Database";
+import { ContractSuspensionRepositoryFake } from "./FakeClass/ContractSuspensionFake";
 
 const service = new VinculationService(
   new WorkerRepositoryFake(),
   new RelativeRepositoryFake(),
   new EmploymentRepositoryFake(),
   new TypesContractsRepositoryFake(),
-  new ChargesRepositoryFake()
+  new ChargesRepositoryFake(),
+  new ContractSuspensionRepositoryFake()
 );
 
 test.group("VinculationService TEST for createVinculation", () => {

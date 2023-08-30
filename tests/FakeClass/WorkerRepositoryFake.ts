@@ -52,6 +52,9 @@ const employmentFake: IEmployment = {
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
+  getActivesContractorworkers(): Promise<IWorker[]> {
+    throw new Error("Method not implemented.");
+  }
   getActivesWorkers(): Promise<IWorker[]> {
     throw new Error("Method not implemented.");
   }

@@ -13,3 +13,9 @@ export interface IcontractSuspension {
   userCreate?: string;
   dateCreate?: DateTime;
 }
+
+export interface IFilterContractSuspension{
+  codEmployment: number;
+  page: number;
+  perPage: number;
+}

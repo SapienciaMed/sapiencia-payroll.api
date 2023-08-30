@@ -23,6 +23,9 @@ export default class AppProvider {
     const SalaryIncrementService = await import(
       "App/Services/SalaryIncrementService"
     );
+    const ManualDeductionService = await import(
+      "App/Services/ManualDeductionService"
+    );
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
@@ -68,6 +71,9 @@ export default class AppProvider {
     const SalaryHistoryRepository = await import(
       "App/Repositories/SalaryHistoryRepository"
     );
+    const ManualDeductionRepository = await import(
+      "App/Repositories/ManualDeductionRepository"
+    );
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
@@ -80,7 +86,8 @@ export default class AppProvider {
           new RelativeRepository.default(),
           new EmploymentRepository.default(),
           new TypesContractsRepository.default(),
-          new ChargesRepository.default()
+          new ChargesRepository.default(),
+          new ContractSuspensionRepository.default()
         )
     );
 
@@ -132,7 +139,7 @@ export default class AppProvider {
           new SalaryIncrementRepository.default(),
           new SalaryHistoryRepository.default(),
           new EmploymentRepository.default(),
-          new ChargesRepository.default(),
+          new ChargesRepository.default()
         )
     );
 
@@ -140,6 +147,14 @@ export default class AppProvider {
       "core.SalaryHistoryProvider",
       () =>
         new SalaryHistoryService.default(new SalaryHistoryRepository.default())
+    );
+
+    this.app.container.singleton(
+      "core.ManualDeductionProvider",
+      () =>
+        new ManualDeductionService.default(
+          new ManualDeductionRepository.default()
+        )
     );
   }
 

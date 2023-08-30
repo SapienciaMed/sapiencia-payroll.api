@@ -23,6 +23,11 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IFilterContractSuspension,
+  IcontractSuspension,
+} from "App/Interfaces/ContractSuspensionInterfaces";
+import { IContractSuspensionRepository } from "App/Repositories/ContractSuspensionRepository";
 
 export interface IVinculationService {
   getVinculationPaginate(
@@ -33,6 +38,7 @@ export interface IVinculationService {
   ): Promise<ApiResponse<IPagingData<IEmployment>>>;
   getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
   getActiveWorkers(): Promise<ApiResponse<IWorker[]>>;
+  getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>>;
   createVinculation(
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
@@ -50,6 +56,12 @@ export interface IVinculationService {
   retirementEmployment(
     data: IRetirementEmployment
   ): Promise<ApiResponse<IEmployment>>;
+  getContractSuspensionPaginate(
+    filters: IFilterContractSuspension
+  ): Promise<ApiResponse<IPagingData<IcontractSuspension>>>;
+  createContractSuspension(
+    contractSuspension: IcontractSuspension
+  ): Promise<ApiResponse<IcontractSuspension>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -58,7 +70,8 @@ export default class VinculationService implements IVinculationService {
     private relativeRepository: IRelativeRepository,
     private employmentRepository: IEmploymentRepository,
     private TypesContractsRepository: ITypesContractsRepository,
-    private typesChargesRepository: IChargesRepository
+    private typesChargesRepository: IChargesRepository,
+    private contractSuspensionRepository: IContractSuspensionRepository
   ) {}
 
   async getVinculationPaginate(
@@ -108,6 +121,37 @@ export default class VinculationService implements IVinculationService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  async createContractSuspension(
+    contractSuspension: IcontractSuspension
+  ): Promise<ApiResponse<IcontractSuspension>> {
+    const suspension =
+      await this.contractSuspensionRepository.getContractSuspensionBetweenDate(
+        contractSuspension.codEmployment,
+        contractSuspension.dateStart,
+        contractSuspension.dateEnd
+      );
+    if (suspension.length > 0) {
+      return new ApiResponse(
+        {} as IcontractSuspension,
+        EResponseCodes.FAIL,
+        "Ya existe una suspensión en las fechas indicadas"
+      );
+    }
+    const res =
+      await this.contractSuspensionRepository.createContractSuspension(
+        contractSuspension
+      );
+
+    if (!res) {
+      return new ApiResponse(
+        {} as IcontractSuspension,
+        EResponseCodes.FAIL,
+        "Ocurrió un error en su Transacción "
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
   async createVinculation(
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
@@ -157,6 +201,19 @@ export default class VinculationService implements IVinculationService {
 
   async getActiveWorkers(): Promise<ApiResponse<IWorker[]>> {
     const res = await this.workerRepository.getActivesWorkers();
+    if (!res) {
+      return new ApiResponse(
+        {} as IWorker[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>> {
+    const res = await this.workerRepository.getActivesContractorworkers();
     if (!res) {
       return new ApiResponse(
         {} as IWorker[],
@@ -292,5 +349,15 @@ export default class VinculationService implements IVinculationService {
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getContractSuspensionPaginate(
+    filters: IFilterContractSuspension
+  ): Promise<ApiResponse<IPagingData<IcontractSuspension>>> {
+    const Employments =
+      await this.contractSuspensionRepository.getContractSuspensionPaginate(
+        filters
+      );
+    return new ApiResponse(Employments, EResponseCodes.OK);
   }
 }

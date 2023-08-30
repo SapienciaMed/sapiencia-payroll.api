@@ -13,6 +13,7 @@ export interface IWorkerRepository {
   ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
   getActivesWorkers(): Promise<IWorker[]>
+  getActivesContractorworkers(): Promise<IWorker[]>
   createWorker(
     worker: IWorker,
     trx: TransactionClientContract
@@ -112,6 +113,17 @@ export default class WorkerRepository implements IWorkerRepository {
   async getActivesWorkers(): Promise<IWorker[]> {
     const res = await Worker.query().whereHas("employment", (employmentQuery)=>{
       employmentQuery.where("state", "1");
+    })
+    .preload("employment")
+    return res as IWorker[];
+  }
+
+  async getActivesContractorworkers(): Promise<IWorker[]> {
+    const res = await Worker.query().whereHas("employment", (employmentQuery)=>{
+      employmentQuery.where("state", "1");
+      employmentQuery.preload("typesContracts", (typesContractQuery)=>{
+        typesContractQuery.where("temporary",true)
+      })
     })
     .preload("employment")
     return res as IWorker[];

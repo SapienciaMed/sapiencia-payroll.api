@@ -47,9 +47,10 @@ export default class SalaryIncrementService implements ISalaryIncrementService {
     const employees = await this.EmploymentRepository.getEmploymentsbyCharge(
       salaryIncrement.codCharge
     );
-   const updateStatus = await this.SalaryHistoryRepository.updateStatusSalaryHistory(
-      salaryIncrement.codCharge
-    )
+    const updateStatus =
+      await this.SalaryHistoryRepository.updateStatusSalaryHistory(
+        salaryIncrement.codCharge
+      );
     if (employees && updateStatus) {
       await this.SalaryHistoryRepository.createManySalaryHistory(
         employees.map((i) => {

@@ -4,6 +4,7 @@ import {
   ISalaryIncrement,
 } from "App/Interfaces/SalaryIncrementInterfaces";
 import SalaryIncrement from "App/Models/SalaryIncrement";
+import { DateTime } from "luxon";
 
 export interface ISalaryIncrementRepository {
   createSalaryIncrement(
@@ -14,9 +15,11 @@ export interface ISalaryIncrementRepository {
     salaryIncrement: ISalaryEditIncrement,
     trx: TransactionClientContract
   ): Promise<ISalaryEditIncrement | null>;
-  getSalaryIncrementById(
-    id: number
-  ): Promise<ISalaryEditIncrement | null>
+  getSalaryIncrementById(id: number): Promise<ISalaryEditIncrement | null>;
+  getSalaryIncrementEffectiveDate(
+    codCharge: number,
+    date: DateTime
+  ): Promise<ISalaryEditIncrement | null>;
 }
 
 export default class SalaryIncrementRepository
@@ -55,6 +58,18 @@ export default class SalaryIncrementRepository
     id: number
   ): Promise<ISalaryEditIncrement | null> {
     const res = await SalaryIncrement.find(id);
+
+    return res ? (res.serialize() as ISalaryEditIncrement) : null;
+  }
+
+  async getSalaryIncrementEffectiveDate(
+    codCharge: number,
+    date: DateTime
+  ): Promise<ISalaryEditIncrement | null> {
+    const res = await SalaryIncrement.query()
+      .where("effectiveDate", date.toString())
+      .andWhere("codCharge", codCharge)
+      .firstOrFail();
 
     return res ? (res.serialize() as ISalaryEditIncrement) : null;
   }

@@ -99,9 +99,10 @@ export default class SalaryHistoryRepository
       }
 
       if (filters.numberActApproval) {
-        salaryIncrementQuery.whereILike(
-          "numberActApproval",
-          `%${filters.numberActApproval}%`
+        salaryIncrementQuery.whereRaw(
+          `TRANSLATE(UPPER("ISA_ACTA_APROBACION"),'ÁÉÍÓÚ','AEIOU') like
+        TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+          [`%${filters.numberActApproval}%`]
         );
       }
       salaryIncrementQuery.preload("charge");
@@ -113,7 +114,6 @@ export default class SalaryHistoryRepository
         workerQuery.orderBy("firstName", "asc");
       });
     });
-
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

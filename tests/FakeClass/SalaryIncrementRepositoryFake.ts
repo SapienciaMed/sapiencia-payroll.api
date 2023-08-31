@@ -40,6 +40,9 @@ const salaryEditIncrementFake: ISalaryEditIncrement = {
 export class SalaryIncrementRepositoryFake
   implements SalaryIncrementRepository
 {
+  getSalaryIncrementEffectiveDate(_codCharge: number, _date: DateTime): Promise<ISalaryEditIncrement | null> {
+    throw new Error("Method not implemented.");
+  }
   createSalaryIncrement(
     _salaryIncrement: ISalaryIncrement,
     _trx: TransactionClientContract

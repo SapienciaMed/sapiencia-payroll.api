@@ -13,12 +13,12 @@ export interface ISalaryHistoryRepository {
   updateManySalaryHistory(
     salaryHistories: ISalaryHistory[],
     trx: TransactionClientContract
-  ): Promise<boolean> 
+  ): Promise<boolean>;
   getSalaryHistories(idSalaryIncrement: number): Promise<ISalaryHistory[]>;
   getSalaryHistoriesPaginate(
     filters: ISalaryIncrementsFilters
   ): Promise<IPagingData<ISalaryHistory>>;
-  updateStatusSalaryHistory(chargeId: number): Promise<boolean> 
+  updateStatusSalaryHistory(chargeId: number): Promise<boolean>;
 }
 
 export default class SalaryHistoryRepository
@@ -86,9 +86,10 @@ export default class SalaryHistoryRepository
       }
 
       if (filters.numberActApproval) {
-        salaryIncrementQuery.whereILike(
-          "numberActApproval",
-          `%${filters.numberActApproval}%`
+        salaryIncrementQuery.whereRaw(
+          `TRANSLATE(UPPER("ISA_ACTA_APROBACION"),'ÁÉÍÓÚ','AEIOU') like
+        TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+          [`%${filters.numberActApproval}%`]
         );
       }
     });
@@ -107,13 +108,12 @@ export default class SalaryHistoryRepository
     });
 
     res.preload("employment", (employmentQuery) => {
-      employmentQuery.where("state",1)
-      employmentQuery.preload("worker", (workerQuery)=>{
-        workerQuery.orderBy("firstName","asc")
+      employmentQuery.where("state", 1);
+      employmentQuery.preload("worker", (workerQuery) => {
+        workerQuery.orderBy("firstName", "asc");
       });
     });
 
-    
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

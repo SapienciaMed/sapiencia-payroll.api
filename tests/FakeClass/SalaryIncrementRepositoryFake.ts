@@ -40,11 +40,42 @@ const salaryEditIncrementFake: ISalaryEditIncrement = {
 export class SalaryIncrementRepositoryFake
   implements SalaryIncrementRepository
 {
-  getSalaryIncrementByChargeID(idCharge: number): Promise<ISalaryEditIncrement | null> {
-    throw new Error("Method not implemented.");
+  getSalaryIncrementByChargeID(
+    _idCharge: number
+  ): Promise<ISalaryEditIncrement | null> {
+    const list = [{ ...salaryEditIncrementFake }];
+
+    return new Promise((res) => {
+      const salaryIncrements = list.find(
+        (salaryIncrement) => salaryIncrement.codCharge === _idCharge
+      );
+
+      if (!salaryIncrements) {
+        return res(null);
+      }
+
+      return res(salaryIncrements);
+    });
   }
-  getSalaryIncrementEffectiveDate(_codCharge: number, _date: DateTime): Promise<ISalaryEditIncrement | null> {
-    throw new Error("Method not implemented.");
+  getSalaryIncrementEffectiveDate(
+    _codCharge: number,
+    _date: DateTime
+  ): Promise<ISalaryEditIncrement | null> {
+    const list = [{ ...salaryEditIncrementFake }];
+
+    return new Promise((res) => {
+      const salaryIncrements = list.find(
+        (salaryIncrement) =>
+          salaryIncrement.codCharge === _codCharge &&
+          salaryIncrement.effectiveDate == _date
+      );
+
+      if (!salaryIncrements) {
+        return res(null);
+      }
+
+      return res(salaryIncrements);
+    });
   }
   createSalaryIncrement(
     _salaryIncrement: ISalaryIncrement,

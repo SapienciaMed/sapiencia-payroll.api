@@ -29,8 +29,23 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
-  updateContractDate(_idEmployment: number, _date: DateTime): Promise<IEmployment | null> {
-    throw new Error("Method not implemented.");
+  updateContractDate(
+    _idEmployment: number,
+    _date: DateTime
+  ): Promise<IEmployment | null> {
+    const list = [employmentFake];
+
+    return new Promise((res) => {
+      let employments = list.find(
+        (employment) => employment.id === _idEmployment
+      );
+      if (employments) employments = { ...employments, endDate: _date };
+      if (!employments) {
+        return res(null);
+      }
+
+      return res(employments);
+    });
   }
   getEmploymentsbyCharge(_idCharge: number): Promise<IEmployment[]> {
     const list = [
@@ -39,7 +54,9 @@ export class EmploymentRepositoryFake implements EmploymentRepository {
     ] as IEmployment[];
 
     return new Promise((res) => {
-      const employment = list.find((employment) => employment.idCharge === _idCharge);
+      const employment = list.find(
+        (employment) => employment.idCharge === _idCharge
+      );
 
       if (!employment) {
         return res([]);

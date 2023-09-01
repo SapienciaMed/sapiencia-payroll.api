@@ -55,6 +55,7 @@ export default class ContractSuspensionRepository
         employmentQuery.where("id", filters.codEmployment);
       }
       employmentQuery.preload("worker");
+      employmentQuery.preload("typesContracts")
     });
 
     const workerEmploymentPaginated = await res.paginate(

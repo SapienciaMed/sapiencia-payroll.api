@@ -189,15 +189,20 @@ export default class VinculationController {
     request,
     response,
   }: HttpContextContract) {
-    try {
-      const contractSuspension = await request.validate(
-        CreateContractSuspensionValidator
-      );
-      return response.send(
-        await VinculationProvider.createContractSuspension(contractSuspension)
-      );
-    } catch (err) {
-      return new ApiResponse(null, EResponseCodes.FAIL, String(err.messages));
-    }
+    await Database.transaction(async (trx) => {
+      try {
+        const contractSuspension = await request.validate(
+          CreateContractSuspensionValidator
+        );
+        return response.send(
+          await VinculationProvider.createContractSuspension(
+            contractSuspension,
+            trx
+          )
+        );
+      } catch (err) {
+        return new ApiResponse(null, EResponseCodes.FAIL, String(err.messages));
+      }
+    });
   }
 }

@@ -28,7 +28,8 @@ export interface IEmploymentRepository {
   ): Promise<IEmployment | null>;
   updateContractDate(
     idEmployment: number,
-    date: DateTime
+    date: DateTime,
+    trx: TransactionClientContract
   ): Promise<IEmployment | null>;
 }
 
@@ -109,13 +110,14 @@ export default class EmploymentRepository implements IEmploymentRepository {
 
   async updateContractDate(
     idEmployment: number,
-    date: DateTime
+    date: DateTime,
+    trx: TransactionClientContract
   ): Promise<IEmployment | null> {
     const toUpdate = await Employment.find(idEmployment);
 
     if (!toUpdate) return null;
 
-    await toUpdate.merge({ endDate: date }).save();
+    (await toUpdate.merge({ endDate: date }).save()).useTransaction(trx);
 
     return toUpdate.serialize() as IEmployment;
   }

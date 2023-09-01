@@ -11,6 +11,8 @@ import { ICreateOrUpdateVinculation } from "App/Interfaces/VinculationInterfaces
 import { DateTime } from "luxon";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { ContractSuspensionRepositoryFake } from "./FakeClass/ContractSuspensionFake";
+import { SalaryHistoryRepositoryFake } from "./FakeClass/SalaryHistoryRepositoryFake";
+import { SalaryIncrementRepositoryFake } from "./FakeClass/SalaryIncrementRepositoryFake";
 
 const service = new VinculationService(
   new WorkerRepositoryFake(),
@@ -18,7 +20,9 @@ const service = new VinculationService(
   new EmploymentRepositoryFake(),
   new TypesContractsRepositoryFake(),
   new ChargesRepositoryFake(),
-  new ContractSuspensionRepositoryFake()
+  new ContractSuspensionRepositoryFake(),
+  new SalaryHistoryRepositoryFake(),
+  new SalaryIncrementRepositoryFake()
 );
 
 test.group("VinculationService TEST for createVinculation", () => {

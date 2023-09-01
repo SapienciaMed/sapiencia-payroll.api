@@ -16,6 +16,9 @@ export interface ISalaryIncrementRepository {
     trx: TransactionClientContract
   ): Promise<ISalaryEditIncrement | null>;
   getSalaryIncrementById(id: number): Promise<ISalaryEditIncrement | null>;
+  getSalaryIncrementByChargeID(
+    idCharge: number
+  ): Promise<ISalaryEditIncrement | null>
   getSalaryIncrementEffectiveDate(
     codCharge: number,
     date: DateTime
@@ -58,6 +61,17 @@ export default class SalaryIncrementRepository
     id: number
   ): Promise<ISalaryEditIncrement | null> {
     const res = await SalaryIncrement.find(id);
+
+    return res ? (res.serialize() as ISalaryEditIncrement) : null;
+  }
+
+  async getSalaryIncrementByChargeID(
+    idCharge: number
+  ): Promise<ISalaryEditIncrement | null> {
+    const res = await SalaryIncrement.query()
+      .where("codCharge", idCharge)
+      .max("id")
+      .first();
 
     return res ? (res.serialize() as ISalaryEditIncrement) : null;
   }

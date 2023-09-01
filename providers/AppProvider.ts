@@ -87,7 +87,9 @@ export default class AppProvider {
           new EmploymentRepository.default(),
           new TypesContractsRepository.default(),
           new ChargesRepository.default(),
-          new ContractSuspensionRepository.default()
+          new ContractSuspensionRepository.default(),
+          new SalaryHistoryRepository.default(),
+          new SalaryIncrementRepository.default(),
         )
     );
 

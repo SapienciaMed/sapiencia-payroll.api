@@ -1,3 +1,4 @@
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import {
   IFilterContractSuspension,
   IcontractSuspension,
@@ -8,7 +9,8 @@ import { DateTime } from "luxon";
 
 export interface IContractSuspensionRepository {
   createContractSuspension(
-    contractSuspension: IcontractSuspension
+    contractSuspension: IcontractSuspension,
+    trx: TransactionClientContract
   ): Promise<IcontractSuspension>;
   getContractSuspensionPaginate(
     filters: IFilterContractSuspension
@@ -25,9 +27,10 @@ export default class ContractSuspensionRepository
 {
   constructor() {}
   async createContractSuspension(
-    contractSuspension: IcontractSuspension
+    contractSuspension: IcontractSuspension,
+    trx: TransactionClientContract
   ): Promise<IcontractSuspension> {
-    const toCreate = new ContractSuspension();
+    const toCreate = new ContractSuspension().useTransaction(trx);
 
     toCreate.fill({ ...contractSuspension });
     await toCreate.save();

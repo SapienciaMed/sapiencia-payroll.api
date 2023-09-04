@@ -28,9 +28,7 @@ import {
   IcontractSuspension,
 } from "App/Interfaces/ContractSuspensionInterfaces";
 import { IContractSuspensionRepository } from "App/Repositories/ContractSuspensionRepository";
-import SalaryHistoryRepository, {
-  ISalaryHistoryRepository,
-} from "App/Repositories/SalaryHistoryRepository";
+import { ISalaryHistoryRepository } from "App/Repositories/SalaryHistoryRepository";
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
 import { ISalaryIncrementRepository } from "App/Repositories/SalaryIncrementRepository";
 import { DateTime } from "luxon";

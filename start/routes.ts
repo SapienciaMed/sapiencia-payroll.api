@@ -57,7 +57,7 @@ Route.group(() => {
 }).prefix("/api/v1/vinculation");
 
 Route.group(() => {
-  Route.post("/", "VacationsController.getVacations");
+  Route.get("/", "VacationsController.getVacations");
   Route.post("/create", "VacationsController.createVacationDays");
   Route.put("/", "VacationsController.updateVacationPeriod");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");

@@ -18,7 +18,7 @@ const service = new SalaryIncrementService(
   new SalaryIncrementRepositoryFake(),
   new SalaryHistoryRepositoryFake(),
   new EmploymentRepositoryFake(),
-  new ChargesRepositoryFake()
+  new ChargesRepositoryFake(),
 );
 
 test.group("SalaryIncrementService TEST for createSalaryIncrement", () => {

@@ -14,9 +14,6 @@ export default class AppProvider {
     const IncapacityService = await import("App/Services/IncapacityService");
     const LicenceService = await import("App/Services/LicenceService");
     const FormPeriodService = await import("App/Services/FormPeriodService");
-    const ContractSuspensionService = await import(
-      "App/Services/ContractSuspensionService"
-    );
     const SalaryHistoryService = await import(
       "App/Services/SalaryHistoryService"
     );
@@ -89,7 +86,7 @@ export default class AppProvider {
           new ChargesRepository.default(),
           new ContractSuspensionRepository.default(),
           new SalaryHistoryRepository.default(),
-          new SalaryIncrementRepository.default(),
+          new SalaryIncrementRepository.default()
         )
     );
 
@@ -124,14 +121,6 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.FormPeriodProvider",
       () => new FormPeriodService.default(new FormPeriodRepository.default())
-    );
-
-    this.app.container.singleton(
-      "core.ContractSuspensionProvider",
-      () =>
-        new ContractSuspensionService.default(
-          new ContractSuspensionRepository.default()
-        )
     );
 
     this.app.container.singleton(

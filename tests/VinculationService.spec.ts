@@ -13,6 +13,10 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import { ContractSuspensionRepositoryFake } from "./FakeClass/ContractSuspensionFake";
 import { SalaryHistoryRepositoryFake } from "./FakeClass/SalaryHistoryRepositoryFake";
 import { SalaryIncrementRepositoryFake } from "./FakeClass/SalaryIncrementRepositoryFake";
+import {
+  IFilterContractSuspension,
+  IcontractSuspension,
+} from "App/Interfaces/ContractSuspensionInterfaces";
 
 const service = new VinculationService(
   new WorkerRepositoryFake(),
@@ -348,6 +352,98 @@ test.group("VinculationService TEST for getEmploymentPaginate", () => {
 
   test("the method getEmploymentPaginate must return a OK code ", async (assert) => {
     const result = await service.getEmploymentPaginate(filters);
+    assert.isTrue(result.operation.code === EResponseCodes.OK);
+  });
+});
+
+test.group("VinculationService TEST for getContractSuspensionPaginate", () => {
+  const filters: IFilterContractSuspension = {
+    page: 1,
+    perPage: 2,
+    codEmployment: 1,
+  };
+
+  test("class service must have a method getContractSuspensionPaginate with a return", async (assert) => {
+    const result = await service.getContractSuspensionPaginate(filters);
+    assert.isNotNull(result);
+  });
+
+  test("the method getContractSuspensionPaginate must be a promise", async (assert) => {
+    const result = service.getContractSuspensionPaginate(filters);
+    assert.typeOf(result, "Promise");
+  });
+
+  test("the method getContractSuspensionPaginate must return a ApiResponse", async (assert) => {
+    const result = await service.getContractSuspensionPaginate(filters);
+    assert.instanceOf(result, ApiResponse);
+  });
+
+  test("the method getContractSuspensionPaginate must return a OK code ", async (assert) => {
+    const result = await service.getContractSuspensionPaginate(filters);
+    assert.isTrue(result.operation.code === EResponseCodes.OK);
+  });
+});
+
+test.group("VinculationService TEST for createContractSuspension", () => {
+  const suspension: IcontractSuspension = {
+    codEmployment: 17,
+    dateStart: DateTime.fromISO("2023-08-31T00:00:00.000-05:00"),
+    dateEnd: DateTime.fromISO("2023-09-15T00:00:00.000-05:00"),
+    adjustEndDate: false,
+    newDateEnd: DateTime.fromISO("2023-09-16T00:00:00.000-05:00"),
+    observation: "test",
+    dateModified: DateTime.fromISO("2023-09-01T12:08:37.904-05:00"),
+    dateCreate: DateTime.fromISO("2023-09-01T12:08:37.904-05:00"),
+    id: 6,
+  };
+
+  test("class service must have a method createContractSuspension with a return", async (assert) => {
+    await Database.transaction(async (trx) => {
+      const result = await service.createContractSuspension(suspension, trx);
+      assert.isNotNull(result);
+    });
+  });
+
+  test("the method createContractSuspension must be a promise", async (assert) => {
+    await Database.transaction(async (trx) => {
+      const result = service.createContractSuspension(suspension, trx);
+      assert.typeOf(result, "Promise");
+    });
+  });
+
+  test("the method createContractSuspension must return a ApiResponse", async (assert) => {
+    await Database.transaction(async (trx) => {
+      const result = await service.createContractSuspension(suspension, trx);
+      assert.instanceOf(result, ApiResponse);
+    });
+  });
+
+  test("the method createContractSuspension must return a OK code ", async (assert) => {
+    await Database.transaction(async (trx) => {
+      const result = await service.createContractSuspension(suspension, trx);
+      assert.isTrue(result.operation.code === EResponseCodes.OK);
+    });
+  });
+});
+
+test.group("VinculationService TEST for getActivesContractorworkers", () => {
+  test("class service must have a method getActivesContractorworkers with a return", async (assert) => {
+    const result = await service.getActivesContractorworkers();
+    assert.isNotNull(result);
+  });
+
+  test("the method getActivesContractorworkers must be a promise", async (assert) => {
+    const result = await service.getActivesContractorworkers();
+    assert.typeOf(result, "Promise");
+  });
+
+  test("the method getActivesContractorworkers must return a ApiResponse", async (assert) => {
+    const result = await service.getActivesContractorworkers();
+    assert.instanceOf(result, ApiResponse);
+  });
+
+  test("the method getActivesContractorworkers must return a OK code ", async (assert) => {
+    const result = await service.getActivesContractorworkers();
     assert.isTrue(result.operation.code === EResponseCodes.OK);
   });
 });

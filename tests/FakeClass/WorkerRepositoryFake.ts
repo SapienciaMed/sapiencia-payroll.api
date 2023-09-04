@@ -121,7 +121,7 @@ export class WorkerRepositoryFake implements IWorkerRepository {
     });
   }
   getWorkerById(id: number): Promise<IWorker | null> {
-    const list = { ...workerFake };
+    const list = workerFake;
 
     return new Promise((res) => {
       const worker = list.find((worker) => worker.id === id);

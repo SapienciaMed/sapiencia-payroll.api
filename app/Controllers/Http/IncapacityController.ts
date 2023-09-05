@@ -20,7 +20,9 @@ export default class IncapacityController {
         await IncapacityProvider.createIncapacity(incapacityValidate)
       );
     } catch (err) {
-      return new ApiResponse(null, EResponseCodes.FAIL, String(err.messages));
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
     }
   }
 

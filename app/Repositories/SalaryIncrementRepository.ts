@@ -18,7 +18,7 @@ export interface ISalaryIncrementRepository {
   getSalaryIncrementById(id: number): Promise<ISalaryEditIncrement | null>;
   getSalaryIncrementByChargeID(
     idCharge: number
-  ): Promise<ISalaryEditIncrement | null>
+  ): Promise<ISalaryEditIncrement | null>;
   getSalaryIncrementEffectiveDate(
     codCharge: number,
     date: DateTime
@@ -69,8 +69,7 @@ export default class SalaryIncrementRepository
     idCharge: number
   ): Promise<ISalaryEditIncrement | null> {
     const res = await SalaryIncrement.query()
-      .where("codCharge", idCharge)
-      .max("id")
+      .where("codCharge", idCharge).orderBy("id","desc")
       .first();
 
     return res ? (res.serialize() as ISalaryEditIncrement) : null;

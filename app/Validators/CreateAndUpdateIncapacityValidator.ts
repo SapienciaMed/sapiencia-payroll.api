@@ -28,7 +28,7 @@ export default class IncapacityValidator {
     codEmployment: schema.number(),
     dateInitial: schema.date(),
     dateFinish: schema.date(),
-    comments: schema.string([rules.maxLength(100)]),
+    comments: schema.string.optional([rules.maxLength(100)]),
     isExtension: schema.boolean.optional(),
     userModified: schema.string.optional([rules.maxLength(15)]),
     userCreate: schema.string.optional([rules.maxLength(15)]),

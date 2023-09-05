@@ -104,7 +104,9 @@ export default class AppProvider {
       () =>
         new IncapacityService.default(
           new IncapacityRepository.default(),
-          new TypesIncapacityRepository.default()
+          new TypesIncapacityRepository.default(),
+          new LicenceRepository.default(),
+          new VacationDaysRepository.default()
         )
     );
 

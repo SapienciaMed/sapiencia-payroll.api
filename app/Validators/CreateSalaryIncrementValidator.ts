@@ -13,7 +13,7 @@ export default class CreateSalaryIncrementValidator {
     incrementValue: schema.number(),
     previousSalary: schema.number(),
     newSalary: schema.number(),
-    observation:schema.string([rules.maxLength(500)]),
+    observation:schema.string.optional([rules.maxLength(500)]),
     userModified: schema.string.optional([rules.maxLength(15)]),
     userCreate: schema.string.optional([rules.maxLength(15)]),
   });

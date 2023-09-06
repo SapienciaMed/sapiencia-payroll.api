@@ -7,6 +7,7 @@ export interface IManualDeduction {
   cyclic: boolean;
   numberInstallments?: number;
   applyExtraordinary?: boolean;
+  porcentualValue?:boolean;
   value: number;
   codFormsPeriod?: number;
   state: string;

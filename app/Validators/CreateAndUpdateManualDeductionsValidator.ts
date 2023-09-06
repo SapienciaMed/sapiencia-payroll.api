@@ -12,9 +12,10 @@ export default class CreateAndUpdateManualDeductionsValidator {
     numberInstallments: schema.number.optional(),
     applyExtraordinary: schema.boolean.optional(),
     value: schema.number(),
-    codFormsPeriod:schema.number.optional(),
+    porcentualValue: schema.boolean(),
+    codFormsPeriod: schema.number.optional(),
     state: schema.string([rules.maxLength(20)]),
-    observation: schema.string.optional([rules.maxLength(500)])
+    observation: schema.string.optional([rules.maxLength(500)]),
   });
 
   public messages: CustomMessages = { err: "error" };

@@ -46,6 +46,12 @@ export default class extends BaseSchema {
         .decimal("DDM_VALOR", 15, 2)
         .notNullable()
         .comment("valor de la deduccion / cuota");
+        table
+        .boolean("DDM_ES_PORCENTUAL")
+        .notNullable()
+        .comment(
+          "Indicador de si el valor es porcentual o se define el valor"
+        );
       table
         .integer("DDM_CODPPL")
         .references("PPL_CODIGO")

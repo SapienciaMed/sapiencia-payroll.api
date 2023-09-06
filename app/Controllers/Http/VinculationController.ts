@@ -4,10 +4,12 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import VinculationProvider from "@ioc:core.VinculationProvider";
 
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
+import { IFilterContractSuspension } from "App/Interfaces/ContractSuspensionInterfaces";
 import { IFilterEmployment } from "App/Interfaces/EmploymentInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import CreateAndUpdateWorkerValidator from "App/Validators/CreateAndUpdateVinculationValidator";
+import CreateContractSuspensionValidator from "App/Validators/CreateContractSuspensionValidator";
 import RetirementEmploymentValidator from "App/Validators/RetirementEmploymentValidator";
 
 export default class VinculationController {
@@ -143,6 +145,18 @@ export default class VinculationController {
     }
   }
 
+  public async getActivesContractorworkers({ response }: HttpContextContract) {
+    try {
+      return response.send(
+        await VinculationProvider.getActivesContractorworkers()
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
   public async getReasonsForWithdrawalList({ response }: HttpContextContract) {
     try {
       return response.send(
@@ -153,5 +167,44 @@ export default class VinculationController {
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
       );
     }
+  }
+
+  public async getContractSuspensionPaginate({
+    response,
+    request,
+  }: HttpContextContract) {
+    try {
+      const data = request.body() as IFilterContractSuspension;
+      return response.send(
+        await VinculationProvider.getContractSuspensionPaginate(data)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async createContractSuspension({
+    request,
+    response,
+  }: HttpContextContract) {
+    await Database.transaction(async (trx) => {
+      try {
+        const contractSuspension = await request.validate(
+          CreateContractSuspensionValidator
+        );
+        return response.send(
+          await VinculationProvider.createContractSuspension(
+            contractSuspension,
+            trx
+          )
+        );
+      } catch (err) {
+        return response.badRequest(
+          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        );
+      }
+    });
   }
 }

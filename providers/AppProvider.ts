@@ -14,14 +14,14 @@ export default class AppProvider {
     const IncapacityService = await import("App/Services/IncapacityService");
     const LicenceService = await import("App/Services/LicenceService");
     const FormPeriodService = await import("App/Services/FormPeriodService");
-    const ContractSuspensionService = await import(
-      "App/Services/ContractSuspensionService"
-    );
     const SalaryHistoryService = await import(
       "App/Services/SalaryHistoryService"
     );
     const SalaryIncrementService = await import(
       "App/Services/SalaryIncrementService"
+    );
+    const ManualDeductionService = await import(
+      "App/Services/ManualDeductionService"
     );
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
@@ -68,6 +68,9 @@ export default class AppProvider {
     const SalaryHistoryRepository = await import(
       "App/Repositories/SalaryHistoryRepository"
     );
+    const ManualDeductionRepository = await import(
+      "App/Repositories/ManualDeductionRepository"
+    );
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
@@ -80,7 +83,10 @@ export default class AppProvider {
           new RelativeRepository.default(),
           new EmploymentRepository.default(),
           new TypesContractsRepository.default(),
-          new ChargesRepository.default()
+          new ChargesRepository.default(),
+          new ContractSuspensionRepository.default(),
+          new SalaryHistoryRepository.default(),
+          new SalaryIncrementRepository.default()
         )
     );
 
@@ -98,7 +104,9 @@ export default class AppProvider {
       () =>
         new IncapacityService.default(
           new IncapacityRepository.default(),
-          new TypesIncapacityRepository.default()
+          new TypesIncapacityRepository.default(),
+          new LicenceRepository.default(),
+          new VacationDaysRepository.default()
         )
     );
 
@@ -118,21 +126,13 @@ export default class AppProvider {
     );
 
     this.app.container.singleton(
-      "core.ContractSuspensionProvider",
-      () =>
-        new ContractSuspensionService.default(
-          new ContractSuspensionRepository.default()
-        )
-    );
-
-    this.app.container.singleton(
       "core.SalaryIncrementProvider",
       () =>
         new SalaryIncrementService.default(
           new SalaryIncrementRepository.default(),
           new SalaryHistoryRepository.default(),
           new EmploymentRepository.default(),
-          new ChargesRepository.default(),
+          new ChargesRepository.default()
         )
     );
 
@@ -140,6 +140,14 @@ export default class AppProvider {
       "core.SalaryHistoryProvider",
       () =>
         new SalaryHistoryService.default(new SalaryHistoryRepository.default())
+    );
+
+    this.app.container.singleton(
+      "core.ManualDeductionProvider",
+      () =>
+        new ManualDeductionService.default(
+          new ManualDeductionRepository.default()
+        )
     );
   }
 

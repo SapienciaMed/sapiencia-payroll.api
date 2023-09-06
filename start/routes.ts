@@ -32,6 +32,10 @@ Route.group(() => {
     "VinculationController.getReasonsForWithdrawalList"
   );
   Route.get("/worker", "VinculationController.getActiveWorkers");
+  Route.get(
+    "/contractors",
+    "VinculationController.getActivesContractorworkers"
+  );
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.put("/", "VinculationController.updateVinculation");
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
@@ -39,6 +43,11 @@ Route.group(() => {
   Route.post(
     "/employment/get-paginated",
     "VinculationController.getEmploymentPaginate"
+  );
+  Route.post("/suspension", "VinculationController.createContractSuspension");
+  Route.post(
+    "/suspension/get-paginated",
+    "VinculationController.getContractSuspensionPaginate"
   );
   Route.put(
     "/employment/retirement",
@@ -48,7 +57,7 @@ Route.group(() => {
 }).prefix("/api/v1/vinculation");
 
 Route.group(() => {
-  Route.post("/", "VacationsController.getVacations");
+  Route.get("/", "VacationsController.getVacations");
   Route.post("/create", "VacationsController.createVacationDays");
   Route.put("/", "VacationsController.updateVacationPeriod");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
@@ -70,13 +79,14 @@ Route.group(() => {
   Route.get("/:id", "LicencesController.getLicenseById");
 }).prefix("/api/v1/licence");
 
-Route.group(() => {
-  
-}).prefix("/api/v1/payroll");
+Route.group(() => {}).prefix("/api/v1/payroll");
 
 Route.group(() => {
-  Route.post("/","SalaryIncrementsController.createSalaryIncrements")
-  Route.post("get-paginated","SalaryIncrementsController.getSalaryHistoriesPaginate")
-  Route.put("/","SalaryIncrementsController.updateSalaryIncrements")
-  Route.get("/:id","SalaryIncrementsController.getSalaryIncrementById")
+  Route.post("/", "SalaryIncrementsController.createSalaryIncrements");
+  Route.post(
+    "get-paginated",
+    "SalaryIncrementsController.getSalaryHistoriesPaginate"
+  );
+  Route.put("/", "SalaryIncrementsController.updateSalaryIncrements");
+  Route.get("/:id", "SalaryIncrementsController.getSalaryIncrementById");
 }).prefix("/api/v1/salaryIncrease");

@@ -59,16 +59,32 @@ export class IncapacityRepositoryFake implements IncapacityRepository {
   getIncapacityPaginate(
     _filters: IFilterIncapacity
   ): Promise<IPagingData<IGetIncapacity>> {
-    throw new Error("Method not implemented.");
+    return Promise.resolve({
+      array: [getIncapacityFake],
+      meta: { total: 100 },
+    });
   }
   getIncapacityById(_id: number): Promise<IGetIncapacity | null> {
-    throw new Error("Method not implemented.");
+    const list = [{ ...getIncapacityFake }];
+
+    return new Promise((res) => {
+      const incapacity = list.find((licence) => licence.id === _id);
+
+      if (!incapacity) {
+        return res(null);
+      }
+
+      return res(incapacity);
+    });
   }
+
   updateIncapacity(
     _incapacity: IIncapacity,
     _id: number
   ): Promise<IIncapacity | null> {
-    throw new Error("Method not implemented.");
+    const list = [getIncapacityFake];
+
+    return Promise.resolve(list.find((i) => i.id == _id) || null);
   }
 
   getIncapacityDateCodEmployment(

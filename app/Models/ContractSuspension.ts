@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
+import Employment from "./Employment";
 
 export default class ContractSuspension extends BaseModel {
   public static table = "SCO_SUSPENCION_CONTRATOS";
@@ -70,4 +71,10 @@ export default class ContractSuspension extends BaseModel {
     prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
+
+  @hasOne(() => Employment, {
+    localKey: "codEmployment",
+    foreignKey: "id",
+  })
+  public employment: HasOne<typeof Employment>;
 }

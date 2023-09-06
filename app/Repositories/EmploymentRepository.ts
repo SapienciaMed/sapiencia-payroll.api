@@ -9,6 +9,7 @@ import {
 import Employment from "App/Models/Employment";
 import ReasonsForWithdrawal from "App/Models/ReasonsForWithdrawal";
 import { IPagingData } from "App/Utils/ApiResponses";
+import { DateTime } from "luxon";
 
 export interface IEmploymentRepository {
   createEmployment(
@@ -20,10 +21,15 @@ export interface IEmploymentRepository {
     filters: IFilterEmployment
   ): Promise<IPagingData<IEmployment>>;
   getEmploymentById(id: number): Promise<IEmploymentWorker[] | null>;
-  getEmploymentsbyCharge(idCharge:number): Promise<IEmployment[]>
+  getEmploymentsbyCharge(idCharge: number): Promise<IEmployment[]>;
   getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]>;
   retirementEmployment(
     data: IRetirementEmployment
+  ): Promise<IEmployment | null>;
+  updateContractDate(
+    idEmployment: number,
+    date: DateTime,
+    trx: TransactionClientContract
   ): Promise<IEmployment | null>;
 }
 
@@ -56,8 +62,10 @@ export default class EmploymentRepository implements IEmploymentRepository {
     return res as IEmployment[];
   }
 
-  async getEmploymentsbyCharge(idCharge:number): Promise<IEmployment[]>{
-    const res = await Employment.query().where("state", 1).andWhere("idCharge",idCharge);
+  async getEmploymentsbyCharge(idCharge: number): Promise<IEmployment[]> {
+    const res = await Employment.query()
+      .where("state", 1)
+      .andWhere("idCharge", idCharge);
     return res as IEmployment[];
   }
   async getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
@@ -100,6 +108,19 @@ export default class EmploymentRepository implements IEmploymentRepository {
     return toUpdate.serialize() as IEmployment;
   }
 
+  async updateContractDate(
+    idEmployment: number,
+    date: DateTime,
+    trx: TransactionClientContract
+  ): Promise<IEmployment | null> {
+    const toUpdate = await Employment.find(idEmployment);
+
+    if (!toUpdate) return null;
+
+    (await toUpdate.merge({ endDate: date }).save()).useTransaction(trx);
+
+    return toUpdate.serialize() as IEmployment;
+  }
   async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
     const res = await ReasonsForWithdrawal.all();
     return res as IReasonsForWithdrawal[];

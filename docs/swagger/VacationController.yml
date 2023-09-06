@@ -51,32 +51,31 @@
                     "operation": { "code": "OK", "message": "" },
                   }
 
-/api/v1/vacations/:
-  put:
-    tags:
-      - Vacation
-    summary: Permite la creación de un reintegro a un periodo de vacaciones.
-    description: Crea un reintegro a partir de los campos requeridos.
-    operationId: updateVacation
-    requestBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/RefundVacation"
-    produces:
-      - application/json
-    responses:
-      200:
-        description: OK
+paths:
+  /api/v1/vacations/:
+    put:
+      tags:
+        - Vacation
+      summary: Permite la creación de un reintegro a un periodo de vacaciones.
+      description: Crea un reintegro a partir de los campos requeridos.
+      operationId: updateVacation
+      requestBody:
         content:
           application/json:
-            examples:
-              Action:
-                value:
-                  {
-                    "data":
-                      [
-                        {
+            schema:
+              $ref: "#/components/schemas/RefundVacation"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    data:
+                      - {
                           "id": 1,
                           "codEmployment": 1,
                           "period": 2023,
@@ -88,10 +87,43 @@
                           "available": 3,
                           "days": 9,
                           "periodClosed": false,
-                        },
-                      ],
-                    "operation": { "code": "OK", "message": "" },
-                  }
+                        }
+                    operation:
+                      code: OK
+                      message: ""
+    get:
+      tags:
+        - Vacation
+      summary: Obtiene los periodos de vacaciones.
+      description: Obtiene los periodos de vacaciones.
+      operationId: GetVacation
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    data:
+                      - {
+                          "id": 1,
+                          "codEmployment": 1,
+                          "period": 2023,
+                          "dateFrom": "2023-07-11T13:48:28.204-05:00",
+                          "dateUntil": "2023-07-15T13:48:28.204-05:00",
+                          "periodFormer": 2,
+                          "enjoyed": 3,
+                          "refund": 3,
+                          "available": 3,
+                          "days": 9,
+                          "periodClosed": false,
+                        }
+                    operation:
+                      code: OK
+                      message: ""
 
 /api/v1/vacations/workerVacation:
   post:

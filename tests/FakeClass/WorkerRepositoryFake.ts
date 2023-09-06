@@ -8,34 +8,92 @@ import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
 
-const workerFake: IWorker = {
-  id: 1,
-  typeDocument: "CC",
-  numberDocument: "123456789",
-  firstName: "Juan",
-  secondName: "",
-  surname: "Andrade",
-  secondSurname: "",
-  gender: "M",
-  bloodType: "1",
-  birthDate: DateTime.now(),
-  nationality: "COL",
-  email: "",
-  contactNumber: "3006847693",
-  department: "5",
-  municipality: "1",
-  neighborhood: "17",
-  address: "CLL 98 A57 #58",
-  socioEconomic: "3",
-  eps: "2",
-  severanceFund: "",
-  arl: "",
-  riskLevel: "",
-  housingType: "",
-  fundPension: "",
-  userCreate: "",
-  userModified: "",
-};
+const workerFake: IWorker[] = [
+  {
+    id: 1,
+    typeDocument: "CC",
+    numberDocument: "123456789",
+    firstName: "Juan",
+    secondName: "",
+    surname: "Andrade",
+    secondSurname: "",
+    gender: "M",
+    bloodType: "1",
+    birthDate: DateTime.now(),
+    nationality: "COL",
+    email: "",
+    contactNumber: "3006847693",
+    department: "5",
+    municipality: "1",
+    neighborhood: "17",
+    address: "CLL 98 A57 #58",
+    socioEconomic: "3",
+    eps: "2",
+    severanceFund: "",
+    arl: "",
+    riskLevel: "",
+    housingType: "",
+    fundPension: "",
+    userCreate: "",
+    userModified: "",
+  },
+  {
+    id: 1,
+    typeDocument: "CC",
+    numberDocument: "123456789",
+    firstName: "Juan",
+    secondName: "",
+    surname: "Andrade",
+    secondSurname: "",
+    gender: "M",
+    bloodType: "1",
+    birthDate: DateTime.now(),
+    nationality: "COL",
+    email: "",
+    contactNumber: "3006847693",
+    department: "5",
+    municipality: "1",
+    neighborhood: "17",
+    address: "CLL 98 A57 #58",
+    socioEconomic: "3",
+    eps: "2",
+    severanceFund: "",
+    arl: "",
+    riskLevel: "",
+    housingType: "",
+    fundPension: "",
+    userCreate: "",
+    userModified: "",
+  },
+  {
+    id: 1,
+    typeDocument: "CC",
+    numberDocument: "123456789",
+    firstName: "Juan",
+    secondName: "",
+    surname: "Andrade",
+    secondSurname: "",
+    gender: "M",
+    bloodType: "1",
+    birthDate: DateTime.now(),
+    nationality: "COL",
+    email: "",
+    contactNumber: "3006847693",
+    department: "5",
+    municipality: "1",
+    neighborhood: "17",
+    address: "CLL 98 A57 #58",
+    socioEconomic: "3",
+    eps: "2",
+    severanceFund: "",
+    arl: "",
+    riskLevel: "",
+    housingType: "",
+    fundPension: "",
+    userCreate: "",
+    userModified: "",
+  },
+];
 
 const employmentFake: IEmployment = {
   id: 2,
@@ -52,11 +110,18 @@ const employmentFake: IEmployment = {
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
+  getActivesContractorworkers(): Promise<IWorker[]> {
+    return new Promise((res) => {
+      res(workerFake);
+    });
+  }
   getActivesWorkers(): Promise<IWorker[]> {
-    throw new Error("Method not implemented.");
+    return new Promise((res) => {
+      res(workerFake);
+    });
   }
   getWorkerById(id: number): Promise<IWorker | null> {
-    const list = [{ ...workerFake }];
+    const list = workerFake;
 
     return new Promise((res) => {
       const worker = list.find((worker) => worker.id === id);
@@ -65,13 +130,13 @@ export class WorkerRepositoryFake implements IWorkerRepository {
         return res(null);
       }
 
-      return res(worker);
+      return res(worker[0]);
     });
   }
 
   createWorker(_worker: IWorker): Promise<IWorker> {
     return new Promise((res) => {
-      res(workerFake);
+      res(workerFake[0]);
     });
   }
 
@@ -80,7 +145,7 @@ export class WorkerRepositoryFake implements IWorkerRepository {
   ): Promise<IPagingData<IGetVinculation>> {
     return new Promise((res) => {
       res({
-        array: [{ worker: workerFake, employment: employmentFake }],
+        array: [{ worker: workerFake[0], employment: employmentFake }],
         meta: { total: 100 },
       });
     });
@@ -88,7 +153,7 @@ export class WorkerRepositoryFake implements IWorkerRepository {
 
   editWorker(_worker: IWorker): Promise<IWorker | null> {
     return new Promise((res) => {
-      res(workerFake);
+      res(workerFake[0]);
     });
   }
 }

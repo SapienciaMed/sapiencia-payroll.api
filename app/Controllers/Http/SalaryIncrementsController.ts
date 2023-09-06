@@ -29,7 +29,7 @@ export default class SalaryIncrementsController {
       } catch (err) {
         await trx.rollback();
         return response.badRequest(
-          new ApiResponse(null, EResponseCodes.FAIL, String(err.messages))
+          new ApiResponse(null, EResponseCodes.FAIL, String(err))
         );
       }
     });

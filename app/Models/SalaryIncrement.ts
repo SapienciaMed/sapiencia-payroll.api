@@ -28,6 +28,8 @@ export default class SalaryIncrement extends BaseModel {
   @column({
     columnName: "ISA_ES_PORCENTUAL",
     serializeAs: "porcentualIncrement",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
   })
   public porcentualIncrement: boolean;
 

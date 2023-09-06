@@ -1,13 +1,19 @@
-import { DateTime } from 'luxon'
-import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from '@ioc:Adonis/Lucid/Orm'
-import Employment from './Employment';
-import VacationDay from './VacationDay';
+import { DateTime } from "luxon";
+import {
+  BaseModel,
+  HasMany,
+  HasOne,
+  column,
+  hasMany,
+  hasOne,
+} from "@ioc:Adonis/Lucid/Orm";
+import Employment from "./Employment";
+import VacationDay from "./VacationDay";
 
 export default class Vacation extends BaseModel {
-
   public static table = "VAC_VACACIONES";
-  
-  @column({ isPrimary: true, columnName: "VAC_CODIGO", serializeAs: "id", })
+
+  @column({ isPrimary: true, columnName: "VAC_CODIGO", serializeAs: "id" })
   public id: number;
 
   @column({ columnName: "VAC_CODEMP_EMPLEO", serializeAs: "codEmployment" })
@@ -15,11 +21,19 @@ export default class Vacation extends BaseModel {
 
   @column({ columnName: "VAC_PERIODO", serializeAs: "period" })
   public period: number;
-  
-  @column.dateTime({ autoCreate: false,columnName: "VAC_FECHA_DESDE", serializeAs: "dateFrom"})
+
+  @column.dateTime({
+    autoCreate: false,
+    columnName: "VAC_FECHA_DESDE",
+    serializeAs: "dateFrom",
+  })
   public dateFrom: DateTime;
 
-  @column.dateTime({ autoCreate: false,columnName: "VAC_FECHA_HASTA", serializeAs: "dateUntil"})
+  @column.dateTime({
+    autoCreate: false,
+    columnName: "VAC_FECHA_HASTA",
+    serializeAs: "dateUntil",
+  })
   public dateUntil: DateTime;
 
   @column({ columnName: "VAC_PERIODO_ANTERIOR", serializeAs: "periodFormer" })
@@ -37,7 +51,12 @@ export default class Vacation extends BaseModel {
   @column({ columnName: "VAC_DIAS", serializeAs: "days" })
   public days: number;
 
-  @column({ columnName: "VAC_PERIODO_CERRADO", serializeAs: "periodClosed" })
+  @column({
+    columnName: "VAC_PERIODO_CERRADO",
+    serializeAs: "periodClosed",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
   public periodClosed: boolean;
 
   @hasOne(() => Employment, {
@@ -51,5 +70,4 @@ export default class Vacation extends BaseModel {
     foreignKey: "codVacation",
   })
   public vacationDay: HasMany<typeof VacationDay>;
-
 }

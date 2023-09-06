@@ -29,7 +29,12 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_DIAS", serializeAs: "enjoyedDays" })
   public enjoyedDays: number;
 
-  @column({ columnName: "DVA_PAGADAS", serializeAs: "paid" })
+  @column({
+    columnName: "DVA_PAGADAS",
+    serializeAs: "paid",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
   public paid: boolean;
 
   @column({ columnName: "DVA_CODPPL_PLANILLA", serializeAs: "codForm" })

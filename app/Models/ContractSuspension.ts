@@ -25,7 +25,12 @@ export default class ContractSuspension extends BaseModel {
   })
   public dateEnd: DateTime;
 
-  @column({ columnName: "SCO_AJUSTA_FECHA_FIN", serializeAs: "adjustEndDate" })
+  @column({
+    columnName: "SCO_AJUSTA_FECHA_FIN",
+    serializeAs: "adjustEndDate",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
   public adjustEndDate: boolean;
 
   @column.dateTime({

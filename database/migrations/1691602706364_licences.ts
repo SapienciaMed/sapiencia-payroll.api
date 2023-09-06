@@ -14,24 +14,24 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("LIC_CODEMP_EMPLEO")
-        .references("EMP_CODIGO")
+        .unsigned().references("EMP_CODIGO")
         .inTable("EMP_EMPLEOS")
         .unsigned()
         .notNullable()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
       table
         .integer("LIC_CODTLC_TIPO_LICENCIA")
-        .references("TLC_CODIGO")
+        .unsigned().references("TLC_CODIGO")
         .inTable("TLC_TIPOS_LICENCIAS")
         .unsigned()
         .nullable()
         .comment("codigo del tipo de licencia (FK TLC_TIPOS_LICENCIAS)");
       table
-        .timestamp("LIC_FECHA_INICIO")
+        .date("LIC_FECHA_INICIO")
         .notNullable()
         .comment("fecha de inicio de la licencia");
       table
-        .timestamp("LIC_FECHA_FIN")
+        .date("LIC_FECHA_FIN")
         .notNullable()
         .comment("fecha de finalizacion de la licencia");
         table

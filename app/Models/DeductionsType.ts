@@ -9,8 +9,8 @@ export default class DeductionsType extends BaseModel {
   public name: string;
 
   @column({
-    columnName: "TDD_ES_CICLICA",
-    serializeAs: "cyclic",
+    columnName: "TDD_TIPO",
+    serializeAs: "type",
   })
-  public cyclic: boolean;
+  public type: string;
 }

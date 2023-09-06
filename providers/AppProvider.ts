@@ -58,7 +58,7 @@ export default class AppProvider {
     const LicenceRepository = await import(
       "App/Repositories/LicenceRepository"
     );
-    const FormPeriodRepository = await import("App/Repositories/FormsPeriod");
+    const FormPeriodRepository = await import("App/Repositories/FormsPeriodRepository");
     const ContractSuspensionRepository = await import(
       "App/Repositories/ContractSuspensionRepository"
     );

@@ -6,40 +6,40 @@ export default class extends BaseSeeder {
     await DeductionsType.createMany([
       {
         name: "Aportes AFC",
-        cyclic: true,
+        type: "Ciclica",
       },
       {
         name: "Aportes Pensión Voluntaria",
-        cyclic: true,
+        type: "Ciclica",
       },
       {
         name: "Poliza de vida",
-        cyclic: true,
+        type: "Ciclica",
       },
       {
         name: "Poliza de salud",
-        cyclic: true,
+        type: "Ciclica",
       },
       {
         name: "Libranza caja de compensación",
-        cyclic: true,
+        type: "Ciclica",
       },
       {
         name: "Embargos",
-        cyclic: true,
+        type: "Ciclica",
       },
       {
-        name:"Mayor valor pagado por salario",
-        cyclic: false,  
+        name: "Mayor valor pagado por salario",
+        type: "Eventual",
       },
       {
-        name:"Otros descuentos",
-        cyclic: false,
+        name: "Otros descuentos",
+        type: "Eventual",
       },
       {
-        name:"Menor valor descontado",
-        cyclic: false,
-      }
+        name: "Menor valor descontado",
+        type: "Eventual",
+      },
     ]);
   }
 }

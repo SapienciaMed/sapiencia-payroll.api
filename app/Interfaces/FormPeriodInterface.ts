@@ -10,6 +10,7 @@ export interface IFormPeriod {
     paidDate: DateTime;
     month: number;
     year: number;
+    observation?:string;
     userModified?: string;
     dateModified?: DateTime;
     userCreate?: string;

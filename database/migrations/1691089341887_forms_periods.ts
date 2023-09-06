@@ -22,7 +22,7 @@ export default class extends BaseSchema {
       table
         .string("PPL_ESTADO", 10)
         .notNullable()
-        .comment("Referencia del periodo de vacaciones del empleado ");
+        .comment("Referencia del estado de la planilla");
       table
         .date("PPL_FECHA_INICIO")
         .notNullable()
@@ -44,6 +44,10 @@ export default class extends BaseSchema {
         .integer("PPL_ANIO")
         .notNullable()
         .comment("Año al que corresponde la planilla");
+        table
+        .string("PPL_OBSERVACIONES", 500)
+        .notNullable()
+        .comment("Observaciones de la planilla");
       table
         .string("PPL_USUARIO_MODIFICO", 15)
         .comment(

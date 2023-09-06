@@ -31,7 +31,12 @@ export default class Incapacity extends BaseModel {
   @column({ columnName: "INC_COMENTARIOS", serializeAs: "comments" })
   public comments: string;
 
-  @column({ columnName: "INC_ES_PRORROGA", serializeAs: "isExtension" })
+  @column({
+    columnName: "INC_ES_PRORROGA",
+    serializeAs: "isExtension",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
   public isExtension: boolean;
 
   @column({ columnName: "INC_USUARIO_MODIFICO", serializeAs: "userModified" })

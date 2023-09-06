@@ -9,6 +9,7 @@ export interface IManualDeductionRepository {
   ): Promise<IManualDeduction>;
   getDeductionTypes(): Promise<IDeductionType[]>;
   getManualDeductionById(id: number): Promise<IManualDeduction[] | null>;
+  getDeductionTypesByType(type: string): Promise<IDeductionType[]>;
 }
 
 export default class manualDeductionRepository
@@ -28,6 +29,10 @@ export default class manualDeductionRepository
 
   async getDeductionTypes(): Promise<IDeductionType[]> {
     const deductionTypes = await DeductionsType.all();
+    return deductionTypes as IDeductionType[];
+  }
+  async getDeductionTypesByType(type: string): Promise<IDeductionType[]> {
+    const deductionTypes = await DeductionsType.query().where("type", type);
     return deductionTypes as IDeductionType[];
   }
 

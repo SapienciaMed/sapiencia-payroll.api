@@ -79,10 +79,15 @@ Route.group(() => {
   Route.get("/:id", "LicencesController.getLicenseById");
 }).prefix("/api/v1/licence");
 
-Route.group(() => {}).prefix("/api/v1/payroll");
+Route.group(() => {
+  Route.post("/","FormPeriodsController.createFormPeriod");
+  Route.get("/types","FormPeriodsController.getFormTypes");
+  Route.get("/last","FormPeriodsController.getLastPeriods")
+}).prefix("/api/v1/payroll");
 
 Route.group(() => {
-  Route.post("/","ManualDeductionsController.createDeduction");
+  Route.post("/", "ManualDeductionsController.createDeduction");
+  Route.get("/:type", "ManualDeductionsController.getDeductionTypesByType");
 }).prefix("/api/v1/deduction");
 
 Route.group(() => {

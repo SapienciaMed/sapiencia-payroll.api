@@ -19,4 +19,20 @@ export default class ManualDeductionsController {
       );
     }
   }
+
+  public async getDeductionTypesByType({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const {type} = request.body();
+      return response.send(
+        await ManualDeductionProvider.getDeductionTypesByType(type)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

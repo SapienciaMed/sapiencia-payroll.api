@@ -11,6 +11,7 @@ export interface IManualDeductionService {
   ): Promise<ApiResponse<IManualDeduction>>;
   getDeductionTypes(): Promise<ApiResponse<IDeductionType[]>>;
   getManualDeductionById(id: number): Promise<ApiResponse<IManualDeduction[]>>;
+  getDeductionTypesByType(type: string): Promise<ApiResponse<IDeductionType[]>>;
 }
 
 export default class ManualDeductionService implements IManualDeductionService {
@@ -23,8 +24,10 @@ export default class ManualDeductionService implements IManualDeductionService {
   async createManualDeduction(
     manualDeduction: IManualDeduction
   ): Promise<ApiResponse<IManualDeduction>> {
-    const salary = await this.employmentRepository.getChargeEmployment(manualDeduction.codEmployment);
-    if(manualDeduction.value > (Number(salary.baseSalary) * 0.5) ){
+    const salary = await this.employmentRepository.getChargeEmployment(
+      manualDeduction.codEmployment
+    );
+    if (manualDeduction.value > Number(salary.baseSalary) * 0.5) {
       return new ApiResponse(
         {} as IManualDeduction,
         EResponseCodes.FAIL,
@@ -60,6 +63,22 @@ export default class ManualDeductionService implements IManualDeductionService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  async getDeductionTypesByType(
+    type: string
+  ): Promise<ApiResponse<IDeductionType[]>> {
+    const res = await this.manualDeductionRepository.getDeductionTypesByType(
+      type
+    );
+    if (!res) {
+      return new ApiResponse(
+        {} as IDeductionType[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
   async getManualDeductionById(
     id: number
   ): Promise<ApiResponse<IManualDeduction[]>> {

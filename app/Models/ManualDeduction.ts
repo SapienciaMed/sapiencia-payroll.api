@@ -26,7 +26,12 @@ export default class ManualDeduction extends BaseModel {
   })
   public codDeductionType: number;
 
-  @column({ columnName: "DDM_ES_CICLICA", serializeAs: "cyclic" })
+  @column({
+    columnName: "DDM_ES_CICLICA",
+    serializeAs: "cyclic",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
   public cyclic: boolean;
 
   @column({
@@ -38,6 +43,8 @@ export default class ManualDeduction extends BaseModel {
   @column({
     columnName: "DDM_APLICAR_EXTRAORINARIAS",
     serializeAs: "applyExtraordinary",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
   })
   public applyExtraordinary: boolean;
 
@@ -49,7 +56,7 @@ export default class ManualDeduction extends BaseModel {
 
   @column({ columnName: "DDM_ESTADO", serializeAs: "state" })
   public state: string;
-  
+
   @column({ columnName: "DDM_OBSERVACIONES", serializeAs: "observation" })
   public observation: string;
 
@@ -63,7 +70,7 @@ export default class ManualDeduction extends BaseModel {
     autoUpdate: true,
     columnName: "DDM_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+   // prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 
@@ -77,7 +84,7 @@ export default class ManualDeduction extends BaseModel {
     autoCreate: true,
     columnName: "DDM_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+   // prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
 

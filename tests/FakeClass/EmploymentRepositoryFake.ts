@@ -1,3 +1,4 @@
+import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import {
   IEmployment,
   IEmploymentWorker,
@@ -29,6 +30,9 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  getChargeEmployment(_idEmployment: number): Promise<ICharge> {
+    throw new Error("Method not implemented.");
+  }
   updateContractDate(
     _idEmployment: number,
     _date: DateTime

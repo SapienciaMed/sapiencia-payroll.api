@@ -39,9 +39,7 @@ export interface IEmploymentRepository {
 export default class EmploymentRepository implements IEmploymentRepository {
   constructor() {}
   async getChargeEmployment(idEmployment: number): Promise<ICharge> {
-    const employment = await Employment.query()
-      .where("id", idEmployment)
-      .firstOrFail();
+    const employment = await Employment.findOrFail(idEmployment)
     const res = await Charge.query().where("id", employment.idCharge).first();
     return res as ICharge;
   }

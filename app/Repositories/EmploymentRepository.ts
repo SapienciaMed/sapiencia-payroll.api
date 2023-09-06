@@ -1,4 +1,5 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import {
   IEmployment,
   IEmploymentWorker,
@@ -6,6 +7,7 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
+import Charge from "App/Models/Charge";
 import Employment from "App/Models/Employment";
 import ReasonsForWithdrawal from "App/Models/ReasonsForWithdrawal";
 import { IPagingData } from "App/Utils/ApiResponses";
@@ -22,6 +24,7 @@ export interface IEmploymentRepository {
   ): Promise<IPagingData<IEmployment>>;
   getEmploymentById(id: number): Promise<IEmploymentWorker[] | null>;
   getEmploymentsbyCharge(idCharge: number): Promise<IEmployment[]>;
+  getChargeEmployment(idEmployment: number): Promise<ICharge>;
   getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]>;
   retirementEmployment(
     data: IRetirementEmployment
@@ -35,6 +38,13 @@ export interface IEmploymentRepository {
 
 export default class EmploymentRepository implements IEmploymentRepository {
   constructor() {}
+  async getChargeEmployment(idEmployment: number): Promise<ICharge> {
+    const employment = await Employment.query()
+      .where("id", idEmployment)
+      .firstOrFail();
+    const res = await Charge.query().where("id", employment.idCharge).first();
+    return res as ICharge;
+  }
 
   async getEmploymentWorker(
     filters: IFilterEmployment

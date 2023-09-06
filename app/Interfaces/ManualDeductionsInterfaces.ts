@@ -10,6 +10,7 @@ export interface IManualDeduction {
   value: number;
   codFormsPeriod?: number;
   state: string;
+  observation?:string;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

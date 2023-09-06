@@ -146,7 +146,8 @@ export default class AppProvider {
       "core.ManualDeductionProvider",
       () =>
         new ManualDeductionService.default(
-          new ManualDeductionRepository.default()
+          new ManualDeductionRepository.default(),
+          new EmploymentRepository.default()
         )
     );
   }

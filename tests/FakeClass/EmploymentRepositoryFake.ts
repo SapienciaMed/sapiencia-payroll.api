@@ -29,6 +29,7 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  
   updateContractDate(
     _idEmployment: number,
     _date: DateTime

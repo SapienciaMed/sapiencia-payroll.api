@@ -1,11 +1,13 @@
-import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import BaseSchema from "@ioc:Adonis/Lucid/Schema";
 
 export default class extends BaseSchema {
-  protected tableName = 'TDD_TIPOS_DEDUCCIONES'
+  protected tableName = "TDD_TIPOS_DEDUCCIONES";
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.comment("Tabla que define los tipos de deducciones que se aplican en planilla");
+      table.comment(
+        "Tabla que define los tipos de deducciones que se aplican en planilla"
+      );
       table
         .increments("TDD_CODIGO")
         .primary()
@@ -16,13 +18,13 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Descripcion de la deduccion");
       table
-        .boolean("TDD_ES_CICLICA")
+        .string("TDD_TIPO", 15)
         .nullable()
-        .comment("Indicador de deduccion ciclica");
+        .comment("Indicador de tipo de procesamiento (Ciclica, Eventual, Automatica)");
     });
   }
 
-  public async down () {
-    this.schema.dropTable(this.tableName)
+  public async down() {
+    this.schema.dropTable(this.tableName);
   }
 }

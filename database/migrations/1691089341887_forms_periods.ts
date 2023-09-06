@@ -16,7 +16,7 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("PPL_CODTPL_TIPO_PLANILLA")
-        .references("TPL_CODIGO")
+        .unsigned().references("TPL_CODIGO")
         .inTable("TPL_TIPOS_PLANILLA").unsigned()
         .comment("codigo del tipo de planilla (FK TPL_TIPOS_PLANILLA)");
       table
@@ -24,18 +24,18 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Referencia del periodo de vacaciones del empleado ");
       table
-        .timestamp("PPL_FECHA_INICIO")
+        .date("PPL_FECHA_INICIO")
         .notNullable()
         .comment("Fecha de inicio del periodo de planilla");
       table
-        .timestamp("PPL_FECHA_FIN")
+        .date("PPL_FECHA_FIN")
         .notNullable()
         .comment("Fecha de finalizacion del periodo de planilla");
       table
-        .timestamp("PPL_FECHA_CORTE")
+        .date("PPL_FECHA_CORTE")
         .notNullable()
         .comment("fecha de corte para trabajar la planilla");
-      table.timestamp("PPL_FECHA_PAGO").notNullable().comment("fecha de pago");
+      table.date("PPL_FECHA_PAGO").notNullable().comment("fecha de pago");
       table
         .integer("PPL_MES")
         .notNullable()
@@ -50,14 +50,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("PPL_FECHA_MODIFICO")
+        .dateTime("PPL_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("PPL_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("PPL_FECHA_CREO")
+        .dateTime("PPL_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

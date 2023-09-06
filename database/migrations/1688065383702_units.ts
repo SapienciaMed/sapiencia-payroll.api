@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.string("UNI_NOMBRE", 100).notNullable().comment("Nombre del cargo");
       table
         .integer("UNI_CODUNI_SUPERIOR")
-        .references("UNI_CODIGO")
+        .unsigned().references("UNI_CODIGO")
         .inTable("UNI_UNIDADES")
         .comment("codigo unidad superior (FK UNI_UNIDADES)");
     });

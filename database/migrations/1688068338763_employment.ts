@@ -10,20 +10,20 @@ export default class extends BaseSchema {
       table
         .integer("EMP_CODTRA_TRABAJADOR")
         .notNullable()
-        .references("TRA_CODIGO")
+        .unsigned().references("TRA_CODIGO")
         .inTable("TRA_TRABAJADORES")
         .comment("codigo del expediente (FK TRA_TRABAJADORES)");
       table
         .integer("EMP_CODCRG_CARGO")
         .notNullable()
-        .references("CRG_CODIGO")
+        .unsigned().references("CRG_CODIGO")
         .inTable("CRG_CARGOS")
         .comment("codigo del cargo (FK CRG_CARGOS)");
       table
         .integer("EMP_CODTCO_TIPO_CONTRATO")
         .notNullable()
         .comment("Tipo de contrato de vinculacionn del empleado")
-        .references("TCO_CODIGO")
+        .unsigned().references("TCO_CODIGO")
         .inTable("TCO_TIPOS_CONTRATO");
       table
         .string("EMP_CORREO_INSTITUCIONAL", 50)
@@ -35,11 +35,11 @@ export default class extends BaseSchema {
         .comment("Numero del contrato ");
 
       table
-        .timestamp("EMP_FECHA_INICIO")
+        .date("EMP_FECHA_INICIO")
         .notNullable()
         .comment("Fecha de inicio del contrato ");
       table
-        .timestamp("EMP_FECHA_FIN")
+        .date("EMP_FECHA_FIN")
         .comment("Fecha de finalizacion del contrato ");
       table
         .string("EMP_ESTADO", 10)
@@ -47,11 +47,11 @@ export default class extends BaseSchema {
         .comment("Estado del empleos");
       table
         .integer("EMP_CODTMR_MOTIVO_RETIRO")
-        .references("TMR_CODIGO")
+        .unsigned().references("TMR_CODIGO")
         .inTable("TMR_TIPOS_MOTIVOS_RETIRO")
         .comment("codigo del motivo de retiro (FK TMR_TIPOS_MOTIVOS_RETIRO)");
       table
-        .timestamp("EMP_FECHA_RETIRO")
+        .date("EMP_FECHA_RETIRO")
         .comment("Fecha en que se retiro el empleado");
 
       table
@@ -74,14 +74,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("EMP_FECHA_MODIFICO")
+        .dateTime("EMP_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("EMP_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("EMP_FECHA_CREO")
+        .dateTime("EMP_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

@@ -6,10 +6,14 @@ import { IncapacityRepositoryFake } from "./FakeClass/IncapacityRepositoryFake";
 import IncapacityService from "App/Services/IncapacityService";
 import { IncapacityTypesRepositoryFake } from "./FakeClass/IncapacityTypesRepositoryFake";
 import { IFilterIncapacity, IIncapacity } from "App/Interfaces/IncapacityInterfaces";
+import { LicenceRepositoryFake } from "./FakeClass/LicenceRepositoryFake";
+import { VacationDaysRepositoryFake } from "./FakeClass/VacationDaysRepository";
 
 const service = new IncapacityService(
   new IncapacityRepositoryFake(),
-  new IncapacityTypesRepositoryFake()
+  new IncapacityTypesRepositoryFake(),
+  new LicenceRepositoryFake(),
+  new VacationDaysRepositoryFake()
 );
 
 test.group("IncapacityService TEST for createIncapacity", () => {

@@ -1,9 +1,9 @@
-import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import BaseSchema from "@ioc:Adonis/Lucid/Schema";
 
 export default class extends BaseSchema {
-  protected tableName = 'DDM_DEDUCCIONES_MANUALES'
+  protected tableName = "DDM_DEDUCCIONES_MANUALES";
 
-  public async up () {
+  public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.comment(
         "Tabla que contiene el registro de las deducciones manuales tanto como ciclicas y eventuales"
@@ -31,24 +31,22 @@ export default class extends BaseSchema {
       table
         .boolean("DDM_ES_CICLICA")
         .notNullable()
-        .comment(
-          "Indicado de que si la deduccion es ciclica o no"
-        );
+        .comment("Indicado de que si la deduccion es ciclica o no");
       table
         .integer("DDM_NUMERO_CUOTAS")
         .nullable()
         .comment("Numero de cuotas que se deben aplicar para las ciclicas");
-        table
+      table
         .boolean("DDM_APLICAR_EXTRAORINARIAS")
         .nullable()
         .comment(
           "Indicador de que la cuota de la ciclica se aplica en planillas extraordinarias"
         );
-        table
+      table
         .decimal("DDM_VALOR", 15, 2)
         .notNullable()
         .comment("valor de la deduccion / cuota");
-        table
+      table
         .integer("DDM_CODPPL")
         .references("PPL_CODIGO")
         .inTable("PPL_PERIODOS_PLANILLA")
@@ -60,6 +58,10 @@ export default class extends BaseSchema {
         .string("DDM_ESTADO", 20)
         .notNullable()
         .comment("Estado de la deduccion (Vigente, Finalizada)");
+      table
+        .string("DDM_OBSERVACIONES", 500)
+        .nullable()
+        .comment("Observaciones de la deducción");
       table
         .string("DDM_USUARIO_MODIFICO", 15)
         .comment(
@@ -79,7 +81,7 @@ export default class extends BaseSchema {
     });
   }
 
-  public async down () {
-    this.schema.dropTable(this.tableName)
+  public async down() {
+    this.schema.dropTable(this.tableName);
   }
 }

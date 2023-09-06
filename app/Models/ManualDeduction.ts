@@ -49,6 +49,9 @@ export default class ManualDeduction extends BaseModel {
 
   @column({ columnName: "DDM_ESTADO", serializeAs: "state" })
   public state: string;
+  
+  @column({ columnName: "DDM_OBSERVACIONES", serializeAs: "observation" })
+  public observation: string;
 
   @column({
     columnName: "DDM_USUARIO_MODIFICO",

@@ -82,6 +82,10 @@ Route.group(() => {
 Route.group(() => {}).prefix("/api/v1/payroll");
 
 Route.group(() => {
+  Route.post("/","ManualDeductionsController.createDeduction");
+}).prefix("/api/v1/deduction");
+
+Route.group(() => {
   Route.post("/", "SalaryIncrementsController.createSalaryIncrements");
   Route.post(
     "get-paginated",

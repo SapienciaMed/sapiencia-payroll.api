@@ -12,6 +12,6 @@ export interface IManualDeduction {
   state: string;
   userModified?: string;
   dateModified?: DateTime;
-  userCreate: string;
-  dateCreate: DateTime;
+  userCreate?: string;
+  dateCreate?: DateTime;
 }

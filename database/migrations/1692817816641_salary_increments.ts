@@ -16,13 +16,13 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("ISA_CODCRG_CARGO")
-        .references("CRG_CODIGO")
+        .unsigned().references("CRG_CODIGO")
         .inTable("CRG_CARGOS")
         .unsigned()
         .notNullable()
         .comment("codigo del cargo (FK CRG_CARGOS)");
       table
-        .timestamp("ISA_FECHA_EFECTIVA")
+        .date("ISA_FECHA_EFECTIVA")
         .notNullable()
         .comment("Fecha desde cuando es efectivo el incremento ");
       table
@@ -57,14 +57,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("ISA_FECHA_MODIFICO")
+        .dateTime("ISA_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("ISA_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("ISA_FECHA_CREO")
+        .dateTime("ISA_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

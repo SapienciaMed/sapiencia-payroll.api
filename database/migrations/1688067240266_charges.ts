@@ -14,13 +14,13 @@ export default class extends BaseSchema {
       table
         .integer("CRG_CODUNI_UNIDAD")
         .notNullable()
-        .references("UNI_CODIGO")
+        .unsigned().references("UNI_CODIGO")
         .inTable("UNI_UNIDADES")
         .comment("codigo de la unidad (FK UNI_UNIDADES)");
       table
         .integer("CRG_CODTCG_TIPO_CARGO")
         .notNullable()
-        .references("TCG_CODIGO")
+        .unsigned().references("TCG_CODIGO")
         .inTable("TCG_TIPOS_CARGOS")
         .comment("codigo del tipo de cargo (FK TCG_TIPOS_CARGOS)");
       table
@@ -34,14 +34,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("CRG_FECHA_MODIFICO")
+        .dateTime("CRG_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("CRG_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("CRG_FECHA_CREO")
+        .dateTime("CRG_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

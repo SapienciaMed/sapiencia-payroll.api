@@ -16,17 +16,17 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("SCO_CODEMP_EMPLEO")
-        .references("EMP_CODIGO")
+        .unsigned().references("EMP_CODIGO")
         .inTable("EMP_EMPLEOS")
         .unsigned()
         .notNullable()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
       table
-        .timestamp("SCO_FECHA_INICIO")
+        .date("SCO_FECHA_INICIO")
         .notNullable()
         .comment("fecha de inicio de la suspencion");
       table
-        .timestamp("SCO_FECHA_FIN")
+        .date("SCO_FECHA_FIN")
         .notNullable()
         .comment("fecha de finalizacion de la suspencion");
       table
@@ -36,7 +36,7 @@ export default class extends BaseSchema {
           "Indicador de que si la fecha fin de contarto se vera afectado por la suspencion"
         );
       table
-        .timestamp("SCO_NUEVA_FECHA_FIN")
+        .date("SCO_NUEVA_FECHA_FIN")
         .nullable()
         .comment("Nueva fecha de finalizacion de contrato");
       table
@@ -49,14 +49,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("SCO_FECHA_MODIFICO")
+        .dateTime("SCO_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("SCO_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("SCO_FECHA_CREO")
+        .dateTime("SCO_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

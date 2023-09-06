@@ -16,15 +16,15 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("DVA_CODVAC_VACACION")
-        .references("VAC_CODIGO")
+        .unsigned().references("VAC_CODIGO")
         .inTable("VAC_VACACIONES").unsigned()
         .comment("codigo del periodo de vacaciones (FK VAC_VACIONES)");
       table
-        .timestamp("DVA_FECHA_DESDE")
+        .date("DVA_FECHA_DESDE")
         .notNullable()
         .comment("Fecha de inicio del disfrute");
       table
-        .timestamp("DVA_FECHA_HASTA")
+        .date("DVA_FECHA_HASTA")
         .nullable()
         .comment("Fecha de inicio del disfrute");
       table
@@ -39,7 +39,7 @@ export default class extends BaseSchema {
         );
       table
         .integer("DVA_CODPPL_PLANILLA")
-        .references("VAC_CODIGO")
+        .unsigned().references("VAC_CODIGO")
         .inTable("VAC_VACACIONES")
         .nullable()
         .comment("codigo del periodo de vacaciones (FK PPL_PERIODOS_PLANILLA)");
@@ -60,14 +60,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("DVA_FECHA_MODIFICO")
+        .dateTime("DVA_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("DVA_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("DVA_FECHA_CREO")
+        .dateTime("DVA_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

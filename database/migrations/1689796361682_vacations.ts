@@ -16,7 +16,7 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("VAC_CODEMP_EMPLEO")
-        .references("EMP_CODIGO")
+        .unsigned().references("EMP_CODIGO")
         .inTable("EMP_EMPLEOS").unsigned()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
       table
@@ -24,11 +24,11 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Referencia del periodo de vacaciones del empleado ");
       table
-        .timestamp("VAC_FECHA_DESDE")
+        .date("VAC_FECHA_DESDE")
         .notNullable()
         .comment("Fecha de inicio del periodo");
       table
-        .timestamp("VAC_FECHA_HASTA")
+        .date("VAC_FECHA_HASTA")
         .notNullable()
         .comment("Fecha de finalizacion del periodo");
       table

@@ -66,14 +66,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("DDM_FECHA_MODIFICO")
+        .dateTime("DDM_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("DDM_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("DDM_FECHA_CREO")
+        .dateTime("DDM_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

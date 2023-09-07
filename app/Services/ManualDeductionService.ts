@@ -1,9 +1,12 @@
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
-import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
+import {
+  IManualDeduction,
+  IManualDeductionFilters,
+} from "App/Interfaces/ManualDeductionsInterfaces";
 import { IEmploymentRepository } from "App/Repositories/EmploymentRepository";
 import { IManualDeductionRepository } from "App/Repositories/ManualDeductionRepository";
-import { ApiResponse } from "App/Utils/ApiResponses";
+import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IManualDeductionService {
   createManualDeduction(
@@ -12,6 +15,9 @@ export interface IManualDeductionService {
   getDeductionTypes(): Promise<ApiResponse<IDeductionType[]>>;
   getManualDeductionById(id: number): Promise<ApiResponse<IManualDeduction[]>>;
   getDeductionTypesByType(type: string): Promise<ApiResponse<IDeductionType[]>>;
+  getManualDeductionPaginate(
+    filters: IManualDeductionFilters
+  ): Promise<ApiResponse<IPagingData<IManualDeduction>>>;
 }
 
 export default class ManualDeductionService implements IManualDeductionService {
@@ -93,5 +99,13 @@ export default class ManualDeductionService implements IManualDeductionService {
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getManualDeductionPaginate(
+    filters: IManualDeductionFilters
+  ): Promise<ApiResponse<IPagingData<IManualDeduction>>> {
+    const vacations =
+      await this.manualDeductionRepository.getManualDeductionPaginate(filters);
+    return new ApiResponse(vacations, EResponseCodes.OK);
   }
 }

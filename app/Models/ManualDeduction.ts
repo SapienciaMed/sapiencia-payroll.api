@@ -57,6 +57,9 @@ export default class ManualDeduction extends BaseModel {
   @column({ columnName: "DDM_VALOR", serializeAs: "value" })
   public value: number;
 
+  @column({ columnName: "DDM_VALOR", serializeAs: "totalMount" })
+  public totalMount: number;
+
   @column({ columnName: "DDM_CODPPL", serializeAs: "codFormsPeriod" })
   public codFormsPeriod: number;
 

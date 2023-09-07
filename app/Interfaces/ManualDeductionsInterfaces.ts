@@ -5,6 +5,7 @@ export interface IManualDeduction {
   codEmployment: number;
   codDeductionType?: number;
   cyclic: boolean;
+  totalMount?:number;
   numberInstallments?: number;
   applyExtraordinary?: boolean;
   porcentualValue?:boolean;
@@ -16,4 +17,12 @@ export interface IManualDeduction {
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
+}
+
+export interface IManualDeductionFilters{
+  codEmployment: number;
+  codFormsPeriod?: number;
+  type?: string;
+  page: number;
+  perPage: number;
 }

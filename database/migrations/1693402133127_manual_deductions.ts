@@ -22,6 +22,10 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
       table
+        .boolean("DDM_ES_CICLICA")
+        .notNullable()
+        .comment("Indicado de que si la deduccion es ciclica o no");
+      table
         .integer("DDM_CODTDD_TIPO_DEDUCCION")
         .references("TDD_CODIGO")
         .inTable("TDD_TIPOS_DEDUCCIONES")
@@ -29,13 +33,13 @@ export default class extends BaseSchema {
         .nullable()
         .comment("codigo del tipo de deduccion (FK TDD_TIPOS_DEDUCCIONES)");
       table
-        .boolean("DDM_ES_CICLICA")
+        .boolean("DDM_ES_PORCENTUAL")
         .notNullable()
-        .comment("Indicado de que si la deduccion es ciclica o no");
+        .comment("Indicador de si el valor es porcentual o se define el valor");
       table
-        .integer("DDM_NUMERO_CUOTAS")
-        .nullable()
-        .comment("Numero de cuotas que se deben aplicar para las ciclicas");
+        .decimal("DDM_VALOR", 15, 2)
+        .notNullable()
+        .comment("valor de la deduccion / cuota");
       table
         .boolean("DDM_APLICAR_EXTRAORINARIAS")
         .nullable()
@@ -43,15 +47,13 @@ export default class extends BaseSchema {
           "Indicador de que la cuota de la ciclica se aplica en planillas extraordinarias"
         );
       table
-        .decimal("DDM_VALOR", 15, 2)
-        .notNullable()
+        .integer("DDM_NUMERO_CUOTAS")
+        .nullable()
+        .comment("Numero de cuotas que se deben aplicar para las ciclicas");
+      table
+        .decimal("DDM_MONTO_TOTAL", 15, 2)
+        .nullable()
         .comment("valor de la deduccion / cuota");
-        table
-        .boolean("DDM_ES_PORCENTUAL")
-        .notNullable()
-        .comment(
-          "Indicador de si el valor es porcentual o se define el valor"
-        );
       table
         .integer("DDM_CODPPL")
         .references("PPL_CODIGO")
@@ -59,7 +61,6 @@ export default class extends BaseSchema {
         .unsigned()
         .nullable()
         .comment("codigo del periodo de planilla (FK PPL_PERIODOS_PLANILLA)");
-
       table
         .string("DDM_ESTADO", 20)
         .notNullable()

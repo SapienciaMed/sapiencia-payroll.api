@@ -10,6 +10,7 @@ export default class CreateAndUpdateManualDeductionsValidator {
     codDeductionType: schema.number.optional(),
     cyclic: schema.boolean(),
     numberInstallments: schema.number.optional(),
+    totalMount: schema.number.optional(),
     applyExtraordinary: schema.boolean.optional(),
     value: schema.number(),
     porcentualValue: schema.boolean(),

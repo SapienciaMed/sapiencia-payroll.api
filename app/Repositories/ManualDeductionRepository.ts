@@ -1,7 +1,11 @@
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
-import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
+import {
+  IManualDeduction,
+  IManualDeductionFilters,
+} from "App/Interfaces/ManualDeductionsInterfaces";
 import DeductionsType from "App/Models/DeductionsType";
 import ManualDeduction from "App/Models/ManualDeduction";
+import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IManualDeductionRepository {
   createManualDeduction(
@@ -10,9 +14,12 @@ export interface IManualDeductionRepository {
   getDeductionTypes(): Promise<IDeductionType[]>;
   getManualDeductionById(id: number): Promise<IManualDeduction[] | null>;
   getDeductionTypesByType(type: string): Promise<IDeductionType[]>;
+  getManualDeductionPaginate(
+    filters: IManualDeductionFilters
+  ): Promise<IPagingData<IManualDeduction>>;
 }
 
-export default class manualDeductionRepository
+export default class ManualDeductionRepository
   implements IManualDeductionRepository
 {
   constructor() {}
@@ -34,6 +41,61 @@ export default class manualDeductionRepository
   async getDeductionTypesByType(type: string): Promise<IDeductionType[]> {
     const deductionTypes = await DeductionsType.query().where("type", type);
     return deductionTypes as IDeductionType[];
+  }
+
+  async getManualDeductionPaginate(
+    filters: IManualDeductionFilters
+  ): Promise<IPagingData<IManualDeduction>> {
+    const res = ManualDeduction.query();
+    const addEmploymentConditions = (query: any) => {
+      query.preload("employment", (employmentQuery) => {
+        employmentQuery.preload("charges");
+        if (filters.codEmployment) {
+          employmentQuery.where("id", filters.codEmployment);
+        }
+        employmentQuery.preload("worker");
+      });
+    };
+    const addDeductionsTypeConditions = (query: any) => {
+      query.preload("deductionsType", (deductionTypeQuery) => {
+        if (filters.type) {
+          deductionTypeQuery.where("type", filters.type);
+        }
+      });
+    };
+
+    if (filters.codEmployment) {
+      res.whereHas("employment", (employmentQuery) => {
+        employmentQuery.where("id", filters.codEmployment);
+      });
+    }
+
+    if (filters.codFormsPeriod) {
+      res.where("codFormsPeriod", filters.codFormsPeriod);
+    }
+
+    if (filters.type) {
+      res.whereHas("deductionsType", (deductionTypeQuery) => {
+        if (filters.type) {
+          deductionTypeQuery.where("type", filters.type);
+        }
+      });
+    }
+    addEmploymentConditions(res);
+    addDeductionsTypeConditions(res);
+
+    const workerEmploymentPaginated = await res.paginate(
+      filters.page,
+      filters.perPage
+    );
+
+    const { data, meta } = workerEmploymentPaginated.serialize();
+    const dataArray = data ?? [];
+
+    return {
+      array: dataArray as IManualDeduction[],
+      meta,
+    };
   }
 
   async getManualDeductionById(id: number): Promise<IManualDeduction[] | null> {

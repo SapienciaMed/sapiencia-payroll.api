@@ -17,6 +17,10 @@ export interface IManualDeductionRepository {
   getManualDeductionPaginate(
     filters: IManualDeductionFilters
   ): Promise<IPagingData<IManualDeduction>>;
+  updateManualDeduction(
+    manualDeduction: IManualDeduction,
+    id: number
+  ): Promise<IManualDeduction | null>;
 }
 
 export default class ManualDeductionRepository
@@ -32,6 +36,23 @@ export default class ManualDeductionRepository
     toCreate.fill({ ...manualDeduction });
     await toCreate.save();
     return toCreate.serialize() as IManualDeduction;
+  }
+
+  async updateManualDeduction(
+    manualDeduction: IManualDeduction,
+    id: number
+  ): Promise<IManualDeduction | null> {
+    const toUpdate = await ManualDeduction.find(id);
+
+    if (!toUpdate) {
+      return null;
+    }
+
+    toUpdate.fill({ ...manualDeduction });
+
+    await toUpdate.save();
+
+    return toUpdate.serialize() as IManualDeduction;
   }
 
   async getDeductionTypes(): Promise<IDeductionType[]> {

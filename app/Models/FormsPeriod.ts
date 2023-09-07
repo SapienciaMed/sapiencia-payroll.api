@@ -71,7 +71,7 @@ export default class FormsPeriod extends BaseModel {
     autoUpdate: true,
     columnName: "PPL_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+   // prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 
@@ -85,7 +85,7 @@ export default class FormsPeriod extends BaseModel {
     autoCreate: true,
     columnName: "PPL_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+   // prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
 

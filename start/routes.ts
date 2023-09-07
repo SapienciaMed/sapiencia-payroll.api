@@ -87,11 +87,13 @@ Route.group(() => {
 
 Route.group(() => {
   Route.post("/", "ManualDeductionsController.createDeduction");
-  Route.get("/:type", "ManualDeductionsController.getDeductionTypesByType");
+  Route.get("/", "ManualDeductionsController.getDeductionTypesByType");
+  Route.get("/:id","ManualDeductionsController.getManualDeductionById")
   Route.post(
     "get-paginated",
     "ManualDeductionsController.getManualDeductionPaginate"
   );
+  Route.put("/","ManualDeductionsController.updateManualDeduction")
 }).prefix("/api/v1/deduction");
 
 Route.group(() => {

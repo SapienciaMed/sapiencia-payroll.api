@@ -6,7 +6,7 @@ import FormsType from "App/Models/FormsType";
 export interface IFormPeriodRepository {
   createFormPeriod(formPeriod: IFormPeriod): Promise<IFormPeriod>;
   getFormTypes(): Promise<IFormTypes[]>;
-  getLastPeriods(): Promise<IFormPeriod[]>
+  getLastPeriods(): Promise<IFormPeriod[]>;
 }
 
 export default class FormPeriodRepository implements IFormPeriodRepository {
@@ -24,8 +24,11 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     return res as IFormTypes[];
   }
 
-  async getLastPeriods(): Promise<IFormPeriod[]>{
-    const res = await FormsPeriod.all();
+  async getLastPeriods(): Promise<IFormPeriod[]> {
+    const res = await FormsPeriod.query().whereIn("state", [
+      "Pendiente",
+      "Generada",
+    ]);
     return res as IFormPeriod[];
   }
 }

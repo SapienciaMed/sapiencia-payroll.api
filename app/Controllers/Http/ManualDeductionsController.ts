@@ -52,4 +52,36 @@ export default class ManualDeductionsController {
       );
     }
   }
+
+  public async updateManualDeduction({ request, response }: HttpContextContract) {
+    try {
+      const deductionValidate = (await request.validate(
+        CreateAndUpdateManualDeductionsValidator
+      )) ;
+
+      const { id } = deductionValidate;
+
+      return response.send(
+        await ManualDeductionProvider.updateManualDeduction(
+          deductionValidate,
+          Number(id)
+        )
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async getManualDeductionById({ request, response }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      return response.send(await ManualDeductionProvider.getManualDeductionById(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

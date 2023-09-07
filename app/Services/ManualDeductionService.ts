@@ -18,6 +18,10 @@ export interface IManualDeductionService {
   getManualDeductionPaginate(
     filters: IManualDeductionFilters
   ): Promise<ApiResponse<IPagingData<IManualDeduction>>>;
+  updateManualDeduction(
+    incapacity: IManualDeduction,
+    id: number
+  ): Promise<ApiResponse<IManualDeduction | null>>;
 }
 
 export default class ManualDeductionService implements IManualDeductionService {
@@ -42,6 +46,26 @@ export default class ManualDeductionService implements IManualDeductionService {
     }
     const res = await this.manualDeductionRepository.createManualDeduction(
       manualDeduction
+    );
+
+    if (!res) {
+      return new ApiResponse(
+        {} as IManualDeduction,
+        EResponseCodes.FAIL,
+        "Ocurrió un error en su Transacción "
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async updateManualDeduction(
+    incapacity: IManualDeduction,
+    id: number
+  ): Promise<ApiResponse<IManualDeduction | null>> {
+    const res = await this.manualDeductionRepository.updateManualDeduction(
+      incapacity,
+      id
     );
 
     if (!res) {

@@ -89,7 +89,7 @@ Route.group(() => {
 }).prefix("/api/v1/payroll");
 
 Route.group(() => {
-  Route.get("/", "ManualDeductionsController.getDeductionTypesByType");
+  Route.get("/:type", "ManualDeductionsController.getDeductionTypesByType");
   Route.get("/:id", "ManualDeductionsController.getManualDeductionById");
   Route.post("/", "ManualDeductionsController.createDeduction");
   Route.post(

@@ -26,7 +26,7 @@ export default class ManualDeductionsController {
     response,
   }: HttpContextContract) {
     try {
-      const { type } = request.body();
+      const { type } = request.params();
       return response.send(
         await ManualDeductionProvider.getDeductionTypesByType(type)
       );
@@ -53,11 +53,14 @@ export default class ManualDeductionsController {
     }
   }
 
-  public async updateManualDeduction({ request, response }: HttpContextContract) {
+  public async updateManualDeduction({
+    request,
+    response,
+  }: HttpContextContract) {
     try {
-      const deductionValidate = (await request.validate(
+      const deductionValidate = await request.validate(
         CreateAndUpdateManualDeductionsValidator
-      )) ;
+      );
 
       const { id } = deductionValidate;
 
@@ -74,10 +77,15 @@ export default class ManualDeductionsController {
     }
   }
 
-  public async getManualDeductionById({ request, response }: HttpContextContract) {
+  public async getManualDeductionById({
+    request,
+    response,
+  }: HttpContextContract) {
     try {
       const { id } = request.params();
-      return response.send(await ManualDeductionProvider.getManualDeductionById(id));
+      return response.send(
+        await ManualDeductionProvider.getManualDeductionById(id)
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

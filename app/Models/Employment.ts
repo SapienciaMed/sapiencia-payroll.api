@@ -45,21 +45,23 @@ export default class Employment extends BaseModel {
   })
   public contractNumber: string;
 
-  @column.dateTime({
+  @column({
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
     // serialize: (value) =>
     //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
-  public startDate: DateTime;
+  public startDate: Date;
 
-  @column.dateTime({
+  @column({
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
     // serialize: (value) =>
     //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
-  public endDate: DateTime;
+  public endDate: Date;
 
   @column({
     columnName: "EMP_ESTADO",
@@ -73,13 +75,12 @@ export default class Employment extends BaseModel {
   })
   public idReasonRetirement: number;
 
-  @column.dateTime({
+  @column({
     columnName: "EMP_FECHA_RETIRO",
     serializeAs: "retirementDate",
-    // serialize: (value) =>
-    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
-  public retirementDate: DateTime;
+  public retirementDate: Date;
 
   @column({
     columnName: "EMP_SALARIO",

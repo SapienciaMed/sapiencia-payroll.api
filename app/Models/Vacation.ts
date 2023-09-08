@@ -22,19 +22,19 @@ export default class Vacation extends BaseModel {
   @column({ columnName: "VAC_PERIODO", serializeAs: "period" })
   public period: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "VAC_FECHA_DESDE",
     serializeAs: "dateFrom",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateFrom: DateTime;
+  public dateFrom: Date;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "VAC_FECHA_HASTA",
     serializeAs: "dateUntil",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateUntil: DateTime;
+  public dateUntil: Date;
 
   @column({ columnName: "VAC_PERIODO_ANTERIOR", serializeAs: "periodFormer" })
   public periodFormer: number;

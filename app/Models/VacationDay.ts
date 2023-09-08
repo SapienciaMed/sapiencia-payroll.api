@@ -2,7 +2,6 @@ import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
 import Vacation from "./Vacation";
-import Employment from "./Employment";
 import FormsPeriod from "./FormsPeriod";
 
 export default class VacationDay extends BaseModel {
@@ -14,19 +13,19 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_CODVAC_VACACION", serializeAs: "codVacation" })
   public codVacation: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "DVA_FECHA_DESDE",
     serializeAs: "dateFrom",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateFrom: DateTime;
+  public dateFrom: Date;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "DVA_FECHA_HASTA",
     serializeAs: "dateUntil",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateUntil: DateTime;
+  public dateUntil: Date;
 
   @column({ columnName: "DVA_DIAS", serializeAs: "enjoyedDays" })
   public enjoyedDays: number;

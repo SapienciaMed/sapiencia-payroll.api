@@ -34,12 +34,12 @@ export default class SalaryHistory extends BaseModel {
   })
   public validity: boolean;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "HPA_FECHA_VIGENCIA",
     serializeAs: "effectiveDate",
+    prepare: (value: DateTime) => value ? new Date(value.toJSDate()):new Date(),
   })
-  public effectiveDate: DateTime;
+  public effectiveDate: Date;
 
   @hasOne(() => Employment, {
     localKey: "codEmployment",

@@ -70,8 +70,9 @@ export default class Worker extends BaseModel {
   @column({
     columnName: "TRA_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
-  public birthDate: DateTime;
+  public birthDate: Date;
 
   @column({
     columnName: "TRA_NACIONALIDAD",
@@ -185,7 +186,6 @@ export default class Worker extends BaseModel {
     autoUpdate: true,
     columnName: "TRA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    // prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 

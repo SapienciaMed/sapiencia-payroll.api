@@ -19,14 +19,19 @@ export default class Incapacity extends BaseModel {
   @column({ columnName: "INC_CODEMP_EMPLEO", serializeAs: "codEmployment" })
   public codEmployment: number;
 
-  @column.dateTime({
+  @column({
     columnName: "INC_FECHA_INICIO",
     serializeAs: "dateInitial",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateInitial: DateTime;
+  public dateInitial: Date;
 
-  @column.dateTime({ columnName: "INC_FECHA_FIN", serializeAs: "dateFinish" })
-  public dateFinish: DateTime;
+  @column({
+    columnName: "INC_FECHA_FIN",
+    serializeAs: "dateFinish",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
+  })
+  public dateFinish: Date;
 
   @column({ columnName: "INC_COMENTARIOS", serializeAs: "comments" })
   public comments: string;
@@ -57,7 +62,7 @@ export default class Incapacity extends BaseModel {
     autoCreate: true,
     columnName: "INC_FECHA_CREO",
     serializeAs: "dateCreate",
-   // prepare: () => DateTime.now().toSQL(),
+    // prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
 

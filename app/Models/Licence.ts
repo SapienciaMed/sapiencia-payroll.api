@@ -1,5 +1,12 @@
 import { DateTime } from "luxon";
-import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  HasMany,
+  HasOne,
+  column,
+  hasMany,
+  hasOne,
+} from "@ioc:Adonis/Lucid/Orm";
 import Employment from "./Employment";
 import LicenceType from "./LicenceType";
 
@@ -18,21 +25,24 @@ export default class Licence extends BaseModel {
   })
   public idLicenceType: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "LIC_FECHA_INICIO",
     serializeAs: "dateStart",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateStart: DateTime;
+  public dateStart: Date;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "LIC_FECHA_FIN",
     serializeAs: "dateEnd",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateEnd: DateTime;
+  public dateEnd: Date;
 
-  @column({ columnName: "LIC_NUMERO_RESOLUCION", serializeAs: "resolutionNumber" })
+  @column({
+    columnName: "LIC_NUMERO_RESOLUCION",
+    serializeAs: "resolutionNumber",
+  })
   public resolutionNumber: string;
 
   @column({ columnName: "LIC_ESTADO", serializeAs: "licenceState" })

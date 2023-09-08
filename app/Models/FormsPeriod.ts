@@ -27,26 +27,26 @@ export default class FormsPeriod extends BaseModel {
   })
   public year: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "PPL_FECHA_INICIO",
     serializeAs: "dateStart",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateStart: DateTime;
+  public dateStart: Date;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "PPL_FECHA_FIN",
     serializeAs: "dateEnd",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateEnd: DateTime;
+  public dateEnd: Date;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "PPL_FECHA_PAGO",
     serializeAs: "paidDate",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public paidDate: DateTime;
+  public paidDate: Date;
 
   @column({ columnName: "PPL_ESTADO", serializeAs: "state" })
   public state: string;

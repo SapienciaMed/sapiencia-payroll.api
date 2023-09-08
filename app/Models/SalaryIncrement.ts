@@ -12,12 +12,12 @@ export default class SalaryIncrement extends BaseModel {
   @column({ columnName: "ISA_CODCRG_CARGO", serializeAs: "codCharge" })
   public codCharge: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column({
     columnName: "ISA_FECHA_EFECTIVA",
     serializeAs: "effectiveDate",
+    prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public effectiveDate: DateTime;
+  public effectiveDate: Date;
 
   @column({
     columnName: "ISA_ACTA_APROBACION",

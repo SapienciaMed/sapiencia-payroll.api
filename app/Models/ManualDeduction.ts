@@ -57,7 +57,7 @@ export default class ManualDeduction extends BaseModel {
   @column({ columnName: "DDM_VALOR", serializeAs: "value" })
   public value: number;
 
-  @column({ columnName: "DDM_VALOR", serializeAs: "totalMount" })
+  @column({ columnName: "DDM_MONTO_TOTAL", serializeAs: "totalMount" })
   public totalMount: number;
 
   @column({ columnName: "DDM_CODPPL", serializeAs: "codFormsPeriod" })
@@ -79,7 +79,7 @@ export default class ManualDeduction extends BaseModel {
     autoUpdate: true,
     columnName: "DDM_FECHA_MODIFICO",
     serializeAs: "dateModified",
-   // prepare: () => DateTime.now().toSQL(),
+    // prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 
@@ -93,7 +93,7 @@ export default class ManualDeduction extends BaseModel {
     autoCreate: true,
     columnName: "DDM_FECHA_CREO",
     serializeAs: "dateCreate",
-   // prepare: () => DateTime.now().toSQL(),
+    // prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
 

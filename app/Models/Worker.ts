@@ -185,7 +185,7 @@ export default class Worker extends BaseModel {
     autoUpdate: true,
     columnName: "TRA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+    // prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 
@@ -199,7 +199,7 @@ export default class Worker extends BaseModel {
     autoCreate: true,
     columnName: "TRA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+    // prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
 

@@ -37,7 +37,7 @@ Route.group(() => {
     "VinculationController.getActivesContractorworkers"
   );
   Route.get("/:id", "VinculationController.getVinculationById");
-  Route.put("/", "VinculationController.updateVinculation");
+  Route.get("/employment/:id", "VinculationController.getEmploymentById");
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
   Route.post("/", "VinculationController.createVinculation");
   Route.post(
@@ -49,59 +49,62 @@ Route.group(() => {
     "/suspension/get-paginated",
     "VinculationController.getContractSuspensionPaginate"
   );
+  Route.put("/", "VinculationController.updateVinculation");
   Route.put(
     "/employment/retirement",
     "VinculationController.retirementEmployment"
   );
-  Route.get("/employment/:id", "VinculationController.getEmploymentById");
 }).prefix("/api/v1/vinculation");
 
 Route.group(() => {
   Route.get("/", "VacationsController.getVacations");
   Route.post("/create", "VacationsController.createVacationDays");
-  Route.put("/", "VacationsController.updateVacationPeriod");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
   Route.post("/get-paginated", "VacationsController.getVacationsPaginate");
+  Route.put("/", "VacationsController.updateVacationPeriod");
 }).prefix("/api/v1/vacations");
 
 Route.group(() => {
   Route.get("/incapacity-types", "IncapacityController.getIncapacityTypes");
-  Route.post("/create", "IncapacityController.createIncapacity");
-  Route.put("/update", "IncapacityController.updateIncapacity");
-  Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
   Route.get("/get-by-id/:id", "IncapacityController.getIncapacityById");
+  Route.post("/create", "IncapacityController.createIncapacity");
+  Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
+  Route.put("/update", "IncapacityController.updateIncapacity");
 }).prefix("/api/v1/incapacity");
 
 Route.group(() => {
-  Route.post("/", "LicencesController.createLicence");
-  Route.post("/get-paginated", "LicencesController.getLicencePaginate");
   Route.get("/types", "LicencesController.getLicenceTypes");
   Route.get("/:id", "LicencesController.getLicenseById");
+  Route.post("/", "LicencesController.createLicence");
+  Route.post("/get-paginated", "LicencesController.getLicencePaginate");
 }).prefix("/api/v1/licence");
 
 Route.group(() => {
-  Route.post("/", "FormPeriodsController.createFormPeriod");
   Route.get("/types", "FormPeriodsController.getFormTypes");
   Route.get("/last", "FormPeriodsController.getLastPeriods");
+  Route.get("/:id", "FormPeriodsController.getFormPeriodById");
+  Route.post("/", "FormPeriodsController.createFormPeriod");
+  Route.post("get-paginated", "FormPeriodsController.getFormPeriodPaginate");
+  Route.put("/", "FormPeriodsController.updateFormPeriod");
 }).prefix("/api/v1/payroll");
 
 Route.group(() => {
-  Route.post("/", "ManualDeductionsController.createDeduction");
   Route.get("/", "ManualDeductionsController.getDeductionTypesByType");
-  Route.get("/:id","ManualDeductionsController.getManualDeductionById")
+  Route.get("/:id", "ManualDeductionsController.getManualDeductionById");
+  Route.post("/", "ManualDeductionsController.createDeduction");
   Route.post(
     "get-paginated",
     "ManualDeductionsController.getManualDeductionPaginate"
   );
-  Route.put("/","ManualDeductionsController.updateManualDeduction")
+  Route.put("/", "ManualDeductionsController.updateManualDeduction");
 }).prefix("/api/v1/deduction");
 
 Route.group(() => {
+  Route.get("/:id", "SalaryIncrementsController.getSalaryIncrementById");
   Route.post("/", "SalaryIncrementsController.createSalaryIncrements");
   Route.post(
     "get-paginated",
     "SalaryIncrementsController.getSalaryHistoriesPaginate"
   );
   Route.put("/", "SalaryIncrementsController.updateSalaryIncrements");
-  Route.get("/:id", "SalaryIncrementsController.getSalaryIncrementById");
 }).prefix("/api/v1/salaryIncrease");

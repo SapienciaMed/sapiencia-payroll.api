@@ -16,8 +16,10 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("PPL_CODTPL_TIPO_PLANILLA")
-        .unsigned().references("TPL_CODIGO")
-        .inTable("TPL_TIPOS_PLANILLA").unsigned()
+        .unsigned()
+        .references("TPL_CODIGO")
+        .inTable("TPL_TIPOS_PLANILLA")
+        .unsigned()
         .comment("codigo del tipo de planilla (FK TPL_TIPOS_PLANILLA)");
       table
         .string("PPL_ESTADO", 10)
@@ -31,10 +33,6 @@ export default class extends BaseSchema {
         .date("PPL_FECHA_FIN")
         .notNullable()
         .comment("Fecha de finalizacion del periodo de planilla");
-      table
-        .date("PPL_FECHA_CORTE")
-        .notNullable()
-        .comment("fecha de corte para trabajar la planilla");
       table.date("PPL_FECHA_PAGO").notNullable().comment("fecha de pago");
       table
         .integer("PPL_MES")
@@ -44,7 +42,7 @@ export default class extends BaseSchema {
         .integer("PPL_ANIO")
         .notNullable()
         .comment("Año al que corresponde la planilla");
-        table
+      table
         .string("PPL_OBSERVACIONES", 500)
         .notNullable()
         .comment("Observaciones de la planilla");

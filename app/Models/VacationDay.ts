@@ -2,6 +2,8 @@ import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
 import Vacation from "./Vacation";
+import Employment from "./Employment";
+import FormsPeriod from "./FormsPeriod";
 
 export default class VacationDay extends BaseModel {
   public static table = "DVA_DIAS_VACACIONES";
@@ -56,7 +58,7 @@ export default class VacationDay extends BaseModel {
     autoUpdate: true,
     columnName: "DVA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+    //prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 
@@ -70,14 +72,15 @@ export default class VacationDay extends BaseModel {
     autoCreate: true,
     columnName: "DVA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+    //prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
-  // @hasOne(() => Employment, {
-  //   localKey: "codEmployment",
-  //   foreignKey: "id",
-  // })
-  // public typeCharge: HasOne<typeof Employment>;
+
+  @hasOne(() => FormsPeriod, {
+    localKey: "codForm",
+    foreignKey: "id",
+  })
+  public formPeriod: HasOne<typeof FormsPeriod>;
 
   @hasOne(() => Vacation, {
     localKey: "codVacation",

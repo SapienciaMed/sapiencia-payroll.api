@@ -1,12 +1,24 @@
-import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
+import {
+  IFormPeriod,
+  IFormPeriodFilters,
+} from "App/Interfaces/FormPeriodInterface";
 import { IFormTypes } from "App/Interfaces/FormTypesInterface";
 import FormsPeriod from "App/Models/FormsPeriod";
 import FormsType from "App/Models/FormsType";
+import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IFormPeriodRepository {
   createFormPeriod(formPeriod: IFormPeriod): Promise<IFormPeriod>;
   getFormTypes(): Promise<IFormTypes[]>;
   getLastPeriods(): Promise<IFormPeriod[]>;
+  updateFormPeriod(
+    formPeriod: IFormPeriod,
+    id: number
+  ): Promise<IFormPeriod | null>;
+  getFormPeriodById(id: number): Promise<IFormPeriod[] | null>;
+  getFormsPeriodPaginate(
+    filters: IFormPeriodFilters
+  ): Promise<IPagingData<FormsPeriod>>;
 }
 
 export default class FormPeriodRepository implements IFormPeriodRepository {
@@ -17,6 +29,23 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     toCreate.fill({ ...formPeriod });
     await toCreate.save();
     return toCreate.serialize() as IFormPeriod;
+  }
+
+  async updateFormPeriod(
+    formPeriod: IFormPeriod,
+    id: number
+  ): Promise<IFormPeriod | null> {
+    const toUpdate = await FormsPeriod.find(id);
+
+    if (!toUpdate) {
+      return null;
+    }
+
+    toUpdate.fill({ ...formPeriod });
+
+    await toUpdate.save();
+
+    return toUpdate.serialize() as IFormPeriod;
   }
 
   async getFormTypes(): Promise<IFormTypes[]> {
@@ -30,5 +59,46 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       "Generada",
     ]);
     return res as IFormPeriod[];
+  }
+  async getFormPeriodById(id: number): Promise<IFormPeriod[] | null> {
+    const queryFormPeriod = FormsPeriod.query().where("id", id);
+    queryFormPeriod.preload("formsType");
+    const formPeriod = await queryFormPeriod;
+
+    if (!formPeriod) {
+      return null;
+    }
+
+    return formPeriod as IFormPeriod[];
+  }
+
+  async getFormsPeriodPaginate(
+    filters: IFormPeriodFilters
+  ): Promise<IPagingData<FormsPeriod>> {
+    const res = FormsPeriod.query();
+
+    if (filters.idFormType) {
+      res.where("idFormType", filters.idFormType);
+    }
+    if (filters.state) {
+      res.where("state", filters.state);
+    }
+    if (filters.paidDate) {
+      res.where("paidDate", filters.paidDate.toString());
+    }
+    res.preload("formsType");
+
+    const formPeriodPaginated = await res.paginate(
+      filters.page,
+      filters.perPage
+    );
+
+    const { data, meta } = formPeriodPaginated.serialize();
+    const dataArray = data ?? [];
+
+    return {
+      array: dataArray as FormsPeriod[],
+      meta,
+    };
   }
 }

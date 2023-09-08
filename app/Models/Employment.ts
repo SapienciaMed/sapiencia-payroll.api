@@ -107,7 +107,7 @@ export default class Employment extends BaseModel {
     autoUpdate: true,
     columnName: "EMP_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+   // prepare: () => DateTime.now().toSQL(),
   })
   public dateModified: DateTime;
 
@@ -121,7 +121,7 @@ export default class Employment extends BaseModel {
     autoCreate: true,
     columnName: "EMP_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+   // prepare: () => DateTime.now().toSQL(),
   })
   public dateCreate: DateTime;
 

@@ -48,7 +48,7 @@ export default class ManualDeductionRepository
       return null;
     }
 
-    toUpdate.fill({ ...manualDeduction });
+    toUpdate.merge({ ...manualDeduction });
 
     await toUpdate.save();
 

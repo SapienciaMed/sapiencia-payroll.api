@@ -60,11 +60,11 @@ export default class ManualDeductionService implements IManualDeductionService {
   }
 
   async updateManualDeduction(
-    incapacity: IManualDeduction,
+    deduction: IManualDeduction,
     id: number
   ): Promise<ApiResponse<IManualDeduction | null>> {
     const res = await this.manualDeductionRepository.updateManualDeduction(
-      incapacity,
+      deduction,
       id
     );
 

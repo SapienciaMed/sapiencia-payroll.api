@@ -58,7 +58,7 @@ export class ManualDeductionRepositoryFake
     const list = [{ ...deduction }];
 
     return new Promise((res) => {
-      const deductions = list.find((licence) => licence.id === _id);
+      const deductions = list.find((deduction) => deduction.id === _id);
 
       if (!deductions) {
         return res(null);

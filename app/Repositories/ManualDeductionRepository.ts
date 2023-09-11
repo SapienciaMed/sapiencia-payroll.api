@@ -33,7 +33,7 @@ export default class ManualDeductionRepository
   ): Promise<IManualDeduction> {
     const toCreate = new ManualDeduction();
 
-    toCreate.merge({ ...manualDeduction });
+    toCreate.fill({ ...manualDeduction });
     await toCreate.save();
     return toCreate.serialize() as IManualDeduction;
   }
@@ -47,8 +47,30 @@ export default class ManualDeductionRepository
     if (!toUpdate) {
       return null;
     }
-
-    toUpdate.merge({ ...manualDeduction });
+    if (manualDeduction.totalMount !== undefined) {
+      toUpdate.totalMount = manualDeduction.totalMount;
+    }
+    if (manualDeduction.numberInstallments !== undefined) {
+      toUpdate.numberInstallments = manualDeduction.numberInstallments;
+    }
+    if (manualDeduction.applyExtraordinary !== undefined) {
+      toUpdate.applyExtraordinary = manualDeduction.applyExtraordinary;
+    }
+    if (manualDeduction.porcentualValue !== undefined) {
+      toUpdate.porcentualValue = manualDeduction.porcentualValue;
+    }
+    if (manualDeduction.codFormsPeriod !== undefined) {
+      toUpdate.codFormsPeriod = manualDeduction.codFormsPeriod;
+    }
+    if (manualDeduction.observation !== undefined) {
+      toUpdate.observation = manualDeduction.observation;
+    }
+    if (manualDeduction.value) {
+      toUpdate.value = manualDeduction.value;
+    }
+    if (manualDeduction.state) {
+      toUpdate.state = manualDeduction.state;
+    }
 
     await toUpdate.save();
 

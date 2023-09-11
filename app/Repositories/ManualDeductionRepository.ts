@@ -33,7 +33,7 @@ export default class ManualDeductionRepository
   ): Promise<IManualDeduction> {
     const toCreate = new ManualDeduction();
 
-    toCreate.fill({ ...manualDeduction });
+    toCreate.merge({ ...manualDeduction });
     await toCreate.save();
     return toCreate.serialize() as IManualDeduction;
   }

@@ -24,5 +24,5 @@ export default class Relative extends BaseModel {
     serializeAs: "birthDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
-  public birthDate: Date;
+  public birthDate: DateTime;
 }

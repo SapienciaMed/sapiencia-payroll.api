@@ -30,14 +30,14 @@ export default class Licence extends BaseModel {
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateStart: Date;
+  public dateStart: DateTime;
 
   @column({
     columnName: "LIC_FECHA_FIN",
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateEnd: Date;
+  public dateEnd: DateTime;
 
   @column({
     columnName: "LIC_NUMERO_RESOLUCION",

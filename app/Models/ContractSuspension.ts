@@ -17,14 +17,14 @@ export default class ContractSuspension extends BaseModel {
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateStart: Date;
+  public dateStart: DateTime;
 
   @column({
     columnName: "SCO_FECHA_FIN",
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateEnd: Date;
+  public dateEnd: DateTime;
 
   @column({
     columnName: "SCO_AJUSTA_FECHA_FIN",
@@ -39,7 +39,7 @@ export default class ContractSuspension extends BaseModel {
     serializeAs: "newDateEnd",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public newDateEnd: Date;
+  public newDateEnd: DateTime;
 
   @column({ columnName: "SCO_OBSERVACIONES", serializeAs: "observation" })
   public observation: string;

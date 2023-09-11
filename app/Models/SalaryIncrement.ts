@@ -17,7 +17,7 @@ export default class SalaryIncrement extends BaseModel {
     serializeAs: "effectiveDate",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public effectiveDate: Date;
+  public effectiveDate: DateTime;
 
   @column({
     columnName: "ISA_ACTA_APROBACION",

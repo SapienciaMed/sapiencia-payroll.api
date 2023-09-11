@@ -32,21 +32,21 @@ export default class FormsPeriod extends BaseModel {
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateStart: Date;
+  public dateStart: DateTime;
 
   @column({
     columnName: "PPL_FECHA_FIN",
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateEnd: Date;
+  public dateEnd: DateTime;
 
   @column({
     columnName: "PPL_FECHA_PAGO",
     serializeAs: "paidDate",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public paidDate: Date;
+  public paidDate: DateTime;
 
   @column({ columnName: "PPL_ESTADO", serializeAs: "state" })
   public state: string;

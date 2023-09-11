@@ -24,14 +24,14 @@ export default class Incapacity extends BaseModel {
     serializeAs: "dateInitial",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateInitial: Date;
+  public dateInitial: DateTime;
 
   @column({
     columnName: "INC_FECHA_FIN",
     serializeAs: "dateFinish",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateFinish: Date;
+  public dateFinish: DateTime;
 
   @column({ columnName: "INC_COMENTARIOS", serializeAs: "comments" })
   public comments: string;

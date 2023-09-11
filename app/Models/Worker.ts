@@ -72,7 +72,7 @@ export default class Worker extends BaseModel {
     serializeAs: "birthDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
-  public birthDate: Date;
+  public birthDate: DateTime;
 
   @column({
     columnName: "TRA_NACIONALIDAD",

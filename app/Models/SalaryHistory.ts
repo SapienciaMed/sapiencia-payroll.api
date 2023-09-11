@@ -39,7 +39,7 @@ export default class SalaryHistory extends BaseModel {
     serializeAs: "effectiveDate",
     prepare: (value: DateTime) => value ? new Date(value.toJSDate()):new Date(),
   })
-  public effectiveDate: Date;
+  public effectiveDate: DateTime;
 
   @hasOne(() => Employment, {
     localKey: "codEmployment",

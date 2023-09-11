@@ -18,14 +18,14 @@ export default class VacationDay extends BaseModel {
     serializeAs: "dateFrom",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateFrom: Date;
+  public dateFrom: DateTime;
 
   @column({
     columnName: "DVA_FECHA_HASTA",
     serializeAs: "dateUntil",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateUntil: Date;
+  public dateUntil: DateTime;
 
   @column({ columnName: "DVA_DIAS", serializeAs: "enjoyedDays" })
   public enjoyedDays: number;

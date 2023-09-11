@@ -2,7 +2,6 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import FormPeriodProvider from "@ioc:core.FormPeriodProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import {
-  IFormPeriod,
   IFormPeriodFilters,
 } from "App/Interfaces/FormPeriodInterface";
 import { ApiResponse } from "App/Utils/ApiResponses";

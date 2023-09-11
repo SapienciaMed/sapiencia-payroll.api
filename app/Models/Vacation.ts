@@ -27,14 +27,14 @@ export default class Vacation extends BaseModel {
     serializeAs: "dateFrom",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateFrom: Date;
+  public dateFrom: DateTime;
 
   @column({
     columnName: "VAC_FECHA_HASTA",
     serializeAs: "dateUntil",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
   })
-  public dateUntil: Date;
+  public dateUntil: DateTime;
 
   @column({ columnName: "VAC_PERIODO_ANTERIOR", serializeAs: "periodFormer" })
   public periodFormer: number;

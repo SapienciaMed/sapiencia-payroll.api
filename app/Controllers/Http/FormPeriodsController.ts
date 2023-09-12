@@ -46,7 +46,7 @@ export default class FormPeriodsController {
     try {
       const data = request.body() as IFormPeriodFilters;
       return response.send(
-        await FormPeriodProvider.getManualDeductionPaginate(data)
+        await FormPeriodProvider.getFormsPeriodPaginate(data)
       );
     } catch (err) {
       return response.badRequest(

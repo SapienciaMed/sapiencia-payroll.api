@@ -13,7 +13,7 @@ export interface IFormPeriodService {
   createFormPeriod(formPeriod: IFormPeriod): Promise<ApiResponse<IFormPeriod>>;
   getFormTypes(): Promise<ApiResponse<IFormTypes[]>>;
   getLastPeriods(): Promise<ApiResponse<IFormPeriod[]>>;
-  getManualDeductionPaginate(
+  getFormsPeriodPaginate(
     filters: IFormPeriodFilters
   ): Promise<ApiResponse<IPagingData<IFormPeriod>>>;
   getFormPeriodById(id: number): Promise<ApiResponse<IFormPeriod[]>>;
@@ -88,7 +88,7 @@ export default class FormPeriodService implements IFormPeriodService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getManualDeductionPaginate(
+  async getFormsPeriodPaginate(
     filters: IFormPeriodFilters
   ): Promise<ApiResponse<IPagingData<IFormPeriod>>> {
     const vacations = await this.formPeriodRepository.getFormsPeriodPaginate(

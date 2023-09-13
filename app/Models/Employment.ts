@@ -49,8 +49,6 @@ export default class Employment extends BaseModel {
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
-    // serialize: (value) =>
-    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public startDate: DateTime;
 
@@ -58,8 +56,6 @@ export default class Employment extends BaseModel {
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
-    // serialize: (value) =>
-    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
   })
   public endDate: DateTime;
 
@@ -108,7 +104,7 @@ export default class Employment extends BaseModel {
     autoUpdate: true,
     columnName: "EMP_FECHA_MODIFICO",
     serializeAs: "dateModified",
-   // prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -122,7 +118,7 @@ export default class Employment extends BaseModel {
     autoCreate: true,
     columnName: "EMP_FECHA_CREO",
     serializeAs: "dateCreate",
-   // prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

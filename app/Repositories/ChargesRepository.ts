@@ -5,7 +5,11 @@ import Charge from "App/Models/Charge";
 export interface IChargesRepository {
   getChargeById(id: number): Promise<ICharge | null>;
   getChargesList(): Promise<ICharge[]>;
-  updateChargeSalary(id:number,salary:number,trx: TransactionClientContract): Promise<ICharge | null>;
+  updateChargeSalary(
+    id: number,
+    salary: number,
+    trx: TransactionClientContract
+  ): Promise<ICharge | null>;
 }
 
 export default class ChargesRepository implements IChargesRepository {
@@ -20,18 +24,20 @@ export default class ChargesRepository implements IChargesRepository {
     return res as ICharge[];
   }
 
-  async updateChargeSalary(id:number,salary:number,trx: TransactionClientContract): Promise<ICharge | null>{
-
+  async updateChargeSalary(
+    id: number,
+    salary: number,
+    trx: TransactionClientContract
+  ): Promise<ICharge | null> {
     const toUpdate = await Charge.find(id);
 
     if (!toUpdate) {
       return null;
     }
 
-    toUpdate.merge({ baseSalary:salary }).useTransaction(trx);
+    toUpdate.merge({ ...toUpdate, baseSalary: salary }).useTransaction(trx);
 
     await toUpdate.save();
-    return (toUpdate.serialize() as ICharge);
-
+    return toUpdate.serialize() as ICharge;
   }
 }

@@ -10,6 +10,7 @@ import {
 import Env from "@ioc:Adonis/Core/Env";
 import Employment from "./Employment";
 import DeductionsType from "./DeductionsType";
+import FormsPeriod from "./FormsPeriod";
 
 export default class ManualDeduction extends BaseModel {
   public static table = "DDM_DEDUCCIONES_MANUALES";
@@ -79,7 +80,7 @@ export default class ManualDeduction extends BaseModel {
     autoUpdate: true,
     columnName: "DDM_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    // prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -93,7 +94,7 @@ export default class ManualDeduction extends BaseModel {
     autoCreate: true,
     columnName: "DDM_FECHA_CREO",
     serializeAs: "dateCreate",
-    // prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 
@@ -102,6 +103,12 @@ export default class ManualDeduction extends BaseModel {
     foreignKey: "id",
   })
   public employment: HasOne<typeof Employment>;
+
+  @hasOne(() => FormsPeriod, {
+    localKey: "codFormsPeriod",
+    foreignKey: "id",
+  })
+  public formsPeriod: HasOne<typeof FormsPeriod>;
 
   @hasMany(() => DeductionsType, {
     localKey: "codDeductionType",

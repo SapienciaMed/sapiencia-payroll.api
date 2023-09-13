@@ -39,7 +39,7 @@ export interface IEmploymentRepository {
 export default class EmploymentRepository implements IEmploymentRepository {
   constructor() {}
   async getChargeEmployment(idEmployment: number): Promise<ICharge> {
-    const employment = await Employment.findOrFail(idEmployment)
+    const employment = await Employment.findOrFail(idEmployment);
     const res = await Charge.query().where("id", employment.idCharge).first();
     return res as ICharge;
   }
@@ -111,7 +111,7 @@ export default class EmploymentRepository implements IEmploymentRepository {
 
     if (!toUpdate) return null;
 
-    await toUpdate.merge({ ...dataRetirement }).save();
+    await toUpdate.merge({ ...toUpdate, ...dataRetirement }).save();
 
     return toUpdate.serialize() as IEmployment;
   }
@@ -125,7 +125,9 @@ export default class EmploymentRepository implements IEmploymentRepository {
 
     if (!toUpdate) return null;
 
-    (await toUpdate.merge({ endDate: date }).save()).useTransaction(trx);
+    (
+      await toUpdate.merge({ ...toUpdate, endDate: date }).save()
+    ).useTransaction(trx);
 
     return toUpdate.serialize() as IEmployment;
   }

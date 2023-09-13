@@ -55,7 +55,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
       return null;
     }
 
-    toUpdate.merge({ ...data });
+    toUpdate.merge({ ...toUpdate,...data });
     await toUpdate.save();
     return toUpdate.serialize() as VacationDay;
   }

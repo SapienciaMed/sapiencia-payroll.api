@@ -41,7 +41,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       return null;
     }
 
-    toUpdate.fill({ ...formPeriod });
+    toUpdate.fill({ ...toUpdate,...formPeriod });
 
     await toUpdate.save();
 

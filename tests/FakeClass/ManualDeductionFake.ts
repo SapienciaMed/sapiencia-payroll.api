@@ -26,6 +26,15 @@ const deductionTypesFake: IDeductionType = {
 export class ManualDeductionRepositoryFake
   implements ManualDeductionRepository
 {
+  getManualDeductionByEmploymentId(
+    employmentId: number
+  ): Promise<IManualDeduction[] | null> {
+    const list = [deduction];
+
+    return Promise.resolve(
+      list.filter((i) => i.codEmployment == employmentId) ?? null
+    );
+  }
   createManualDeduction(
     _manualDeduction: IManualDeduction
   ): Promise<IManualDeduction> {

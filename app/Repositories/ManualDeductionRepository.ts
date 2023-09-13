@@ -13,6 +13,9 @@ export interface IManualDeductionRepository {
   ): Promise<IManualDeduction>;
   getDeductionTypes(): Promise<IDeductionType[]>;
   getManualDeductionById(id: number): Promise<IManualDeduction[] | null>;
+  getManualDeductionByEmploymentId(
+    employmentId: number
+  ): Promise<IManualDeduction[] | null>;
   getDeductionTypesByType(type: string): Promise<IDeductionType[]>;
   getManualDeductionPaginate(
     filters: IManualDeductionFilters
@@ -139,6 +142,29 @@ export default class ManualDeductionRepository
       array: dataArray as IManualDeduction[],
       meta,
     };
+  }
+
+  async getManualDeductionByEmploymentId(
+    employmentId: number
+  ): Promise<IManualDeduction[] | null> {
+    const queryManualDeduction = ManualDeduction.query();
+
+    queryManualDeduction.where("state", "Vigente");
+    queryManualDeduction.whereHas("employment", (employmentQuery) => {
+      employmentQuery.where("id", employmentId);
+    });
+    queryManualDeduction.preload("employment", (employmentQuery) => {
+      employmentQuery.where("id", employmentId);
+      employmentQuery.preload("worker");
+    });
+
+    const manualDeduction = await queryManualDeduction;
+
+    if (!manualDeduction) {
+      return null;
+    }
+
+    return manualDeduction as IManualDeduction[];
   }
 
   async getManualDeductionById(id: number): Promise<IManualDeduction[] | null> {

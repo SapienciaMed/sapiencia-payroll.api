@@ -387,7 +387,7 @@ paths:
                     "operation": { "code": "OK", "message": "" },
                   }
 
-/api/v1/vinculation/employment/{id}":
+/api/v1/vinculation/employment/{id}:
   get:
     tags:
       - Vinculation

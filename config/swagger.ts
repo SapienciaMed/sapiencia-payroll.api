@@ -12,7 +12,7 @@ export default {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "Documentación API Autenticación",
+        title: "Documentación API Payroll",
         version: "1.0.0",
         description: "Catalago de servicios",
       },

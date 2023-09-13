@@ -1,0 +1,361 @@
+paths:
+  /api/v1/payroll/:
+    post:
+      tags:
+        - Payroll
+      summary: Permite la creación de una planilla.
+      description: Crea una planilla.
+      operationId: createFormPeriod
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/formPeriod"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        [
+                          {
+                            "id": 1,
+                            "idFormType": 2,
+                            "state": "Generada",
+                            "dateStart": "2023-09-01T00:00:00.000-00:00",
+                            "dateEnd": "2023-09-30T00:00:00.000-00:00",
+                            "paidDate": "2023-10-05T00:00:00.000-00:00",
+                            "month": 9,
+                            "year": 2023,
+                            "observation": "test",
+                          },
+                        ],
+                      "operation": { "code": "OK", "message": "" },
+                    }
+    put:
+      tags:
+        - Payroll
+      summary: Actualizar una planilla.
+      description: Actualiza una planilla.
+      operationId: updateFormPeriod
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/formPeriodEdit"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        [
+                          {
+                            "id": 1,
+                            "idFormType": 2,
+                            "state": "Generada",
+                            "dateStart": "2023-09-01T00:00:00.000-00:00",
+                            "dateEnd": "2023-09-30T00:00:00.000-00:00",
+                            "paidDate": "2023-10-05T00:00:00.000-00:00",
+                            "month": 9,
+                            "year": 2023,
+                            "observation": "test",
+                          },
+                        ],
+                      "operation": { "code": "OK", "message": "" },
+                    }
+
+/api/v1/payroll/get-paginated:
+  post:
+    tags:
+      - Payroll
+    summary: Obtener la información de una planilla.
+    description: Obtiene las planillas según los filtros.
+    operationId: get-paginated-Payroll
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              idFormType:
+                type: number
+                example: 1
+                description: código del tipo de planilla.
+                required: false
+              state:
+                type: string
+                example: "Generada"
+                description: estado de la planilla
+                required: false
+              paidDate:
+                type: string
+                format: date-time
+                example: "2023-07-11T09:40:02.350-05:00"
+                description: dia de pago.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      idFormType: 1
+                      state: "Generada"
+                      dateStart: "2023-09-01T00:00:00.000-00:00"
+                      dateEnd: "2023-09-30T00:00:00.000-00:00"
+                      paidDate: "2023-10-05T00:00:00.000-00:00"
+                      month: 9
+                      year: 2023
+                      observation: "test"
+                      userModified: null
+                      dateModified: "2023-08-18T09:41:14.162-05:00"
+                      userCreate: null
+                      dateCreate: "2023-08-18T09:41:14.164-05:00"
+                      formsType:
+                        id: 1
+                        special: false
+                        name: "Quincenal"
+                        frecuencyPaid: "Quincenal"
+                  operation: { code: "OK", message: "" }
+
+/api/v1/payroll/types:
+  get:
+    tags:
+      - Payroll
+    summary: Obtiene los tipos de planillas.
+    description: Obtiene los tipos de planillas.
+    operationId: getTypes
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 1,
+                          "special": false,
+                          "name": "Quincenal",
+                          "frecuencyPaid": "Quincenal",
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+/api/v1/payroll/last:
+  get:
+    tags:
+      - Payroll
+    summary: Obtener la información de las planillas en estado generado o pendiente.
+    description: Obtiene la información de las planillas en estado generado o pendiente.
+    operationId: getFormPeriodById
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 1,
+                          "idFormType": 2,
+                          "state": "Generada",
+                          "dateStart": "2023-09-01T00:00:00.000-00:00",
+                          "dateEnd": "2023-09-30T00:00:00.000-00:00",
+                          "paidDate": "2023-10-05T00:00:00.000-00:00",
+                          "month": 9,
+                          "year": 2023,
+                          "observation": "test",
+                          "formType":
+                            {
+                              "id": 2,
+                              "special": false,
+                              "name": "Mensual",
+                              "frecuencyPaid": "Mensual",
+                            },
+                        },
+                        {
+                          "id": 2,
+                          "idFormType": 2,
+                          "state": "Pendiente",
+                          "dateStart": "2023-09-01T00:00:00.000-00:00",
+                          "dateEnd": "2023-09-15T00:00:00.000-00:00",
+                          "paidDate": "2023-09-30T00:00:00.000-00:00",
+                          "month": 9,
+                          "year": 2023,
+                          "observation": "test",
+                          "formType":
+                            {
+                              "id": 1,
+                              "special": false,
+                              "name": "Quincenal",
+                              "frecuencyPaid": "Quincenal",
+                            },
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/payroll/{id}:
+  get:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: number
+          example: 1
+        required: true
+        description: Id de la deducción
+    tags:
+      - Payroll
+    summary: Obtener la información de una planilla.
+    description: Obtiene una planilla por id.
+    operationId: getFormPeriodById
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      idFormType: 1
+                      state: "Generada"
+                      dateStart: "2023-09-01T00:00:00.000-00:00"
+                      dateEnd: "2023-09-30T00:00:00.000-00:00"
+                      paidDate: "2023-10-05T00:00:00.000-00:00"
+                      month: 9
+                      year: 2023
+                      observation: "test"
+                      userModified: null
+                      dateModified: "2023-08-18T09:41:14.162-05:00"
+                      userCreate: null
+                      dateCreate: "2023-08-18T09:41:14.164-05:00"
+                      formsType:
+                        id: 1
+                        special: false
+                        name: "Quincenal"
+                        frecuencyPaid: "Quincenal"
+                  operation: { code: "OK", message: "" }
+
+components:
+  schemas:
+    formPeriod:
+      type: object
+      properties:
+        idFormType:
+          type: number
+          example: 1
+        state:
+          type: string
+          example: "Generada"
+        dateStart:
+          type: string
+          format: date-time
+          example: "2023-07-01T09:40:02.350-05:00"
+        dateEnd:
+          type: string
+          format: date-time
+          example: "2023-07-14T09:40:02.350-05:00"
+        paidDate:
+          type: string
+          format: date-time
+          example: "2023-07-15T09:40:02.350-05:00"
+        month:
+          type: number
+          example: 9
+        year:
+          type: number
+          example: 2023
+        observation:
+          type: string
+          example: "test observation"
+        userModified:
+          type: string
+          example: "12345467"
+        dateModified:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+        userCreate:
+          type: string
+          example: "12345467"
+        dateCreate:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+    formPeriodEdit:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        idFormType:
+          type: number
+          example: 1
+        state:
+          type: string
+          example: "Generada"
+        dateStart:
+          type: string
+          format: date-time
+          example: "2023-07-01T09:40:02.350-05:00"
+        dateEnd:
+          type: string
+          format: date-time
+          example: "2023-07-14T09:40:02.350-05:00"
+        paidDate:
+          type: string
+          format: date-time
+          example: "2023-07-15T09:40:02.350-05:00"
+        month:
+          type: number
+          example: 9
+        year:
+          type: number
+          example: 2023
+        observation:
+          type: string
+          example: "test observation"
+        userModified:
+          type: string
+          example: "12345467"
+        dateModified:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"
+        userCreate:
+          type: string
+          example: "12345467"
+        dateCreate:
+          type: string
+          format: date-time
+          example: "2023-07-11T09:40:02.350-05:00"

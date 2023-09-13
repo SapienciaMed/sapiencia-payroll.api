@@ -37,7 +37,19 @@ export default class ManualDeductionService implements IManualDeductionService {
     const salary = await this.employmentRepository.getChargeEmployment(
       manualDeduction.codEmployment
     );
-    if (manualDeduction.value > Number(salary.baseSalary) * 0.5) {
+    const deductions =
+      await this.manualDeductionRepository.getManualDeductionByEmploymentId(
+        manualDeduction.codEmployment
+      );
+    let totalValue = 0;
+    if (deductions !== null) {
+      for (const deduction of deductions) {
+        if (deduction.porcentualValue && deduction.value > 0)
+          totalValue += (deduction.value / 100) * Number(salary.baseSalary);
+        else totalValue += deduction.value;
+      }
+    }
+    if (manualDeduction.value + totalValue > Number(salary.baseSalary) * 0.5) {
       return new ApiResponse(
         {} as IManualDeduction,
         EResponseCodes.FAIL,
@@ -63,6 +75,33 @@ export default class ManualDeductionService implements IManualDeductionService {
     deduction: IManualDeduction,
     id: number
   ): Promise<ApiResponse<IManualDeduction | null>> {
+    const salary = await this.employmentRepository.getChargeEmployment(
+      deduction.codEmployment
+    );
+    const deductions =
+      await this.manualDeductionRepository.getManualDeductionByEmploymentId(
+        deduction.codEmployment
+      );
+    let totalValue = 0;
+
+    if (deductions !== null) {
+      for (const deduction of deductions) {
+        if (deduction.id !== id) {
+          if (deduction.porcentualValue && deduction.value > 0) {
+            totalValue += (deduction.value / 100) * Number(salary.baseSalary);
+          } else {
+            totalValue += deduction.value;
+          }
+        }
+      }
+    }
+    if (deduction.value + totalValue > Number(salary.baseSalary) * 0.5) {
+      return new ApiResponse(
+        {} as IManualDeduction,
+        EResponseCodes.FAIL,
+        "La deducción supera más del 50% del salario"
+      );
+    }
     const res = await this.manualDeductionRepository.updateManualDeduction(
       deduction,
       id

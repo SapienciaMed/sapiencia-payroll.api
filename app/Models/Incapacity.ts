@@ -51,7 +51,7 @@ export default class Incapacity extends BaseModel {
     autoUpdate: true,
     columnName: "INC_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    //prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -62,7 +62,7 @@ export default class Incapacity extends BaseModel {
     autoCreate: true,
     columnName: "INC_FECHA_CREO",
     serializeAs: "dateCreate",
-    // prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

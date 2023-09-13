@@ -10,7 +10,6 @@ export default class CreateAndUpdateFormPeriodValidator {
     state: schema.string([rules.maxLength(10)]),
     dateStart: schema.date(),
     dateEnd: schema.date(),
-    cutoffDate: schema.date(),
     paidDate: schema.date(),
     month: schema.number(),
     year: schema.number(),

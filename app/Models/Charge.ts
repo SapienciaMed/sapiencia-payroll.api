@@ -46,7 +46,7 @@ export default class Charge extends BaseModel {
     autoUpdate: true,
     columnName: "CRG_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    //prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -60,7 +60,7 @@ export default class Charge extends BaseModel {
     autoCreate: true,
     columnName: "CRG_FECHA_CREO",
     serializeAs: "dateCreate",
-    //prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

@@ -12,8 +12,8 @@ export interface IWorkerRepository {
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
-  getActivesWorkers(): Promise<IWorker[]>
-  getActivesContractorworkers(): Promise<IWorker[]>
+  getActivesWorkers(): Promise<IWorker[]>;
+  getActivesContractorworkers(): Promise<IWorker[]>;
   createWorker(
     worker: IWorker,
     trx: TransactionClientContract
@@ -22,7 +22,6 @@ export interface IWorkerRepository {
     worker: IWorker,
     trx: TransactionClientContract
   ): Promise<IWorker | null>;
-  
 }
 
 export default class WorkerRepository implements IWorkerRepository {
@@ -34,44 +33,336 @@ export default class WorkerRepository implements IWorkerRepository {
     const res = Worker.query();
 
     if (filters.firtsName) {
-      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.firtsName}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.firtsName}%`]);
+      res
+        .whereRaw(
+          `UPPER(REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                TRA_PRIMER_NOMBRE,
+                'Á', 'A'
+              ),
+              'É', 'E'
+            ),
+            'Í', 'I'
+          ),
+          'Ó', 'O'
+        ),
+        'Ú', 'U'
+      )
+    ) like
+    UPPER(
+      REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                (?),
+                'Á', 'A'
+              ),
+              'É', 'E'
+            ),
+            'Í', 'I'
+          ),
+          'Ó', 'O'
+        ),
+        'Ú', 'U'
+      )
+    )`,
+          [`%${filters.firtsName}%`]
+        )
+        .orWhereRaw(
+          `UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  TRA_SEGUNDO_NOMBRE,
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      ) like
+      UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  (?),
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      )`,
+          [`%${filters.firtsName}%`]
+        );
     }
 
     if (filters.secondName) {
-      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.secondName}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_NOMBRE"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.secondName}%`]);
+      res
+        .whereRaw(
+          `REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                TRA_PRIMER_NOMBRE,
+                'Á', 'A'
+              ),
+              'É', 'E'
+            ),
+            'Í', 'I'
+          ),
+          'Ó', 'O'
+        ),
+        'Ú', 'U'
+      )
+    ) like
+    UPPER(
+      REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                (?),
+                'Á', 'A'
+              ),
+              'É', 'E'
+            ),
+            'Í', 'I'
+          ),
+          'Ó', 'O'
+        ),
+        'Ú', 'U'
+      )
+    )`,
+          [`%${filters.secondName}%`]
+        )
+        .orWhereRaw(
+          `UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  TRA_SEGUNDO_NOMBRE,
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      ) like
+      UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  (?),
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      )`,
+          [`%${filters.secondName}%`]
+        );
     }
 
     if (filters.surname) {
-      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.surname}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.surname}%`]);
+      res
+        .whereRaw(
+          `UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  TRA_PRIMER_APELLIDO,
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      ) like
+      UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  (?),
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      )`,
+          [`%${filters.surname}%`]
+        )
+        .orWhereRaw(
+          `UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  TRA_SEGUNDO_APELLIDO,
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      ) like
+      UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  (?),
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      )`,
+          [`%${filters.surname}%`]
+        );
     }
 
     if (filters.secondSurname) {
-      res.whereRaw(`TRANSLATE(UPPER("TRA_PRIMER_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.secondSurname}%`]).orWhereRaw(`TRANSLATE(UPPER("TRA_SEGUNDO_APELLIDO"),'ÁÉÍÓÚ','AEIOU') like
-      TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
-      [`%${filters.secondSurname}%`]);
+      res
+        .whereRaw(
+          `UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  TRA_PRIMER_APELLIDO,
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      ) like
+      UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  (?),
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      )`,
+          [`%${filters.secondSurname}%`]
+        )
+        .orWhereRaw(
+          `UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  TRA_SEGUNDO_APELLIDO,
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      ) like
+      UPPER(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  (?),
+                  'Á', 'A'
+                ),
+                'É', 'E'
+              ),
+              'Í', 'I'
+            ),
+            'Ó', 'O'
+          ),
+          'Ú', 'U'
+        )
+      )`,
+          [`%${filters.secondSurname}%`]
+        );
     }
 
     if (filters.documentNumber) {
       res.whereILike("numberDocument", `%${filters.documentNumber}%`);
     }
 
-
-    res.whereHas('employment',(employmentQuery)=>{
-
+    res.whereHas("employment", (employmentQuery) => {
       if (filters.state) {
         employmentQuery.where("state", filters.state);
       }
@@ -79,7 +370,7 @@ export default class WorkerRepository implements IWorkerRepository {
       if (filters.vinculationType) {
         employmentQuery.where("idTypeContract", filters.vinculationType);
       }
-    })
+    });
     res.preload("employment", (query) => {
       if (filters.state) {
         query.where("state", filters.state);
@@ -88,7 +379,7 @@ export default class WorkerRepository implements IWorkerRepository {
       if (filters.vinculationType) {
         query.where("idTypeContract", filters.vinculationType);
       }
-      query.preload("typesContracts")
+      query.preload("typesContracts");
     });
 
     const workerEmploymentPaginated = await res.paginate(
@@ -111,21 +402,23 @@ export default class WorkerRepository implements IWorkerRepository {
   }
 
   async getActivesWorkers(): Promise<IWorker[]> {
-    const res = await Worker.query().whereHas("employment", (employmentQuery)=>{
-      employmentQuery.where("state", "1");
-    })
-    .preload("employment")
+    const res = await Worker.query()
+      .whereHas("employment", (employmentQuery) => {
+        employmentQuery.where("state", "1");
+      })
+      .preload("employment");
     return res as IWorker[];
   }
 
   async getActivesContractorworkers(): Promise<IWorker[]> {
-    const res = await Worker.query().whereHas("employment", (employmentQuery)=>{
-      employmentQuery.where("state", "1");
-      employmentQuery.preload("typesContracts", (typesContractQuery)=>{
-        typesContractQuery.where("temporary",true)
+    const res = await Worker.query()
+      .whereHas("employment", (employmentQuery) => {
+        employmentQuery.where("state", "1");
+        employmentQuery.preload("typesContracts", (typesContractQuery) => {
+          typesContractQuery.where("temporary", true);
+        });
       })
-    })
-    .preload("employment")
+      .preload("employment");
     return res as IWorker[];
   }
 
@@ -150,7 +443,7 @@ export default class WorkerRepository implements IWorkerRepository {
       return null;
     }
 
-    toUpdate.fill({ ...worker }).useTransaction(trx);
+    toUpdate.merge({ ...toUpdate, ...worker }).useTransaction(trx);
 
     await toUpdate.save();
 

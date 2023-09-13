@@ -75,7 +75,7 @@ export default class FormPeriodsController {
       );
     }
   }
-  public async getManualDeductionById({
+  public async getFormPeriodById({
     request,
     response,
   }: HttpContextContract) {

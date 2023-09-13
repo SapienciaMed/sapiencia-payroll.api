@@ -87,8 +87,42 @@ export default class SalaryHistoryRepository
 
       if (filters.numberActApproval) {
         salaryIncrementQuery.whereRaw(
-          `TRANSLATE(UPPER("ISA_ACTA_APROBACION"),'ÁÉÍÓÚ','AEIOU') like
-        TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+          `UPPER(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  REPLACE(
+                    REPLACE(
+                      ISA_ACTA_APROBACION,
+                      'Á', 'A'
+                    ),
+                    'É', 'E'
+                  ),
+                  'Í', 'I'
+                ),
+                'Ó', 'O'
+              ),
+              'Ú', 'U'
+            )
+          ) like
+          UPPER(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  REPLACE(
+                    REPLACE(
+                      (?),
+                      'Á', 'A'
+                    ),
+                    'É', 'E'
+                  ),
+                  'Í', 'I'
+                ),
+                'Ó', 'O'
+              ),
+              'Ú', 'U'
+            )
+          )`,
           [`%${filters.numberActApproval}%`]
         );
       }
@@ -100,8 +134,42 @@ export default class SalaryHistoryRepository
 
       if (filters.numberActApproval) {
         salaryIncrementQuery.whereRaw(
-          `TRANSLATE(UPPER("ISA_ACTA_APROBACION"),'ÁÉÍÓÚ','AEIOU') like
-        TRANSLATE(UPPER(?),'ÁÉÍÓÚ','AEIOU')`,
+          `UPPER(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  REPLACE(
+                    REPLACE(
+                      ISA_ACTA_APROBACION,
+                      'Á', 'A'
+                    ),
+                    'É', 'E'
+                  ),
+                  'Í', 'I'
+                ),
+                'Ó', 'O'
+              ),
+              'Ú', 'U'
+            )
+          ) like
+          UPPER(
+            REPLACE(
+              REPLACE(
+                REPLACE(
+                  REPLACE(
+                    REPLACE(
+                      (?),
+                      'Á', 'A'
+                    ),
+                    'É', 'E'
+                  ),
+                  'Í', 'I'
+                ),
+                'Ó', 'O'
+              ),
+              'Ú', 'U'
+            )
+          )`,
           [`%${filters.numberActApproval}%`]
         );
       }

@@ -1,9 +1,7 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import FormPeriodProvider from "@ioc:core.FormPeriodProvider";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
-import {
-  IFormPeriodFilters,
-} from "App/Interfaces/FormPeriodInterface";
+import { IFormPeriodFilters } from "App/Interfaces/FormPeriodInterface";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import CreateAndUpdateFormPeriodValidator from "App/Validators/CreateAndUpdateFormPeriodValidator";
 
@@ -29,9 +27,20 @@ export default class FormPeriodsController {
     }
   }
 
-  public async getLastPeriods({ response }: HttpContextContract) {
+  public async getLastPeriods({ request, response }: HttpContextContract) {
+    const { id } = request.params();
     try {
-      return response.send(await FormPeriodProvider.getLastPeriods());
+      return response.send(await FormPeriodProvider.getLastPeriods(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async getFormPeriod({ response }: HttpContextContract) {
+    try {
+      return response.send(await FormPeriodProvider.getFormPeriod());
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
@@ -75,10 +84,7 @@ export default class FormPeriodsController {
       );
     }
   }
-  public async getFormPeriodById({
-    request,
-    response,
-  }: HttpContextContract) {
+  public async getFormPeriodById({ request, response }: HttpContextContract) {
     try {
       const { id } = request.params();
       return response.send(await FormPeriodProvider.getFormPeriodById(id));

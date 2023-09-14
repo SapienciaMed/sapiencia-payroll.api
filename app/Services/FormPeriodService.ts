@@ -6,13 +6,15 @@ import {
 import { IFormTypes } from "App/Interfaces/FormTypesInterface";
 
 import { IFormPeriodRepository } from "App/Repositories/FormsPeriodRepository";
+import { ITypesContractsRepository } from "App/Repositories/TypesContractsRepository";
 
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
 export interface IFormPeriodService {
   createFormPeriod(formPeriod: IFormPeriod): Promise<ApiResponse<IFormPeriod>>;
   getFormTypes(): Promise<ApiResponse<IFormTypes[]>>;
-  getLastPeriods(): Promise<ApiResponse<IFormPeriod[]>>;
+  getLastPeriods(idType: number): Promise<ApiResponse<IFormPeriod[]>>;
+  getFormPeriod(): Promise<ApiResponse<IFormPeriod[]>>;
   getFormsPeriodPaginate(
     filters: IFormPeriodFilters
   ): Promise<ApiResponse<IPagingData<IFormPeriod>>>;
@@ -24,7 +26,10 @@ export interface IFormPeriodService {
 }
 
 export default class FormPeriodService implements IFormPeriodService {
-  constructor(private formPeriodRepository: IFormPeriodRepository) {}
+  constructor(
+    private formPeriodRepository: IFormPeriodRepository,
+    private typeContractsRepository: ITypesContractsRepository
+  ) {}
 
   async createFormPeriod(
     formPeriod: IFormPeriod
@@ -75,8 +80,24 @@ export default class FormPeriodService implements IFormPeriodService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getLastPeriods(): Promise<ApiResponse<IFormPeriod[]>> {
-    const res = await this.formPeriodRepository.getLastPeriods();
+  async getLastPeriods(idType: number): Promise<ApiResponse<IFormPeriod[]>> {
+    const contractType =
+      await this.typeContractsRepository.getTypeContractsById(idType);
+    const temporary = contractType?.temporary ?? false;
+    const res = await this.formPeriodRepository.getLastPeriods(temporary);
+    if (!res) {
+      return new ApiResponse(
+        {} as IFormPeriod[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getFormPeriod(): Promise<ApiResponse<IFormPeriod[]>> {
+    const res = await this.formPeriodRepository.getFormPeriod();
     if (!res) {
       return new ApiResponse(
         {} as IFormPeriod[],

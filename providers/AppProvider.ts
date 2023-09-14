@@ -58,7 +58,9 @@ export default class AppProvider {
     const LicenceRepository = await import(
       "App/Repositories/LicenceRepository"
     );
-    const FormPeriodRepository = await import("App/Repositories/FormsPeriodRepository");
+    const FormPeriodRepository = await import(
+      "App/Repositories/FormsPeriodRepository"
+    );
     const ContractSuspensionRepository = await import(
       "App/Repositories/ContractSuspensionRepository"
     );
@@ -122,7 +124,11 @@ export default class AppProvider {
 
     this.app.container.singleton(
       "core.FormPeriodProvider",
-      () => new FormPeriodService.default(new FormPeriodRepository.default())
+      () =>
+        new FormPeriodService.default(
+          new FormPeriodRepository.default(),
+          new TypesContractsRepository.default()
+        )
     );
 
     this.app.container.singleton(

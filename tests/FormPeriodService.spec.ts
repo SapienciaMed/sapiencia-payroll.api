@@ -8,8 +8,12 @@ import {
   IFormPeriodFilters,
 } from "App/Interfaces/FormPeriodInterface";
 import { DateTime } from "luxon";
+import { TypesContractsRepositoryFake } from "./FakeClass/TypesContractsRepositoryFake";
 
-const service = new FormPeriodService(new FormPeriodRepository());
+const service = new FormPeriodService(
+  new FormPeriodRepository(),
+  new TypesContractsRepositoryFake()
+);
 
 test.group("FormPeriodService TEST for createManualDeduction", () => {
   const formPeriod: IFormPeriod = {
@@ -91,55 +95,52 @@ test.group("FormPeriodService  TEST for getFormPeriodById", () => {
 
 test.group("FormPeriodService  TEST for getLastPeriods", () => {
   test("class service must have a method getLastPeriods with a return", async (assert) => {
-    const result = await service.getLastPeriods();
+    const result = await service.getLastPeriods(1);
     assert.isNotNull(result);
   });
 
   test("the method getLastPeriods must be a promise", async (assert) => {
-    const result = await service.getLastPeriods();
+    const result = await service.getLastPeriods(1);
     assert.typeOf(result, "Promise");
   });
 
   test("the method getLastPeriods must return a ApiResponse", async (assert) => {
-    const result = await service.getLastPeriods();
+    const result = await service.getLastPeriods(1);
     assert.instanceOf(result, ApiResponse);
   });
 
   test("the method getLastPeriods must return a OK code ", async (assert) => {
-    const result = await service.getLastPeriods();
+    const result = await service.getLastPeriods(1);
     assert.isTrue(result.operation.code === EResponseCodes.OK);
   });
 });
 
-test.group(
-  "FormPeriodService  TEST for getFormsPeriodPaginate",
-  () => {
-    const filters: IFormPeriodFilters = {
-      idFormType: 1,
-      state: "Generada",
-      paidDate: DateTime.fromISO("2023-10-05T00:00:00.000-00:00"),
-      page: 1,
-      perPage: 10,
-    };
+test.group("FormPeriodService  TEST for getFormsPeriodPaginate", () => {
+  const filters: IFormPeriodFilters = {
+    idFormType: 1,
+    state: "Generada",
+    paidDate: DateTime.fromISO("2023-10-05T00:00:00.000-00:00"),
+    page: 1,
+    perPage: 10,
+  };
 
-    test("class service must have a method getFormsPeriodPaginate with a return", async (assert) => {
-      const result = await service.getFormsPeriodPaginate(filters);
-      assert.isNotNull(result);
-    });
+  test("class service must have a method getFormsPeriodPaginate with a return", async (assert) => {
+    const result = await service.getFormsPeriodPaginate(filters);
+    assert.isNotNull(result);
+  });
 
-    test("the method getFormsPeriodPaginate must be a promise", async (assert) => {
-      const result = service.getFormsPeriodPaginate(filters);
-      assert.typeOf(result, "Promise");
-    });
+  test("the method getFormsPeriodPaginate must be a promise", async (assert) => {
+    const result = service.getFormsPeriodPaginate(filters);
+    assert.typeOf(result, "Promise");
+  });
 
-    test("the method getFormsPeriodPaginate must return a ApiResponse", async (assert) => {
-      const result = await service.getFormsPeriodPaginate(filters);
-      assert.instanceOf(result, ApiResponse);
-    });
+  test("the method getFormsPeriodPaginate must return a ApiResponse", async (assert) => {
+    const result = await service.getFormsPeriodPaginate(filters);
+    assert.instanceOf(result, ApiResponse);
+  });
 
-    test("the method getFormsPeriodPaginate must return a OK code ", async (assert) => {
-      const result = await service.getFormsPeriodPaginate(filters);
-      assert.isTrue(result.operation.code === EResponseCodes.OK);
-    });
-  }
-);
+  test("the method getFormsPeriodPaginate must return a OK code ", async (assert) => {
+    const result = await service.getFormsPeriodPaginate(filters);
+    assert.isTrue(result.operation.code === EResponseCodes.OK);
+  });
+});

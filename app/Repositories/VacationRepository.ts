@@ -19,7 +19,8 @@ export interface IVacationRepository {
     trx: TransactionClientContract
   ): Promise<IVacation | null>;
   updateVacationDays(
-    daysVacation: IVacationDayValidator
+    daysVacation: IVacationDayValidator,
+    trx: TransactionClientContract
   ): Promise<IVacation | null>;
   getVacationsByParams(
     params: IVacationSearchParams
@@ -117,19 +118,22 @@ export default class VacationRepository implements IVacationRepository {
     if (daysVacation.refund) {
       toUpdate.refund = daysVacation.refund;
     }
-    (await toUpdate.save()).useTransaction(trx);
+    toUpdate.useTransaction(trx);
+    await toUpdate.save();
     return toUpdate.serialize() as IVacation;
   }
 
   async updateVacationDays(
-    daysVacation: IVacationDayValidator
+    daysVacation: IVacationDayValidator,
+    trx: TransactionClientContract
   ): Promise<IVacation | null> {
     const toUpdate = await Vacation.findOrFail(daysVacation.periodId);
     if (!toUpdate) {
       return null;
     }
+
     if (daysVacation.enjoyedDays) {
-      toUpdate.enjoyed += daysVacation.enjoyedDays;
+      toUpdate.enjoyed = daysVacation.enjoyedDays;
     }
     if (typeof daysVacation.avaibleDays === "number") {
       toUpdate.available = daysVacation.avaibleDays;
@@ -143,6 +147,7 @@ export default class VacationRepository implements IVacationRepository {
     if (typeof daysVacation.formedDays === "number") {
       toUpdate.periodFormer = daysVacation.formedDays;
     }
+    toUpdate.useTransaction(trx);
     await toUpdate.save();
     return toUpdate.serialize() as IVacation;
   }

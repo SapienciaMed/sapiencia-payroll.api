@@ -119,9 +119,11 @@ export default class ManualDeductionRepository
     if (filters.codFormsPeriod) {
       res.where("codFormsPeriod", filters.codFormsPeriod);
     }
-    
-    res.preload("formsPeriod");
-    
+
+    res.preload("formsPeriod", (formPeriodQuery) => {
+      formPeriodQuery.preload("formsType");
+    });
+
     if (filters.type) {
       res.whereHas("deductionsType", (deductionTypeQuery) => {
         if (filters.type) {

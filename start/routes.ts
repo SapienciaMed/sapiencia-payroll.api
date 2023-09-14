@@ -81,7 +81,8 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get("/types", "FormPeriodsController.getFormTypes");
-  Route.get("/last", "FormPeriodsController.getLastPeriods");
+  Route.get("/available", "FormPeriodsController.getFormPeriod");
+  Route.get("/last/:id", "FormPeriodsController.getLastPeriods");
   Route.get("/:id", "FormPeriodsController.getFormPeriodById");
   Route.post("/", "FormPeriodsController.createFormPeriod");
   Route.post("get-paginated", "FormPeriodsController.getFormPeriodPaginate");

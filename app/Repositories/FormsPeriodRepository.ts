@@ -10,7 +10,8 @@ import { IPagingData } from "App/Utils/ApiResponses";
 export interface IFormPeriodRepository {
   createFormPeriod(formPeriod: IFormPeriod): Promise<IFormPeriod>;
   getFormTypes(): Promise<IFormTypes[]>;
-  getLastPeriods(): Promise<IFormPeriod[]>;
+  getLastPeriods(temporary: boolean): Promise<IFormPeriod[]>;
+  getFormPeriod(): Promise<IFormPeriod[] | null>;
   updateFormPeriod(
     formPeriod: IFormPeriod,
     id: number
@@ -41,7 +42,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       return null;
     }
 
-    toUpdate.fill({ ...toUpdate,...formPeriod });
+    toUpdate.fill({ ...toUpdate, ...formPeriod });
 
     await toUpdate.save();
 
@@ -53,12 +54,25 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     return res as IFormTypes[];
   }
 
-  async getLastPeriods(): Promise<IFormPeriod[]> {
-    const res = await FormsPeriod.query().whereIn("state", [
-      "Pendiente",
-      "Generada",
-    ]);
-    return res as IFormPeriod[];
+  async getLastPeriods(temporary: boolean): Promise<IFormPeriod[]> {
+    const res = FormsPeriod.query().whereIn("state", ["Pendiente", "Generada"]);
+
+    res.preload("formsType", (formTypeQuery) => {
+      if (temporary) {
+        formTypeQuery.where("name", "Mensual");
+      }
+      formTypeQuery.where("name", "Quincenal");
+    });
+
+    return (await res) as IFormPeriod[];
+  }
+
+  async getFormPeriod(): Promise<IFormPeriod[] | null> {
+    const res = FormsPeriod.query();
+    res.preload("formsType", (formTypeQuery) => {
+      formTypeQuery.whereIn("name", ["Quincenal", "Mensual"]);
+    });
+    return (await res) as IFormPeriod[];
   }
   async getFormPeriodById(id: number): Promise<IFormPeriod[] | null> {
     const queryFormPeriod = FormsPeriod.query().where("id", id);
@@ -84,7 +98,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       res.where("state", filters.state);
     }
     if (filters.paidDate) {
-      res.where("paidDate", filters.paidDate.toString());
+      res.where("paidDate", ">=", filters.paidDate.toString());
     }
     res.preload("formsType");
 

@@ -117,7 +117,8 @@ export default class VacationRepository implements IVacationRepository {
     if (daysVacation.refund) {
       toUpdate.refund = daysVacation.refund;
     }
-    (await toUpdate.save()).useTransaction(trx);
+    toUpdate.useTransaction(trx);
+    await toUpdate.save()
     return toUpdate.serialize() as IVacation;
   }
 

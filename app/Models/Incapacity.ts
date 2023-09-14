@@ -31,7 +31,7 @@ export default class Incapacity extends BaseModel {
     columnName: "INC_FECHA_FIN",
     serializeAs: "dateFinish",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
-    serialize: (value: DateTime) => value.toJSDate(),
+    serialize: (value: DateTime) => (value ? value.toJSDate() : value),
   })
   public dateFinish: DateTime;
 

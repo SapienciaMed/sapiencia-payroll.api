@@ -50,7 +50,7 @@ export default class SalaryIncrementRepository
       return null;
     }
 
-    toUpdate.merge({ ...toUpdate,...salaryIncrement }).useTransaction(trx);
+    toUpdate.fill({ ...toUpdate,...salaryIncrement }).useTransaction(trx);
 
     await toUpdate.save();
 

@@ -75,7 +75,7 @@ export default class Employment extends BaseModel {
     columnName: "EMP_FECHA_RETIRO",
     serializeAs: "retirementDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
-    serialize: (value: DateTime) => value.toJSDate(),
+    serialize: (value: DateTime) => (value ? value.toJSDate() : value),
   })
   public retirementDate: DateTime;
 

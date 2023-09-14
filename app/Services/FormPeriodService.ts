@@ -4,8 +4,6 @@ import {
   IFormPeriodFilters,
 } from "App/Interfaces/FormPeriodInterface";
 import { IFormTypes } from "App/Interfaces/FormTypesInterface";
-import { ITypesContracts } from "App/Interfaces/TypesContractsInterfaces";
-import TypesContract from "App/Models/TypesContract";
 
 import { IFormPeriodRepository } from "App/Repositories/FormsPeriodRepository";
 import { ITypesContractsRepository } from "App/Repositories/TypesContractsRepository";

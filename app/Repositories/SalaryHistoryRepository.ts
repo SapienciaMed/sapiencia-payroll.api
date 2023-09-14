@@ -176,6 +176,12 @@ export default class SalaryHistoryRepository
       salaryIncrementQuery.preload("charge");
     });
 
+    res.whereHas("employment", (employmentQuery) => {
+      employmentQuery.where("state", 1);
+      employmentQuery.preload("worker", (workerQuery) => {
+        workerQuery.orderBy("firstName", "asc");
+      });
+    });
     res.preload("employment", (employmentQuery) => {
       employmentQuery.where("state", 1);
       employmentQuery.preload("worker", (workerQuery) => {

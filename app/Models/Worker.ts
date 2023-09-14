@@ -70,7 +70,7 @@ export default class Worker extends BaseModel {
   @column({
     columnName: "TRA_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public birthDate: DateTime;
 
@@ -186,7 +186,7 @@ export default class Worker extends BaseModel {
     autoUpdate: true,
     columnName: "TRA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateModified: DateTime;
 
@@ -200,7 +200,7 @@ export default class Worker extends BaseModel {
     autoCreate: true,
     columnName: "TRA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateCreate: DateTime;
 

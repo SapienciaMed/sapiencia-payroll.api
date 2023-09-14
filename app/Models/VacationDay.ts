@@ -16,14 +16,14 @@ export default class VacationDay extends BaseModel {
   @column({
     columnName: "DVA_FECHA_DESDE",
     serializeAs: "dateFrom",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateFrom: DateTime;
 
   @column({
     columnName: "DVA_FECHA_HASTA",
     serializeAs: "dateUntil",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateUntil: DateTime;
 
@@ -57,7 +57,7 @@ export default class VacationDay extends BaseModel {
     autoUpdate: true,
     columnName: "DVA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateModified: DateTime;
 
@@ -71,7 +71,7 @@ export default class VacationDay extends BaseModel {
     autoCreate: true,
     columnName: "DVA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateCreate: DateTime;
 

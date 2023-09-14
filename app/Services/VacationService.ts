@@ -92,7 +92,7 @@ export default class VacationService implements IVacationService {
 
     async createManyVacation(vacations: IVacationDayValidator, trx: TransactionClientContract): Promise<ApiResponse<IVacationDay[]>>{
         const vacationEnjoyed = await this.vacationDaysRepository.createManyVacation(vacations.vacationDay,trx);
-        await this.vacationRepository.updateVacationDays(vacations)
+        await this.vacationRepository.updateVacationDays(vacations,trx)
         await trx.commit();
 
         if (!vacationEnjoyed) {

@@ -23,6 +23,7 @@ export default class Incapacity extends BaseModel {
     columnName: "INC_FECHA_INICIO",
     serializeAs: "dateInitial",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
+    serialize: (value: DateTime) => value.toJSDate(),
   })
   public dateInitial: DateTime;
 
@@ -30,6 +31,7 @@ export default class Incapacity extends BaseModel {
     columnName: "INC_FECHA_FIN",
     serializeAs: "dateFinish",
     prepare: (value: DateTime) => new Date(value.toJSDate()),
+    serialize: (value: DateTime) => (value ? value.toJSDate() : value),
   })
   public dateFinish: DateTime;
 

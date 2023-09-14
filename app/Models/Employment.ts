@@ -71,10 +71,11 @@ export default class Employment extends BaseModel {
   })
   public idReasonRetirement: number;
 
-  @column({
+  @column.dateTime({
     columnName: "EMP_FECHA_RETIRO",
     serializeAs: "retirementDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => value.toJSDate(),
   })
   public retirementDate: DateTime;
 

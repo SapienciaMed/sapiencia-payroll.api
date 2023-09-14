@@ -98,10 +98,10 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       res.where("state", filters.state);
     }
     if (filters.paidDate) {
-      res.where("paidDate", ">=", filters.paidDate.toString());
+      res.where("paidDate", "=", new Date(filters.paidDate.toString()));
     }
     res.preload("formsType");
-
+    console.log(res.toQuery());
     const formPeriodPaginated = await res.paginate(
       filters.page,
       filters.perPage

@@ -148,12 +148,20 @@ export default class VinculationService implements IVinculationService {
     }
 
     const newContractDate =
-      contractSuspension.newDateEnd > DateTime.local().endOf("year")
-        ? DateTime.local().endOf("year")
+      contractSuspension.newDateEnd >
+      DateTime.local()
+        .endOf("year")
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        ? DateTime.local()
+            .endOf("year")
+            .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
         : contractSuspension.newDateEnd;
 
     const adjustContractDate =
-      contractSuspension.newDateEnd > DateTime.local().endOf("year");
+      contractSuspension.newDateEnd >
+      DateTime.local()
+        .endOf("year")
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
     const suspensionData = {
       ...contractSuspension,

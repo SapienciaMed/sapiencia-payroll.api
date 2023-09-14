@@ -17,8 +17,22 @@ export default class SalaryIncrement extends BaseModel {
     serializeAs: "effectiveDate",
     prepare: (value: DateTime) =>
       new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
-    serialize: (value: DateTime) =>
-      new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    serialize: (value: DateTime) => {
+      console.log(
+        value
+          .set({ hour: 23 })
+          .set({ minute: 59 })
+          .set({ second: 59 })
+          .toString()
+      );
+      return new Date(
+        value
+          .set({ hour: 23 })
+          .set({ minute: 59 })
+          .set({ second: 59 })
+          .toString()
+      );
+    },
   })
   public effectiveDate: DateTime;
 

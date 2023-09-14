@@ -22,16 +22,14 @@ export default class Incapacity extends BaseModel {
   @column({
     columnName: "INC_FECHA_INICIO",
     serializeAs: "dateInitial",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
-    serialize: (value: DateTime) => value.toJSDate(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateInitial: DateTime;
 
   @column({
     columnName: "INC_FECHA_FIN",
     serializeAs: "dateFinish",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
-    serialize: (value: DateTime) => (value ? value.toJSDate() : value),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateFinish: DateTime;
 
@@ -53,7 +51,7 @@ export default class Incapacity extends BaseModel {
     autoUpdate: true,
     columnName: "INC_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateModified: DateTime;
 
@@ -64,7 +62,7 @@ export default class Incapacity extends BaseModel {
     autoCreate: true,
     columnName: "INC_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateCreate: DateTime;
 

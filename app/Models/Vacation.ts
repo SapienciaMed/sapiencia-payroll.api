@@ -25,14 +25,14 @@ export default class Vacation extends BaseModel {
   @column({
     columnName: "VAC_FECHA_DESDE",
     serializeAs: "dateFrom",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateFrom: DateTime;
 
   @column({
     columnName: "VAC_FECHA_HASTA",
     serializeAs: "dateUntil",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateUntil: DateTime;
 

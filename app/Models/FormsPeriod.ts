@@ -30,21 +30,21 @@ export default class FormsPeriod extends BaseModel {
   @column({
     columnName: "PPL_FECHA_INICIO",
     serializeAs: "dateStart",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateStart: DateTime;
 
   @column({
     columnName: "PPL_FECHA_FIN",
     serializeAs: "dateEnd",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateEnd: DateTime;
 
   @column({
     columnName: "PPL_FECHA_PAGO",
     serializeAs: "paidDate",
-    prepare: (value: DateTime) => new Date(value.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public paidDate: DateTime;
 
@@ -64,7 +64,7 @@ export default class FormsPeriod extends BaseModel {
     autoUpdate: true,
     columnName: "PPL_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateModified: DateTime;
 
@@ -78,7 +78,7 @@ export default class FormsPeriod extends BaseModel {
     autoCreate: true,
     columnName: "PPL_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
   })
   public dateCreate: DateTime;
 

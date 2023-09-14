@@ -37,7 +37,7 @@ export default class SalaryHistory extends BaseModel {
   @column({
     columnName: "HPA_FECHA_VIGENCIA",
     serializeAs: "effectiveDate",
-    prepare: (value: DateTime) => value ? new Date(value.toJSDate()):new Date(),
+    prepare: (value: DateTime) => value ? new Date(value?.toJSDate().setHours(2, 2, 2, 2)):new Date(),
   })
   public effectiveDate: DateTime;
 

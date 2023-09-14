@@ -121,15 +121,22 @@ export default class EmploymentRepository implements IEmploymentRepository {
     date: DateTime,
     trx: TransactionClientContract
   ): Promise<IEmployment | null> {
-    const toUpdate = await Employment.find(idEmployment);
+    // Realiza la actualización
+    const employment = await Employment.query()
+      .where("id", idEmployment)
+      .update({endDate: new Date(date?.toJSDate()),dateModified: new Date()})
+      .useTransaction(trx);
 
-    if (!toUpdate) return null;
+    if (employment) {
+      // Busca el registro actualizado
+      const updatedEmployment = await Employment.find(idEmployment);
 
-    (
-      await toUpdate.merge({ ...toUpdate, endDate: date }).save()
-    ).useTransaction(trx);
+      if (updatedEmployment) {
+        return updatedEmployment.serialize() as IEmployment;
+      }
+    }
 
-    return toUpdate.serialize() as IEmployment;
+    return null;
   }
   async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
     const res = await ReasonsForWithdrawal.all();

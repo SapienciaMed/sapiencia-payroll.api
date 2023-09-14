@@ -201,6 +201,7 @@ export default class VinculationController {
           )
         );
       } catch (err) {
+        await trx.rollback();
         return response.badRequest(
           new ApiResponse(null, EResponseCodes.FAIL, String(err))
         );

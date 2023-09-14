@@ -132,48 +132,54 @@ export default class VinculationService implements IVinculationService {
     contractSuspension: IcontractSuspension,
     trx: TransactionClientContract
   ): Promise<ApiResponse<IcontractSuspension>> {
-    const suspension =
+    const existingSuspension =
       await this.contractSuspensionRepository.getContractSuspensionBetweenDate(
         contractSuspension.codEmployment,
         contractSuspension.dateStart,
         contractSuspension.dateEnd
       );
-    if (suspension.length > 0) {
+
+    if (existingSuspension.length > 0) {
       return new ApiResponse(
         {} as IcontractSuspension,
         EResponseCodes.FAIL,
         "Ya existe una suspensión en las fechas indicadas"
       );
     }
+
     const newContractDate =
       contractSuspension.newDateEnd > DateTime.local().endOf("year")
         ? DateTime.local().endOf("year")
         : contractSuspension.newDateEnd;
+
     const adjustContractDate =
       contractSuspension.newDateEnd > DateTime.local().endOf("year");
-    const res =
+
+    const suspensionData = {
+      ...contractSuspension,
+      newDateEnd: newContractDate,
+      adjustEndDate: adjustContractDate,
+    };
+
+    const suspensionResult =
       await this.contractSuspensionRepository.createContractSuspension(
-        {
-          ...contractSuspension,
-          newDateEnd: newContractDate,
-          adjustEndDate: adjustContractDate,
-        },
+        suspensionData,
         trx
       );
+
     await this.employmentRepository.updateContractDate(
       contractSuspension.codEmployment,
       newContractDate,
       trx
     );
-    if (!res) {
-      return new ApiResponse(
-        {} as IcontractSuspension,
-        EResponseCodes.FAIL,
-        "Ocurrió un error en su Transacción "
-      );
-    }
 
-    return new ApiResponse(res, EResponseCodes.OK);
+    await trx.commit();
+
+    return new ApiResponse(
+      suspensionResult,
+      EResponseCodes.OK,
+      "La suspensión ha sido registrada exitosamente."
+    );
   }
   async createVinculation(
     data: ICreateOrUpdateVinculation,

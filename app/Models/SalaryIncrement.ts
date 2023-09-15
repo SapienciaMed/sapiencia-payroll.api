@@ -59,7 +59,7 @@ export default class SalaryIncrement extends BaseModel {
     columnName: "ISA_FECHA_MODIFICO",
     serializeAs: "dateModified",
     prepare: (value: DateTime) =>
-      new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+      new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -74,7 +74,7 @@ export default class SalaryIncrement extends BaseModel {
     columnName: "ISA_FECHA_CREO",
     serializeAs: "dateCreate",
     prepare: (value: DateTime) =>
-      new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+      new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

@@ -67,10 +67,13 @@ export default class Worker extends BaseModel {
   })
   public bloodType: string;
 
-  @column({
+  @column.date({
     columnName: "TRA_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public birthDate: DateTime;
 
@@ -186,7 +189,8 @@ export default class Worker extends BaseModel {
     autoUpdate: true,
     columnName: "TRA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) =>
+      new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -200,7 +204,8 @@ export default class Worker extends BaseModel {
     autoCreate: true,
     columnName: "TRA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) =>
+      new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

@@ -13,17 +13,23 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_CODVAC_VACACION", serializeAs: "codVacation" })
   public codVacation: number;
 
-  @column({
+  @column.date({
     columnName: "DVA_FECHA_DESDE",
     serializeAs: "dateFrom",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public dateFrom: DateTime;
 
-  @column({
+  @column.date({
     columnName: "DVA_FECHA_HASTA",
     serializeAs: "dateUntil",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public dateUntil: DateTime;
 
@@ -57,7 +63,7 @@ export default class VacationDay extends BaseModel {
     autoUpdate: true,
     columnName: "DVA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -71,7 +77,7 @@ export default class VacationDay extends BaseModel {
     autoCreate: true,
     columnName: "DVA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

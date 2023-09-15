@@ -80,7 +80,7 @@ export default class ManualDeduction extends BaseModel {
     autoUpdate: true,
     columnName: "DDM_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -94,7 +94,7 @@ export default class ManualDeduction extends BaseModel {
     autoCreate: true,
     columnName: "DDM_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

@@ -25,7 +25,7 @@ export default class Licence extends BaseModel {
   })
   public idLicenceType: number;
 
-  @column({
+  @column.date({
     columnName: "LIC_FECHA_INICIO",
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -35,7 +35,7 @@ export default class Licence extends BaseModel {
   })
   public dateStart: DateTime;
 
-  @column({
+  @column.date({
     columnName: "LIC_FECHA_FIN",
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

@@ -19,7 +19,7 @@ export default class Incapacity extends BaseModel {
   @column({ columnName: "INC_CODEMP_EMPLEO", serializeAs: "codEmployment" })
   public codEmployment: number;
 
-  @column({
+  @column.date({
     columnName: "INC_FECHA_INICIO",
     serializeAs: "dateInitial",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -29,7 +29,7 @@ export default class Incapacity extends BaseModel {
   })
   public dateInitial: DateTime;
 
-  @column({
+  @column.date({
     columnName: "INC_FECHA_FIN",
     serializeAs: "dateFinish",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

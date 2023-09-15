@@ -12,7 +12,7 @@ export default class ContractSuspension extends BaseModel {
   @column({ columnName: "SCO_CODEMP_EMPLEO", serializeAs: "codEmployment" })
   public codEmployment: number;
 
-  @column({
+  @column.date({
     columnName: "SCO_FECHA_INICIO",
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -22,7 +22,7 @@ export default class ContractSuspension extends BaseModel {
   })
   public dateStart: DateTime;
 
-  @column({
+  @column.date({
     columnName: "SCO_FECHA_FIN",
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -40,7 +40,7 @@ export default class ContractSuspension extends BaseModel {
   })
   public adjustEndDate: boolean;
 
-  @column({
+  @column.date({
     columnName: "SCO_NUEVA_FECHA_FIN",
     serializeAs: "newDateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

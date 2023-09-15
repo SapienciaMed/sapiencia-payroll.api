@@ -27,7 +27,7 @@ export default class FormsPeriod extends BaseModel {
   })
   public year: number;
 
-  @column({
+  @column.date({
     columnName: "PPL_FECHA_INICIO",
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -37,7 +37,7 @@ export default class FormsPeriod extends BaseModel {
   })
   public dateStart: DateTime;
 
-  @column({
+  @column.date({
     columnName: "PPL_FECHA_FIN",
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -47,7 +47,7 @@ export default class FormsPeriod extends BaseModel {
   })
   public dateEnd: DateTime;
 
-  @column({
+  @column.date({
     columnName: "PPL_FECHA_PAGO",
     serializeAs: "paidDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

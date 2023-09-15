@@ -67,7 +67,7 @@ export default class Worker extends BaseModel {
   })
   public bloodType: string;
 
-  @column({
+  @column.date({
     columnName: "TRA_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

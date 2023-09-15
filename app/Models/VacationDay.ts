@@ -13,7 +13,7 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_CODVAC_VACACION", serializeAs: "codVacation" })
   public codVacation: number;
 
-  @column({
+  @column.date({
     columnName: "DVA_FECHA_DESDE",
     serializeAs: "dateFrom",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -23,7 +23,7 @@ export default class VacationDay extends BaseModel {
   })
   public dateFrom: DateTime;
 
-  @column({
+  @column.date({
     columnName: "DVA_FECHA_HASTA",
     serializeAs: "dateUntil",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

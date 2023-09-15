@@ -45,7 +45,7 @@ export default class Employment extends BaseModel {
   })
   public contractNumber: string;
 
-  @column({
+  @column.date({
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -55,7 +55,7 @@ export default class Employment extends BaseModel {
   })
   public startDate: DateTime;
 
-  @column({
+  @column.date({
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
@@ -77,7 +77,7 @@ export default class Employment extends BaseModel {
   })
   public idReasonRetirement: number;
 
-  @column.dateTime({
+  @column.date({
     columnName: "EMP_FECHA_RETIRO",
     serializeAs: "retirementDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),

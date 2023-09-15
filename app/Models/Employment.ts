@@ -48,14 +48,20 @@ export default class Employment extends BaseModel {
   @column({
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public startDate: DateTime;
 
   @column({
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public endDate: DateTime;
 
@@ -74,7 +80,10 @@ export default class Employment extends BaseModel {
   @column.dateTime({
     columnName: "EMP_FECHA_RETIRO",
     serializeAs: "retirementDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public retirementDate: DateTime;
 
@@ -104,7 +113,7 @@ export default class Employment extends BaseModel {
     autoUpdate: true,
     columnName: "EMP_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -118,7 +127,7 @@ export default class Employment extends BaseModel {
     autoCreate: true,
     columnName: "EMP_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

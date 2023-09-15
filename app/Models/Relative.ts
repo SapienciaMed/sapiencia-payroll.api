@@ -22,7 +22,10 @@ export default class Relative extends BaseModel {
   @column({
     columnName: "FAM_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate().setHours(2, 2, 2, 2)),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.toISODate() : value;
+    },
   })
   public birthDate: DateTime;
 }

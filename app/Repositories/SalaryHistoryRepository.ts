@@ -188,6 +188,7 @@ export default class SalaryHistoryRepository
         workerQuery.orderBy("firstName", "asc");
       });
     });
+
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

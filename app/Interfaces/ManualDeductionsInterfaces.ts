@@ -22,7 +22,7 @@ export interface IManualDeduction {
 export interface IManualDeductionFilters{
   codEmployment: number;
   codFormsPeriod?: number;
-  type?: string;
+  typeDeduction?: string;
   page: number;
   perPage: number;
 }

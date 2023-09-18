@@ -57,11 +57,19 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
   async getLastPeriods(temporary: boolean): Promise<IFormPeriod[]> {
     const res = FormsPeriod.query().whereIn("state", ["Pendiente", "Generada"]);
 
+    res.whereHas("formsType", (formTypeQuery) => {
+      if (temporary) {
+        formTypeQuery.where("name", "Mensual");
+      } else {
+        formTypeQuery.where("name", "Quincenal");
+      }
+    });
     res.preload("formsType", (formTypeQuery) => {
       if (temporary) {
         formTypeQuery.where("name", "Mensual");
+      } else {
+        formTypeQuery.where("name", "Quincenal");
       }
-      formTypeQuery.where("name", "Quincenal");
     });
 
     return (await res) as IFormPeriod[];

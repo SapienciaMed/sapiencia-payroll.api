@@ -40,7 +40,7 @@ export default class SalaryHistory extends BaseModel {
     prepare: (value: DateTime) =>
       value ? new Date(value?.toJSDate()) : new Date(),
     serialize: (value: DateTime) => {
-      return value ? value.toISODate() : value;
+      return value ? value.setLocale('zh').toLocaleString() : value;
     },
   })
   public effectiveDate: DateTime;

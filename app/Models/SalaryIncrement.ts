@@ -17,7 +17,7 @@ export default class SalaryIncrement extends BaseModel {
     serializeAs: "effectiveDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.toISODate() : value;
+      return value ? value.setLocale('zh').toLocaleString() : value;
     },
   })
   public effectiveDate: DateTime;

@@ -1,3 +1,4 @@
+import Database from "@ioc:Adonis/Lucid/Database";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import {
   IManualDeduction,
@@ -93,47 +94,43 @@ export default class ManualDeductionRepository
     filters: IManualDeductionFilters
   ): Promise<IPagingData<IManualDeduction>> {
     const res = ManualDeduction.query();
-    const addEmploymentConditions = (query: any) => {
-      query.preload("employment", (employmentQuery) => {
-        employmentQuery.preload("charges");
-        if (filters.codEmployment) {
-          employmentQuery.where("id", filters.codEmployment);
-        }
-        employmentQuery.preload("worker");
-      });
-    };
-    const addDeductionsTypeConditions = (query: any) => {
-      query.preload("deductionsType", (deductionTypeQuery) => {
-        if (filters.type) {
-          deductionTypeQuery.where("type", filters.type);
-        }
-      });
-    };
+
+    if (filters.typeDeduction) {
+      res.where("cyclic", filters.typeDeduction == "Ciclica");
+    }
 
     if (filters.codEmployment) {
       res.whereHas("employment", (employmentQuery) => {
         employmentQuery.where("id", filters.codEmployment);
       });
     }
+    res.preload("employment", (employmentQuery) => {
+      employmentQuery.preload("charges");
+      if (filters.codEmployment) {
+        employmentQuery.where("id", filters.codEmployment);
+      }
+      employmentQuery.preload("worker");
+    });
 
     if (filters.codFormsPeriod) {
       res.where("codFormsPeriod", filters.codFormsPeriod);
     }
 
+    res.preload("deductionsType");
     res.preload("formsPeriod", (formPeriodQuery) => {
       formPeriodQuery.preload("formsType");
     });
-
-    if (filters.type) {
-      res.whereHas("deductionsType", (deductionTypeQuery) => {
-        if (filters.type) {
-          deductionTypeQuery.where("type", filters.type);
-        }
-      });
-    }
-    addEmploymentConditions(res);
-    addDeductionsTypeConditions(res);
-
+    res.orderBy([
+      {
+        column: "state",
+        order: "desc",
+      },
+      {
+        column: "cyclic",
+        order: "desc",
+      },
+    ]);
+    console.log(res.toQuery());
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

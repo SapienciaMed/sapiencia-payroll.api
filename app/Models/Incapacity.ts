@@ -24,7 +24,7 @@ export default class Incapacity extends BaseModel {
     serializeAs: "dateInitial",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.toISODate() : value;
+      return value ? value.setLocale('zh').toLocaleString() : value;
     },
   })
   public dateInitial: DateTime;
@@ -34,7 +34,7 @@ export default class Incapacity extends BaseModel {
     serializeAs: "dateFinish",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.toISODate() : value;
+      return value ? value.setLocale('zh').toLocaleString() : value;
     },
   })
   public dateFinish: DateTime;

@@ -150,7 +150,7 @@ test.group("ManualDeductionService  TEST for getManualDeductionPaginate", () => 
   const filters: IManualDeductionFilters = {
     codEmployment: 1,
     codFormsPeriod: 1,
-    type: "En progreso",
+    typeDeduction: "En progreso",
     page: 1,
     perPage: 10,
   };

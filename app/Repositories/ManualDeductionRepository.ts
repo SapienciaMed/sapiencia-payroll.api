@@ -1,4 +1,3 @@
-import Database from "@ioc:Adonis/Lucid/Database";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import {
   IManualDeduction,
@@ -94,7 +93,6 @@ export default class ManualDeductionRepository
     filters: IManualDeductionFilters
   ): Promise<IPagingData<IManualDeduction>> {
     const res = ManualDeduction.query();
-
     if (filters.typeDeduction) {
       res.where("cyclic", filters.typeDeduction == "Ciclica");
     }
@@ -104,14 +102,16 @@ export default class ManualDeductionRepository
         employmentQuery.where("id", filters.codEmployment);
       });
     }
+
     res.preload("employment", (employmentQuery) => {
       employmentQuery.preload("charges");
       if (filters.codEmployment) {
         employmentQuery.where("id", filters.codEmployment);
       }
-      employmentQuery.preload("worker");
+      employmentQuery.preload("worker", (workerQuery) => {
+        workerQuery.orderBy("firstName", "desc");
+      });
     });
-
     if (filters.codFormsPeriod) {
       res.where("codFormsPeriod", filters.codFormsPeriod);
     }
@@ -130,7 +130,7 @@ export default class ManualDeductionRepository
         order: "desc",
       },
     ]);
-    console.log(res.toQuery());
+
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

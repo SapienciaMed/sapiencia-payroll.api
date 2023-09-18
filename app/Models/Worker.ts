@@ -72,7 +72,7 @@ export default class Worker extends BaseModel {
     serializeAs: "birthDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.toISODate() : value;
+      return value ? value.setLocale('zh').toLocaleString() : value;
     },
   })
   public birthDate: DateTime;

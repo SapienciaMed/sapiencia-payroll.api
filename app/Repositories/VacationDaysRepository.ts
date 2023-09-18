@@ -45,7 +45,15 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
     vacations: IVacationDay[],
     trx: TransactionClientContract
   ): Promise<IVacationDay[]> {
-    const res = await VacationDay.createMany(vacations, { client: trx });
+    const res = await VacationDay.createMany(
+      vacations.map((vacation) => {
+        return {
+          ...vacation,
+          observation: vacation.observation ? vacation.observation : "",
+        };
+      }),
+      { client: trx }
+    );
     return res as IVacationDay[];
   }
 
@@ -55,7 +63,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
       return null;
     }
 
-    toUpdate.merge({ ...toUpdate,...data });
+    toUpdate.merge({ ...toUpdate, ...data });
     await toUpdate.save();
     return toUpdate.serialize() as VacationDay;
   }

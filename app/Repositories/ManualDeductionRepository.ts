@@ -93,6 +93,10 @@ export default class ManualDeductionRepository
     filters: IManualDeductionFilters
   ): Promise<IPagingData<IManualDeduction>> {
     const res = ManualDeduction.query();
+
+    res.join("EMP_EMPLEOS", "EMP_CODIGO", "DDM_CODEMP_EMPLEO");
+    res.join("TRA_TRABAJADORES", "TRA_CODIGO", "EMP_CODTRA_TRABAJADOR");
+
     if (filters.typeDeduction) {
       res.where("cyclic", filters.typeDeduction == "Ciclica");
     }
@@ -108,9 +112,7 @@ export default class ManualDeductionRepository
       if (filters.codEmployment) {
         employmentQuery.where("id", filters.codEmployment);
       }
-      employmentQuery.preload("worker", (workerQuery) => {
-        workerQuery.orderBy("firstName", "desc");
-      });
+      employmentQuery.preload("worker");
     });
     if (filters.codFormsPeriod) {
       res.where("codFormsPeriod", filters.codFormsPeriod);
@@ -120,7 +122,11 @@ export default class ManualDeductionRepository
     res.preload("formsPeriod", (formPeriodQuery) => {
       formPeriodQuery.preload("formsType");
     });
+
     res.orderBy([
+      {
+        column: "TRA_PRIMER_NOMBRE",
+      },
       {
         column: "state",
         order: "desc",
@@ -130,7 +136,7 @@ export default class ManualDeductionRepository
         order: "desc",
       },
     ]);
-
+    
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

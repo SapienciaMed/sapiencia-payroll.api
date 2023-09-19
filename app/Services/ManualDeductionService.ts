@@ -88,9 +88,9 @@ export default class ManualDeductionService implements IManualDeductionService {
       for (const deduction of deductions) {
         if (deduction.id !== id) {
           if (deduction.porcentualValue && deduction.value > 0) {
-            totalValue += (deduction.value / 100) * Number(salary.baseSalary);
+            totalValue += Number((deduction.value / 100) * Number(salary.baseSalary));
           } else {
-            totalValue += deduction.value;
+            totalValue += Number(deduction.value);
           }
         }
       }

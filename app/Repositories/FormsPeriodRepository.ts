@@ -103,7 +103,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       res.where("idFormType", filters.idFormType);
     }
     if (filters.state) {
-      res.where("state", filters.state);
+      res.where("state",'=', filters.state);
     }
     if (filters.paidDate) {
       res.where("paidDate", "=", new Date(filters.paidDate.toString()));

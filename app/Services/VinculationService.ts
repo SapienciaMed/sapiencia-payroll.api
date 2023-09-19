@@ -229,7 +229,7 @@ export default class VinculationService implements IVinculationService {
           validity: true,
           effectiveDate: DateTime.fromFormat(
             String(salaryIncrement?.effectiveDate),
-            "yyyy/M/d"
+            "yyyy/MM/dd"
           ),
         } as ISalaryHistory,
       ],

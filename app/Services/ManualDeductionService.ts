@@ -42,14 +42,29 @@ export default class ManualDeductionService implements IManualDeductionService {
         manualDeduction.codEmployment
       );
     let totalValue = 0;
+
     if (deductions !== null) {
       for (const deduction of deductions) {
-        if (deduction.porcentualValue && deduction.value > 0)
-          totalValue += (deduction.value / 100) * Number(salary.baseSalary);
-        else totalValue += deduction.value;
+        if (
+          deduction.cyclic ||
+          (!deduction.cyclic &&
+            deduction.codFormsPeriod === manualDeduction.codFormsPeriod)
+        ) {
+          const deductionValue =
+            Number(deduction.porcentualValue) && Number(deduction.value) > 0
+              ? (Number(deduction.value) / 100) * Number(salary.baseSalary)
+              : Number(deduction.value);
+          totalValue += deductionValue;
+        }
       }
     }
-    if (manualDeduction.value + totalValue > Number(salary.baseSalary) * 0.5) {
+    if (
+      (Number(manualDeduction.porcentualValue)
+        ? (Number(manualDeduction.value) / 100) * Number(salary.baseSalary)
+        : Number(manualDeduction.value)) +
+        Number(totalValue) >
+      Number(salary.baseSalary) * 0.5
+    ) {
       return new ApiResponse(
         {} as IManualDeduction,
         EResponseCodes.FAIL,
@@ -72,30 +87,40 @@ export default class ManualDeductionService implements IManualDeductionService {
   }
 
   async updateManualDeduction(
-    deduction: IManualDeduction,
+    deductionEdit: IManualDeduction,
     id: number
   ): Promise<ApiResponse<IManualDeduction | null>> {
     const salary = await this.employmentRepository.getChargeEmployment(
-      deduction.codEmployment
+      deductionEdit.codEmployment
     );
     const deductions =
       await this.manualDeductionRepository.getManualDeductionByEmploymentId(
-        deduction.codEmployment
+        deductionEdit.codEmployment
       );
     let totalValue = 0;
 
     if (deductions !== null) {
       for (const deduction of deductions) {
-        if (deduction.id !== id) {
-          if (deduction.porcentualValue && deduction.value > 0) {
-            totalValue += Number((deduction.value / 100) * Number(salary.baseSalary));
-          } else {
-            totalValue += Number(deduction.value);
-          }
+        if (
+          deduction.cyclic ||
+          (!deduction.cyclic &&
+            deduction.codFormsPeriod === deductionEdit.codFormsPeriod)
+        ) {
+          const deductionValue =
+            Number(deduction.porcentualValue) && Number(deduction.value) > 0
+              ? (Number(deduction.value) / 100) * Number(salary.baseSalary)
+              : Number(deduction.value);
+          totalValue += deductionValue;
         }
       }
     }
-    if (deduction.value + totalValue > Number(salary.baseSalary) * 0.5) {
+    if (
+      (Number(deductionEdit.porcentualValue)
+        ? (Number(deductionEdit.value) / 100) * Number(salary.baseSalary)
+        : Number(deductionEdit.value)) +
+        Number(totalValue) >
+      Number(salary.baseSalary) * 0.5
+    ) {
       return new ApiResponse(
         {} as IManualDeduction,
         EResponseCodes.FAIL,
@@ -103,7 +128,7 @@ export default class ManualDeductionService implements IManualDeductionService {
       );
     }
     const res = await this.manualDeductionRepository.updateManualDeduction(
-      deduction,
+      deductionEdit,
       id
     );
 

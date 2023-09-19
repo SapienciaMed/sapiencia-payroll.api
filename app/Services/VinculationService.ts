@@ -227,7 +227,10 @@ export default class VinculationService implements IVinculationService {
           previousSalary: salaryIncrement?.previousSalary,
           salary: charge?.baseSalary,
           validity: true,
-          effectiveDate: salaryIncrement?.effectiveDate,
+          effectiveDate: DateTime.fromFormat(
+            String(salaryIncrement?.effectiveDate),
+            "yyyy/MM/dd"
+          ),
         } as ISalaryHistory,
       ],
       trx

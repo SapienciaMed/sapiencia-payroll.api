@@ -102,9 +102,10 @@ export default class ManualDeductionService implements IManualDeductionService {
     if (deductions !== null) {
       for (const deduction of deductions) {
         if (
-          deduction.cyclic ||
+          (deduction.cyclic && deduction.id !== deductionEdit.id) ||
           (!deduction.cyclic &&
-            deduction.codFormsPeriod === deductionEdit.codFormsPeriod)
+            deduction.codFormsPeriod === deductionEdit.codFormsPeriod &&
+            deduction.id !== deductionEdit.id)
         ) {
           const deductionValue =
             Number(deduction.porcentualValue) && Number(deduction.value) > 0

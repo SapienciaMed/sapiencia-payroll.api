@@ -50,7 +50,7 @@ export default class Employment extends BaseModel {
     serializeAs: "startDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public startDate: DateTime;
@@ -60,7 +60,7 @@ export default class Employment extends BaseModel {
     serializeAs: "endDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public endDate: DateTime;
@@ -82,7 +82,7 @@ export default class Employment extends BaseModel {
     serializeAs: "retirementDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public retirementDate: DateTime;

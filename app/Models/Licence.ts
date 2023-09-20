@@ -30,7 +30,7 @@ export default class Licence extends BaseModel {
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public dateStart: DateTime;
@@ -40,7 +40,7 @@ export default class Licence extends BaseModel {
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public dateEnd: DateTime;

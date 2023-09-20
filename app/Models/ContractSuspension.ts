@@ -17,7 +17,7 @@ export default class ContractSuspension extends BaseModel {
     serializeAs: "dateStart",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public dateStart: DateTime;
@@ -27,7 +27,7 @@ export default class ContractSuspension extends BaseModel {
     serializeAs: "dateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public dateEnd: DateTime;
@@ -45,7 +45,7 @@ export default class ContractSuspension extends BaseModel {
     serializeAs: "newDateEnd",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public newDateEnd: DateTime;

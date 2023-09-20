@@ -7,13 +7,13 @@ export default class CreateSalaryIncrementValidator {
   public schema = schema.create({
     id: schema.number.optional(),
     codCharge: schema.number(),
-    effectiveDate: schema.date(),
+    effectiveDate: schema.date({ format: "yyyy/MM/dd" }),
     numberActApproval: schema.string([rules.maxLength(100)]),
     porcentualIncrement: schema.boolean(),
     incrementValue: schema.number(),
     previousSalary: schema.number(),
     newSalary: schema.number(),
-    observation:schema.string.optional([rules.maxLength(500)]),
+    observation: schema.string.optional([rules.maxLength(500)]),
     userModified: schema.string.optional([rules.maxLength(15)]),
     userCreate: schema.string.optional([rules.maxLength(15)]),
   });

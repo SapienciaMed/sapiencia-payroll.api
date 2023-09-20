@@ -27,7 +27,7 @@ export default class Vacation extends BaseModel {
     serializeAs: "dateFrom",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public dateFrom: DateTime;
@@ -37,7 +37,7 @@ export default class Vacation extends BaseModel {
     serializeAs: "dateUntil",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public dateUntil: DateTime;

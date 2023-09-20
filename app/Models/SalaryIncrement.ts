@@ -17,7 +17,7 @@ export default class SalaryIncrement extends BaseModel {
     serializeAs: "effectiveDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public effectiveDate: DateTime;
@@ -58,8 +58,7 @@ export default class SalaryIncrement extends BaseModel {
     autoUpdate: true,
     columnName: "ISA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: (value: DateTime) =>
-      new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -73,8 +72,7 @@ export default class SalaryIncrement extends BaseModel {
     autoCreate: true,
     columnName: "ISA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: (value: DateTime) =>
-      new Date(value?.toJSDate()),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 

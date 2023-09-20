@@ -24,7 +24,7 @@ export default class Relative extends BaseModel {
     serializeAs: "birthDate",
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
     serialize: (value: DateTime) => {
-      return value ? value.setLocale('zh').toLocaleString() : value;
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
     },
   })
   public birthDate: DateTime;

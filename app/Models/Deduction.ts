@@ -1,4 +1,7 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import Employment from "./Employment";
+import FormsPeriod from "./FormsPeriod";
+import DeductionType from "./DeductionType";
 
 export default class Deduction extends BaseModel {
   public static table = "DED_DEDUCCIONES";
@@ -47,4 +50,22 @@ export default class Deduction extends BaseModel {
     serializeAs: "unitTime",
   })
   public unitTime: string;
+
+  @hasMany(() => FormsPeriod, {
+    localKey: "idTypePayroll",
+    foreignKey: "id",
+  })
+  public formPeriod: HasMany<typeof FormsPeriod>;
+
+  @hasMany(() => Employment, {
+    localKey: "idEmployment",
+    foreignKey: "id",
+  })
+  public employment: HasMany<typeof Employment>;
+
+  @hasMany(() => DeductionType, {
+    localKey: "idTypeDeduction",
+    foreignKey: "id",
+  })
+  public deductionType: HasMany<typeof DeductionType>;
 }

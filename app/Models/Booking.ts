@@ -1,4 +1,7 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import Employment from "./Employment";
+import FormsPeriod from "./FormsPeriod";
+import ReserveType from "./ReserveType";
 
 export default class Booking extends BaseModel {
   public static table = "RSV_RESERVAS";
@@ -19,10 +22,10 @@ export default class Booking extends BaseModel {
   public idEmployment: number;
 
   @column({
-    columnName: "RSV_CODTDD_TIPO_DEDUCCION",
-    serializeAs: "idTypeDeduction",
+    columnName: "RSV_CODTDD_TIPO_RESERVA",
+    serializeAs: "idTypeReserve",
   })
-  public idTypeDeduction: number;
+  public idTypeReserve: number;
 
   @column({
     columnName: "RSV_VALOR",
@@ -41,4 +44,22 @@ export default class Booking extends BaseModel {
     serializeAs: "unitTime",
   })
   public unitTime: string;
+
+  @hasMany(() => FormsPeriod, {
+    localKey: "idTypePayroll",
+    foreignKey: "id",
+  })
+  public formPeriod: HasMany<typeof FormsPeriod>;
+
+  @hasMany(() => Employment, {
+    localKey: "idEmployment",
+    foreignKey: "id",
+  })
+  public employment: HasMany<typeof Employment>;
+
+  @hasMany(() => ReserveType, {
+    localKey: "idEmployment",
+    foreignKey: "id",
+  })
+  public reserveType: HasMany<typeof ReserveType>;
 }

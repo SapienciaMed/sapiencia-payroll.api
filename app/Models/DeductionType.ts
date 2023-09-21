@@ -1,6 +1,6 @@
 import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
-export default class DeductionsType extends BaseModel {
+export default class DeductionType extends BaseModel {
   public static table = "TDD_TIPOS_DEDUCCIONES";
   @column({ isPrimary: true, columnName: "TDD_CODIGO", serializeAs: "id" })
   public id: number;

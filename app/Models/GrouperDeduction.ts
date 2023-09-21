@@ -1,4 +1,6 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import Grouper from "./Grouper";
+import DeductionType from "./DeductionType";
 
 export default class GrouperDeduction extends BaseModel {
   public static table = "DAG_DEDUCCIONES_AGRUPADOR";
@@ -17,4 +19,16 @@ export default class GrouperDeduction extends BaseModel {
 
   @column({ columnName: "DAG_SIGNO", serializeAs: "sign" })
   public sign: string;
+
+  @hasMany(() => Grouper, {
+    localKey: "idGrouper",
+    foreignKey: "id",
+  })
+  public grouper: HasMany<typeof Grouper>;
+
+  @hasMany(() => DeductionType, {
+    localKey: "idTypeDeduction",
+    foreignKey: "id",
+  })
+  public deductionType: HasMany<typeof DeductionType>;
 }

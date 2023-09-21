@@ -9,7 +9,7 @@ import {
 } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
 import Employment from "./Employment";
-import DeductionsType from "./DeductionsType";
+import DeductionsType from "./DeductionType";
 import FormsPeriod from "./FormsPeriod";
 
 export default class ManualDeduction extends BaseModel {

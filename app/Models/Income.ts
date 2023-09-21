@@ -1,4 +1,7 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import FormsPeriod from "./FormsPeriod";
+import Employment from "./Employment";
+import IncomeType from "./IncomeType";
 
 export default class Income extends BaseModel {
   public static table = "ING_INGRESOS";
@@ -41,4 +44,22 @@ export default class Income extends BaseModel {
     serializeAs: "unitTime",
   })
   public unitTime: string;
+
+  @hasMany(() => FormsPeriod, {
+    localKey: "idTypePayroll",
+    foreignKey: "id",
+  })
+  public formPeriod: HasMany<typeof FormsPeriod>;
+
+  @hasMany(() => Employment, {
+    localKey: "idEmployment",
+    foreignKey: "id",
+  })
+  public employment: HasMany<typeof Employment>;
+
+  @hasMany(() => IncomeType, {
+    localKey: "idTypeIncome",
+    foreignKey: "id",
+  })
+  public incomeType: HasMany<typeof IncomeType>;
 }

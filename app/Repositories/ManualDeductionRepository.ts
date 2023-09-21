@@ -3,7 +3,7 @@ import {
   IManualDeduction,
   IManualDeductionFilters,
 } from "App/Interfaces/ManualDeductionsInterfaces";
-import DeductionsType from "App/Models/DeductionsType";
+import DeductionsType from "App/Models/DeductionType";
 import ManualDeduction from "App/Models/ManualDeduction";
 import { IPagingData } from "App/Utils/ApiResponses";
 
@@ -136,7 +136,7 @@ export default class ManualDeductionRepository
         order: "desc",
       },
     ]);
-    
+
     const workerEmploymentPaginated = await res.paginate(
       filters.page,
       filters.perPage

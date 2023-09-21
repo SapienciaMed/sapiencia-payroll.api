@@ -8,4 +8,10 @@ export default class IncomeType extends BaseModel {
 
   @column({ columnName: "TIG_NOMBRE", serializeAs: "name" })
   public name: string;
+
+  @column({
+    columnName: "TIG_CUENTA_CONTABLE",
+    serializeAs: "accountingAccount",
+  })
+  public accountingAccount: string;
 }

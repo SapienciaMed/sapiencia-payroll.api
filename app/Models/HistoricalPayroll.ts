@@ -1,4 +1,7 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import { HasMany, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import Employment from "./Employment";
+import FormsPeriod from "./FormsPeriod";
 
 export default class HistoricalPayroll extends BaseModel {
   public static table = "HPL_HISTORICOS_PLANILLA";
@@ -59,4 +62,16 @@ export default class HistoricalPayroll extends BaseModel {
     serializeAs: "observations",
   })
   public observation: string;
+
+  @hasMany(() => FormsPeriod, {
+    localKey: "idTypePayroll",
+    foreignKey: "id",
+  })
+  public formPeriod: HasMany<typeof FormsPeriod>;
+
+  @hasMany(() => Employment, {
+    localKey: "idEmployment",
+    foreignKey: "id",
+  })
+  public employment: HasMany<typeof Employment>;
 }

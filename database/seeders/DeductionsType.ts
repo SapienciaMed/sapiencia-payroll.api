@@ -1,5 +1,5 @@
 import BaseSeeder from "@ioc:Adonis/Lucid/Seeder";
-import DeductionsType from "App/Models/DeductionsType";
+import DeductionsType from "App/Models/DeductionType";
 
 export default class extends BaseSeeder {
   public async run() {

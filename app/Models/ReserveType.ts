@@ -8,4 +8,10 @@ export default class ReserveType extends BaseModel {
 
   @column({ columnName: "TRS_NOMBRE", serializeAs: "name" })
   public name: string;
+
+  @column({
+    columnName: "TRD_CUENTA_CONTABLE",
+    serializeAs: "accountingAccount",
+  })
+  public accountingAccount: string;
 }

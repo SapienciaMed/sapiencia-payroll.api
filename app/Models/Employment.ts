@@ -11,6 +11,7 @@ import Charge from "./Charge";
 import TypesContract from "./TypesContract";
 import Worker from "./Worker";
 import ReasonsForWithdrawal from "./ReasonsForWithdrawal";
+import SalaryHistory from "./SalaryHistory";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -148,6 +149,12 @@ export default class Employment extends BaseModel {
     foreignKey: "id",
   })
   public typesContracts: HasMany<typeof TypesContract>;
+
+  @hasMany(() => SalaryHistory, {
+    localKey: "idTypeContract",
+    foreignKey: "id",
+  })
+  public salaryHistories: HasMany<typeof SalaryHistory>;
 
   @belongsTo(() => Worker, {
     localKey: "id",

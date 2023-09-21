@@ -151,8 +151,8 @@ export default class Employment extends BaseModel {
   public typesContracts: HasMany<typeof TypesContract>;
 
   @hasMany(() => SalaryHistory, {
-    localKey: "idTypeContract",
-    foreignKey: "id",
+    localKey: "id",
+    foreignKey: "codEmployment",
   })
   public salaryHistories: HasMany<typeof SalaryHistory>;
 

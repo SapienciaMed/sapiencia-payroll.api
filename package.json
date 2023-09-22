@@ -28,6 +28,7 @@
     "@adonisjs/mail": "^8.2.0",
     "@adonisjs/repl": "^3.1.11",
     "adonis5-swagger": "^1.4.1",
+    "axios": "^1.5.0",
     "japa": "^4.0.0",
     "jsonwebtoken": "^9.0.0",
     "luxon": "^3.3.0",

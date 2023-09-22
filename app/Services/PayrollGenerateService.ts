@@ -5,16 +5,20 @@ import { IPayrollGenerateRepository } from "../Repositories/PayrollGenerateRepos
 import FormsPeriodRepository from "App/Repositories/FormsPeriodRepository";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import axios, { AxiosInstance } from "axios";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
 }
 
 export default class PayrollGenerateService implements IPayrollGenerateService {
+  private urlApiCore: AxiosInstance;
   constructor(
     private payrollGenerateRepository: IPayrollGenerateRepository,
     private formsPeriodRepository: FormsPeriodRepository
-  ) {}
+  ) {
+    this.urlApiCore = axios.create({ baseURL: process.env.API_CORE });
+  }
 
   async payrollGenerateById(id: number): Promise<ApiResponse<boolean>> {
     const formPeriod = await this.formsPeriodRepository.getFormPeriodById(id);
@@ -23,6 +27,9 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     if (!formPeriod || formPeriod.length === 0) {
       return new ApiResponse(false, EResponseCodes.FAIL, "....");
     }
+    formPeriod.map((pay) => {
+      pay.state;
+    });
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
 
@@ -42,9 +49,6 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   async generatePayrollBiweekly(formPeriod: IFormPeriod): Promise<void> {
     //buscar los empelados activos de la planilla quincenal.
 
-
-
-
     const emploments = await this.payrollGenerateRepository.getActiveEmploments(
       1,
       new Date(String(formPeriod.dateEnd))
@@ -53,9 +57,6 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     Promise.all(
       emploments.map(async (emploment) => {
         try {
-          
-
-
           // 1. Calcula Licencia
           await this.calculateLicense(emploment, formPeriod);
 

@@ -1,4 +1,11 @@
-import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  HasMany,
+  HasOne,
+  column,
+  hasMany,
+  hasOne,
+} from "@ioc:Adonis/Lucid/Orm";
 import FormsPeriod from "./FormsPeriod";
 import Employment from "./Employment";
 import IncomeType from "./IncomeType";
@@ -57,9 +64,9 @@ export default class Income extends BaseModel {
   })
   public employment: HasMany<typeof Employment>;
 
-  @hasMany(() => IncomeType, {
+  @hasOne(() => IncomeType, {
     localKey: "idTypeIncome",
     foreignKey: "id",
   })
-  public incomeType: HasMany<typeof IncomeType>;
+  public incomeType: HasOne<typeof IncomeType>;
 }

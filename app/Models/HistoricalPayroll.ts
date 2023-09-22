@@ -63,15 +63,15 @@ export default class HistoricalPayroll extends BaseModel {
   })
   public observation: string;
 
-  @hasMany(() => FormsPeriod, {
+  @hasOne(() => FormsPeriod, {
     localKey: "idTypePayroll",
     foreignKey: "id",
   })
-  public formPeriod: HasMany<typeof FormsPeriod>;
+  public formPeriod: HasOne<typeof FormsPeriod>;
 
-  @hasMany(() => Employment, {
+  @hasOne(() => Employment, {
     localKey: "idEmployment",
     foreignKey: "id",
   })
-  public employment: HasMany<typeof Employment>;
+  public employment: HasOne<typeof Employment>;
 }

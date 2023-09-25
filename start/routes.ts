@@ -24,6 +24,15 @@ Route.get("/", async () => {
   return "Api de servicios Transversales de SAPIENCIA";
 });
 
+
+
+Route.group(() => {
+  Route.get("/generate-by-id/:id", "PayrollGenerateController.payrollGenerateById");
+}).prefix("/api/v1/payroll-generate");
+
+
+
+
 Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
   Route.get("/charges", "VinculationController.getCharges");

@@ -1,5 +1,4 @@
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
-import { HasMany, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import Employment from "./Employment";
 import FormsPeriod from "./FormsPeriod";
 

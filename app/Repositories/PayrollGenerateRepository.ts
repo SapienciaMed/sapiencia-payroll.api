@@ -17,11 +17,45 @@ import { DateTime } from "luxon";
 export interface IPayrollGenerateRepository {
   getActiveEmploments(dateStart: Date): Promise<IEmployment[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
+  getMonthlyValuePerGrouper(
+    gruperId: number,
+    month: number,
+    year: number,
+    employmentId: number
+  ): Promise<number>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
 {
   constructor() {}
+
+  async getMonthlyValuePerGrouper(
+    gruperId: number,
+    month: number,
+    year: number,
+    employmentId: number
+  ): Promise<number> {
+    const incomes = await Income.query()
+      .select("ING_VALOR as value", "IAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "ING_CODPPL_PLANILLA")
+      .join(
+        "IAG_INGRESOS_AGRUPADOR",
+        "IAG_CODTIG_TIPO_INGRESO",
+        "ING_CODTIG_TIPO_INGRESO"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("IAG_CODAGR_AGRUPADOR", gruperId)
+      .where("ING_CODEMP_EMPLEO", employmentId);
+
+    const toReturn = incomes.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    return toReturn;
+  }
 
   async getActiveEmploments(dateStart: Date): Promise<IEmployment[]> {
     const res = await Employment.query()
@@ -31,7 +65,7 @@ export default class PayrollGenerateRepository
         contractsQuery.where("temporary", false);
       })
       .where("startDate", "<=", dateStart)
-      .andWhere("state", "=", 1);
+      .andWhere("state", "=", true);
 
     return res.map((i) => i.serialize() as IEmployment);
   }

@@ -1,4 +1,5 @@
 import type { ApplicationContract } from "@ioc:Adonis/Core/Application";
+import PayrollGenerateService from '../app/Services/PayrollGenerateService';
 
 export default class AppProvider {
   constructor(protected app: ApplicationContract) {}
@@ -14,6 +15,8 @@ export default class AppProvider {
     const IncapacityService = await import("App/Services/IncapacityService");
     const LicenceService = await import("App/Services/LicenceService");
     const FormPeriodService = await import("App/Services/FormPeriodService");
+    // const CoreService = await import("App/Services/External/CoreService");
+    const PayrollGenerateService = await import("App/Services/PayrollGenerateService");
     const SalaryHistoryService = await import(
       "App/Services/SalaryHistoryService"
     );
@@ -31,6 +34,7 @@ export default class AppProvider {
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
     const WorkerRepository = await import("App/Repositories/WorkerRepository");
+    const PayrollGenerateRepository = await import("App/Repositories/PayrollGenerateRepository");
     const VacationRepository = await import(
       "App/Repositories/VacationRepository"
     );
@@ -76,6 +80,17 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
+
+    this.app.container.singleton(
+      "core.PayrollGenerateProvider",
+      () =>
+        new PayrollGenerateService.default(
+          new PayrollGenerateRepository.default(),
+          new FormPeriodRepository.default()
+        )
+    );
+
+
 
     this.app.container.singleton(
       "core.VinculationProvider",

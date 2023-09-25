@@ -1,6 +1,5 @@
 import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import Grouper from "./Grouper";
-import Employment from "./Employment";
 import IncomeType from "./IncomeType";
 
 export default class GrouperIncome extends BaseModel {

@@ -91,7 +91,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       return null;
     }
 
-    return formPeriod as IFormPeriod;
+    return formPeriod.serialize() as IFormPeriod;
   }
 
   async getFormsPeriodPaginate(

@@ -1,24 +1,21 @@
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
-
 import { IPayrollGenerateRepository } from "../Repositories/PayrollGenerateRepository";
 import FormsPeriodRepository from "App/Repositories/FormsPeriodRepository";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
-import axios, { AxiosInstance } from "axios";
+// import CoreService from "./External/CoreService";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
 }
 
 export default class PayrollGenerateService implements IPayrollGenerateService {
-  private urlApiCore: AxiosInstance;
   constructor(
     private payrollGenerateRepository: IPayrollGenerateRepository,
     private formsPeriodRepository: FormsPeriodRepository
-  ) {
-    this.urlApiCore = axios.create({ baseURL: process.env.API_CORE });
-  }
+  ) // private coreService: CoreService
+  {}
 
   async payrollGenerateById(id: number): Promise<ApiResponse<boolean>> {
     const formPeriod = await this.formsPeriodRepository.getFormPeriodById(id);
@@ -31,9 +28,9 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
 
     // 3. Genera la planilla segun el tipo
-    switch (formPeriod[1].idFormType) {
+    switch (formPeriod.idFormType) {
       case 1: // Planilla Quincenal
-        await this.generatePayrollBiweekly(formPeriod[1]);
+        await this.generatePayrollBiweekly(formPeriod);
         break;
 
       default:
@@ -58,6 +55,9 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
 
           // 2. Calcula Licencia
           await this.calculateIncapacity(emploment, formPeriod);
+
+          // Calcula Renta
+          await this.calculateISR(emploment, formPeriod);
         } catch (error) {
           // Crea historico Fallido
         }
@@ -66,8 +66,8 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   }
 
   async calculateLicense(
-    employment: IEmployment,
-    formPeriod: IFormPeriod
+    _employment: IEmployment,
+    _formPeriod: IFormPeriod
   ): Promise<void> {
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
@@ -75,10 +75,30 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   }
 
   async calculateIncapacity(
+    _employment: IEmployment,
+    _formPeriod: IFormPeriod
+  ): Promise<void> {
+    // 1. buscar incapacidades vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+  }
+
+  async calculateISR(
     employment: IEmployment,
     formPeriod: IFormPeriod
   ): Promise<void> {
-    // 1. buscar incapacidades vigentes y que entren en planilla
+    // 1. Buscar ingresos afectos
+    console.log('akive1')
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        1,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0
+      );
+
+    console.log(affectionValue);
+
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
   }

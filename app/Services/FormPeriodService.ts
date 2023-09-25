@@ -18,7 +18,7 @@ export interface IFormPeriodService {
   getFormsPeriodPaginate(
     filters: IFormPeriodFilters
   ): Promise<ApiResponse<IPagingData<IFormPeriod>>>;
-  getFormPeriodById(id: number): Promise<ApiResponse<IFormPeriod[]>>;
+  getFormPeriodById(id: number): Promise<ApiResponse<IFormPeriod>>;
   updateFormPeriod(
     formPeriod: IFormPeriod,
     id: number
@@ -118,12 +118,12 @@ export default class FormPeriodService implements IFormPeriodService {
     return new ApiResponse(vacations, EResponseCodes.OK);
   }
 
-  async getFormPeriodById(id: number): Promise<ApiResponse<IFormPeriod[]>> {
+  async getFormPeriodById(id: number): Promise<ApiResponse<IFormPeriod>> {
     const res = await this.formPeriodRepository.getFormPeriodById(id);
 
     if (!res) {
       return new ApiResponse(
-        {} as IFormPeriod[],
+        {} as IFormPeriod,
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );

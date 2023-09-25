@@ -49,7 +49,7 @@ export class FormPeriodRepositoryFake implements FormPeriodRepository {
       list.filter((i) => i.state == "Pendiente" || i.state == "Generada")
     );
   }
-  getFormPeriodById(_id: number): Promise<IFormPeriod[] | null> {
+  getFormPeriodById(_id: number): Promise<IFormPeriod | null> {
     const list = [{ ...formPeriod }];
 
     return new Promise((res) => {
@@ -59,7 +59,7 @@ export class FormPeriodRepositoryFake implements FormPeriodRepository {
         return res(null);
       }
 
-      return res([formPeriods]);
+      return res(formPeriods);
     });
   }
   getFormsPeriodPaginate(

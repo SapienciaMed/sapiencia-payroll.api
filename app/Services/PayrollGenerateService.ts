@@ -24,12 +24,9 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     const formPeriod = await this.formsPeriodRepository.getFormPeriodById(id);
 
     // 1. Validar si la planilla esta autorizada o no existe el periodo
-    if (!formPeriod || formPeriod.length === 0) {
+    if (!formPeriod || formPeriod.state === "Autorizada") {
       return new ApiResponse(false, EResponseCodes.FAIL, "....");
     }
-    formPeriod.map((pay) => {
-      pay.state;
-    });
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
 
@@ -50,7 +47,6 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     //buscar los empelados activos de la planilla quincenal.
 
     const emploments = await this.payrollGenerateRepository.getActiveEmploments(
-      1,
       new Date(String(formPeriod.dateEnd))
     );
 

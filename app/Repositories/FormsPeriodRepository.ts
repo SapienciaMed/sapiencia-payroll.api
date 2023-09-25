@@ -16,7 +16,7 @@ export interface IFormPeriodRepository {
     formPeriod: IFormPeriod,
     id: number
   ): Promise<IFormPeriod | null>;
-  getFormPeriodById(id: number): Promise<IFormPeriod[] | null>;
+  getFormPeriodById(id: number): Promise<IFormPeriod | null>;
   getFormsPeriodPaginate(
     filters: IFormPeriodFilters
   ): Promise<IPagingData<IFormPeriod>>;
@@ -82,16 +82,16 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     });
     return (await res) as IFormPeriod[];
   }
-  async getFormPeriodById(id: number): Promise<IFormPeriod[] | null> {
+  async getFormPeriodById(id: number): Promise<IFormPeriod | null> {
     const queryFormPeriod = FormsPeriod.query().where("id", id);
     queryFormPeriod.preload("formsType");
-    const formPeriod = await queryFormPeriod;
+    const formPeriod = await queryFormPeriod.first();
 
     if (!formPeriod) {
       return null;
     }
 
-    return formPeriod as IFormPeriod[];
+    return formPeriod as IFormPeriod;
   }
 
   async getFormsPeriodPaginate(

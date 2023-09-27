@@ -1,11 +1,16 @@
 import { EGroupers, EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
-import { IEmploymentResult, IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IEmploymentResult,
+  IEmployment,
+} from "App/Interfaces/EmploymentInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 import { IRange } from "App/Interfaces/RangeInterfaces";
 import FormsPeriodRepository from "App/Repositories/FormsPeriodRepository";
 import { IPayrollGenerateRepository } from "App/Repositories/PayrollGenerateRepository";
 import CoreService from "../External/CoreService";
+import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
+import { IParameter } from "App/Interfaces/CoreInterfaces";
 
 export class PayrollCalculations {
   constructor(
@@ -213,6 +218,136 @@ export class PayrollCalculations {
     };
     await this.payrollGenerateRepository.createIncome(income as IIncome);
 
+    // 1. buscar liciencias vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+  }
+
+  async calculateHealthDeduction(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    parameter: IParameter[]
+  ) {
+    const deductionType =
+      await this.payrollGenerateRepository.getDeductionTypesByName(
+        "Seguridad Social"
+      );
+    const employeeValue = Number(
+      parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_EMPLEADO"))
+        ?.value
+    );
+    const employerValue = Number(
+      parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_PATRONAL"))
+        ?.value
+    );
+    const deduction = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeDeduction: deductionType.id,
+      value:
+        (Number(employment.charge?.baseSalary) / 2) * (employeeValue / 100),
+      patronalValue:
+        (Number(employment.charge?.baseSalary) / 2) * (employerValue / 100),
+      time: 15,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createDeduction(
+      deduction as IDeduction
+    );
+  }
+
+  async calculateRetirementDeduction(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    parameter: IParameter[]
+  ) {
+    const deductionType =
+      await this.payrollGenerateRepository.getDeductionTypesByName("Pension");
+    const employeeValue = Number(
+      parameter.find((item) => (item.id = "PCT_PENSION_EMPLEADO"))?.value
+    );
+    const employerValue = Number(
+      parameter.find((item) => (item.id = "PCT_PENSION_PATRONAL"))?.value
+    );
+    const deduction = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeDeduction: deductionType.id,
+      value:
+        (Number(employment.charge?.baseSalary) / 2) * (employeeValue / 100),
+      patronalValue:
+        (Number(employment.charge?.baseSalary) / 2) * (employerValue / 100),
+      time: 15,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createDeduction(
+      deduction as IDeduction
+    );
+  }
+
+  async calculateSolidarityFund(
+    employment: IEmployment,
+    formPeriod: IFormPeriod,
+    smlv: number,
+    solidarityFundTable: IRange[]
+  ): Promise<void> {
+    const affectionValue =
+      await this.payrollGenerateRepository.getSalarybyEmployment(
+        employment?.id || 0
+      );
+
+    // si tiene dependiente le restamos segun el calculo
+
+    // Si tiene Certificado Alivio tributario le resta
+
+    const tableValue = Number(affectionValue.salary) / smlv;
+
+    const range = solidarityFundTable.find(
+      (i) => tableValue > i.start && tableValue <= i.end
+    );
+
+    if (!range) {
+      throw new Error("Tabla de la renta no encontrada");
+    }
+
+    const solidarityFundValue =
+      (tableValue - range.start) * (range.value / 100);
+
+    const solidarityFundValueFixed = (solidarityFundValue * smlv).toFixed(2);
+
+    this.payrollGenerateRepository.createDeduction({
+      value: Number(solidarityFundValueFixed),
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: EDeductionTypes.solidarityFund,
+      patronalValue: 0,
+    });
+  }
+
+  async calculateEventualDeductions(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod
+  ): Promise<void> {
+    if (employment.id) {
+      const eventualDeductions =
+        await this.payrollGenerateRepository.getEventualDeductionsByEmployment(
+          employment.id,
+          formPeriod.id || 0
+        );
+
+      if (eventualDeductions.length == 0) {
+        return;
+      }
+      const deductions = eventualDeductions.map((eventualDeduction) => ({
+        value: eventualDeduction.value,
+        idEmployment: employment.id || 0,
+        idTypePayroll: formPeriod.id || 0,
+        idTypeDeduction: eventualDeduction.codDeductionType || 0,
+        patronalValue: 0,
+      }));
+
+      await this.payrollGenerateRepository.createManyDeduction(deductions);
+    }
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos

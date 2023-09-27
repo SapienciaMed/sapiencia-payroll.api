@@ -10,6 +10,8 @@ import {
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 
 import CoreService from "./External/CoreService";
+import { IParameter } from "App/Interfaces/CoreInterfaces";
+import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
@@ -84,6 +86,14 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
             incapacitiesDays,
             vacationDays
           );
+
+          const deduction = await this.coreService.getParametersByCodes([
+            "PCT_SEGURIDAD_SOCIAL_EMPLEADO",
+            "PCT_SEGURIDAD_SOCIAL_PATRONAL",
+            "PCT_PENSION_EMPLEADO",
+            "PCT_PENSION_PATRONAL",
+            "SMLV",
+          ]);
           // 4. Calcula deducción salud
 
           // 5. Calcula deducción pensión
@@ -326,6 +336,38 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     // 3. Calcula e inserta en la tabla final de Ingresos
   }
 
+  async calculateHealthDeduction(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    parameter: IParameter[]
+  ) {
+    const deductionType =
+      await this.payrollGenerateRepository.getDeductionTypesByName(
+        "Seguridad Social"
+      );
+    const employeeValue = Number(
+      parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_EMPLEADO"))
+        ?.value
+    );
+    const employerValue = Number(
+      parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_PATRONAL"))
+        ?.value
+    );
+    const deduction = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeDeduction: deductionType.id,
+      value:
+        (Number(employment.charge?.baseSalary) / 2) * (employeeValue / 100),
+      patronalValue:
+        (Number(employment.charge?.baseSalary) / 2) * (employerValue / 100),
+      time: 15,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createDeduction(
+      deduction as IDeduction
+    );
+  }
   async calculateISR(
     employment: IEmployment,
     formPeriod: IFormPeriod

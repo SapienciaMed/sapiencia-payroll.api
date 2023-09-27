@@ -1,5 +1,5 @@
 export interface IDeduction {
-  id: number;
+  id?: number;
   idTypePayroll: number;
   idEmployment: number;
   idTypeDeduction: number;

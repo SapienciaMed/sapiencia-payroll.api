@@ -59,10 +59,40 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
       emploments.map(async (emploment) => {
         try {
           // 1. Calcula Licencia
-          await this.calculateLicense(emploment, formPeriod);
+          const licenceDays = await this.calculateLicense(
+            emploment,
+            formPeriod
+          );
 
-          // 2. Calcula Licencia
-          await this.calculateIncapacity(emploment, formPeriod);
+          // 2. Calcula Incapacidades
+          const incapacitiesDays = await this.calculateIncapacity(
+            emploment,
+            formPeriod
+          );
+
+          // 3. Calcula Vacaciones
+          const vacationDays = await this.calculateVacation(
+            emploment,
+            formPeriod
+          );
+
+          //4. Calcula ingreso por salario
+          await this.calculateSalary(
+            emploment,
+            formPeriod,
+            licenceDays,
+            incapacitiesDays,
+            vacationDays
+          );
+          // 4. Calcula deducción salud
+
+          // 5. Calcula deducción pensión
+
+          // 6. Calcula deducción fondo solidaridad
+
+          // 7. Calcula deducciones Ciclicas
+
+          // 8. Calcula deducciones Eventuales
 
           // Calcula Renta
 
@@ -95,7 +125,7 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   async calculateLicense(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
-  ): Promise<void> {
+  ): Promise<number> {
     let daysLicencePaid = 0;
     let daysLicenceUnpaid = 0;
     const valueDay = Number(employment.charge?.baseSalary) / 30;
@@ -110,7 +140,7 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
         );
 
       if (licences.length == 0) {
-        return;
+        return 0;
       }
       for (const licence of licences) {
         if (licence.type.paid) {
@@ -132,17 +162,21 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
         unitTime: "Dias",
       };
       await this.payrollGenerateRepository.createIncome(income as IIncome);
+
+      return Number(daysLicencePaid + daysLicenceUnpaid);
     }
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
+    return 0;
   }
 
   async calculateIncapacity(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
-  ): Promise<void> {
-    let incapacitiesDays = 0;
+  ): Promise<number> {
+    let incapacitiesGeneralDays = 0;
+    let incapacitiesLaboralDays = 0;
     let incapacityDayValue = 0;
     const valueDay = Number(employment.charge?.baseSalary) / 30;
     const typeIncome =
@@ -156,18 +190,28 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
         );
 
       if (incapicities.length == 0) {
-        return;
+        return 0;
       }
       for (const incapacity of incapicities) {
-        if (incapacity.typeIncapacity?.rangeGrouper) {
-          incapacitiesDays += Number(
+        if (
+          incapacity.typeIncapacity?.rangeGrouper ==
+          "INCAPACIDAD_ENFERMEDAD_COMUN"
+        ) {
+          incapacitiesGeneralDays += Number(
+            incapacity.dateFinish
+              .diff(incapacity.dateInitial, ["days"])
+              .toObject()
+          );
+        } else {
+          incapacitiesGeneralDays += Number(
             incapacity.dateFinish
               .diff(incapacity.dateInitial, ["days"])
               .toObject()
           );
         }
       }
-      for (let dia = 1; dia <= incapacitiesDays; dia++) {
+
+      for (let dia = 1; dia <= incapacitiesGeneralDays; dia++) {
         if (dia <= 2) {
           incapacityDayValue += 1.0 * valueDay; // 100% de pago para los primeros 2 días
         } else if (dia <= 180) {
@@ -178,17 +222,106 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
           break; // No hay pago para más de 540 días
         }
       }
+
       const income = {
         idTypePayroll: formPeriod.id,
         idEmployment: employment.id,
         idTypeIncome: typeIncome.id,
-        value: incapacityDayValue,
-        time: incapacitiesDays,
+        value: incapacityDayValue + Number(incapacitiesLaboralDays) * valueDay,
+        time: Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays),
         unitTime: "Dias",
       };
       await this.payrollGenerateRepository.createIncome(income as IIncome);
+
+      return Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays);
     }
     // 1. buscar incapacidades vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+    return 0;
+  }
+
+  async calculateVacation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod
+  ): Promise<number> {
+    let vacationDays = 0;
+    //const valueDay = Number(employment.charge?.baseSalary) / 30;
+    const typeIncome =
+      await this.payrollGenerateRepository.getIncomesTypesByName("Vacaciones");
+    if (employment.id) {
+      const vacations =
+        await this.payrollGenerateRepository.getVacationsPeriodByEmployment(
+          employment.id,
+          formPeriod.dateStart,
+          formPeriod.dateEnd
+        );
+
+      if (vacations.length == 0) {
+        return 0;
+      }
+      for (const vacation of vacations) {
+        for (const vacationDay of vacation.vacationDay) {
+          if (!vacationDay.paid) {
+            vacationDays += Number(
+              vacationDay?.dateUntil
+                ?.diff(vacation.dateFrom, ["days"])
+                .toObject()
+            );
+          } else {
+            vacationDays += Number(vacationDay.enjoyedDays);
+          }
+        }
+      }
+      const income = {
+        idTypePayroll: formPeriod.id,
+        idEmployment: employment.id,
+        idTypeIncome: typeIncome.id,
+        value: 0,
+        time: vacationDays,
+        unitTime: "Dias",
+      };
+      await this.payrollGenerateRepository.createIncome(income as IIncome);
+      return vacationDays;
+    }
+    // 1. buscar liciencias vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+    return 0;
+  }
+
+  async calculateSalary(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    licencesDays: number,
+    incapacities: number,
+    vacationDays: number
+  ): Promise<void> {
+    let daysSalary = 0;
+    const valueDay = Number(employment.charge?.baseSalary) / 30;
+    if (employment.startDate < formPeriod.dateStart) {
+      daysSalary += 15 - licencesDays - incapacities - vacationDays;
+    } else {
+      daysSalary +=
+        Number(formPeriod.dateEnd.diff(employment.startDate)) -
+        licencesDays -
+        incapacities -
+        vacationDays;
+    }
+
+    const typeIncome =
+      await this.payrollGenerateRepository.getIncomesTypesByName("Salario");
+    const income = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeIncome: typeIncome.id,
+      value: Number(valueDay * (daysSalary < 0 ? 0 : daysSalary)),
+      time: daysSalary < 0 ? 0 : daysSalary,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createIncome(income as IIncome);
+
+    // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
   }

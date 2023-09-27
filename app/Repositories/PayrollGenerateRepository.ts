@@ -62,6 +62,12 @@ export interface IPayrollGenerateRepository {
   deleteDeductions(codPayroll: number): Promise<IDeduction[]>;
   deleteReserves(codPayroll: number): Promise<IBooking[]>;
   deleteHistoryPayroll(codPayroll: number): Promise<IHistoricalPayroll[]>;
+  getMonthlyDeductionValuePerGrouper(
+    gruperId: number,
+    month: number,
+    year: number,
+    employmentId: number
+  ): Promise<number>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -86,6 +92,34 @@ export default class PayrollGenerateRepository
       .where("PPL_ANIO", year)
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("ING_CODEMP_EMPLEO", employmentId);
+
+    const toReturn = incomes.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    return toReturn;
+  }
+
+  async getMonthlyDeductionValuePerGrouper(
+    gruperId: number,
+    month: number,
+    year: number,
+    employmentId: number
+  ): Promise<number> {
+    const incomes = await Deduction.query()
+      .select("DED_VALOR as value", "DAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .join(
+        "DAG_DEDUCCIONES_AGRUPADOR",
+        "DAG_CODTDD_TIPO_DEDUCCION",
+        "DED_CODTDD_TIPO_DEDUCCION"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("DAG_CODAGR_AGRUPADOR", gruperId)
+      .where("DED_CODEMP_EMPLEO", employmentId);
 
     const toReturn = incomes.reduce(
       (sum, i) =>

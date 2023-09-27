@@ -8,7 +8,8 @@ import {
   IEmploymentResult,
 } from "App/Interfaces/EmploymentInterfaces";
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
-// import CoreService from "./External/CoreService";
+
+import CoreService from "./External/CoreService";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
@@ -17,7 +18,8 @@ export interface IPayrollGenerateService {
 export default class PayrollGenerateService implements IPayrollGenerateService {
   constructor(
     private payrollGenerateRepository: IPayrollGenerateRepository,
-    private formsPeriodRepository: FormsPeriodRepository // private coreService: CoreService
+    private formsPeriodRepository: FormsPeriodRepository,
+    private coreService: CoreService
   ) {}
 
   async payrollGenerateById(id: number): Promise<ApiResponse<boolean>> {
@@ -29,10 +31,10 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     }
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
-    await this.payrollGenerateRepository.deleteIncomes(id);
-    await this.payrollGenerateRepository.deleteDeductions(id);
-    await this.payrollGenerateRepository.deleteReserves(id);
-    await this.payrollGenerateRepository.deleteHistoryPayroll(id);
+    // await this.payrollGenerateRepository.deleteIncomes(id);
+    // await this.payrollGenerateRepository.deleteDeductions(id);
+    // await this.payrollGenerateRepository.deleteReserves(id);
+    // await this.payrollGenerateRepository.deleteHistoryPayroll(id);
     // 3. Genera la planilla segun el tipo
     switch (formPeriod.idFormType) {
       case 1: // Planilla Quincenal
@@ -63,9 +65,28 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
           await this.calculateIncapacity(emploment, formPeriod);
 
           // Calcula Renta
+
+          const response = await this.coreService.getParametersByCodes([
+            "ISR_VALOR_UVT",
+            "",
+          ]);
+
+          console.log(response);
+
+          // Ingresos brutos al mes
           await this.calculateISR(emploment, formPeriod);
+
+          // Ingresos no constituvios de renta
+          await this.calculateINCR(emploment, formPeriod);
+
+          //Deducciones retefuente
+          await this.calculateDR(emploment, formPeriod);
+
+          //Rentas exentas
+          await this.calculateRE(emploment, formPeriod);
         } catch (error) {
           // Crea historico Fallido
+          console.log(error);
         }
       })
     );
@@ -175,10 +196,8 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   async calculateISR(
     employment: IEmployment,
     formPeriod: IFormPeriod
-  ): Promise<void> {
-    // 1. Buscar ingresos afectos
-    console.log("akive1");
-    const affectionValue =
+  ): Promise<number> {
+    const valueIncomePerMonth =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         1,
         formPeriod.month,
@@ -186,10 +205,52 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
         employment.id || 0
       );
 
-    console.log(affectionValue);
+    return valueIncomePerMonth;
+  }
 
-    // 2. si no exitiste return
-    // 3. Calcula e inserta en la tabla final de Ingresos
+  async calculateINCR(
+    employment: IEmployment,
+    formPeriod: IFormPeriod
+  ): Promise<number> {
+    const valueConstitutiveIncome =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        2,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0
+      );
+
+    return valueConstitutiveIncome;
+  }
+
+  async calculateDR(
+    employment: IEmployment,
+    formPeriod: IFormPeriod
+  ): Promise<number> {
+    const valueDeductionReteFuente =
+      await this.payrollGenerateRepository.getMonthlyDeductionValuePerGrouper(
+        3,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0
+      );
+
+    return valueDeductionReteFuente;
+  }
+
+  async calculateRE(
+    employment: IEmployment,
+    formPeriod: IFormPeriod
+  ): Promise<number> {
+    const valueIncomeExempt =
+      await this.payrollGenerateRepository.getMonthlyDeductionValuePerGrouper(
+        4,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0
+      );
+
+    return valueIncomeExempt;
   }
 }
 

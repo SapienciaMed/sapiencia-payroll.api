@@ -15,8 +15,11 @@ export default class CoreService {
     codes: Array<string>
   ): Promise<IParameter[]> {
     const dataUser = await this.axiosInstance.get<ApiResponse<IParameter[]>>(
-      `/api/v1/parameter/get-by-codes?codes=${JSON.stringify(codes)}`,
+      `/api/v1/parameter/get-by-codes`,
       {
+        params: {
+          codes,
+        },
         headers: {
           Authorization: process.env.CURRENT_AUTHORIZATION,
         },

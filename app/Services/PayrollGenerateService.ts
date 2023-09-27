@@ -10,17 +10,14 @@ import {
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 
 import CoreService from "./External/CoreService";
-<<<<<<< HEAD
 import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
-=======
 import {
   EDeductionTypes,
   EGroupers,
   EPayrollTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { IRange } from "App/Interfaces/RangeInterfaces";
->>>>>>> 26388765ee78ff4b2e4ccfc8ea53c1f7d66fb5f3
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
@@ -82,25 +79,24 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     Promise.all(
       emploments.map(async (emploment) => {
         try {
-          // // 1. Calcula Licencia
-          // const licenceDays = await this.calculateLicense(
-          //   emploment,
-          //   formPeriod
-          // );
+          // 1. Calcula Licencia
+          const licenceDays = await this.calculateLicense(
+            emploment,
+            formPeriod
+          );
 
-          // // 2. Calcula Incapacidades
-          // const incapacitiesDays = await this.calculateIncapacity(
-          //   emploment,
-          //   formPeriod
-          // );
+          // 2. Calcula Incapacidades
+          const incapacitiesDays = await this.calculateIncapacity(
+            emploment,
+            formPeriod
+          );
 
-          // // 3. Calcula Vacaciones
-          // const vacationDays = await this.calculateVacation(
-          //   emploment,
-          //   formPeriod
-          // );
+          // 3. Calcula Vacaciones
+          const vacationDays = await this.calculateVacation(
+            emploment,
+            formPeriod
+          );
 
-<<<<<<< HEAD
           //4. Calcula ingreso por salario
           await this.calculateSalary(
             emploment,
@@ -117,16 +113,6 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
             "PCT_PENSION_PATRONAL",
             "SMLV",
           ]);
-=======
-          // //4. Calcula ingreso por salario
-          // await this.calculateSalary(
-          //   emploment,
-          //   formPeriod,
-          //   licenceDays,
-          //   incapacitiesDays,
-          //   vacationDays
-          // );
->>>>>>> 26388765ee78ff4b2e4ccfc8ea53c1f7d66fb5f3
           // 4. Calcula deducción salud
 
           // 5. Calcula deducción pensión
@@ -373,6 +359,39 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     );
     const employerValue = Number(
       parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_PATRONAL"))
+        ?.value
+    );
+    const deduction = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeDeduction: deductionType.id,
+      value:
+        (Number(employment.charge?.baseSalary) / 2) * (employeeValue / 100),
+      patronalValue:
+        (Number(employment.charge?.baseSalary) / 2) * (employerValue / 100),
+      time: 15,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createDeduction(
+      deduction as IDeduction
+    );
+  }
+
+  async calculateRetirementDeduction(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    parameter: IParameter[]
+  ) {
+    const deductionType =
+      await this.payrollGenerateRepository.getDeductionTypesByName(
+        "Pension"
+      );
+    const employeeValue = Number(
+      parameter.find((item) => (item.id = "PCT_PENSION_EMPLEADO"))
+        ?.value
+    );
+    const employerValue = Number(
+      parameter.find((item) => (item.id = "PCT_PENSION_PATRONAL"))
         ?.value
     );
     const deduction = {

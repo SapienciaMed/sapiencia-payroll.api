@@ -8,6 +8,7 @@ import { IIncome } from "App/Interfaces/IncomeInterfaces";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
 import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
+import { IRange } from "App/Interfaces/RangeInterfaces";
 import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
 import Deduction from "App/Models/Deduction";
@@ -19,10 +20,12 @@ import Income from "App/Models/Income";
 import IncomeType from "App/Models/IncomeType";
 import Licence from "App/Models/Licence";
 import ManualDeduction from "App/Models/ManualDeduction";
+import Range from "App/Models/Range";
 import Vacation from "App/Models/Vacation";
 import { DateTime } from "luxon";
 
 export interface IPayrollGenerateRepository {
+  getRangeByGrouper(grouper: string): Promise<IRange[]>;
   getActiveEmploments(dateStart: Date): Promise<IEmploymentResult[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
   getMonthlyValuePerGrouper(
@@ -73,6 +76,11 @@ export default class PayrollGenerateRepository
 {
   constructor() {}
 
+  async getRangeByGrouper(grouper: string): Promise<IRange[]> {
+    const res = await Range.query().where("grouper", grouper);
+    return res.map((i) => i.serialize() as IRange);
+  }
+
   async getMonthlyValuePerGrouper(
     gruperId: number,
     month: number,
@@ -92,13 +100,32 @@ export default class PayrollGenerateRepository
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("ING_CODEMP_EMPLEO", employmentId);
 
-    const toReturn = incomes.reduce(
+    const totalIncomes = incomes.reduce(
       (sum, i) =>
         sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
       0
     );
 
-    return toReturn;
+    const deductions = await Deduction.query()
+      .select("DED_VALOR as value", "DAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .join(
+        "DAG_DEDUCCIONES_AGRUPADOR",
+        "DAG_CODTDD_TIPO_DEDUCCION",
+        "DED_CODTDD_TIPO_DEDUCCION"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("DAG_CODAGR_AGRUPADOR", gruperId)
+      .where("DED_CODEMP_EMPLEO", employmentId);
+
+    const totalDeductions = deductions.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    return (totalIncomes || 0) - (totalDeductions || 0);
   }
 
   async getMonthlyDeductionValuePerGrouper(

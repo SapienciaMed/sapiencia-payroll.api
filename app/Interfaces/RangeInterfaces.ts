@@ -4,4 +4,5 @@ export interface IRange {
   start: number;
   end: number;
   value: number;
+  value2: number;
 }

@@ -383,16 +383,12 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     parameter: IParameter[]
   ) {
     const deductionType =
-      await this.payrollGenerateRepository.getDeductionTypesByName(
-        "Pension"
-      );
+      await this.payrollGenerateRepository.getDeductionTypesByName("Pension");
     const employeeValue = Number(
-      parameter.find((item) => (item.id = "PCT_PENSION_EMPLEADO"))
-        ?.value
+      parameter.find((item) => (item.id = "PCT_PENSION_EMPLEADO"))?.value
     );
     const employerValue = Number(
-      parameter.find((item) => (item.id = "PCT_PENSION_PATRONAL"))
-        ?.value
+      parameter.find((item) => (item.id = "PCT_PENSION_PATRONAL"))?.value
     );
     const deduction = {
       idTypePayroll: formPeriod.id,
@@ -409,6 +405,78 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
       deduction as IDeduction
     );
   }
+
+  async calculateSolidarityFund(
+    employment: IEmployment,
+    formPeriod: IFormPeriod,
+    smlv: number,
+    solidarityFundTable: IRange[]
+  ): Promise<void> {
+    const affectionValue =
+      await this.payrollGenerateRepository.getSalarybyEmployment(
+        employment?.id || 0
+      );
+
+    // si tiene dependiente le restamos segun el calculo
+
+    // Si tiene Certificado Alivio tributario le resta
+
+    const tableValue = Number(affectionValue.salary) / smlv;
+
+    const range = solidarityFundTable.find(
+      (i) => tableValue > i.start && tableValue <= i.end
+    );
+
+    if (!range) {
+      throw new Error("Tabla de la renta no encontrada");
+    }
+
+    const solidarityFundValue =
+      (tableValue - range.start) * (range.value / 100);
+
+    const solidarityFundValueFixed = (solidarityFundValue * smlv).toFixed(2);
+
+    this.payrollGenerateRepository.createDeduction({
+      value: Number(solidarityFundValueFixed),
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: EDeductionTypes.solidarityFund,
+      patronalValue: 0,
+    });
+  }
+
+  async calculateEventualDeductions(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod
+  ): Promise<void> {
+    if (employment.id) {
+      const eventualDeductions =
+        await this.payrollGenerateRepository.getEventualDeductionsByEmployment(
+          employment.id,
+          formPeriod.id || 0
+        );
+
+      if (eventualDeductions.length == 0) {
+        return;
+      }
+      const deductions = eventualDeductions.map((eventualDeduction) => ({
+        value: eventualDeduction.value,
+        idEmployment: employment.id || 0,
+        idTypePayroll: formPeriod.id || 0,
+        idTypeDeduction: eventualDeduction.codDeductionType || 0,
+        patronalValue: 0,
+      }));
+
+      await this.payrollGenerateRepository.createManyDeduction(deductions);
+
+      return;
+    }
+    // 1. buscar liciencias vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+    return;
+  }
+
   async calculateISR(
     employment: IEmployment,
     formPeriod: IFormPeriod,

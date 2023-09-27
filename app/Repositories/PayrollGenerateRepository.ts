@@ -10,6 +10,7 @@ import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
 import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
 import { IRange } from "App/Interfaces/RangeInterfaces";
+import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
 import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
 import Deduction from "App/Models/Deduction";
@@ -23,6 +24,7 @@ import IncomeType from "App/Models/IncomeType";
 import Licence from "App/Models/Licence";
 import ManualDeduction from "App/Models/ManualDeduction";
 import Range from "App/Models/Range";
+import SalaryHistory from "App/Models/SalaryHistory";
 import Vacation from "App/Models/Vacation";
 import { DateTime } from "luxon";
 
@@ -58,17 +60,18 @@ export interface IPayrollGenerateRepository {
   getCyclicDeductionsByEmployment(
     idEmployement: number
   ): Promise<IManualDeduction[]>;
+  getSalarybyEmployment(idEmployement: number): Promise<ISalaryHistory>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   getDeductionTypesByName(name: string): Promise<IDeductionType>;
   createIncome(income: IIncome): Promise<IIncome>;
   createDeduction(deduction: IDeduction): Promise<IDeduction>;
+  createManyDeduction(deductions: IDeduction[]): Promise<IDeduction[]>;
   deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
   deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
   deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
   deleteHistoryPayroll(
     codPayroll: number
   ): Promise<IHistoricalPayroll[] | null>;
-
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -216,6 +219,15 @@ export default class PayrollGenerateRepository
     return res.map((i) => i.serialize() as IManualDeduction);
   }
 
+  async getSalarybyEmployment(idEmployement: number): Promise<ISalaryHistory> {
+    const res = await SalaryHistory.query()
+      .where("codEmployment", idEmployement)
+      .andWhere("validity", true)
+      .first();
+
+    return res?.serialize() as ISalaryHistory;
+  }
+
   async getIncomesTypesByName(name: string): Promise<IIncomeType> {
     const res = await IncomeType.query().where("name", name).first();
 
@@ -241,6 +253,12 @@ export default class PayrollGenerateRepository
     toCreate.fill({ ...deduction });
     await toCreate.save();
     return toCreate.serialize() as IDeduction;
+  }
+
+  async createManyDeduction(deductions: IDeduction[]): Promise<IDeduction[]> {
+    const toCreate = await Deduction.createMany(deductions);
+
+    return toCreate.map((i) => i.serialize() as IDeduction);
   }
   async deleteIncomes(codPayroll: number): Promise<IIncome[] | null> {
     const res = await Income.query()

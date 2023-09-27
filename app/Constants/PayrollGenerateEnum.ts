@@ -1,5 +1,6 @@
 export enum EDeductionTypes {
   incomeTax = 12,
+  solidarityFund = 13
 }
 
 export enum EGroupers {

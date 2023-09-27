@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { ILicenceType } from "./LicenceTypesInterface";
 
 export interface ILicence {
   id?: number;
@@ -17,4 +18,16 @@ export interface ILicenceFilters {
   idLicenceType?: number;
   page: number;
   perPage: number;
+}
+
+export interface ILicenceResult {
+  id?: number;
+  codEmployment: number;
+  idLicenceType?: number;
+  dateStart: DateTime;
+  dateEnd: DateTime;
+  licenceState: string;
+  resolutionNumber:string;
+  observation?: string;
+  type: ILicenceType;
 }

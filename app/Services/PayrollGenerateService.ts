@@ -3,7 +3,11 @@ import { EResponseCodes } from "../Constants/ResponseCodesEnum";
 import { IPayrollGenerateRepository } from "../Repositories/PayrollGenerateRepository";
 import FormsPeriodRepository from "App/Repositories/FormsPeriodRepository";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
-import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IEmployment,
+  IEmploymentResult,
+} from "App/Interfaces/EmploymentInterfaces";
+import { IIncome } from "App/Interfaces/IncomeInterfaces";
 // import CoreService from "./External/CoreService";
 
 export interface IPayrollGenerateService {
@@ -13,9 +17,8 @@ export interface IPayrollGenerateService {
 export default class PayrollGenerateService implements IPayrollGenerateService {
   constructor(
     private payrollGenerateRepository: IPayrollGenerateRepository,
-    private formsPeriodRepository: FormsPeriodRepository
-  ) // private coreService: CoreService
-  {}
+    private formsPeriodRepository: FormsPeriodRepository // private coreService: CoreService
+  ) {}
 
   async payrollGenerateById(id: number): Promise<ApiResponse<boolean>> {
     const formPeriod = await this.formsPeriodRepository.getFormPeriodById(id);
@@ -26,7 +29,10 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     }
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
-
+    await this.payrollGenerateRepository.deleteIncomes(id);
+    await this.payrollGenerateRepository.deleteDeductions(id);
+    await this.payrollGenerateRepository.deleteReserves(id);
+    await this.payrollGenerateRepository.deleteHistoryPayroll(id);
     // 3. Genera la planilla segun el tipo
     switch (formPeriod.idFormType) {
       case 1: // Planilla Quincenal
@@ -66,18 +72,101 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   }
 
   async calculateLicense(
-    _employment: IEmployment,
-    _formPeriod: IFormPeriod
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod
   ): Promise<void> {
+    let daysLicencePaid = 0;
+    let daysLicenceUnpaid = 0;
+    const valueDay = Number(employment.charge?.baseSalary) / 30;
+    const typeIncome =
+      await this.payrollGenerateRepository.getIncomesTypesByName("Licencias");
+    if (employment.id) {
+      const licences =
+        await this.payrollGenerateRepository.getLicencesPeriodByEmployment(
+          employment.id,
+          formPeriod.dateStart,
+          formPeriod.dateEnd
+        );
+
+      if (licences.length == 0) {
+        return;
+      }
+      for (const licence of licences) {
+        if (licence.type.paid) {
+          daysLicencePaid += Number(
+            licence.dateEnd.diff(licence.dateStart, ["days"]).toObject()
+          );
+        } else {
+          daysLicenceUnpaid += Number(
+            licence.dateEnd.diff(licence.dateStart, ["days"]).toObject()
+          );
+        }
+      }
+      const income = {
+        idTypePayroll: formPeriod.id,
+        idEmployment: employment.id,
+        idTypeIncome: typeIncome.id,
+        value: Number(valueDay * daysLicencePaid),
+        time: daysLicencePaid + daysLicenceUnpaid,
+        unitTime: "Dias",
+      };
+      await this.payrollGenerateRepository.createIncome(income as IIncome);
+    }
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
   }
 
   async calculateIncapacity(
-    _employment: IEmployment,
-    _formPeriod: IFormPeriod
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod
   ): Promise<void> {
+    let incapacitiesDays = 0;
+    let incapacityDayValue = 0;
+    const valueDay = Number(employment.charge?.baseSalary) / 30;
+    const typeIncome =
+      await this.payrollGenerateRepository.getIncomesTypesByName("Incapacidad");
+    if (employment.id) {
+      const incapicities =
+        await this.payrollGenerateRepository.getIncapacitiesPeriodByEmployment(
+          employment.id,
+          formPeriod.dateStart,
+          formPeriod.dateEnd
+        );
+
+      if (incapicities.length == 0) {
+        return;
+      }
+      for (const incapacity of incapicities) {
+        if (incapacity.typeIncapacity?.rangeGrouper) {
+          incapacitiesDays += Number(
+            incapacity.dateFinish
+              .diff(incapacity.dateInitial, ["days"])
+              .toObject()
+          );
+        }
+      }
+      for (let dia = 1; dia <= incapacitiesDays; dia++) {
+        if (dia <= 2) {
+          incapacityDayValue += 1.0 * valueDay; // 100% de pago para los primeros 2 días
+        } else if (dia <= 180) {
+          incapacityDayValue += 0.6667 * valueDay; // 66.67% de pago del día 3 al 180
+        } else if (dia <= 540) {
+          incapacityDayValue += 0.5 * valueDay; // 50% de pago del día 181 al 540
+        } else {
+          break; // No hay pago para más de 540 días
+        }
+      }
+      const income = {
+        idTypePayroll: formPeriod.id,
+        idEmployment: employment.id,
+        idTypeIncome: typeIncome.id,
+        value: incapacityDayValue,
+        time: incapacitiesDays,
+        unitTime: "Dias",
+      };
+      await this.payrollGenerateRepository.createIncome(income as IIncome);
+    }
     // 1. buscar incapacidades vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
@@ -88,7 +177,7 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     formPeriod: IFormPeriod
   ): Promise<void> {
     // 1. Buscar ingresos afectos
-    console.log('akive1')
+    console.log("akive1");
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         1,

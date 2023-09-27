@@ -16,11 +16,15 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Nombre del tipo de licencia");
       table
+        .boolean("TLC_ES_REMUNERADA")
+        .notNullable()
+        .comment("Indicador de que si la licencia es remunerada o no ");
+      table
         .integer("TLC_NUMERO_DIAS")
         .nullable()
         .comment("Numero de dias de las licencias");
       table
-        .string("TLC_TIPO_DIAS",20)
+        .string("TLC_TIPO_DIAS", 20)
         .nullable()
         .comment("Tipo de días de las licencias");
     });

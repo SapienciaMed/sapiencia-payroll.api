@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { IWorker } from "./WorkerInterfaces";
 import { ITypesContracts } from "./TypesContractsInterfaces";
+import { ICharge } from "./ChargeInterfaces";
 
 export interface IEmployment {
   id?: number;
@@ -22,6 +23,30 @@ export interface IEmployment {
   userCreate?: string;
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
+}
+
+export interface IEmploymentResult {
+  id?: number;
+  workerId?: number;
+  idCharge: number;
+  institutionalMail: string;
+  contractNumber: string;
+  startDate: DateTime;
+  endDate?: DateTime;
+  state: string;
+  idTypeContract: number;
+  idReasonRetirement?: number;
+  retirementDate?: DateTime;
+  observation?: string;
+  salary?: number;
+  totalValue?: number;
+  userModified?: string;
+  dateModified?: DateTime;
+  userCreate?: string;
+  dateCreate?: DateTime;
+  typesContracts?: ITypesContracts[];
+  worker: IWorker;
+  charge?: ICharge;
 }
 
 export interface IEmploymentWorker extends IEmployment {

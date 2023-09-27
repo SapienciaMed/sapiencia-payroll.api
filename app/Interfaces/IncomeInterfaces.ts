@@ -1,5 +1,5 @@
 export interface IIncome {
-  id: number;
+  id?: number;
   idTypePayroll: number;
   idEmployment: number;
   idTypeIncome: number;

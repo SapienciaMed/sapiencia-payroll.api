@@ -55,10 +55,12 @@ export interface IPayrollGenerateRepository {
   ): Promise<IManualDeduction[]>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   createIncome(income: IIncome): Promise<IIncome>;
-  deleteIncomes(codPayroll: number): Promise<IIncome[]>;
-  deleteDeductions(codPayroll: number): Promise<IDeduction[]>;
-  deleteReserves(codPayroll: number): Promise<IBooking[]>;
-  deleteHistoryPayroll(codPayroll: number): Promise<IHistoricalPayroll[]>;
+  deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
+  deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
+  deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
+  deleteHistoryPayroll(
+    codPayroll: number
+  ): Promise<IHistoricalPayroll[] | null>;
   getMonthlyDeductionValuePerGrouper(
     gruperId: number,
     month: number,

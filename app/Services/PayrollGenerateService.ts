@@ -10,6 +10,12 @@ import {
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 
 import CoreService from "./External/CoreService";
+import {
+  EDeductionTypes,
+  EGroupers,
+  EPayrollTypes,
+} from "App/Constants/PayrollGenerateEnum";
+import { IRange } from "App/Interfaces/RangeInterfaces";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
@@ -37,7 +43,7 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     // await this.payrollGenerateRepository.deleteHistoryPayroll(id);
     // 3. Genera la planilla segun el tipo
     switch (formPeriod.idFormType) {
-      case 1: // Planilla Quincenal
+      case EPayrollTypes.biweekly: // Planilla Quincenal
         await this.generatePayrollBiweekly(formPeriod);
         break;
 
@@ -53,6 +59,19 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
 
     const emploments = await this.payrollGenerateRepository.getActiveEmploments(
       new Date(String(formPeriod.dateEnd))
+    );
+
+    // Busca los parametro o recurosos a utilizar
+
+    const incomeTaxTable =
+      await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
+
+    const parameters = await this.coreService.getParametersByCodes([
+      "ISR_VALOR_UVT",
+    ]);
+
+    const uvtValue = Number(
+      parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
     );
 
     Promise.all(
@@ -97,7 +116,12 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
           // Calcula Renta
 
           // Ingresos brutos al mes
-          await this.calculateISR(emploment, formPeriod);
+          await this.calculateISR(
+            emploment,
+            formPeriod,
+            uvtValue,
+            incomeTaxTable
+          );
         } catch (error) {
           // Crea historico Fallido
           console.log(error);
@@ -312,38 +336,25 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
 
   async calculateISR(
     employment: IEmployment,
-    formPeriod: IFormPeriod
-  ): Promise<number> {
+    formPeriod: IFormPeriod,
+    uvtValue: number,
+    incomeTaxTable: IRange[]
+  ): Promise<void> {
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
-        1,
+        EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
         employment.id || 0
       );
 
-    const res = await this.coreService.getParametersByCodes(["ISR_VALOR_UVT"]);
-
-    console.log(res);
-    let uvt = 0;
-    if (res.length >= 1) {
-      uvt = Number(res[0].value);
-    } else {
-      throw new Error("Parametro UVT no econtrado");
-    }
-
     // si tiene dependiente le restamos segun el calculo
 
     // Si tiene Certificado Alivio tributario le resta
 
-    const tableValue = affectionValue / uvt;
+    const tableValue = affectionValue / uvtValue;
 
-    const isrTable = await this.payrollGenerateRepository.getRangeByGrouper(
-      "TABLA_ISR"
-    );
-
-    console.log(isrTable);
-    const range = isrTable.find(
+    const range = incomeTaxTable.find(
       (i) => tableValue > i.start && tableValue <= i.end
     );
 
@@ -353,9 +364,15 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
 
     const isr = (tableValue - range.start) * (range.value / 100) + range.value2;
 
-    const isrValue = (isr * uvt).toFixed(2);
+    const isrValue = (isr * uvtValue).toFixed(2);
 
-    return 0;
+    this.payrollGenerateRepository.createDeduction({
+      value: Number(isrValue),
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: EDeductionTypes.incomeTax,
+      patronalValue: 0,
+    });
   }
 }
 

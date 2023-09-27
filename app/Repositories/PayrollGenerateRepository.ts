@@ -3,15 +3,12 @@ import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
 import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
-import {
-  IGetIncapacity,
-  IIncapacity,
-} from "App/Interfaces/IncapacityInterfaces";
+import { IGetIncapacity } from "App/Interfaces/IncapacityInterfaces";
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
 import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
-import { IVacation } from "App/Interfaces/VacationsInterfaces";
+import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
 import Deduction from "App/Models/Deduction";
 import Employment from "App/Models/Employment";
@@ -48,7 +45,7 @@ export interface IPayrollGenerateRepository {
     idEmployement: number,
     dateStart: DateTime,
     dateEnd: DateTime
-  ): Promise<IVacation[]>;
+  ): Promise<IVacationResult[]>;
   getEventualDeductionsByEmployment(
     idEmployement: number,
     codPayroll: number
@@ -58,10 +55,12 @@ export interface IPayrollGenerateRepository {
   ): Promise<IManualDeduction[]>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   createIncome(income: IIncome): Promise<IIncome>;
-  deleteIncomes(codPayroll: number): Promise<IIncome[]>;
-  deleteDeductions(codPayroll: number): Promise<IDeduction[]>;
-  deleteReserves(codPayroll: number): Promise<IBooking[]>;
-  deleteHistoryPayroll(codPayroll: number): Promise<IHistoricalPayroll[]>;
+  deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
+  deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
+  deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
+  deleteHistoryPayroll(
+    codPayroll: number
+  ): Promise<IHistoricalPayroll[] | null>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -142,7 +141,7 @@ export default class PayrollGenerateRepository
     idEmployement: number,
     dateStart: DateTime,
     dateEnd: DateTime
-  ): Promise<IVacation[]> {
+  ): Promise<IVacationResult[]> {
     const res = await Vacation.query()
       .where("codEmployment", idEmployement)
       .whereHas("vacationDay", (vacationDayQuery) => {
@@ -161,7 +160,7 @@ export default class PayrollGenerateRepository
             dateEnd.toString(),
           ]);
       });
-    return res.map((i) => i.serialize() as IVacation);
+    return res.map((i) => i.serialize() as IVacationResult);
   }
 
   async getEventualDeductionsByEmployment(
@@ -199,33 +198,43 @@ export default class PayrollGenerateRepository
     return toCreate.serialize() as IIncome;
   }
 
-  async deleteIncomes(codPayroll: number): Promise<IIncome[]> {
+  async deleteIncomes(codPayroll: number): Promise<IIncome[] | null> {
     const res = await Income.query()
       .where("idTypePayroll", codPayroll)
       .delete();
-    return res.map((i) => i.serialize() as IIncome);
+    return res.map((i) => i.serialize() as IIncome) || null;
   }
 
-  async deleteDeductions(codPayroll: number): Promise<IDeduction[]> {
+  async deleteDeductions(codPayroll: number): Promise<IDeduction[] | null> {
     const res = await Deduction.query()
       .where("idTypePayroll", codPayroll)
       .delete();
+    if (!res) {
+      return null;
+    }
     return res.map((i) => i.serialize() as IDeduction);
   }
 
-  async deleteReserves(codPayroll: number): Promise<IBooking[]> {
+  async deleteReserves(codPayroll: number): Promise<IBooking[] | null> {
     const res = await Booking.query()
       .where("idTypePayroll", codPayroll)
       .delete();
+    if (!res) {
+      return null;
+    }
     return res.map((i) => i.serialize() as IBooking);
   }
 
   async deleteHistoryPayroll(
     codPayroll: number
-  ): Promise<IHistoricalPayroll[]> {
+  ): Promise<IHistoricalPayroll[] | null> {
     const res = await HistoricalPayroll.query()
       .where("idTypePayroll", codPayroll)
       .delete();
+
+    if (!res) {
+      return null;
+    }
     return res.map((i) => i.serialize() as IHistoricalPayroll);
   }
 }

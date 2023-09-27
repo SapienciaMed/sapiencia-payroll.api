@@ -20,4 +20,7 @@ export default class Range extends BaseModel {
 
   @column({ columnName: "RNG_VALOR", serializeAs: "value" })
   public value: number;
+
+  @column({ columnName: "RNG_VALOR_2", serializeAs: "value2" })
+  public value2: number;
 }

@@ -4,6 +4,6 @@ export interface IIncome {
   idEmployment: number;
   idTypeIncome: number;
   value: number;
-  time: number;
-  unitTime: string;
+  time?: number;
+  unitTime?: string;
 }

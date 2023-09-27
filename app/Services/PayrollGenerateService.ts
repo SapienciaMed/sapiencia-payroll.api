@@ -10,8 +10,17 @@ import {
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 
 import CoreService from "./External/CoreService";
+<<<<<<< HEAD
 import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
+=======
+import {
+  EDeductionTypes,
+  EGroupers,
+  EPayrollTypes,
+} from "App/Constants/PayrollGenerateEnum";
+import { IRange } from "App/Interfaces/RangeInterfaces";
+>>>>>>> 26388765ee78ff4b2e4ccfc8ea53c1f7d66fb5f3
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
@@ -39,7 +48,7 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
     // await this.payrollGenerateRepository.deleteHistoryPayroll(id);
     // 3. Genera la planilla segun el tipo
     switch (formPeriod.idFormType) {
-      case 1: // Planilla Quincenal
+      case EPayrollTypes.biweekly: // Planilla Quincenal
         await this.generatePayrollBiweekly(formPeriod);
         break;
 
@@ -57,27 +66,41 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
       new Date(String(formPeriod.dateEnd))
     );
 
+    // Busca los parametro o recurosos a utilizar
+
+    const incomeTaxTable =
+      await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
+
+    const parameters = await this.coreService.getParametersByCodes([
+      "ISR_VALOR_UVT",
+    ]);
+
+    const uvtValue = Number(
+      parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
+    );
+
     Promise.all(
       emploments.map(async (emploment) => {
         try {
-          // 1. Calcula Licencia
-          const licenceDays = await this.calculateLicense(
-            emploment,
-            formPeriod
-          );
+          // // 1. Calcula Licencia
+          // const licenceDays = await this.calculateLicense(
+          //   emploment,
+          //   formPeriod
+          // );
 
-          // 2. Calcula Incapacidades
-          const incapacitiesDays = await this.calculateIncapacity(
-            emploment,
-            formPeriod
-          );
+          // // 2. Calcula Incapacidades
+          // const incapacitiesDays = await this.calculateIncapacity(
+          //   emploment,
+          //   formPeriod
+          // );
 
-          // 3. Calcula Vacaciones
-          const vacationDays = await this.calculateVacation(
-            emploment,
-            formPeriod
-          );
+          // // 3. Calcula Vacaciones
+          // const vacationDays = await this.calculateVacation(
+          //   emploment,
+          //   formPeriod
+          // );
 
+<<<<<<< HEAD
           //4. Calcula ingreso por salario
           await this.calculateSalary(
             emploment,
@@ -94,6 +117,16 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
             "PCT_PENSION_PATRONAL",
             "SMLV",
           ]);
+=======
+          // //4. Calcula ingreso por salario
+          // await this.calculateSalary(
+          //   emploment,
+          //   formPeriod,
+          //   licenceDays,
+          //   incapacitiesDays,
+          //   vacationDays
+          // );
+>>>>>>> 26388765ee78ff4b2e4ccfc8ea53c1f7d66fb5f3
           // 4. Calcula deducción salud
 
           // 5. Calcula deducción pensión
@@ -106,24 +139,13 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
 
           // Calcula Renta
 
-          const response = await this.coreService.getParametersByCodes([
-            "ISR_VALOR_UVT",
-            "",
-          ]);
-
-          console.log(response);
-
           // Ingresos brutos al mes
-          await this.calculateISR(emploment, formPeriod);
-
-          // Ingresos no constituvios de renta
-          await this.calculateINCR(emploment, formPeriod);
-
-          //Deducciones retefuente
-          await this.calculateDR(emploment, formPeriod);
-
-          //Rentas exentas
-          await this.calculateRE(emploment, formPeriod);
+          await this.calculateISR(
+            emploment,
+            formPeriod,
+            uvtValue,
+            incomeTaxTable
+          );
         } catch (error) {
           // Crea historico Fallido
           console.log(error);
@@ -370,62 +392,43 @@ export default class PayrollGenerateService implements IPayrollGenerateService {
   }
   async calculateISR(
     employment: IEmployment,
-    formPeriod: IFormPeriod
-  ): Promise<number> {
-    const valueIncomePerMonth =
+    formPeriod: IFormPeriod,
+    uvtValue: number,
+    incomeTaxTable: IRange[]
+  ): Promise<void> {
+    const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
-        1,
+        EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
         employment.id || 0
       );
 
-    return valueIncomePerMonth;
-  }
+    // si tiene dependiente le restamos segun el calculo
 
-  async calculateINCR(
-    employment: IEmployment,
-    formPeriod: IFormPeriod
-  ): Promise<number> {
-    const valueConstitutiveIncome =
-      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
-        2,
-        formPeriod.month,
-        formPeriod.year,
-        employment.id || 0
-      );
+    // Si tiene Certificado Alivio tributario le resta
 
-    return valueConstitutiveIncome;
-  }
+    const tableValue = affectionValue / uvtValue;
 
-  async calculateDR(
-    employment: IEmployment,
-    formPeriod: IFormPeriod
-  ): Promise<number> {
-    const valueDeductionReteFuente =
-      await this.payrollGenerateRepository.getMonthlyDeductionValuePerGrouper(
-        3,
-        formPeriod.month,
-        formPeriod.year,
-        employment.id || 0
-      );
+    const range = incomeTaxTable.find(
+      (i) => tableValue > i.start && tableValue <= i.end
+    );
 
-    return valueDeductionReteFuente;
-  }
+    if (!range) {
+      throw new Error("Tabla de la renta no encontrada");
+    }
 
-  async calculateRE(
-    employment: IEmployment,
-    formPeriod: IFormPeriod
-  ): Promise<number> {
-    const valueIncomeExempt =
-      await this.payrollGenerateRepository.getMonthlyDeductionValuePerGrouper(
-        4,
-        formPeriod.month,
-        formPeriod.year,
-        employment.id || 0
-      );
+    const isr = (tableValue - range.start) * (range.value / 100) + range.value2;
 
-    return valueIncomeExempt;
+    const isrValue = (isr * uvtValue).toFixed(2);
+
+    this.payrollGenerateRepository.createDeduction({
+      value: Number(isrValue),
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: EDeductionTypes.incomeTax,
+      patronalValue: 0,
+    });
   }
 }
 

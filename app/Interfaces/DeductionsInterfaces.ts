@@ -5,6 +5,6 @@ export interface IDeduction {
   idTypeDeduction: number;
   value: number;
   patronalValue: number;
-  time: number;
-  unitTime: string;
+  time?: number;
+  unitTime?: string;
 }

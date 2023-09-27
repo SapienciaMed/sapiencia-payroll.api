@@ -1,5 +1,6 @@
 import { IBooking } from "App/Interfaces/BookingInterfaces";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
+import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
 import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
@@ -12,6 +13,7 @@ import { IRange } from "App/Interfaces/RangeInterfaces";
 import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
 import Deduction from "App/Models/Deduction";
+import DeductionType from "App/Models/DeductionType";
 import Employment from "App/Models/Employment";
 import Grouper from "App/Models/Grouper";
 import HistoricalPayroll from "App/Models/HistoricalPayroll";
@@ -57,7 +59,9 @@ export interface IPayrollGenerateRepository {
     idEmployement: number
   ): Promise<IManualDeduction[]>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
+  getDeductionTypesByName(name: string): Promise<IDeductionType>;
   createIncome(income: IIncome): Promise<IIncome>;
+  createDeduction(deduction: IDeduction): Promise<IDeduction>;
   deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
   deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
   deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
@@ -250,6 +254,11 @@ export default class PayrollGenerateRepository
 
     return res?.serialize() as IIncomeType;
   }
+  async getDeductionTypesByName(name: string): Promise<IDeductionType> {
+    const res = await DeductionType.query().where("name", name).first();
+
+    return res?.serialize() as IDeductionType;
+  }
 
   async createIncome(income: IIncome): Promise<IIncome> {
     const toCreate = new Income();
@@ -259,6 +268,13 @@ export default class PayrollGenerateRepository
     return toCreate.serialize() as IIncome;
   }
 
+  async createDeduction(deduction: IDeduction): Promise<IDeduction> {
+    const toCreate = new Income();
+
+    toCreate.fill({ ...deduction });
+    await toCreate.save();
+    return toCreate.serialize() as IDeduction;
+  }
   async deleteIncomes(codPayroll: number): Promise<IIncome[] | null> {
     const res = await Income.query()
       .where("idTypePayroll", codPayroll)

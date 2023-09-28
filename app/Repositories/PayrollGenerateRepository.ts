@@ -1,4 +1,5 @@
 import { IBooking } from "App/Interfaces/BookingInterfaces";
+import { ICyclicalDeductionInstallment } from "App/Interfaces/CyclicalDeductionInstallmentInterface";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
@@ -9,11 +10,15 @@ import { IIncapcityDaysProcessed } from "App/Interfaces/IncapcityDaysProcessedIn
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
-import { IManualDeduction } from "App/Interfaces/ManualDeductionsInterfaces";
+import {
+  IManualCiclicalDeduction,
+  IManualDeduction,
+} from "App/Interfaces/ManualDeductionsInterfaces";
 import { IRange } from "App/Interfaces/RangeInterfaces";
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
 import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
+import CyclicalDeductionInstallment from "App/Models/CyclicalDeductionInstallment";
 import Deduction from "App/Models/Deduction";
 import DeductionType from "App/Models/DeductionType";
 import Employment from "App/Models/Employment";
@@ -60,7 +65,7 @@ export interface IPayrollGenerateRepository {
   ): Promise<IManualDeduction[]>;
   getCyclicDeductionsByEmployment(
     idEmployement: number
-  ): Promise<IManualDeduction[]>;
+  ): Promise<IManualCiclicalDeduction[]>;
   getSalarybyEmployment(idEmployement: number): Promise<ISalaryHistory>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   getDeductionTypesByName(name: string): Promise<IDeductionType>;
@@ -228,12 +233,13 @@ export default class PayrollGenerateRepository
 
   async getCyclicDeductionsByEmployment(
     idEmployement: number
-  ): Promise<IManualDeduction[]> {
+  ): Promise<IManualCiclicalDeduction[]> {
     const res = await ManualDeduction.query()
       .where("codEmployment", idEmployement)
       .andWhere("state", "Vigente")
-      .andWhere("cyclic", true);
-    return res.map((i) => i.serialize() as IManualDeduction);
+      .andWhere("cyclic", true)
+      .preload("installmentsDeduction");
+    return res.map((i) => i.serialize() as IManualCiclicalDeduction);
   }
 
   async getSalarybyEmployment(idEmployement: number): Promise<ISalaryHistory> {
@@ -276,6 +282,16 @@ export default class PayrollGenerateRepository
     const toCreate = await Deduction.createMany(deductions);
 
     return toCreate.map((i) => i.serialize() as IDeduction);
+  }
+
+  async createCiclycalInstallment(
+    ciclycalInstallment: ICyclicalDeductionInstallment
+  ): Promise<ICyclicalDeductionInstallment> {
+    const toCreate = new CyclicalDeductionInstallment();
+
+    toCreate.fill({ ...ciclycalInstallment });
+    await toCreate.save();
+    return toCreate.serialize() as ICyclicalDeductionInstallment;
   }
   async deleteIncomes(codPayroll: number): Promise<IIncome[] | null> {
     const res = await Income.query()

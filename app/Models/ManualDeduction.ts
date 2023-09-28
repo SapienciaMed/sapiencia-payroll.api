@@ -11,6 +11,7 @@ import Env from "@ioc:Adonis/Core/Env";
 import Employment from "./Employment";
 import DeductionsType from "./DeductionType";
 import FormsPeriod from "./FormsPeriod";
+import CyclicalDeductionInstallment from "./CyclicalDeductionInstallment";
 
 export default class ManualDeduction extends BaseModel {
   public static table = "DDM_DEDUCCIONES_MANUALES";
@@ -115,4 +116,10 @@ export default class ManualDeduction extends BaseModel {
     foreignKey: "id",
   })
   public deductionsType: HasMany<typeof DeductionsType>;
+
+  @hasMany(() => CyclicalDeductionInstallment, {
+    localKey: "id",
+    foreignKey: "idDeductionManual",
+  })
+  public installmentsDeduction: HasMany<typeof CyclicalDeductionInstallment>;
 }

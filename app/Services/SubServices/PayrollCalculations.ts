@@ -15,7 +15,8 @@ import { IPayrollGenerateRepository } from "App/Repositories/PayrollGenerateRepo
 import CoreService from "../External/CoreService";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IParameter } from "App/Interfaces/CoreInterfaces";
-import { calculateDifferenceDays } from "App/Utils/functions";
+import { addCalendarDays, calculateDifferenceDays } from "App/Utils/functions";
+import Incapacity from "../../Models/Incapacity";
 
 export class PayrollCalculations {
   constructor(
@@ -93,14 +94,57 @@ export class PayrollCalculations {
       const incapicities =
         await this.payrollGenerateRepository.getIncapacitiesPeriodByEmployment(
           employment.id,
-          formPeriod.dateStart,
           formPeriod.dateEnd
         );
-      console.log(incapicities);
+
       if (incapicities.length == 0) {
         return 0;
       }
+
       for (const incapacity of incapicities) {
+        // 2. cargamos la tabla de incapaciada
+        const IncapacityTable =
+          await this.payrollGenerateRepository.getRangeByGrouper(
+            incapacity.typeIncapacity?.rangeGrouper || ""
+          );
+
+        // 1. deteminar los dias a procesar.
+        let initDate;
+        let endDate;
+        let daysProcessed = 0;
+        let daysToProcess = 0;
+        const maxDays = 15;
+        const totalDays = calculateDifferenceDays(
+          incapacity.dateInitial,
+          incapacity.dateFinish
+        );
+
+        if (!incapacity.daysProcessed || incapacity.daysProcessed.length == 0) {
+          initDate = incapacity.dateInitial;
+        } else {
+          initDate = addCalendarDays(
+            incapacity.daysProcessed.sort((a, b) => a.id - b.id)[
+              incapacity.daysProcessed.length - 1
+            ].endDate,
+            1,
+            false
+          );
+
+          daysProcessed = incapacity.daysProcessed.reduce(
+            (sum, i) => sum + i.days,
+            0
+          );
+        }
+
+        daysToProcess =
+          totalDays - daysToProcess >= maxDays
+            ? maxDays
+            : totalDays - daysToProcess;
+        
+        endDate = addCalendarDays(initDate,daysToProcess)
+
+
+
         if (
           incapacity.typeIncapacity?.rangeGrouper ==
           "INCAPACIDAD_ENFERMEDAD_COMUN"
@@ -142,9 +186,7 @@ export class PayrollCalculations {
 
       return Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays);
     }
-    // 1. buscar incapacidades vigentes y que entren en planilla
-    // 2. si no exitiste return
-    // 3. Calcula e inserta en la tabla final de Ingresos
+
     return 0;
   }
 

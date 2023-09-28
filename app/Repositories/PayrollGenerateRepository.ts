@@ -45,7 +45,6 @@ export interface IPayrollGenerateRepository {
   ): Promise<ILicenceResult[]>;
   getIncapacitiesPeriodByEmployment(
     idEmployement: number,
-    dateStart: DateTime,
     dateEnd: DateTime
   ): Promise<IGetIncapacity[]>;
   getVacationsPeriodByEmployment(
@@ -157,7 +156,8 @@ export default class PayrollGenerateRepository
     dateStart: DateTime,
     dateEnd: DateTime
   ): Promise<ILicenceResult[]> {
-    const res = await Licence.query().preload("licenceType")
+    const res = await Licence.query()
+      .preload("licenceType")
       .where("codEmployment", idEmployement)
       .whereBetween("dateStart", [dateStart.toString(), dateEnd.toString()])
       .whereBetween("dateEnd", [dateStart.toString(), dateEnd.toString()]);
@@ -165,13 +165,15 @@ export default class PayrollGenerateRepository
   }
   async getIncapacitiesPeriodByEmployment(
     idEmployement: number,
-    dateStart: DateTime,
     dateEnd: DateTime
   ): Promise<IGetIncapacity[]> {
     const res = await Incapacity.query()
+      .preload("daysProcessed")
+      .preload("typeIncapacity")
       .where("codEmployment", idEmployement)
-      .whereBetween("dateInitial", [dateStart.toString(), dateEnd.toString()])
-      .whereBetween("dateFinish", [dateStart.toString(), dateEnd.toString()]);
+      .where("isComplete", false)
+      .where("dateInitial", "<=", dateEnd.toString());
+
     return res.map((i) => i.serialize() as IGetIncapacity);
   }
 

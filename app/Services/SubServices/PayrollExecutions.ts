@@ -16,9 +16,10 @@ export class PayrollExecutions extends PayrollCalculations {
   async generatePayrollBiweekly(formPeriod: IFormPeriod): Promise<void> {
     //buscar los empelados activos de la planilla quincenal.
 
-    const employments = await this.payrollGenerateRepository.getActiveEmployments(
-      new Date(String(formPeriod.dateEnd))
-    );
+    const employments =
+      await this.payrollGenerateRepository.getActiveEmployments(
+        new Date(String(formPeriod.dateEnd))
+      );
 
     // Busca los parametro o recurosos a utilizar
 
@@ -35,44 +36,46 @@ export class PayrollExecutions extends PayrollCalculations {
 
     Promise.all(
       employments.map(async (employment) => {
-        
         try {
-          if(!employment.salaryHistories || employment.salaryHistories.length == 0) {
-            throw new Error('Salario no ubicado')
+          if (
+            !employment.salaryHistories ||
+            employment.salaryHistories.length == 0
+          ) {
+            throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary)
-
-
+          const salary = Number(employment.salaryHistories[0].salary);
 
           // 1. Calcula Licencia
           const licenceDays = await this.calculateLicense(
             employment,
-            formPeriod, 
+            formPeriod,
             salary
           );
 
-          // // 2. Calcula Incapacidades
-          // const incapacitiesDays = await this.calculateIncapacity(
-          //   employment,
-          //   formPeriod
-          // );
+          // 2. Calcula Incapacidades
+          const incapacitiesDays = await this.calculateIncapacity(
+            employment,
+            formPeriod,
+            salary
+          );
 
-          // // 3. Calcula Vacaciones
-          // const vacationDays = await this.calculateVacation(
-          //   employment,
-          //   formPeriod
-          // );
+          // 3. Calcula Vacaciones
+          const vacationDays = await this.calculateVacation(
+            employment,
+            formPeriod
+          );
 
-          // //4. Calcula ingreso por salario
-          // await this.calculateSalary(
-          //   employment,
-          //   formPeriod,
-          //   licenceDays,
-          //   incapacitiesDays,
-          //   vacationDays
-          // );
+          //4. Calcula ingreso por salario
+          await this.calculateSalary(
+            employment,
+            formPeriod,
+            salary,
+            licenceDays,
+            incapacitiesDays,
+            vacationDays
+          );
           // 4. Calcula deducción salud
-
+            
           // 5. Calcula deducción pensión
 
           // 6. Calcula deducción fondo solidaridad

@@ -81,14 +81,14 @@ export class PayrollCalculations {
 
   async calculateIncapacity(
     employment: IEmploymentResult,
-    formPeriod: IFormPeriod
+    formPeriod: IFormPeriod,
+    salary: number
   ): Promise<number> {
     let incapacitiesGeneralDays = 0;
     let incapacitiesLaboralDays = 0;
     let incapacityDayValue = 0;
-    const valueDay = Number(employment.charge?.baseSalary) / 30;
-    const typeIncome =
-      await this.payrollGenerateRepository.getIncomesTypesByName("Incapacidad");
+    const valueDay = salary / 30;
+
     if (employment.id) {
       const incapicities =
         await this.payrollGenerateRepository.getIncapacitiesPeriodByEmployment(
@@ -96,7 +96,7 @@ export class PayrollCalculations {
           formPeriod.dateStart,
           formPeriod.dateEnd
         );
-
+      console.log(incapicities);
       if (incapicities.length == 0) {
         return 0;
       }
@@ -105,16 +105,14 @@ export class PayrollCalculations {
           incapacity.typeIncapacity?.rangeGrouper ==
           "INCAPACIDAD_ENFERMEDAD_COMUN"
         ) {
-          incapacitiesGeneralDays += Number(
+          incapacitiesGeneralDays += calculateDifferenceDays(
+            incapacity.dateInitial,
             incapacity.dateFinish
-              .diff(incapacity.dateInitial, ["days"])
-              .toObject()
           );
         } else {
-          incapacitiesGeneralDays += Number(
+          incapacitiesLaboralDays += calculateDifferenceDays(
+            incapacity.dateInitial,
             incapacity.dateFinish
-              .diff(incapacity.dateInitial, ["days"])
-              .toObject()
           );
         }
       }
@@ -134,11 +132,12 @@ export class PayrollCalculations {
       const income = {
         idTypePayroll: formPeriod.id,
         idEmployment: employment.id,
-        idTypeIncome: typeIncome.id,
+        idTypeIncome: EIncomeTypes.incapacity,
         value: incapacityDayValue + Number(incapacitiesLaboralDays) * valueDay,
         time: Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays),
         unitTime: "Dias",
       };
+      console.log(income);
       await this.payrollGenerateRepository.createIncome(income as IIncome);
 
       return Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays);
@@ -155,8 +154,6 @@ export class PayrollCalculations {
   ): Promise<number> {
     let vacationDays = 0;
     //const valueDay = Number(employment.charge?.baseSalary) / 30;
-    const typeIncome =
-      await this.payrollGenerateRepository.getIncomesTypesByName("Vacaciones");
     if (employment.id) {
       const vacations =
         await this.payrollGenerateRepository.getVacationsPeriodByEmployment(
@@ -170,21 +167,13 @@ export class PayrollCalculations {
       }
       for (const vacation of vacations) {
         for (const vacationDay of vacation.vacationDay) {
-          if (!vacationDay.paid) {
-            vacationDays += Number(
-              vacationDay?.dateUntil
-                ?.diff(vacation.dateFrom, ["days"])
-                .toObject()
-            );
-          } else {
-            vacationDays += Number(vacationDay.enjoyedDays);
-          }
+          vacationDays += Number(vacationDay.enjoyedDays);
         }
       }
       const income = {
         idTypePayroll: formPeriod.id,
         idEmployment: employment.id,
-        idTypeIncome: typeIncome.id,
+        idTypeIncome: EIncomeTypes.vacation,
         value: 0,
         time: vacationDays,
         unitTime: "Dias",
@@ -201,28 +190,29 @@ export class PayrollCalculations {
   async calculateSalary(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
+    salary: number,
     licencesDays: number,
     incapacities: number,
     vacationDays: number
   ): Promise<void> {
     let daysSalary = 0;
-    const valueDay = Number(employment.charge?.baseSalary) / 30;
+    const valueDay = salary / 30;
     if (employment.startDate < formPeriod.dateStart) {
       daysSalary += 15 - licencesDays - incapacities - vacationDays;
     } else {
       daysSalary +=
-        Number(formPeriod.dateEnd.diff(employment.startDate)) -
+        Number(
+          calculateDifferenceDays(employment.startDate, formPeriod.dateEnd)
+        ) -
         licencesDays -
         incapacities -
         vacationDays;
     }
 
-    const typeIncome =
-      await this.payrollGenerateRepository.getIncomesTypesByName("Salario");
     const income = {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
-      idTypeIncome: typeIncome.id,
+      idTypeIncome: EIncomeTypes.salary,
       value: Number(valueDay * (daysSalary < 0 ? 0 : daysSalary)),
       time: daysSalary < 0 ? 0 : daysSalary,
       unitTime: "Dias",

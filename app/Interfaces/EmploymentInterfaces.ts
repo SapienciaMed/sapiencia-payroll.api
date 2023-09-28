@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { IWorker } from "./WorkerInterfaces";
 import { ITypesContracts } from "./TypesContractsInterfaces";
 import { ICharge } from "./ChargeInterfaces";
+import { ISalaryHistory } from "./SalaryHistoryInterfaces";
 
 export interface IEmployment {
   id?: number;
@@ -47,6 +48,7 @@ export interface IEmploymentResult {
   typesContracts?: ITypesContracts[];
   worker: IWorker;
   charge?: ICharge;
+  salaryHistories?: ISalaryHistory[]
 }
 
 export interface IEmploymentWorker extends IEmployment {

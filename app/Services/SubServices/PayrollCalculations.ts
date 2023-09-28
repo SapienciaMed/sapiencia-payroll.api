@@ -1,4 +1,8 @@
-import { EGroupers, EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
+import {
+  EGroupers,
+  EDeductionTypes,
+  EIncomeTypes,
+} from "App/Constants/PayrollGenerateEnum";
 import {
   IEmploymentResult,
   IEmployment,
@@ -11,6 +15,7 @@ import { IPayrollGenerateRepository } from "App/Repositories/PayrollGenerateRepo
 import CoreService from "../External/CoreService";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IParameter } from "App/Interfaces/CoreInterfaces";
+import { calculateDifferenceDays } from "App/Utils/functions";
 
 export class PayrollCalculations {
   constructor(
@@ -21,13 +26,13 @@ export class PayrollCalculations {
 
   async calculateLicense(
     employment: IEmploymentResult,
-    formPeriod: IFormPeriod
+    formPeriod: IFormPeriod,
+    salary: number
   ): Promise<number> {
     let daysLicencePaid = 0;
     let daysLicenceUnpaid = 0;
-    const valueDay = Number(employment.charge?.baseSalary) / 30;
-    const typeIncome =
-      await this.payrollGenerateRepository.getIncomesTypesByName("Licencias");
+    const valueDay = salary / 30;
+
     if (employment.id) {
       const licences =
         await this.payrollGenerateRepository.getLicencesPeriodByEmployment(
@@ -36,24 +41,30 @@ export class PayrollCalculations {
           formPeriod.dateEnd
         );
 
+      console.log(licences);
+
       if (licences.length == 0) {
         return 0;
       }
+
       for (const licence of licences) {
-        if (licence.type.paid) {
-          daysLicencePaid += Number(
-            licence.dateEnd.diff(licence.dateStart, ["days"]).toObject()
+        if (licence.licenceType.paid) {
+          daysLicencePaid += calculateDifferenceDays(
+            licence.dateStart,
+            licence.dateEnd
           );
         } else {
-          daysLicenceUnpaid += Number(
-            licence.dateEnd.diff(licence.dateStart, ["days"]).toObject()
+          daysLicenceUnpaid += calculateDifferenceDays(
+            licence.dateStart,
+            licence.dateEnd
           );
         }
       }
+
       const income = {
         idTypePayroll: formPeriod.id,
         idEmployment: employment.id,
-        idTypeIncome: typeIncome.id,
+        idTypeIncome: EIncomeTypes.license,
         value: Number(valueDay * daysLicencePaid),
         time: daysLicencePaid + daysLicenceUnpaid,
         unitTime: "Dias",

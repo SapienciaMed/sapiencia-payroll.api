@@ -16,7 +16,6 @@ import CoreService from "../External/CoreService";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { addCalendarDays, calculateDifferenceDays } from "App/Utils/functions";
-import Incapacity from "../../Models/Incapacity";
 
 export class PayrollCalculations {
   constructor(

@@ -25,15 +25,27 @@ export class PayrollExecutions extends PayrollCalculations {
 
     const incomeTaxTable =
       await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
+    const solidarityFundTable =
+      await this.payrollGenerateRepository.getRangeByGrouper(
+        "TABLA_FONDO_SOLIDARIO"
+      );
 
     const parameters = await this.coreService.getParametersByCodes([
       "ISR_VALOR_UVT",
+      "PCT_PENSION_EMPLEADO",
+      "PCT_PENSION_PATRONAL",
+      "PCT_SEGURIDAD_SOCIAL_EMPLEADO",
+      "PCT_SEGURIDAD_SOCIAL_PATRONAL",
+      "SMLV",
     ]);
 
     const uvtValue = Number(
       parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
     );
 
+    const smlvValue = Number(
+      parameters.find((i) => i.id == "SMLV")?.value || 0
+    );
     Promise.all(
       employments.map(async (employment) => {
         try {
@@ -75,15 +87,30 @@ export class PayrollExecutions extends PayrollCalculations {
             vacationDays
           );
           // 4. Calcula deducción salud
-            
+          await this.calculateHealthDeduction(
+            employment,
+            formPeriod,
+            parameters
+          );
           // 5. Calcula deducción pensión
-
+          await this.calculateRetirementDeduction(
+            employment,
+            formPeriod,
+            parameters
+          );
           // 6. Calcula deducción fondo solidaridad
-
+          await this.calculateSolidarityFund(
+            employment,
+            formPeriod,
+            smlvValue,
+            solidarityFundTable
+          );
           // 7. Calcula deducciones Ciclicas
 
           // 8. Calcula deducciones Eventuales
-
+          await this.calculateEventualDeductions(
+            employment,formPeriod
+          );
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -93,6 +120,8 @@ export class PayrollExecutions extends PayrollCalculations {
             uvtValue,
             incomeTaxTable
           );
+
+          
         } catch (error) {
           // Crea historico Fallido
           console.log(error);

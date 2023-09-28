@@ -328,6 +328,10 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
   ): Promise<void> {
+    const affectionValue =
+      await this.payrollGenerateRepository.getSalarybyEmployment(
+        employment?.id || 0
+      );
     if (employment.id) {
       const eventualDeductions =
         await this.payrollGenerateRepository.getEventualDeductionsByEmployment(
@@ -338,13 +342,28 @@ export class PayrollCalculations {
       if (eventualDeductions.length == 0) {
         return;
       }
-      const deductions = eventualDeductions.map((eventualDeduction) => ({
-        value: eventualDeduction.value,
-        idEmployment: employment.id || 0,
-        idTypePayroll: formPeriod.id || 0,
-        idTypeDeduction: eventualDeduction.codDeductionType || 0,
-        patronalValue: 0,
-      }));
+      const deductions = eventualDeductions.map((eventualDeduction) => {
+        if (eventualDeduction.porcentualValue) {
+          return {
+            value:
+              ((Number(eventualDeduction.value) / 100) *
+                Number(affectionValue)) /
+              2,
+            idEmployment: employment.id || 0,
+            idTypePayroll: formPeriod.id || 0,
+            idTypeDeduction: eventualDeduction.codDeductionType || 0,
+            patronalValue: 0,
+          };
+        } else {
+          return {
+            value: eventualDeduction.value / 2,
+            idEmployment: employment.id || 0,
+            idTypePayroll: formPeriod.id || 0,
+            idTypeDeduction: eventualDeduction.codDeductionType || 0,
+            patronalValue: 0,
+          };
+        }
+      });
 
       await this.payrollGenerateRepository.createManyDeduction(deductions);
     }

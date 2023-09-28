@@ -16,6 +16,7 @@ import CoreService from "../External/CoreService";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { addCalendarDays, calculateDifferenceDays } from "App/Utils/functions";
+import { DateTime } from "luxon";
 
 export class PayrollCalculations {
   constructor(
@@ -84,10 +85,8 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     salary: number
   ): Promise<number> {
-    let incapacitiesGeneralDays = 0;
-    let incapacitiesLaboralDays = 0;
-    let incapacityDayValue = 0;
-    const valueDay = salary / 30;
+    let daysToReturn = 0;
+    const toProccess: [{ days: number; pct: number }] = [{ days: 0, pct: 0 }];
 
     if (employment.id) {
       const incapicities =
@@ -101,13 +100,13 @@ export class PayrollCalculations {
       }
 
       for (const incapacity of incapicities) {
-        // 2. cargamos la tabla de incapaciada
-        const IncapacityTable =
+        // 1. cargamos la tabla de incapaciada
+        const incapacityTable =
           await this.payrollGenerateRepository.getRangeByGrouper(
             incapacity.typeIncapacity?.rangeGrouper || ""
           );
 
-        // 1. deteminar los dias a procesar.
+        // 2. deteminar los dias a procesar y fecha de inicio y fin
         let initDate;
         let endDate;
         let daysProcessed = 0;
@@ -119,12 +118,13 @@ export class PayrollCalculations {
         );
 
         if (!incapacity.daysProcessed || incapacity.daysProcessed.length == 0) {
-          initDate = incapacity.dateInitial;
+          // Si la incapacidad se iniciaria a procesar
+          initDate = new Date(String(incapacity.dateInitial));
         } else {
+          // sino se contabiliza los dias procesados
           initDate = addCalendarDays(
-            incapacity.daysProcessed.sort((a, b) => a.id - b.id)[
-              incapacity.daysProcessed.length - 1
-            ].endDate,
+            incapacity.daysProcessed[incapacity.daysProcessed.length - 1]
+              .endDate,
             1,
             false
           );
@@ -136,57 +136,63 @@ export class PayrollCalculations {
         }
 
         daysToProcess =
-          totalDays - daysToProcess >= maxDays
+          totalDays - daysProcessed >= maxDays
             ? maxDays
-            : totalDays - daysToProcess;
-        
-        endDate = addCalendarDays(initDate,daysToProcess)
+            : totalDays - daysProcessed;
 
+        endDate = addCalendarDays(initDate, daysToProcess);
 
-
-        if (
-          incapacity.typeIncapacity?.rangeGrouper ==
-          "INCAPACIDAD_ENFERMEDAD_COMUN"
-        ) {
-          incapacitiesGeneralDays += calculateDifferenceDays(
-            incapacity.dateInitial,
-            incapacity.dateFinish
-          );
-        } else {
-          incapacitiesLaboralDays += calculateDifferenceDays(
-            incapacity.dateInitial,
-            incapacity.dateFinish
-          );
+        let startDayProcess = daysProcessed + 1;
+        const endDayProcess = daysProcessed + daysToProcess;
+        // Recorre la tabla para establecer los dias a procesar
+        for (const table of incapacityTable) {
+          if (startDayProcess > table.start && startDayProcess <= table.end) {
+            if (endDayProcess > table.start && endDayProcess <= table.end) {
+              // si todos los rangos se encuentran en el mismo rango
+              toProccess.push({
+                days: endDayProcess - startDayProcess + 1,
+                pct: table.value,
+              });
+              break;
+            } else {
+              // Sino se contabiliza los dias hasta el fin del rango
+              toProccess.push({
+                days: table.end - startDayProcess + 1,
+                pct: table.value,
+              });
+              startDayProcess = table.end + 1;
+            }
+          }
         }
+
+        // Guarda el registro de los dias procesados
+        await this.payrollGenerateRepository.createIncapacityDaysProcessed({
+          codFormPeriod: formPeriod.id || 0,
+          codIncapcity: incapacity.id || 0,
+          days: daysToProcess,
+          startDate: DateTime.fromJSDate(initDate),
+          endDate: DateTime.fromJSDate(endDate),
+        });
+        daysToReturn = daysToReturn + daysToProcess;
       }
 
-      for (let dia = 1; dia <= incapacitiesGeneralDays; dia++) {
-        if (dia <= 2) {
-          incapacityDayValue += 1.0 * valueDay; // 100% de pago para los primeros 2 días
-        } else if (dia <= 180) {
-          incapacityDayValue += 0.6667 * valueDay; // 66.67% de pago del día 3 al 180
-        } else if (dia <= 540) {
-          incapacityDayValue += 0.5 * valueDay; // 50% de pago del día 181 al 540
-        } else {
-          break; // No hay pago para más de 540 días
-        }
-      }
+      // Calcula el valor a pagar de todas la incapacidees
+      const toPay = toProccess.reduce(
+        (sum, i) => sum + (salary / 30) * (i.pct / 100) * i.days,
+        0
+      );
 
-      const income = {
-        idTypePayroll: formPeriod.id,
+      await this.payrollGenerateRepository.createIncome({
+        idTypePayroll: formPeriod.id || 0,
         idEmployment: employment.id,
         idTypeIncome: EIncomeTypes.incapacity,
-        value: incapacityDayValue + Number(incapacitiesLaboralDays) * valueDay,
-        time: Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays),
+        value: Math.round(toPay),
+        time: daysToReturn,
         unitTime: "Dias",
-      };
-      console.log(income);
-      await this.payrollGenerateRepository.createIncome(income as IIncome);
-
-      return Number(incapacitiesGeneralDays) + Number(incapacitiesLaboralDays);
+      });
     }
 
-    return 0;
+    return daysToReturn;
   }
 
   async calculateVacation(

@@ -4,6 +4,7 @@ import Incapacity from "./Incapacity";
 import FormsPeriod from "./FormsPeriod";
 
 export default class IncapacityDaysProcessed extends BaseModel {
+  public static table = "DIP_DIAS_INCAPACIDAD_PROCESADOS";
   @column({ isPrimary: true, columnName: "DIP_CODIGO", serializeAs: "id" })
   public id: number;
 

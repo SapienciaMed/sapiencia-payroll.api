@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 export interface IIncapcityDaysProcessed {
-  id: number;
+  id?: number;
   codIncapcity: number;
   codFormPeriod: number;
   startDate: DateTime;

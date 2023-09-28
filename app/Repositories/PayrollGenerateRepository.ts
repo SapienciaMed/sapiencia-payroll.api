@@ -5,6 +5,7 @@ import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
 import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import { IGetIncapacity } from "App/Interfaces/IncapacityInterfaces";
+import { IIncapcityDaysProcessed } from "App/Interfaces/IncapcityDaysProcessedInterfaces";
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
@@ -19,6 +20,7 @@ import Employment from "App/Models/Employment";
 import Grouper from "App/Models/Grouper";
 import HistoricalPayroll from "App/Models/HistoricalPayroll";
 import Incapacity from "App/Models/Incapacity";
+import IncapacityDaysProcessed from "App/Models/IncapacityDaysProcessed";
 import Income from "App/Models/Income";
 import IncomeType from "App/Models/IncomeType";
 import Licence from "App/Models/Licence";
@@ -71,14 +73,24 @@ export interface IPayrollGenerateRepository {
   deleteHistoryPayroll(
     codPayroll: number
   ): Promise<IHistoricalPayroll[] | null>;
+  createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
 {
   constructor() {}
 
+  async createIncapacityDaysProcessed(
+    data: IIncapcityDaysProcessed
+  ): Promise<void> {
+    const toCreate = new IncapacityDaysProcessed();
+
+    toCreate.fill({ ...data });
+    await toCreate.save();
+  }
+
   async getRangeByGrouper(grouper: string): Promise<IRange[]> {
-    const res = await Range.query().where("grouper", grouper);
+    const res = await Range.query().where("grouper", grouper).orderBy("start");
     return res.map((i) => i.serialize() as IRange);
   }
 

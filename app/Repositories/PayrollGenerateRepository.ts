@@ -43,7 +43,8 @@ export interface IPayrollGenerateRepository {
     gruperId: number,
     month: number,
     year: number,
-    employmentId: number
+    employmentId: number,
+    payrollPeriodId?: number
   ): Promise<number>;
   getLicencesPeriodByEmployment(
     idEmployement: number,
@@ -103,9 +104,10 @@ export default class PayrollGenerateRepository
     gruperId: number,
     month: number,
     year: number,
-    employmentId: number
+    employmentId: number,
+    payrollPeriodId?: number
   ): Promise<number> {
-    const incomes = await Income.query()
+    const incomesq = Income.query()
       .select("ING_VALOR as value", "IAG_SIGNO as sign")
       .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "ING_CODPPL_PLANILLA")
       .join(
@@ -118,13 +120,17 @@ export default class PayrollGenerateRepository
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("ING_CODEMP_EMPLEO", employmentId);
 
+    if (payrollPeriodId) {
+      incomesq.where("PPL_CODIGO", payrollPeriodId);
+    }
+    const incomes = await incomesq;
     const totalIncomes = incomes.reduce(
       (sum, i) =>
         sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
       0
     );
 
-    const deductions = await Deduction.query()
+    const deductionsq = Deduction.query()
       .select("DED_VALOR as value", "DAG_SIGNO as sign")
       .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
       .join(
@@ -137,6 +143,10 @@ export default class PayrollGenerateRepository
       .where("DAG_CODAGR_AGRUPADOR", gruperId)
       .where("DED_CODEMP_EMPLEO", employmentId);
 
+    if (payrollPeriodId) {
+      deductionsq.where("PPL_CODIGO", payrollPeriodId);
+    }
+    const deductions = await deductionsq;
     const totalDeductions = deductions.reduce(
       (sum, i) =>
         sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),

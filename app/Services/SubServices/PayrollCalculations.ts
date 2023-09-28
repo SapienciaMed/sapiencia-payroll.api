@@ -420,52 +420,54 @@ export class PayrollCalculations {
     // 3. Calcula e inserta en la tabla final de Ingresos
   }
 
-  // async calculateCiclicalDeductions(
-  //   employment: IEmploymentResult,
-  //   formPeriod: IFormPeriod,
-  //   salary: number
-  // ): Promise<void> {
+  async calculateCiclicalDeductions(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<void> {
+    if (employment.id) {
+      const ciclicalDeductions =
+        await this.payrollGenerateRepository.getCyclicDeductionsByEmployment(
+          employment.id
+        );
 
-  //   if (employment.id) {
-  //     const ciclicalDeductions =
-  //       await this.payrollGenerateRepository.getCyclicDeductionsByEmployment(
-  //         employment.id,
-  //       );
+      if (ciclicalDeductions.length == 0) {
+        return;
+      }
+      const deductions = ciclicalDeductions.map((eventualDeduction) => {
+        if (
+          eventualDeduction.numberInstallments ==
+          eventualDeduction.installmentsDeduction.sort((a, b) => a.id - b.id)[
+            eventualDeduction.installmentsDeduction.length - 1
+          ].quotaNumber
+        ) {
+          return {
+            value:
+              ((Number(eventualDeduction.value) / 100) * Number(salary)) / 2,
+            idEmployment: employment.id || 0,
+            idTypePayroll: formPeriod.id || 0,
+            idTypeDeduction: eventualDeduction.codDeductionType || 0,
+            patronalValue: 0,
+          };
+        } else {
+          return {
+            value: eventualDeduction.value / 2,
+            idEmployment: employment.id || 0,
+            idTypePayroll: formPeriod.id || 0,
+            idTypeDeduction: eventualDeduction.codDeductionType || 0,
+            patronalValue: 0,
+          };
+        }
+      });
 
-  //     if (ciclicalDeductions.length == 0) {
-  //       return;
-  //     }
-  //     const deductions = ciclicalDeductions.map((eventualDeduction) => {
-  //       if (eventualDeduction.numberInstallments == eventualDeduction.installmentsDeduction.sort((a, b) => a.id - b.id)[
-  //         eventualDeduction.installmentsDeduction.length - 1
-  //       ].quotaNumber) {
-  //         return {
-  //           value:
-  //             ((Number(eventualDeduction.value) / 100) *
-  //               Number(salary)) /
-  //             2,
-  //           idEmployment: employment.id || 0,
-  //           idTypePayroll: formPeriod.id || 0,
-  //           idTypeDeduction: eventualDeduction.codDeductionType || 0,
-  //           patronalValue: 0,
-  //         };
-  //       } else {
-  //         return {
-  //           value: eventualDeduction.value / 2,
-  //           idEmployment: employment.id || 0,
-  //           idTypePayroll: formPeriod.id || 0,
-  //           idTypeDeduction: eventualDeduction.codDeductionType || 0,
-  //           patronalValue: 0,
-  //         };
-  //       }
-  //     });
-
-  //     await this.payrollGenerateRepository.createCiclycalInstallmentDeduction(deductions);
-  //   }
-  //   // 1. buscar liciencias vigentes y que entren en planilla
-  //   // 2. si no exitiste return
-  //   // 3. Calcula e inserta en la tabla final de Ingresos
-  // }
+      await this.payrollGenerateRepository.createCiclycalInstallmentDeduction(
+        deductions
+      );
+    }
+    // 1. buscar liciencias vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+  }
 
   async calculateISR(
     employment: IEmployment,

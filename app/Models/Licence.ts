@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import {
   BaseModel,
-  HasMany,
+  BelongsTo,
   HasOne,
+  belongsTo,
   column,
-  hasMany,
   hasOne,
 } from "@ioc:Adonis/Lucid/Orm";
 import Employment from "./Employment";
@@ -63,9 +63,16 @@ export default class Licence extends BaseModel {
   })
   public employment: HasOne<typeof Employment>;
 
-  @hasMany(() => LicenceType, {
+  //   @belongsTo(() => LicenceType, {
+  //     localKey: "idLicenceType",
+  //     foreignKey: "id",
+  //     serializeAs: "licenceType",
+  //   })
+  //   public licenceType: BelongsTo<typeof LicenceType>;
+
+  @hasOne(() => LicenceType, {
     localKey: "idLicenceType",
     foreignKey: "id",
   })
-  public licenceType: HasMany<typeof LicenceType>;
+  public licenceType: HasOne<typeof LicenceType>;
 }

@@ -16,7 +16,7 @@ export class PayrollExecutions extends PayrollCalculations {
   async generatePayrollBiweekly(formPeriod: IFormPeriod): Promise<void> {
     //buscar los empelados activos de la planilla quincenal.
 
-    const emploments = await this.payrollGenerateRepository.getActiveEmploments(
+    const employments = await this.payrollGenerateRepository.getActiveEmployments(
       new Date(String(formPeriod.dateEnd))
     );
 
@@ -34,29 +34,38 @@ export class PayrollExecutions extends PayrollCalculations {
     );
 
     Promise.all(
-      emploments.map(async (emploment) => {
+      employments.map(async (employment) => {
+        
         try {
-          // // 1. Calcula Licencia
-          // const licenceDays = await this.calculateLicense(
-          //   emploment,
-          //   formPeriod
-          // );
+          if(!employment.salaryHistories || employment.salaryHistories.length == 0) {
+            throw new Error('Salario no ubicado')
+          }
+          const salary = Number(employment.salaryHistories[0].salary)
+
+
+
+          // 1. Calcula Licencia
+          const licenceDays = await this.calculateLicense(
+            employment,
+            formPeriod, 
+            salary
+          );
 
           // // 2. Calcula Incapacidades
           // const incapacitiesDays = await this.calculateIncapacity(
-          //   emploment,
+          //   employment,
           //   formPeriod
           // );
 
           // // 3. Calcula Vacaciones
           // const vacationDays = await this.calculateVacation(
-          //   emploment,
+          //   employment,
           //   formPeriod
           // );
 
           // //4. Calcula ingreso por salario
           // await this.calculateSalary(
-          //   emploment,
+          //   employment,
           //   formPeriod,
           //   licenceDays,
           //   incapacitiesDays,
@@ -76,7 +85,7 @@ export class PayrollExecutions extends PayrollCalculations {
 
           // Ingresos brutos al mes
           await this.calculateISR(
-            emploment,
+            employment,
             formPeriod,
             uvtValue,
             incomeTaxTable

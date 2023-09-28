@@ -29,5 +29,5 @@ export interface ILicenceResult {
   licenceState: string;
   resolutionNumber:string;
   observation?: string;
-  type: ILicenceType;
+  licenceType: ILicenceType;
 }

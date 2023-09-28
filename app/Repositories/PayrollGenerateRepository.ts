@@ -30,7 +30,7 @@ import { DateTime } from "luxon";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
-  getActiveEmploments(dateStart: Date): Promise<IEmploymentResult[]>;
+  getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
   getMonthlyValuePerGrouper(
     gruperId: number,
@@ -130,10 +130,13 @@ export default class PayrollGenerateRepository
     return (totalIncomes || 0) - (totalDeductions || 0);
   }
 
-  async getActiveEmploments(dateStart: Date): Promise<IEmploymentResult[]> {
+  async getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]> {
     const res = await Employment.query()
       .preload("worker")
       .preload("charges")
+      .preload("salaryHistories", (query) => {
+        query.andWhere("validity", true);
+      })
       .whereHas("typesContracts", (contractsQuery) => {
         contractsQuery.where("temporary", false);
       })
@@ -154,7 +157,7 @@ export default class PayrollGenerateRepository
     dateStart: DateTime,
     dateEnd: DateTime
   ): Promise<ILicenceResult[]> {
-    const res = await Licence.query()
+    const res = await Licence.query().preload("licenceType")
       .where("codEmployment", idEmployement)
       .whereBetween("dateStart", [dateStart.toString(), dateEnd.toString()])
       .whereBetween("dateEnd", [dateStart.toString(), dateEnd.toString()]);

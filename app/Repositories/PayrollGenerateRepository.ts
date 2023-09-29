@@ -73,13 +73,19 @@ export interface IPayrollGenerateRepository {
   createIncome(income: IIncome): Promise<IIncome>;
   createDeduction(deduction: IDeduction): Promise<IDeduction>;
   createManyDeduction(deductions: IDeduction[]): Promise<IDeduction[]>;
+  createCiclycalInstallmentDeduction(
+    ciclycalInstallment: ICyclicalDeductionInstallment[]
+  ): Promise<ICyclicalDeductionInstallment[]>;
+  createCiclycalInstallment(
+    ciclycalInstallment: ICyclicalDeductionInstallment
+  ): Promise<ICyclicalDeductionInstallment>
   deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
   deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
   deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
   deleteHistoryPayroll(
     codPayroll: number
   ): Promise<IHistoricalPayroll[] | null>;
-  createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
+createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -120,7 +126,7 @@ export default class PayrollGenerateRepository
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("ING_CODEMP_EMPLEO", employmentId);
 
-    if (payrollPeriodId) {
+if (payrollPeriodId) {
       incomesq.where("PPL_CODIGO", payrollPeriodId);
     }
     const incomes = await incomesq;
@@ -143,7 +149,7 @@ export default class PayrollGenerateRepository
       .where("DAG_CODAGR_AGRUPADOR", gruperId)
       .where("DED_CODEMP_EMPLEO", employmentId);
 
-    if (payrollPeriodId) {
+if (payrollPeriodId) {
       deductionsq.where("PPL_CODIGO", payrollPeriodId);
     }
     const deductions = await deductionsq;
@@ -303,11 +309,21 @@ export default class PayrollGenerateRepository
     await toCreate.save();
     return toCreate.serialize() as ICyclicalDeductionInstallment;
   }
+
+  async createCiclycalInstallmentDeduction(
+    ciclycalInstallment: ICyclicalDeductionInstallment[]
+  ): Promise<ICyclicalDeductionInstallment[]> {
+    const toCreate = await CyclicalDeductionInstallment.createMany(
+      ciclycalInstallment
+    );
+
+    return toCreate.map((i) => i.serialize() as ICyclicalDeductionInstallment);
+  }
   async deleteIncomes(codPayroll: number): Promise<IIncome[] | null> {
     const res = await Income.query()
       .where("idTypePayroll", codPayroll)
       .delete();
-    return res.map((i) => i.serialize() as IIncome) || null;
+    return res || null;
   }
 
   async deleteDeductions(codPayroll: number): Promise<IDeduction[] | null> {
@@ -317,7 +333,7 @@ export default class PayrollGenerateRepository
     if (!res) {
       return null;
     }
-    return res.map((i) => i.serialize() as IDeduction);
+    return res;
   }
 
   async deleteReserves(codPayroll: number): Promise<IBooking[] | null> {
@@ -327,7 +343,7 @@ export default class PayrollGenerateRepository
     if (!res) {
       return null;
     }
-    return res.map((i) => i.serialize() as IBooking);
+    return res;
   }
 
   async deleteHistoryPayroll(
@@ -340,6 +356,6 @@ export default class PayrollGenerateRepository
     if (!res) {
       return null;
     }
-    return res.map((i) => i.serialize() as IHistoricalPayroll);
+    return res;
   }
 }

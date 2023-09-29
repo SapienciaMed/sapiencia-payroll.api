@@ -57,7 +57,7 @@ export class PayrollExecutions extends PayrollCalculations {
           }
           const salary = Number(employment.salaryHistories[0].salary);
 
-          // 1. Calcula Licencia
+          //1. Calcula Licencia
           const licenceDays = await this.calculateLicense(
             employment,
             formPeriod,
@@ -106,11 +106,9 @@ export class PayrollExecutions extends PayrollCalculations {
             solidarityFundTable
           );
           // 7. Calcula deducciones Ciclicas
-
+          await this.calculateCiclicalDeductions(employment, formPeriod);
           // 8. Calcula deducciones Eventuales
-          await this.calculateEventualDeductions(
-            employment,formPeriod
-          );
+          await this.calculateEventualDeductions(employment, formPeriod);
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -120,8 +118,6 @@ export class PayrollExecutions extends PayrollCalculations {
             uvtValue,
             incomeTaxTable
           );
-
-          
         } catch (error) {
           // Crea historico Fallido
           console.log(error);

@@ -276,26 +276,28 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     parameter: IParameter[]
   ) {
-    const deductionType =
-      await this.payrollGenerateRepository.getDeductionTypesByName(
-        "Seguridad Social"
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0,
+        formPeriod.id
       );
     const employeeValue = Number(
-      parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_EMPLEADO"))
+      parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_EMPLEADO")
         ?.value
     );
     const employerValue = Number(
-      parameter.find((item) => (item.id = "PCT_SEGURIDAD_SOCIAL_PATRONAL"))
+      parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_PATRONAL")
         ?.value
     );
     const deduction = {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
-      idTypeDeduction: deductionType.id,
-      value:
-        (Number(employment.charge?.baseSalary) / 2) * (employeeValue / 100),
-      patronalValue:
-        (Number(employment.charge?.baseSalary) / 2) * (employerValue / 100),
+      idTypeDeduction: EDeductionTypes.SocialSecurity,
+      value: (Number(affectionValue) / 2) * (employeeValue / 100),
+      patronalValue: (Number(affectionValue) / 2) * (employerValue / 100),
       time: 15,
       unitTime: "Dias",
     };
@@ -309,22 +311,26 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     parameter: IParameter[]
   ) {
-    const deductionType =
-      await this.payrollGenerateRepository.getDeductionTypesByName("Pension");
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0,
+        formPeriod.id
+      );
     const employeeValue = Number(
-      parameter.find((item) => (item.id = "PCT_PENSION_EMPLEADO"))?.value
+      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value
     );
     const employerValue = Number(
-      parameter.find((item) => (item.id = "PCT_PENSION_PATRONAL"))?.value
+      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value
     );
     const deduction = {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
-      idTypeDeduction: deductionType.id,
-      value:
-        (Number(employment.charge?.baseSalary) / 2) * (employeeValue / 100),
-      patronalValue:
-        (Number(employment.charge?.baseSalary) / 2) * (employerValue / 100),
+      idTypeDeduction: EDeductionTypes.retirementFund,
+      value: (Number(affectionValue) / 2) * (employeeValue / 100),
+      patronalValue: (Number(affectionValue) / 2) * (employerValue / 100),
       time: 15,
       unitTime: "Dias",
     };
@@ -334,21 +340,18 @@ export class PayrollCalculations {
   }
 
   async calculateSolidarityFund(
-    employment: IEmployment,
+    employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     smlv: number,
     solidarityFundTable: IRange[]
   ): Promise<void> {
-    const affectionValue =
-      await this.payrollGenerateRepository.getSalarybyEmployment(
-        employment?.id || 0
-      );
+    const affectionValue = employment.salaryHistories[0].salary;
 
     // si tiene dependiente le restamos segun el calculo
 
     // Si tiene Certificado Alivio tributario le resta
 
-    const tableValue = Number(affectionValue.salary) / smlv;
+    const tableValue = Number(affectionValue) / smlv;
 
     const range = solidarityFundTable.find(
       (i) => tableValue > i.start && tableValue <= i.end
@@ -377,8 +380,12 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod
   ): Promise<void> {
     const affectionValue =
-      await this.payrollGenerateRepository.getSalarybyEmployment(
-        employment?.id || 0
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0,
+        formPeriod.id
       );
     if (employment.id) {
       const eventualDeductions =
@@ -422,55 +429,84 @@ export class PayrollCalculations {
 
   async calculateCiclicalDeductions(
     employment: IEmploymentResult,
-    formPeriod: IFormPeriod,
-    salary: number
+    formPeriod: IFormPeriod
   ): Promise<void> {
-    if (employment.id) {
-      const ciclicalDeductions =
-        await this.payrollGenerateRepository.getCyclicDeductionsByEmployment(
-          employment.id
-        );
-
-      if (ciclicalDeductions.length == 0) {
-        return;
-      }
-      const deductions = ciclicalDeductions.map((eventualDeduction) => {
-        if (
-          eventualDeduction.numberInstallments ==
-          eventualDeduction.installmentsDeduction.sort((a, b) => a.id - b.id)[
-            eventualDeduction.installmentsDeduction.length - 1
-          ].quotaNumber
-        ) {
-          return {
-            value:
-              ((Number(eventualDeduction.value) / 100) * Number(salary)) / 2,
-            idEmployment: employment.id || 0,
-            idTypePayroll: formPeriod.id || 0,
-            idTypeDeduction: eventualDeduction.codDeductionType || 0,
-            patronalValue: 0,
-          };
-        } else {
-          return {
-            value: eventualDeduction.value / 2,
-            idEmployment: employment.id || 0,
-            idTypePayroll: formPeriod.id || 0,
-            idTypeDeduction: eventualDeduction.codDeductionType || 0,
-            patronalValue: 0,
-          };
-        }
-      });
-
-      await this.payrollGenerateRepository.createCiclycalInstallmentDeduction(
-        deductions
-      );
+    if (!employment.id) {
+      // Si employment.id no existe, no podemos continuar, así que simplemente retornamos.
+      return;
     }
-    // 1. buscar liciencias vigentes y que entren en planilla
-    // 2. si no exitiste return
-    // 3. Calcula e inserta en la tabla final de Ingresos
+
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id,
+        formPeriod.id
+      );
+
+    if (affectionValue === 0) {
+      // Si el valor de afectación es 0, no necesitamos continuar, así que retornamos.
+      return;
+    }
+
+    const ciclicalDeductions =
+      await this.payrollGenerateRepository.getCyclicDeductionsByEmployment(
+        employment.id
+      );
+
+    if (ciclicalDeductions.length === 0) {
+      // Si no hay deducciones cíclicas, no necesitamos continuar, así que retornamos.
+      return;
+    }
+
+    const lastQuotaNumber = ciclicalDeductions.reduce(
+      (maxQuotaNumber, ciclicalDeduction) => {
+        const installments = ciclicalDeduction.installmentsDeduction || [];
+        const lastInstallment = installments.reduce(
+          (maxInstallment, installment) =>
+            Math.max(maxInstallment, installment.quotaNumber),
+          0
+        );
+        return Math.max(maxQuotaNumber, lastInstallment);
+      },
+      0
+    );
+
+    const deductions = ciclicalDeductions.map((ciclicalDeduction) => ({
+      idTypePayroll: formPeriod.id,
+      idDeductionManual: ciclicalDeduction.id,
+      quotaNumber: lastQuotaNumber + 1,
+      quotaValue: ciclicalDeduction.porcentualValue
+        ? affectionValue * (Number(ciclicalDeduction.value) / 100)
+        : ciclicalDeduction.value,
+      applied: true,
+    }));
+
+    const deductionsCiclys = ciclicalDeductions.map((eventualDeduction) => ({
+      value: eventualDeduction.porcentualValue
+        ? (Number(eventualDeduction.value) / 100) * Number(affectionValue)
+        : eventualDeduction.value,
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: eventualDeduction.codDeductionType || 0,
+      patronalValue: 0,
+    }));
+
+    await Promise.all([
+      this.payrollGenerateRepository.createCiclycalInstallmentDeduction(
+        deductions
+      ),
+      this.payrollGenerateRepository.createManyDeduction(deductionsCiclys),
+    ]);
+
+    // 1. buscar licencias vigentes y que entren en planilla
+    // 2. si no existen, retornar
+    // 3. Calcular e insertar en la tabla final de Ingresos
   }
 
   async calculateISR(
-    employment: IEmployment,
+    employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     uvtValue: number,
     incomeTaxTable: IRange[]

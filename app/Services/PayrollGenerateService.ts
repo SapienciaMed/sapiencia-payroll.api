@@ -31,10 +31,10 @@ export default class PayrollGenerateService
     }
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
-    // await this.payrollGenerateRepository.deleteIncomes(id);
-    // await this.payrollGenerateRepository.deleteDeductions(id);
-    // await this.payrollGenerateRepository.deleteReserves(id);
-    // await this.payrollGenerateRepository.deleteHistoryPayroll(id);
+    await this.payrollGenerateRepository.deleteIncomes(id);
+    await this.payrollGenerateRepository.deleteDeductions(id);
+    await this.payrollGenerateRepository.deleteReserves(id);
+    await this.payrollGenerateRepository.deleteHistoryPayroll(id);
     // 3. Genera la planilla segun el tipo
     switch (formPeriod.idFormType) {
       case EPayrollTypes.biweekly: // Planilla Quincenal

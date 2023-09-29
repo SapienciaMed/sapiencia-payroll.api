@@ -47,8 +47,8 @@ export interface IEmploymentResult {
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
   worker: IWorker;
-  charge?: ICharge;
-  salaryHistories?: ISalaryHistory[]
+  charges: ICharge[];
+  salaryHistories: ISalaryHistory[]
 }
 
 export interface IEmploymentWorker extends IEmployment {

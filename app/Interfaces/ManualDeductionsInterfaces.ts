@@ -29,9 +29,9 @@ export interface IManualDeductionFilters {
 }
 
 export interface IManualCiclicalDeduction {
-  id?: number;
+  id: number;
   codEmployment: number;
-  codDeductionType?: number;
+  codDeductionType: number;
   cyclic: boolean;
   totalMount?: number;
   numberInstallments?: number;

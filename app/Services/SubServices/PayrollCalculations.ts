@@ -3,10 +3,7 @@ import {
   EDeductionTypes,
   EIncomeTypes,
 } from "App/Constants/PayrollGenerateEnum";
-import {
-  IEmploymentResult,
-  IEmployment,
-} from "App/Interfaces/EmploymentInterfaces";
+import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
 import { IRange } from "App/Interfaces/RangeInterfaces";
@@ -29,7 +26,7 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number
-  ): Promise<number> {
+  ): Promise<{ income?: object; number: number }> {
     let daysLicencePaid = 0;
     let daysLicenceUnpaid = 0;
     const valueDay = salary / 30;
@@ -45,7 +42,7 @@ export class PayrollCalculations {
       console.log(licences);
 
       if (licences.length == 0) {
-        return 0;
+        return { number: Number(daysLicencePaid + daysLicenceUnpaid) ?? 0 };
       }
 
       for (const licence of licences) {
@@ -72,20 +69,29 @@ export class PayrollCalculations {
       };
       await this.payrollGenerateRepository.createIncome(income as IIncome);
 
-      return Number(daysLicencePaid + daysLicenceUnpaid);
+      //return Number(daysLicencePaid + daysLicenceUnpaid);
+      return {
+        income,
+        number: Number(daysLicencePaid + daysLicenceUnpaid) ?? 0,
+      };
     }
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
-    return 0;
+    return { number: Number(daysLicencePaid + daysLicenceUnpaid) ?? 0 };
   }
 
   async calculateIncapacity(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number
-  ): Promise<number> {
+  ): Promise<{
+    income?: object;
+    IncapacityDaysProcessed?: object;
+    number: number;
+  }> {
     let daysToReturn = 0;
+    const result = [{}];
     const toProccess: [{ days: number; pct: number }] = [{ days: 0, pct: 0 }];
 
     if (employment.id) {
@@ -96,7 +102,7 @@ export class PayrollCalculations {
         );
 
       if (incapicities.length == 0) {
-        return 0;
+        return { number: daysToReturn ?? 0 };
       }
 
       for (const incapacity of incapicities) {
@@ -111,6 +117,7 @@ export class PayrollCalculations {
         let endDate;
         let daysProcessed = 0;
         let daysToProcess = 0;
+
         const maxDays = 15;
         const totalDays = calculateDifferenceDays(
           incapacity.dateInitial,
@@ -173,6 +180,13 @@ export class PayrollCalculations {
           startDate: DateTime.fromJSDate(initDate),
           endDate: DateTime.fromJSDate(endDate),
         });
+        result.push({
+          codFormPeriod: formPeriod.id || 0,
+          codIncapcity: incapacity.id || 0,
+          days: daysToProcess,
+          startDate: DateTime.fromJSDate(initDate),
+          endDate: DateTime.fromJSDate(endDate),
+        });
         daysToReturn = daysToReturn + daysToProcess;
       }
 
@@ -190,15 +204,27 @@ export class PayrollCalculations {
         time: daysToReturn,
         unitTime: "Dias",
       });
+      return {
+        income: {
+          idTypePayroll: formPeriod.id || 0,
+          idEmployment: employment.id,
+          idTypeIncome: EIncomeTypes.incapacity,
+          value: Math.round(toPay),
+          time: daysToReturn,
+          unitTime: "Dias",
+        },
+        IncapacityDaysProcessed: result,
+        number: daysToReturn ?? 0,
+      };
     }
-
-    return daysToReturn;
+    return { number: daysToReturn ?? 0 };
+    // return daysToReturn;
   }
 
   async calculateVacation(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
-  ): Promise<number> {
+  ): Promise<{ income?: object; number: number }> {
     let vacationDays = 0;
     //const valueDay = Number(employment.charge?.baseSalary) / 30;
     if (employment.id) {
@@ -210,7 +236,8 @@ export class PayrollCalculations {
         );
 
       if (vacations.length == 0) {
-        return 0;
+        return { number: vacationDays ?? 0 };
+        // return 0;
       }
       for (const vacation of vacations) {
         for (const vacationDay of vacation.vacationDay) {
@@ -226,12 +253,13 @@ export class PayrollCalculations {
         unitTime: "Dias",
       };
       await this.payrollGenerateRepository.createIncome(income as IIncome);
-      return vacationDays;
+      return { income, number: vacationDays ?? 0 };
+      //return vacationDays;
     }
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
-    return 0;
+    return { number: vacationDays ?? 0 };
   }
 
   async calculateSalary(
@@ -241,7 +269,7 @@ export class PayrollCalculations {
     licencesDays: number,
     incapacities: number,
     vacationDays: number
-  ): Promise<void> {
+  ): Promise<object> {
     let daysSalary = 0;
     const valueDay = salary / 30;
     if (employment.startDate < formPeriod.dateStart) {
@@ -265,7 +293,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     };
     await this.payrollGenerateRepository.createIncome(income as IIncome);
-
+    return { income };
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
@@ -275,7 +303,7 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     parameter: IParameter[]
-  ) {
+  ): Promise<object> {
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -304,13 +332,14 @@ export class PayrollCalculations {
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
     );
+    return { deduction };
   }
 
   async calculateRetirementDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     parameter: IParameter[]
-  ) {
+  ): Promise<object> {
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -337,6 +366,7 @@ export class PayrollCalculations {
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
     );
+    return { deduction };
   }
 
   async calculateSolidarityFund(
@@ -344,7 +374,7 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     smlv: number,
     solidarityFundTable: IRange[]
-  ): Promise<void> {
+  ): Promise<object> {
     const affectionValue = employment.salaryHistories[0].salary;
 
     // si tiene dependiente le restamos segun el calculo
@@ -373,12 +403,19 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.solidarityFund,
       patronalValue: 0,
     });
+    return {
+      value: Number(solidarityFundValueFixed),
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: EDeductionTypes.solidarityFund,
+      patronalValue: 0,
+    };
   }
 
   async calculateEventualDeductions(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
-  ): Promise<void> {
+  ): Promise<object> {
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -395,7 +432,7 @@ export class PayrollCalculations {
         );
 
       if (eventualDeductions.length == 0) {
-        return;
+        return {};
       }
       const deductions = eventualDeductions.map((eventualDeduction) => {
         if (eventualDeduction.porcentualValue) {
@@ -421,19 +458,21 @@ export class PayrollCalculations {
       });
 
       await this.payrollGenerateRepository.createManyDeduction(deductions);
+      return { deductions };
     }
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
+    return {};
   }
 
   async calculateCiclicalDeductions(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
-  ): Promise<void> {
+  ): Promise<object> {
     if (!employment.id) {
       // Si employment.id no existe, no podemos continuar, así que simplemente retornamos.
-      return;
+      return {};
     }
 
     const affectionValue =
@@ -447,7 +486,7 @@ export class PayrollCalculations {
 
     if (affectionValue === 0) {
       // Si el valor de afectación es 0, no necesitamos continuar, así que retornamos.
-      return;
+      return {};
     }
 
     const ciclicalDeductions =
@@ -457,7 +496,7 @@ export class PayrollCalculations {
 
     if (ciclicalDeductions.length === 0) {
       // Si no hay deducciones cíclicas, no necesitamos continuar, así que retornamos.
-      return;
+      return {};
     }
 
     const lastQuotaNumber = ciclicalDeductions.reduce(
@@ -499,7 +538,7 @@ export class PayrollCalculations {
       ),
       this.payrollGenerateRepository.createManyDeduction(deductionsCiclys),
     ]);
-
+    return { deductions, deductionsCiclys };
     // 1. buscar licencias vigentes y que entren en planilla
     // 2. si no existen, retornar
     // 3. Calcular e insertar en la tabla final de Ingresos
@@ -510,7 +549,7 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     uvtValue: number,
     incomeTaxTable: IRange[]
-  ): Promise<void> {
+  ): Promise<object> {
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeTaxGrouper,
@@ -544,5 +583,12 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     });
+    return {
+      value: Number(isrValue),
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: EDeductionTypes.incomeTax,
+      patronalValue: 0,
+    };
   }
 }

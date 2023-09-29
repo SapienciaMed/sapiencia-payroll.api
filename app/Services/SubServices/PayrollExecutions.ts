@@ -82,9 +82,9 @@ export class PayrollExecutions extends PayrollCalculations {
             employment,
             formPeriod,
             salary,
-            licenceDays,
-            incapacitiesDays,
-            vacationDays
+            licenceDays?.number,
+            incapacitiesDays?.number,
+            vacationDays?.number
           );
           // 4. Calcula deducción salud
           await this.calculateHealthDeduction(

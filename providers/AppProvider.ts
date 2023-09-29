@@ -1,6 +1,4 @@
 import type { ApplicationContract } from "@ioc:Adonis/Core/Application";
-import PayrollGenerateService from "../app/Services/PayrollGenerateService";
-import CoreService from "App/Services/External/CoreService";
 
 export default class AppProvider {
   constructor(protected app: ApplicationContract) {}

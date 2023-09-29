@@ -19,6 +19,7 @@ const licenceTypesFake: ILicenceType = {
   name: "permiso remunerado",
   numberDays: 5,
   daysType: "Habil",
+  paid: false
 };
 export class LicenceRepositoryFake implements LicenceRepository {
   createLicence(_licence: ILicence): Promise<ILicence> {

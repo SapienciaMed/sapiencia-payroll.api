@@ -51,6 +51,7 @@ const getIncapacityFake: IGetIncapacity = {
       address: "",
     },
   },
+  isComplete: false
 };
 export class IncapacityRepositoryFake implements IncapacityRepository {
   createIncapacity(_incapacity: IIncapacity): Promise<IIncapacity> {

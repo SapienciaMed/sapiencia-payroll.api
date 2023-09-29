@@ -30,6 +30,7 @@ test.group("IncapacityService TEST for createIncapacity", () => {
       userModified: "test",
       dateModified: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
       dateCreate: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
+      isComplete:false
     },
     {
       userCreate: "test",
@@ -43,6 +44,7 @@ test.group("IncapacityService TEST for createIncapacity", () => {
       userModified: "test",
       dateModified: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
       dateCreate: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
+      isComplete:false
     },
   ];
 
@@ -82,6 +84,7 @@ test.group("IncapacityService TEST for updateIncapacity", () => {
         userModified: "test",
         dateModified: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
         dateCreate: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
+        isComplete: false
       },
       {
         userCreate: "test",
@@ -95,6 +98,7 @@ test.group("IncapacityService TEST for updateIncapacity", () => {
         userModified: "test",
         dateModified: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
         dateCreate: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
+        isComplete: false
       },
     ];
   

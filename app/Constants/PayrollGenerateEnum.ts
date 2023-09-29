@@ -3,6 +3,7 @@ export enum EDeductionTypes {
   solidarityFund = 13,
   SocialSecurity = 10,
   retirementFund = 11,
+  dependentPeople = 14,
 }
 
 export enum EGroupers {

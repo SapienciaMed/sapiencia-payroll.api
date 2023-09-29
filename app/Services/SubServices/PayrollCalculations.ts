@@ -505,6 +505,42 @@ export class PayrollCalculations {
     // 3. Calcular e insertar en la tabla final de Ingresos
   }
 
+  async calculateDeductionRelatives(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    uvtValue: number
+  ) {
+    const relatives = await this.payrollGenerateRepository.getRelatives(
+      employment.workerId ?? 0
+    );
+
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeTaxGrouper,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0,
+        formPeriod.id
+      );
+
+    if (relatives.length > 0) {
+      const percent10AffectionValue = (affectionValue * 10) / 100;
+
+      const uvt32 = uvtValue * 32;
+
+      const valueDeduction =
+        percent10AffectionValue > uvt32 ? uvt32 : percent10AffectionValue;
+
+      this.payrollGenerateRepository.createDeduction({
+        value: Number(valueDeduction),
+        idEmployment: employment.id ?? 0,
+        idTypePayroll: formPeriod.id ?? 0,
+        idTypeDeduction: EDeductionTypes.dependentPeople,
+        patronalValue: 0,
+      });
+    }
+  }
+
   async calculateISR(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
@@ -516,7 +552,7 @@ export class PayrollCalculations {
         EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
-        employment.id || 0
+        employment.id ?? 0
       );
 
     // si tiene dependiente le restamos segun el calculo

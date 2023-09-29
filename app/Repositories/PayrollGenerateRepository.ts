@@ -15,6 +15,7 @@ import {
   IManualDeduction,
 } from "App/Interfaces/ManualDeductionsInterfaces";
 import { IRange } from "App/Interfaces/RangeInterfaces";
+import { IRelative } from "App/Interfaces/RelativeInterfaces";
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
 import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
@@ -31,6 +32,7 @@ import IncomeType from "App/Models/IncomeType";
 import Licence from "App/Models/Licence";
 import ManualDeduction from "App/Models/ManualDeduction";
 import Range from "App/Models/Range";
+import Relative from "App/Models/Relative";
 import SalaryHistory from "App/Models/SalaryHistory";
 import Vacation from "App/Models/Vacation";
 import { DateTime } from "luxon";
@@ -78,14 +80,15 @@ export interface IPayrollGenerateRepository {
   ): Promise<ICyclicalDeductionInstallment[]>;
   createCiclycalInstallment(
     ciclycalInstallment: ICyclicalDeductionInstallment
-  ): Promise<ICyclicalDeductionInstallment>
+  ): Promise<ICyclicalDeductionInstallment>;
   deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
   deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
   deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
   deleteHistoryPayroll(
     codPayroll: number
   ): Promise<IHistoricalPayroll[] | null>;
-createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
+  createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
+  getRelatives(workerId: number): Promise<IRelative[]>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -126,7 +129,7 @@ export default class PayrollGenerateRepository
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("ING_CODEMP_EMPLEO", employmentId);
 
-if (payrollPeriodId) {
+    if (payrollPeriodId) {
       incomesq.where("PPL_CODIGO", payrollPeriodId);
     }
     const incomes = await incomesq;
@@ -149,7 +152,7 @@ if (payrollPeriodId) {
       .where("DAG_CODAGR_AGRUPADOR", gruperId)
       .where("DED_CODEMP_EMPLEO", employmentId);
 
-if (payrollPeriodId) {
+    if (payrollPeriodId) {
       deductionsq.where("PPL_CODIGO", payrollPeriodId);
     }
     const deductions = await deductionsq;
@@ -357,5 +360,11 @@ if (payrollPeriodId) {
       return null;
     }
     return res;
+  }
+
+  async getRelatives(workerId: number): Promise<IRelative[]> {
+    const Relatives = await Relative.query().where("workerId", workerId);
+
+    return Relatives.map((i) => i.serialize() as IRelative);
   }
 }

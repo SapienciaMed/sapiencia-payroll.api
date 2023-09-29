@@ -7,7 +7,7 @@ import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
 import { PayrollExecutions } from "./SubServices/PayrollExecutions";
 
 export interface IPayrollGenerateService {
-  payrollGenerateById(id: number): Promise<ApiResponse<boolean>>;
+  payrollGenerateById(id: number): Promise<ApiResponse<object>>;
 }
 
 export default class PayrollGenerateService
@@ -22,29 +22,34 @@ export default class PayrollGenerateService
     super(payrollGenerateRepository, formsPeriodRepository, coreService);
   }
 
-  async payrollGenerateById(id: number): Promise<ApiResponse<boolean>> {
+  async payrollGenerateById(id: number): Promise<ApiResponse<object>> {
     const formPeriod = await this.formsPeriodRepository.getFormPeriodById(id);
-
+    let result;
     // 1. Validar si la planilla esta autorizada o no existe el periodo
     if (!formPeriod || formPeriod.state === "Autorizada") {
-      return new ApiResponse(false, EResponseCodes.FAIL, "....");
+      return new ApiResponse({ error: "fallo" }, EResponseCodes.FAIL, "....");
     }
+    const hashTableCases = {
+      [EPayrollTypes.biweekly]: this.generatePayrollBiweekly(formPeriod),
+    };
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
     await this.payrollGenerateRepository.deleteIncomes(id);
     await this.payrollGenerateRepository.deleteDeductions(id);
     await this.payrollGenerateRepository.deleteReserves(id);
     await this.payrollGenerateRepository.deleteHistoryPayroll(id);
+
+    result = await hashTableCases[formPeriod.idFormType];
     // 3. Genera la planilla segun el tipo
-    switch (formPeriod.idFormType) {
-      case EPayrollTypes.biweekly: // Planilla Quincenal
-        await this.generatePayrollBiweekly(formPeriod);
-        break;
+    // switch (formPeriod.idFormType) {
+    //   case EPayrollTypes.biweekly: // Planilla Quincenal
+    //     result = await this.generatePayrollBiweekly(formPeriod);
+    //     break;
 
-      default:
-        break;
-    }
-
-    return new ApiResponse(true, EResponseCodes.OK);
+    //   default:
+    //     break;
+    // }
+    console.log(result)
+    return new ApiResponse(result, EResponseCodes.OK);
   }
 }

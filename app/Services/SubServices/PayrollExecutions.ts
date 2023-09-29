@@ -13,7 +13,7 @@ export class PayrollExecutions extends PayrollCalculations {
     super(payrollGenerateRepository, formsPeriodRepository, coreService);
   }
 
-  async generatePayrollBiweekly(formPeriod: IFormPeriod): Promise<void> {
+  async generatePayrollBiweekly(formPeriod: IFormPeriod): Promise<any> {
     //buscar los empelados activos de la planilla quincenal.
 
     const employments =
@@ -46,7 +46,7 @@ export class PayrollExecutions extends PayrollCalculations {
     const smlvValue = Number(
       parameters.find((i) => i.id == "SMLV")?.value || 0
     );
-    Promise.all(
+    return Promise.all(
       employments.map(async (employment) => {
         try {
           if (
@@ -78,7 +78,7 @@ export class PayrollExecutions extends PayrollCalculations {
           );
 
           //4. Calcula ingreso por salario
-          await this.calculateSalary(
+          const salaryCalculated = await this.calculateSalary(
             employment,
             formPeriod,
             salary,
@@ -87,40 +87,68 @@ export class PayrollExecutions extends PayrollCalculations {
             vacationDays?.number
           );
           // 4. Calcula deducción salud
-          await this.calculateHealthDeduction(
+          const healthDeduction = await this.calculateHealthDeduction(
             employment,
             formPeriod,
             parameters
           );
           // 5. Calcula deducción pensión
-          await this.calculateRetirementDeduction(
+          const retirementDeduction = await this.calculateRetirementDeduction(
             employment,
             formPeriod,
             parameters
           );
           // 6. Calcula deducción fondo solidaridad
-          await this.calculateSolidarityFund(
+          const solidarityFund = await this.calculateSolidarityFund(
             employment,
             formPeriod,
             smlvValue,
             solidarityFundTable
           );
           // 7. Calcula deducciones Ciclicas
-          await this.calculateCiclicalDeductions(employment, formPeriod);
+          const ciclicalDeductions = await this.calculateCiclicalDeductions(
+            employment,
+            formPeriod
+          );
           // 8. Calcula deducciones Eventuales
-          await this.calculateEventualDeductions(employment, formPeriod);
+          const eventualDeductions = await this.calculateEventualDeductions(
+            employment,
+            formPeriod
+          );
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
           // Calcula Renta
 
           // Ingresos brutos al mes
-          await this.calculateISR(
+          const isrCalculated = await this.calculateISR(
             employment,
             formPeriod,
             uvtValue,
             incomeTaxTable
           );
+          return {
+            licenceDays,
+            incapacitiesDays,
+            vacationDays,
+            salaryCalculated,
+            healthDeduction,
+            retirementDeduction,
+            solidarityFund,
+            ciclicalDeductions,
+            eventualDeductions,
+            relativesDeduction,
+            isrCalculated,
+          };
         } catch (error) {
           // Crea historico Fallido
           console.log(error);
+          return {
+            err: error,
+          };
         }
       })
     );

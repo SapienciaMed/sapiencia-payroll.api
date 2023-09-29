@@ -548,7 +548,7 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     uvtValue: number
-  ) {
+  ): Promise<object> {
     const relatives = await this.payrollGenerateRepository.getRelatives(
       employment.workerId ?? 0
     );
@@ -577,7 +577,15 @@ export class PayrollCalculations {
         idTypeDeduction: EDeductionTypes.dependentPeople,
         patronalValue: 0,
       });
+      return {
+        value: Number(valueDeduction),
+        idEmployment: employment.id ?? 0,
+        idTypePayroll: formPeriod.id ?? 0,
+        idTypeDeduction: EDeductionTypes.dependentPeople,
+        patronalValue: 0,
+      };
     }
+    return {};
   }
 
   async calculateISR(

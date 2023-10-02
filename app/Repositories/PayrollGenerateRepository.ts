@@ -87,6 +87,9 @@ export interface IPayrollGenerateRepository {
   deleteHistoryPayroll(
     codPayroll: number
   ): Promise<IHistoricalPayroll[] | null>;
+  deleteIncapacityProcessedDays(
+    codPayroll: number
+  ): Promise<IIncapcityDaysProcessed[] | null>;
   createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
   getRelatives(workerId: number): Promise<IRelative[]>;
 }
@@ -354,6 +357,19 @@ export default class PayrollGenerateRepository
   ): Promise<IHistoricalPayroll[] | null> {
     const res = await HistoricalPayroll.query()
       .where("idTypePayroll", codPayroll)
+      .delete();
+
+    if (!res) {
+      return null;
+    }
+    return res;
+  }
+
+  async deleteIncapacityProcessedDays(
+    codPayroll: number
+  ): Promise<IIncapcityDaysProcessed[] | null> {
+    const res = await IncapacityDaysProcessed.query()
+      .where("codFormPeriod", codPayroll)
       .delete();
 
     if (!res) {

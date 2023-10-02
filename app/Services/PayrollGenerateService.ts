@@ -37,6 +37,7 @@ export default class PayrollGenerateService
     await this.payrollGenerateRepository.deleteIncomes(id);
     await this.payrollGenerateRepository.deleteDeductions(id);
     await this.payrollGenerateRepository.deleteReserves(id);
+    await this.payrollGenerateRepository.deleteIncapacityProcessedDays(id);
     await this.payrollGenerateRepository.deleteHistoryPayroll(id);
 
     result = await hashTableCases[formPeriod.idFormType];
@@ -49,7 +50,7 @@ export default class PayrollGenerateService
     //   default:
     //     break;
     // }
-    console.log(result)
+    console.log(result);
     return new ApiResponse(result, EResponseCodes.OK);
   }
 }

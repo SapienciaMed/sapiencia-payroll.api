@@ -1,5 +1,5 @@
 export interface IHistoricalPayroll {
-  id: number;
+  id?: number;
   idTypePayroll: number;
   idEmployment: number;
   workedDay: number;

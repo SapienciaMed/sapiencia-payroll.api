@@ -2,6 +2,7 @@ import {
   EGroupers,
   EDeductionTypes,
   EIncomeTypes,
+  EReserveTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
@@ -269,7 +270,7 @@ export class PayrollCalculations {
     licencesDays: number,
     incapacities: number,
     vacationDays: number
-  ): Promise<object> {
+  ): Promise<{ income: object; days: number }> {
     let daysSalary = 0;
     const valueDay = salary / 30;
     if (employment.startDate < formPeriod.dateStart) {
@@ -293,7 +294,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     };
     await this.payrollGenerateRepository.createIncome(income as IIncome);
-    return { income };
+    return { income, days: daysSalary };
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
@@ -324,15 +325,15 @@ export class PayrollCalculations {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
       idTypeDeduction: EDeductionTypes.SocialSecurity,
-      value: (Number(affectionValue) / 2) * (employeeValue / 100),
-      patronalValue: (Number(affectionValue) / 2) * (employerValue / 100),
+      value: Number(affectionValue) * (employeeValue / 100),
+      patronalValue: Number(affectionValue) * (employerValue / 100),
       time: 15,
       unitTime: "Dias",
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
     );
-    return { deduction };
+    return { ...deduction, ingreso: affectionValue };
   }
 
   async calculateRetirementDeduction(
@@ -358,8 +359,8 @@ export class PayrollCalculations {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
       idTypeDeduction: EDeductionTypes.retirementFund,
-      value: (Number(affectionValue) / 2) * (employeeValue / 100),
-      patronalValue: (Number(affectionValue) / 2) * (employerValue / 100),
+      value: Number(affectionValue) * (employeeValue / 100),
+      patronalValue: Number(affectionValue) * (employerValue / 100),
       time: 15,
       unitTime: "Dias",
     };
@@ -634,5 +635,293 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     };
+  }
+  //Calculamos el valor de la Bonificación de servicios de la siguiente manera : ((sueldo básico x 35%)/360) x nro de días trabajos en el mes
+  async calculateReserveServiceBounty(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    daysWorked: number
+  ): Promise<{ serviceBounty: object; value: number }> {
+    const reserveValue = ((salary * 0.35) / 360) * daysWorked;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.bountyService,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      serviceBounty: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.bountyService,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+  async calculateReserveServiceBonus(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    daysWorked: number,
+    bonusService: number
+  ): Promise<{ serviceBonus: object; value: number }> {
+    //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12))/2
+    const reserveValue = ((salary / 360) * daysWorked + bonusService / 12) / 2;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.bonusService,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      serviceBonus: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.bonusService,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+
+  async calculateReserveRecreationBounty(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    daysWorked: number
+  ): Promise<{ recreationBounty: object; value: number }> {
+    //(((salario básico/30)*2) /360)*días trabajados
+    const reserveValue = (((salary / 30) * 2) / 360) * daysWorked;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.bountyRecreation,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      recreationBounty: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.bountyRecreation,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+
+  async calculateReserveVationReserve(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number
+  ): Promise<{ vacationReserve: object; value: number }> {
+    //((((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 ))/2
+    const reserveValue =
+      ((salary / 360) * daysWorked + bountyService / 12 + bonusService / 12) /
+      2;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.vacation,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      vacationReserve: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.vacation,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+
+  async calculateReserveVacationBonus(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number
+  ): Promise<{ bonusVacation: object; value: number }> {
+    //((((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 ))/2
+    const reserveValue =
+      ((salary / 360) * daysWorked + bountyService / 12 + bonusService / 12) /
+      2;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.bonusVacation,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      bonusVacation: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.bonusVacation,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+  async calculateReserveChristmasBonus(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number,
+    vacationBonus: number
+  ): Promise<{ christmasBonus: object; value: number }> {
+    //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12))
+    const reserveValue =
+      ((salary / 360) * daysWorked +
+        bountyService / 12 +
+        bonusService / 12 +
+        vacationBonus / 12) /
+      2;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.bonusChristmas,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      christmasBonus: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.bonusChristmas,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+  async calculateReserveSeverancePay(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number,
+    vacationBonus: number,
+    christmasBonus: number
+  ): Promise<{ severancePay: object; value: number }> {
+    //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12)+(prima de navidad/12)))
+    const salary = Number(employment.salaryHistories[0].salary);
+    const reserveValue =
+      ((salary / 360) * daysWorked +
+        bountyService / 12 +
+        bonusService / 12 +
+        vacationBonus / 12 +
+        christmasBonus / 12) /
+      2;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.severancePay,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      severancePay: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.severancePay,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+  async calculateReserveSeverancePayInterest(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    severancePay: number
+  ): Promise<{ severancePayInterest: object; value: number }> {
+    //cesantías x12%
+    const reserveValue = severancePay * 0.12;
+    this.payrollGenerateRepository.createReserve({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      idTypeReserve: EReserveTypes.severancePayInterest,
+      value: reserveValue,
+      time: 15,
+      unitTime: "Dias",
+    });
+    return {
+      severancePayInterest: {
+        idTypePayroll: formPeriod.id || 0,
+        idEmployment: employment.id || 0,
+        idTypeReserve: EReserveTypes.severancePayInterest,
+        value: reserveValue,
+        time: 15,
+        unitTime: "Dias",
+      },
+      value: reserveValue,
+    };
+  }
+
+  async calculateHistoricalPayroll(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    daysWorked: number,
+    salary: number,
+    state: string,
+    error?: string
+  ): Promise<void> {
+    const incomes =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+    const deductions =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.totalDeductions,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+    this.payrollGenerateRepository.createHistoricalPayroll({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      workedDay: daysWorked,
+      salary: salary,
+      totalIncome: incomes,
+      totalDeduction: deductions,
+      total: Number(incomes) + Number(deductions),
+      state: state,
+      observation: error ?? "",
+    });
   }
 }

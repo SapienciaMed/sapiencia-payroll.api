@@ -130,6 +130,83 @@ export class PayrollExecutions extends PayrollCalculations {
             uvtValue,
             incomeTaxTable
           );
+          //calculos de reservas
+          //bono de servicio
+          const bountyService = await this.calculateReserveServiceBounty(
+            employment,
+            formPeriod,
+            salary,
+            15
+          );
+          //prima de servicio
+          const bonusService = await this.calculateReserveServiceBonus(
+            employment,
+            formPeriod,
+            salary,
+            15,
+            bountyService.value
+          );
+          //bono de recreación
+          const recreationBounty = await this.calculateReserveRecreationBounty(
+            employment,
+            formPeriod,
+            salary,
+            15
+          );
+          //reserva de vacaciones
+          const vacationReserve = await this.calculateReserveVationReserve(
+            employment,
+            formPeriod,
+            salary,
+            15,
+            bountyService.value,
+            bonusService.value
+          );
+          //prima de vacaciones
+          const bonusVacation = await this.calculateReserveVacationBonus(
+            employment,
+            formPeriod,
+            salary,
+            15,
+            bountyService.value,
+            bonusService.value
+          );
+          //prima de navidad
+          const bonusChristmas = await this.calculateReserveChristmasBonus(
+            employment,
+            formPeriod,
+            salary,
+            15,
+            bountyService.value,
+            bonusService.value,
+            bonusVacation.value
+          );
+          //censatias
+          const severancePay = await this.calculateReserveSeverancePay(
+            employment,
+            formPeriod,
+            15,
+            bountyService.value,
+            bonusService.value,
+            bonusVacation.value,
+            bonusChristmas.value
+          );
+          //interes de cesantias
+          const severancePayInterest =
+            await this.calculateReserveSeverancePayInterest(
+              employment,
+              formPeriod,
+              severancePay.value
+            );
+
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            salaryCalculated.days,
+            salary,
+            "Exitoso"
+          );
+
           return {
             licenceDays,
             incapacitiesDays,
@@ -142,9 +219,25 @@ export class PayrollExecutions extends PayrollCalculations {
             eventualDeductions,
             relativesDeduction,
             isrCalculated,
+            bountyService,
+            bonusService,
+            recreationBounty,
+            vacationReserve,
+            bonusVacation,
+            bonusChristmas,
+            severancePay,
+            severancePayInterest,
           };
         } catch (error) {
           // Crea historico Fallido
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            0,
+            0,
+            "Fallido",
+            error
+          );
           console.log(error);
           return {
             err: error,

@@ -1,8 +1,8 @@
 export interface IBooking {
-  id: number;
+  id?: number;
   idTypePayroll: number;
   idEmployment: number;
-  idTypeDeduction: number;
+  idTypeReserve: number;
   value: number;
   time: number;
   unitTime: string;

@@ -21,3 +21,14 @@ export enum EIncomeTypes {
   vacation = 2,
   salary = 1,
 }
+
+export enum EReserveTypes{
+bountyService = 1,	
+bonusService = 2,	
+bountyRecreation = 3,	
+vacation = 4,	
+bonusVacation = 5,	
+bonusChristmas= 6,	
+severancePay = 7,	
+severancePayInterest = 8,	
+}

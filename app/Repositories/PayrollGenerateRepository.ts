@@ -81,6 +81,7 @@ export interface IPayrollGenerateRepository {
   createCiclycalInstallment(
     ciclycalInstallment: ICyclicalDeductionInstallment
   ): Promise<ICyclicalDeductionInstallment>;
+  createReserve(reserve: IBooking): Promise<IBooking>;
   deleteIncomes(codPayroll: number): Promise<IIncome[] | null>;
   deleteDeductions(codPayroll: number): Promise<IDeduction[] | null>;
   deleteReserves(codPayroll: number): Promise<IBooking[] | null>;
@@ -324,6 +325,14 @@ export default class PayrollGenerateRepository
     );
 
     return toCreate.map((i) => i.serialize() as ICyclicalDeductionInstallment);
+  }
+
+  async createReserve(reserve: IBooking): Promise<IBooking> {
+    const toCreate = new Booking();
+
+    toCreate.fill({ ...reserve });
+    await toCreate.save();
+    return toCreate.serialize() as IBooking;
   }
   async deleteIncomes(codPayroll: number): Promise<IIncome[] | null> {
     const res = await Income.query()

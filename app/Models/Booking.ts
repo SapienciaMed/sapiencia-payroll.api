@@ -22,7 +22,7 @@ export default class Booking extends BaseModel {
   public idEmployment: number;
 
   @column({
-    columnName: "RSV_CODTDD_TIPO_RESERVA",
+    columnName: "RSV_CODTRS_TIPO_RESERVA",
     serializeAs: "idTypeReserve",
   })
   public idTypeReserve: number;

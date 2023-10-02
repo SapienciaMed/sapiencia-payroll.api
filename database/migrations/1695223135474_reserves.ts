@@ -33,7 +33,7 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Codigo del empleo (FK EMP)");
       table
-        .integer("RSV_CODTDD_TIPO_DEDUCCION")
+        .integer("RSV_CODTRS_TIPO_RESERVA")
         .unsigned()
         .references("TRS_CODIGO")
         .inTable("TRS_TIPOS_RESERVAS")

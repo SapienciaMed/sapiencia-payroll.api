@@ -199,6 +199,14 @@ export class PayrollExecutions extends PayrollCalculations {
               severancePay.value
             );
 
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            salaryCalculated.days,
+            salary,
+            "Exitoso"
+          );
+
           return {
             licenceDays,
             incapacitiesDays,
@@ -222,6 +230,14 @@ export class PayrollExecutions extends PayrollCalculations {
           };
         } catch (error) {
           // Crea historico Fallido
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            0,
+            0,
+            "Fallido",
+            error
+          );
           console.log(error);
           return {
             err: error,

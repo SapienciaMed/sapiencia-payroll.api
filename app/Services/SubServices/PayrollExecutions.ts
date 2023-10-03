@@ -196,7 +196,8 @@ export class PayrollExecutions extends PayrollCalculations {
             await this.calculateReserveSeverancePayInterest(
               employment,
               formPeriod,
-              severancePay.value
+              severancePay.value,
+              salaryCalculated.days
             );
 
           await this.calculateHistoricalPayroll(

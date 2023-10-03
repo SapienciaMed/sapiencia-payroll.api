@@ -647,7 +647,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.bountyService,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -656,7 +656,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.bountyService,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -676,7 +676,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.bonusService,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -685,7 +685,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.bonusService,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -705,7 +705,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.bountyRecreation,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -714,7 +714,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.bountyRecreation,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -738,7 +738,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.vacation,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -747,7 +747,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.vacation,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -771,7 +771,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.bonusVacation,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -780,7 +780,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.bonusVacation,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -807,7 +807,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.bonusChristmas,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -816,7 +816,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.bonusChristmas,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -845,7 +845,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.severancePay,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -854,7 +854,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.severancePay,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,
@@ -863,7 +863,8 @@ export class PayrollCalculations {
   async calculateReserveSeverancePayInterest(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
-    severancePay: number
+    severancePay: number,
+    daysWorked:number
   ): Promise<{ severancePayInterest: object; value: number }> {
     //cesantías x12%
     const reserveValue = severancePay * 0.12;
@@ -872,7 +873,7 @@ export class PayrollCalculations {
       idEmployment: employment.id || 0,
       idTypeReserve: EReserveTypes.severancePayInterest,
       value: reserveValue,
-      time: 15,
+      time: daysWorked,
       unitTime: "Dias",
     });
     return {
@@ -881,7 +882,7 @@ export class PayrollCalculations {
         idEmployment: employment.id || 0,
         idTypeReserve: EReserveTypes.severancePayInterest,
         value: reserveValue,
-        time: 15,
+        time: daysWorked,
         unitTime: "Dias",
       },
       value: reserveValue,

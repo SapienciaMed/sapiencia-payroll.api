@@ -237,7 +237,7 @@ export class PayrollExecutions extends PayrollCalculations {
             0,
             0,
             "Fallido",
-            error
+            ""
           );
           console.log(error);
           return {

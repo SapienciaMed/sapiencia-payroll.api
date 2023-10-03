@@ -392,10 +392,11 @@ export class PayrollCalculations {
       throw new Error("Tabla de la renta no encontrada");
     }
 
-    const solidarityFundValue =
-      (tableValue - range.start) * (range.value / 100);
+    const solidarityFundValue = range.value / 100;
 
-    const solidarityFundValueFixed = (solidarityFundValue * smlv).toFixed(2);
+    const solidarityFundValueFixed = (
+      solidarityFundValue * Number(affectionValue)
+    ).toFixed(2);
 
     this.payrollGenerateRepository.createDeduction({
       value: Number(solidarityFundValueFixed),
@@ -833,11 +834,11 @@ export class PayrollCalculations {
     //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12)+(prima de navidad/12)))
     const salary = Number(employment.salaryHistories[0].salary);
     const reserveValue =
-      ((salary / 360) * daysWorked +
-        bountyService / 12 +
-        bonusService / 12 +
-        vacationBonus / 12 +
-        christmasBonus / 12);
+      (salary / 360) * daysWorked +
+      bountyService / 12 +
+      bonusService / 12 +
+      vacationBonus / 12 +
+      christmasBonus / 12;
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,

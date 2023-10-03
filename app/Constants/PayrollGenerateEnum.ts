@@ -9,6 +9,7 @@ export enum EDeductionTypes {
 export enum EGroupers {
   incomeTaxGrouper = 1,
   incomeCyclicDeduction = 5,
+  totalDeductions = 6,
 }
 
 export enum EPayrollTypes {

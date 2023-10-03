@@ -270,7 +270,7 @@ export class PayrollCalculations {
     licencesDays: number,
     incapacities: number,
     vacationDays: number
-  ): Promise<object> {
+  ): Promise<{ income: object; days: number }> {
     let daysSalary = 0;
     const valueDay = salary / 30;
     if (employment.startDate < formPeriod.dateStart) {
@@ -294,7 +294,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     };
     await this.payrollGenerateRepository.createIncome(income as IIncome);
-    return { income };
+    return { income, days: daysSalary };
     // 1. buscar liciencias vigentes y que entren en planilla
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
@@ -341,6 +341,9 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     parameter: IParameter[]
   ): Promise<object> {
+    const employeeValue = Number(
+      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value || 4
+    );
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -349,11 +352,8 @@ export class PayrollCalculations {
         employment.id || 0,
         formPeriod.id
       );
-    const employeeValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value
-    );
     const employerValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value
+      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value || 12
     );
     const deduction = {
       idTypePayroll: formPeriod.id,
@@ -439,9 +439,7 @@ export class PayrollCalculations {
         if (eventualDeduction.porcentualValue) {
           return {
             value:
-              ((Number(eventualDeduction.value) / 100) *
-                Number(affectionValue)) /
-              2,
+              (Number(eventualDeduction.value) / 100) * Number(affectionValue),
             idEmployment: employment.id || 0,
             idTypePayroll: formPeriod.id || 0,
             idTypeDeduction: eventualDeduction.codDeductionType || 0,
@@ -449,7 +447,7 @@ export class PayrollCalculations {
           };
         } else {
           return {
-            value: eventualDeduction.value / 2,
+            value: eventualDeduction.value,
             idEmployment: employment.id || 0,
             idTypePayroll: formPeriod.id || 0,
             idTypeDeduction: eventualDeduction.codDeductionType || 0,
@@ -888,5 +886,40 @@ export class PayrollCalculations {
       },
       value: reserveValue,
     };
+  }
+
+  async calculateHistoricalPayroll(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    daysWorked: number,
+    salary: number,
+    state: string,
+    error?: string
+  ): Promise<void> {
+    const incomes =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+    const deductions =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.totalDeductions,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+    this.payrollGenerateRepository.createHistoricalPayroll({
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      workedDay: daysWorked,
+      salary: salary,
+      totalIncome: incomes,
+      totalDeduction: deductions,
+      total: Number(incomes) + Number(deductions),
+      state: state,
+      observation: error ?? "",
+    });
   }
 }

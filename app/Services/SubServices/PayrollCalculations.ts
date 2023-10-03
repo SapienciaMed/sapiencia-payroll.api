@@ -797,11 +797,10 @@ export class PayrollCalculations {
   ): Promise<{ christmasBonus: object; value: number }> {
     //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12))
     const reserveValue =
-      ((salary / 360) * daysWorked +
-        bountyService / 12 +
-        bonusService / 12 +
-        vacationBonus / 12) /
-      2;
+      (salary / 360) * daysWorked +
+      bountyService / 12 +
+      bonusService / 12 +
+      vacationBonus / 12;
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,
@@ -838,8 +837,7 @@ export class PayrollCalculations {
         bountyService / 12 +
         bonusService / 12 +
         vacationBonus / 12 +
-        christmasBonus / 12) /
-      2;
+        christmasBonus / 12);
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,
@@ -864,7 +862,7 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     severancePay: number,
-    daysWorked:number
+    daysWorked: number
   ): Promise<{ severancePayInterest: object; value: number }> {
     //cesantías x12%
     const reserveValue = severancePay * 0.12;

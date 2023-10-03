@@ -439,9 +439,7 @@ export class PayrollCalculations {
         if (eventualDeduction.porcentualValue) {
           return {
             value:
-              ((Number(eventualDeduction.value) / 100) *
-                Number(affectionValue)) /
-              2,
+              (Number(eventualDeduction.value) / 100) * Number(affectionValue),
             idEmployment: employment.id || 0,
             idTypePayroll: formPeriod.id || 0,
             idTypeDeduction: eventualDeduction.codDeductionType || 0,
@@ -449,7 +447,7 @@ export class PayrollCalculations {
           };
         } else {
           return {
-            value: eventualDeduction.value / 2,
+            value: eventualDeduction.value,
             idEmployment: employment.id || 0,
             idTypePayroll: formPeriod.id || 0,
             idTypeDeduction: eventualDeduction.codDeductionType || 0,

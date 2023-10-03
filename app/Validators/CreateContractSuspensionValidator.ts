@@ -7,10 +7,10 @@ export default class CreateContractSuspensionValidator {
   public schema = schema.create({
     id: schema.number.optional(),
     codEmployment: schema.number(),
-    dateStart: schema.date({ format: "yyyy/MM/dd" }),
-    dateEnd: schema.date({ format: "yyyy/MM/dd" }),
+    dateStart: schema.date(),
+    dateEnd: schema.date(),
     adjustEndDate: schema.boolean(),
-    newDateEnd: schema.date({ format: "yyyy/MM/dd" }),
+    newDateEnd: schema.date(),
     observation: schema.string([rules.maxLength(500)]),
   });
 

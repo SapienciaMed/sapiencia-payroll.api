@@ -7,7 +7,7 @@ export default class CreateSalaryIncrementValidator {
   public schema = schema.create({
     id: schema.number.optional(),
     codCharge: schema.number(),
-    effectiveDate: schema.date({ format: "yyyy/MM/dd" }),
+    effectiveDate: schema.date(),
     numberActApproval: schema.string([rules.maxLength(100)]),
     porcentualIncrement: schema.boolean(),
     incrementValue: schema.number(),

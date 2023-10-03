@@ -28,7 +28,7 @@ export default class CreateAndUpdateVacationValidator {
       schema.object().members({
         id: schema.number.optional(),
         codVacation: schema.number(),
-        dateFrom: schema.date({ format: "yyyy/MM/dd" }),
+        dateFrom: schema.date(),
         dateUntil: schema.date.optional(),
         enjoyedDays: schema.number(),
         paid: schema.boolean(),

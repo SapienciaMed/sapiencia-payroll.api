@@ -341,6 +341,9 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     parameter: IParameter[]
   ): Promise<object> {
+    const employeeValue = Number(
+      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value || 4
+    );
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -349,11 +352,8 @@ export class PayrollCalculations {
         employment.id || 0,
         formPeriod.id
       );
-    const employeeValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value
-    );
     const employerValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value
+      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value || 12
     );
     const deduction = {
       idTypePayroll: formPeriod.id,

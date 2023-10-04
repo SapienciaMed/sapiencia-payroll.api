@@ -14,6 +14,7 @@ export enum EGroupers {
 
 export enum EPayrollTypes {
   biweekly = 1,
+  monthly = 2,
 }
 
 export enum EIncomeTypes {

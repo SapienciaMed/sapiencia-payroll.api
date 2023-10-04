@@ -247,4 +247,122 @@ export class PayrollExecutions extends PayrollCalculations {
       })
     );
   }
+
+  async generatePayrollMonthly(formPeriod: IFormPeriod): Promise<any> {
+    //buscar los empelados activos de la planilla quincenal.
+
+    const employments =
+      await this.payrollGenerateRepository.getActiveEmploymentsContracts(
+        new Date(String(formPeriod.dateEnd))
+      );
+
+    // Busca los parametro o recurosos a utilizar
+
+    const incomeTaxTable =
+      await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
+    const solidarityFundTable =
+      await this.payrollGenerateRepository.getRangeByGrouper(
+        "TABLA_FONDO_SOLIDARIO"
+      );
+
+    const parameters = await this.coreService.getParametersByCodes([
+      "ISR_VALOR_UVT",
+      "PCT_PENSION_EMPLEADO",
+      "PCT_PENSION_PATRONAL",
+      "PCT_SEGURIDAD_SOCIAL_EMPLEADO",
+      "PCT_SEGURIDAD_SOCIAL_PATRONAL",
+      "SMLV",
+    ]);
+
+    const uvtValue = Number(
+      parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
+    );
+
+    const smlvValue = Number(
+      parameters.find((i) => i.id == "SMLV")?.value || 0
+    );
+    return Promise.all(
+      employments.map(async (employment) => {
+        try {
+          if (
+            !employment.salaryHistories ||
+            employment.salaryHistories.length == 0
+          ) {
+            throw new Error("Salario no ubicado");
+          }
+          const salary = Number(employment.salaryHistories[0].salary);
+
+          //1. Calcula Licencia
+          const suspensionDays = await this.calculateSuspension(
+            employment,
+            formPeriod
+          );
+
+          //4. Calcula ingreso por salario
+          const salaryCalculated = await this.calculateSalarycontractor(
+            employment,
+            formPeriod,
+            salary,
+            suspensionDays.number
+          );
+          // 7. Calcula deducciones Ciclicas
+          const ciclicalDeductions = await this.calculateCiclicalDeductions(
+            employment,
+            formPeriod
+          );
+          // 8. Calcula deducciones Eventuales
+          const eventualDeductions = await this.calculateEventualDeductions(
+            employment,
+            formPeriod
+          );
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          // Calcula Renta
+
+          // Ingresos brutos al mes
+          const isrCalculated = await this.calculateISR(
+            employment,
+            formPeriod,
+            uvtValue,
+            incomeTaxTable
+          );
+
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            salaryCalculated.days,
+            salary,
+            "Exitoso"
+          );
+
+          return {
+            suspensionDays,
+            salaryCalculated,
+            ciclicalDeductions,
+            eventualDeductions,
+            relativesDeduction,
+            isrCalculated,
+          };
+        } catch (error) {
+          // Crea historico Fallido
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            0,
+            0,
+            "Fallido",
+            ""
+          );
+          console.log(error);
+          return {
+            err: error,
+          };
+        }
+      })
+    );
+  }
 }

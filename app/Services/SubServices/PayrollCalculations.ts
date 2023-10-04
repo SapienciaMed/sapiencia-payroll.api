@@ -299,7 +299,37 @@ export class PayrollCalculations {
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
   }
+  async calculateSalarycontractor(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    suspensionDays: number
+  ) {
+    const valueDay = salary / 30;
+    let daysSalary = 0;
+    if (employment.startDate < formPeriod.dateStart) {
+      daysSalary += 30 - suspensionDays;
+    } else {
+      daysSalary +=
+        Number(
+          calculateDifferenceDays(employment.startDate, formPeriod.dateEnd)
+        ) - suspensionDays;
+    }
 
+    const income = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeIncome: EIncomeTypes.salary,
+      value: Number(valueDay * (daysSalary < 0 ? 0 : daysSalary)),
+      time: daysSalary < 0 ? 0 : daysSalary,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createIncome(income as IIncome);
+    return { income, days: daysSalary };
+    // 1. buscar liciencias vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+  }
   async calculateHealthDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
@@ -413,7 +443,53 @@ export class PayrollCalculations {
       patronalValue: 0,
     };
   }
+  async calculateSuspension(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod
+  ): Promise<{ income?: object; number: number }> {
+    let suspensionDays = 0;
 
+    if (employment.id) {
+      const suspensions =
+        await this.payrollGenerateRepository.getSuspensionPeriodByEmployment(
+          employment.id,
+          formPeriod.dateStart,
+          formPeriod.dateEnd
+        );
+
+      console.log(suspensions);
+
+      if (suspensions.length == 0) {
+        return { number: Number(suspensionDays) ?? 0 };
+      }
+
+      for (const suspension of suspensions) {
+        suspensionDays += calculateDifferenceDays(
+          suspension.dateStart,
+          suspension.dateEnd
+        );
+      }
+
+      const income = {
+        idTypePayroll: formPeriod.id,
+        idEmployment: employment.id,
+        idTypeIncome: EIncomeTypes.license,
+        value: 0,
+        time: suspensionDays,
+        unitTime: "Dias",
+      };
+      await this.payrollGenerateRepository.createIncome(income as IIncome);
+
+      return {
+        income,
+        number: Number(suspensionDays) ?? 0,
+      };
+    }
+    // 1. buscar suspensiones vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+    return { number: Number(suspensionDays) ?? 0 };
+  }
   async calculateEventualDeductions(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod

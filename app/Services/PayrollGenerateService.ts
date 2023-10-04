@@ -31,6 +31,7 @@ export default class PayrollGenerateService
     }
     const hashTableCases = {
       [EPayrollTypes.biweekly]: this.generatePayrollBiweekly(formPeriod),
+      [EPayrollTypes.monthly]: this.generatePayrollMonthly(formPeriod),
     };
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)

@@ -15,7 +15,7 @@ import { ITypesContractsRepository } from "App/Repositories/TypesContractsReposi
 import { IChargesRepository } from "App/Repositories/ChargesRepository";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
-import { IWorker } from "App/Interfaces/WorkerInterfaces";
+import { IWorker, IWorkerFilters } from "App/Interfaces/WorkerInterfaces";
 import {
   IEmployment,
   IEmploymentWorker,
@@ -34,6 +34,7 @@ import { ISalaryIncrementRepository } from "App/Repositories/SalaryIncrementRepo
 import { DateTime } from "luxon";
 
 export interface IVinculationService {
+  getWorkersByFilters(filters: IWorkerFilters): Promise<ApiResponse<IWorker[]>>;
   getVinculationPaginate(
     filters: IFilterVinculation
   ): Promise<ApiResponse<IPagingData<IGetVinculation>>>;
@@ -80,6 +81,12 @@ export default class VinculationService implements IVinculationService {
     private salaryHistoryRepository: ISalaryHistoryRepository,
     private salaryIncrementRepository: ISalaryIncrementRepository
   ) {}
+
+  async getWorkersByFilters(filters: IWorkerFilters): Promise<ApiResponse<IWorker[]>> {
+    const workers = await this.workerRepository.getWorkersByFilters(filters);
+
+    return new ApiResponse(workers, EResponseCodes.OK);
+  }
 
   async getVinculationPaginate(
     filters: IFilterVinculation

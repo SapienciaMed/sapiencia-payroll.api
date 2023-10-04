@@ -47,6 +47,7 @@ Route.group(() => {
   );
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.get("/employment/:id", "VinculationController.getEmploymentById");
+  Route.post("/worker/get-by-filters/", "VinculationController.getWorkersByFilters");
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
   Route.post("/", "VinculationController.createVinculation");
   Route.post(

@@ -1,4 +1,4 @@
-import { IWorker } from "App/Interfaces/WorkerInterfaces";
+import { IWorker, IWorkerFilters } from "App/Interfaces/WorkerInterfaces";
 import Worker from "../Models/Worker";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import {
@@ -8,6 +8,7 @@ import {
 import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IWorkerRepository {
+  getWorkersByFilters(filters: IWorkerFilters): Promise<IWorker[]>;
   getVinculation(
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>>;
@@ -26,6 +27,16 @@ export interface IWorkerRepository {
 
 export default class WorkerRepository implements IWorkerRepository {
   constructor() {}
+
+  async getWorkersByFilters(filters: IWorkerFilters): Promise<IWorker[]> {
+    const query = Worker.query().preload("employment", (q1) =>
+      q1.where("state", 1).preload("charges", (q2) => q2.preload("unit"))
+    );
+
+    if (filters.documentList) query.whereIn("numberDocument", filters.documentList);
+    const res = await query;
+    return res.map((i) => i.serialize() as IWorker);
+  }
 
   async getVinculation(
     filters: IFilterVinculation

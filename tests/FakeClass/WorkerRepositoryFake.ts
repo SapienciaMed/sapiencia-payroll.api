@@ -3,7 +3,7 @@ import {
   IFilterVinculation,
   IGetVinculation,
 } from "App/Interfaces/VinculationInterfaces";
-import { IWorker } from "App/Interfaces/WorkerInterfaces";
+import { IWorker, IWorkerFilters } from "App/Interfaces/WorkerInterfaces";
 import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
@@ -110,6 +110,13 @@ const employmentFake: IEmployment = {
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
+
+getWorkersByFilters(_filters: IWorkerFilters): Promise<IWorker[]> {
+  return new Promise((res) => {
+    res([]);
+  });
+}
+
   getActivesContractorworkers(): Promise<IWorker[]> {
     return new Promise((res) => {
       res(workerFake);

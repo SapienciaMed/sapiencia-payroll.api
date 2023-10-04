@@ -7,6 +7,7 @@ import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { IFilterContractSuspension } from "App/Interfaces/ContractSuspensionInterfaces";
 import { IFilterEmployment } from "App/Interfaces/EmploymentInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
+import { IWorkerFilters } from "App/Interfaces/WorkerInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import CreateAndUpdateWorkerValidator from "App/Validators/CreateAndUpdateVinculationValidator";
 import CreateContractSuspensionValidator from "App/Validators/CreateContractSuspensionValidator";
@@ -117,6 +118,18 @@ export default class VinculationController {
     try {
       const { id } = request.params();
       return response.send(await VinculationProvider.getVinculationById(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async getWorkersByFilters({ response, request }: HttpContextContract) {
+    try {
+      const data = request.body() as IWorkerFilters;
+
+      return response.send(await VinculationProvider.getWorkersByFilters(data));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

@@ -33,3 +33,7 @@ export interface IWorker {
   userCreate?: string;
   dateCreate?: DateTime;
 }
+
+export interface IWorkerFilters {
+  documentList?: string[]
+}

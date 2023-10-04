@@ -138,6 +138,13 @@ export default class Employment extends BaseModel {
   })
   public charges: HasMany<typeof Charge>;
 
+  @belongsTo(() => Charge, {
+    localKey: "idCharge",
+    foreignKey: "id",
+  })
+  public charge: BelongsTo<typeof Charge>;
+
+
   @hasMany(() => ReasonsForWithdrawal, {
     localKey: "idReasonRetirement",
     foreignKey: "id",

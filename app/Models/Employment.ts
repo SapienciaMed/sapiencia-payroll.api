@@ -6,6 +6,8 @@ import {
   hasMany,
   belongsTo,
   BelongsTo,
+  hasOne,
+  HasOne,
 } from "@ioc:Adonis/Lucid/Orm";
 import Charge from "./Charge";
 import TypesContract from "./TypesContract";
@@ -138,11 +140,12 @@ export default class Employment extends BaseModel {
   })
   public charges: HasMany<typeof Charge>;
 
-  @belongsTo(() => Charge, {
+
+  @hasOne(() => Charge, {
     localKey: "idCharge",
     foreignKey: "id",
   })
-  public charge: BelongsTo<typeof Charge>;
+  public charge: HasOne<typeof Charge>;
 
 
   @hasMany(() => ReasonsForWithdrawal, {

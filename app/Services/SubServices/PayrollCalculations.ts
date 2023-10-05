@@ -40,8 +40,6 @@ export class PayrollCalculations {
           formPeriod.dateEnd
         );
 
-      console.log(licences);
-
       if (licences.length == 0) {
         return { number: Number(daysLicencePaid + daysLicenceUnpaid) ?? 0 };
       }

@@ -260,10 +260,6 @@ export class PayrollExecutions extends PayrollCalculations {
 
     const incomeTaxTable =
       await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
-    const solidarityFundTable =
-      await this.payrollGenerateRepository.getRangeByGrouper(
-        "TABLA_FONDO_SOLIDARIO"
-      );
 
     const parameters = await this.coreService.getParametersByCodes([
       "ISR_VALOR_UVT",
@@ -278,9 +274,6 @@ export class PayrollExecutions extends PayrollCalculations {
       parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
     );
 
-    const smlvValue = Number(
-      parameters.find((i) => i.id == "SMLV")?.value || 0
-    );
     return Promise.all(
       employments.map(async (employment) => {
         try {

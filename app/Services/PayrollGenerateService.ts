@@ -32,6 +32,7 @@ export default class PayrollGenerateService
     const hashTableCases = {
       [EPayrollTypes.biweekly]: this.generatePayrollBiweekly,
       [EPayrollTypes.monthly]: this.generatePayrollMonthly,
+      [EPayrollTypes.vacation]: this.generatePayrollVacations,
     };
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
@@ -47,6 +48,8 @@ export default class PayrollGenerateService
       result = await this.generatePayrollBiweekly(formPeriod);
     } else if (EPayrollTypes.monthly === formPeriod.idFormType) {
       result = await this.generatePayrollMonthly(formPeriod);
+    } else if (EPayrollTypes.vacation === formPeriod.idFormType) {
+      result = await this.generatePayrollVacations(formPeriod);
     } else {
       result = {};
     }

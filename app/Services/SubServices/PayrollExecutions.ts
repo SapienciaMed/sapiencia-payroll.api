@@ -373,7 +373,7 @@ export class PayrollExecutions extends PayrollCalculations {
     //buscar los empelados activos de la planilla quincenal.
 
     const employments =
-      await this.payrollGenerateRepository.getActiveEmploymentsContracts(
+      await this.payrollGenerateRepository.getActiveEmployments(
         new Date(String(formPeriod.dateEnd))
       );
 

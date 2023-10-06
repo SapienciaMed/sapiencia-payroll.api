@@ -1026,9 +1026,8 @@ export class PayrollCalculations {
       vacationDays;
 
     const calculatedPrimaVacations =
-      (salary +
-        lastServiceBonus.value / 12 +
-        lastPrimaService.value / 12 / 360) *
+      ((salary + lastServiceBonus.value / 12 + lastPrimaService.value / 12) /
+        360) *
       180;
 
     const calculatedBonusRecreation = (salary / 30) * 2;
@@ -1038,19 +1037,19 @@ export class PayrollCalculations {
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
         idTypeIncome: EIncomeTypes.vacation,
-        value: calculatedVacations,
+        value: Math.round(calculatedVacations),
       },
       {
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
         idTypeIncome: EIncomeTypes.primaVacations,
-        value: calculatedPrimaVacations,
+        value: Math.round(calculatedPrimaVacations),
       },
       {
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
         idTypeIncome: EIncomeTypes.bonusRecreation,
-        value: calculatedBonusRecreation,
+        value: Math.round(calculatedBonusRecreation),
       },
     ] as Income[];
 

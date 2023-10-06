@@ -29,11 +29,11 @@ export default class PayrollGenerateService
     if (!formPeriod || formPeriod.state === "Autorizada") {
       return new ApiResponse({ error: "fallo" }, EResponseCodes.FAIL, "....");
     }
-    const hashTableCases = {
-      [EPayrollTypes.biweekly]: this.generatePayrollBiweekly,
-      [EPayrollTypes.monthly]: this.generatePayrollMonthly,
-      [EPayrollTypes.vacation]: this.generatePayrollVacations,
-    };
+    // const hashTableCases = {
+    //   [EPayrollTypes.biweekly]: this.generatePayrollBiweekly,
+    //   [EPayrollTypes.monthly]: this.generatePayrollMonthly,
+    //   [EPayrollTypes.vacation]: this.generatePayrollVacations,
+    // };
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
     await this.payrollGenerateRepository.deleteIncomes(id);

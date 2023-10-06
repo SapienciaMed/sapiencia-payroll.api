@@ -15,6 +15,7 @@ import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { addCalendarDays, calculateDifferenceDays } from "App/Utils/functions";
 import { DateTime } from "luxon";
+import Income from "App/Models/Income";
 
 export class PayrollCalculations {
   constructor(
@@ -331,7 +332,9 @@ export class PayrollCalculations {
   async calculateHealthDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
-    parameter: IParameter[]
+    parameter: IParameter[],
+    time?: number,
+    unitTime?: string
   ): Promise<object> {
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
@@ -355,8 +358,8 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.SocialSecurity,
       value: Number(affectionValue) * (employeeValue / 100),
       patronalValue: Number(affectionValue) * (employerValue / 100),
-      time: 15,
-      unitTime: "Dias",
+      time: time,
+      unitTime: unitTime,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
@@ -367,7 +370,9 @@ export class PayrollCalculations {
   async calculateRetirementDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
-    parameter: IParameter[]
+    parameter: IParameter[],
+    time?: number,
+    unitTime?: string
   ): Promise<object> {
     const employeeValue = Number(
       parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value || 4
@@ -389,8 +394,8 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.retirementFund,
       value: Number(affectionValue) * (employeeValue / 100),
       patronalValue: Number(affectionValue) * (employerValue / 100),
-      time: 15,
-      unitTime: "Dias",
+      time: time,
+      unitTime: unitTime,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
@@ -794,7 +799,7 @@ export class PayrollCalculations {
     };
   }
 
-  async calculateReserveVationReserve(
+  async calculateReserveVacationReserve(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number,
@@ -993,5 +998,67 @@ export class PayrollCalculations {
       state: state,
       observation: error ?? "",
     });
+  }
+
+  async calculateVacationsBonus(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    vacationDays: number
+  ): Promise<IIncome[]> {
+    const lastServiceBonus =
+      await this.payrollGenerateRepository.getLastServiceBonus(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus
+      );
+
+    const lastPrimaService =
+      await this.payrollGenerateRepository.getLastPrimaService(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.primaService
+      );
+
+    const calculatedVacations =
+      ((salary + lastServiceBonus.value / 12 + lastPrimaService.value / 12) /
+        360) *
+      vacationDays;
+
+    const calculatedPrimaVacations =
+      (salary +
+        lastServiceBonus.value / 12 +
+        lastPrimaService.value / 12 / 360) *
+      180;
+
+    const calculatedBonusRecreation = (salary / 30) * 2;
+
+    const createdIncomesVacations = [
+      {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.vacation,
+        value: calculatedVacations,
+      },
+      {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.primaVacations,
+        value: calculatedPrimaVacations,
+      },
+      {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.bonusRecreation,
+        value: calculatedBonusRecreation,
+      },
+    ] as Income[];
+
+    const vacationsBonus =
+      await this.payrollGenerateRepository.createManyIncome(
+        createdIncomesVacations
+      );
+
+    return vacationsBonus;
   }
 }

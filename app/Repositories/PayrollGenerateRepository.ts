@@ -81,6 +81,7 @@ export interface IPayrollGenerateRepository {
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   getDeductionTypesByName(name: string): Promise<IDeductionType>;
   createIncome(income: IIncome): Promise<IIncome>;
+  createManyIncome(income: IIncome[]): Promise<IIncome[]>;
   createDeduction(deduction: IDeduction): Promise<IDeduction>;
   createManyDeduction(deductions: IDeduction[]): Promise<IDeduction[]>;
   createCiclycalInstallmentDeduction(
@@ -104,6 +105,16 @@ export interface IPayrollGenerateRepository {
   ): Promise<IIncapcityDaysProcessed[] | null>;
   createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
   getRelatives(workerId: number): Promise<IRelative[]>;
+  getLastServiceBonus(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome>;
+  getLastPrimaService(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -334,6 +345,12 @@ export default class PayrollGenerateRepository
     return toCreate.serialize() as IIncome;
   }
 
+  async createManyIncome(incomes: IIncome[]): Promise<IIncome[]> {
+    const toCreate = await Income.createMany(incomes);
+
+    return toCreate.map((i) => i.serialize() as IIncome);
+  }
+
   async createDeduction(deduction: IDeduction): Promise<IDeduction> {
     const toCreate = new Deduction();
 
@@ -442,5 +459,33 @@ export default class PayrollGenerateRepository
     const Relatives = await Relative.query().where("workerId", workerId);
 
     return Relatives.map((i) => i.serialize() as IRelative);
+  }
+
+  async getLastServiceBonus(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome> {
+    const lastServiceBonus = await Income.query()
+      .where("ING_CODPPL_PLANILLA", codFormPeriod)
+      .where("ING_CODEMP_EMPLEO", codEmployment)
+      .where("ING_CODTIG_TIPO_INGRESO", typeIncome)
+      .orderBy("ING_CODIGO", "desc");
+
+    return lastServiceBonus[0].serialize() as IIncome;
+  }
+
+  async getLastPrimaService(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome> {
+    const lastPrimaService = await Income.query()
+      .where("ING_CODPPL_PLANILLA", codFormPeriod)
+      .where("ING_CODEMP_EMPLEO", codEmployment)
+      .where("ING_CODTIG_TIPO_INGRESO", typeIncome)
+      .orderBy("ING_CODIGO", "desc");
+
+    return lastPrimaService[0].serialize() as IIncome;
   }
 }

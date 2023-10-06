@@ -455,8 +455,6 @@ export class PayrollCalculations {
           formPeriod.dateEnd
         );
 
-      console.log(suspensions);
-
       if (suspensions.length == 0) {
         return { number: Number(suspensionDays) ?? 0 };
       }
@@ -476,7 +474,7 @@ export class PayrollCalculations {
         time: suspensionDays,
         unitTime: "Dias",
       };
-      await this.payrollGenerateRepository.createIncome(income as IIncome);
+      // await this.payrollGenerateRepository.createIncome(income as IIncome);
 
       return {
         income,

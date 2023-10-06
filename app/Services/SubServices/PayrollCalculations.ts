@@ -329,6 +329,27 @@ export class PayrollCalculations {
     // 2. si no exitiste return
     // 3. Calcula e inserta en la tabla final de Ingresos
   }
+
+  async calculateServiceBounty(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    percentageBounty: number,
+    days: number
+  ): Promise<Object> {
+    const bountyValue = salary * (percentageBounty / 100);
+    const income = {
+      idTypePayroll: formPeriod.id,
+      idEmployment: employment.id,
+      idTypeIncome: EIncomeTypes.serviceBonus,
+      value: bountyValue,
+      time: days,
+      unitTime: "Dias",
+    };
+    await this.payrollGenerateRepository.createIncome(income as IIncome);
+    return { income };
+  }
+
   async calculateHealthDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,

@@ -259,7 +259,7 @@ export class PayrollExecutions extends PayrollCalculations {
   }
 
   async generatePayrollMonthly(formPeriod: IFormPeriod): Promise<any> {
-    //buscar los empelados activos de la planilla quincenal.
+    //buscar los empelados activos de la planilla Mensual(contratista).
 
     const employments =
       await this.payrollGenerateRepository.getActiveEmploymentsContracts(
@@ -373,7 +373,7 @@ export class PayrollExecutions extends PayrollCalculations {
     //buscar los empelados activos de la planilla quincenal.
 
     const employments =
-      await this.payrollGenerateRepository.getActiveEmploymentsContracts(
+      await this.payrollGenerateRepository.getActiveEmployments(
         new Date(String(formPeriod.dateEnd))
       );
 
@@ -477,6 +477,139 @@ export class PayrollExecutions extends PayrollCalculations {
           return {
             vacationDays,
             calculateVacationsBonus,
+            calculatedDeductionHealth,
+            calculatedDeductionPension,
+            calculatedSolidarityFund,
+            deductionsCiclical,
+            deductionEvetual,
+            isrCalculated,
+          };
+        } catch (error) {
+          // Crea historico Fallido
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            0,
+            0,
+            "Fallido",
+            ""
+          );
+          console.log(error);
+          return {
+            err: error,
+          };
+        }
+      })
+    );
+  }
+
+  async generatePayrollBountyService(formPeriod: IFormPeriod): Promise<any> {
+    //buscar los empelados activos de la planilla quincenal.
+
+    const employments =
+      await this.payrollGenerateRepository.getActiveEmployments(
+        new Date(String(formPeriod.dateEnd))
+      );
+
+    // Busca los parametro o recurosos a utilizar
+
+    const incomeTaxTable =
+      await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
+
+    const solidarityFundTable =
+      await this.payrollGenerateRepository.getRangeByGrouper(
+        "TABLA_FONDO_SOLIDARIO"
+      );
+
+    const parameters = await this.coreService.getParametersByCodes([
+      "ISR_VALOR_UVT",
+      "PCT_PENSION_EMPLEADO",
+      "PCT_PENSION_PATRONAL",
+      "PCT_SEGURIDAD_SOCIAL_EMPLEADO",
+      "PCT_SEGURIDAD_SOCIAL_PATRONAL",
+      "SMLV",
+      "SERVICE_BOUNTY",
+    ]);
+
+    const uvtValue = Number(
+      parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
+    );
+
+    const smlvValue = Number(
+      parameters.find((i) => i.id == "SMLV")?.value || 0
+    );
+
+    const serviceBountyPercentage = Number(
+      parameters.find((i) => i.id == "SERVICE_BOUNTY")?.value || 0
+    );
+
+    return Promise.all(
+      employments.map(async (employment) => {
+        try {
+          if (
+            !employment.salaryHistories ||
+            employment.salaryHistories.length == 0
+          ) {
+            throw new Error("Salario no ubicado");
+          }
+          const salary = Number(employment.salaryHistories[0].salary);
+
+          //1. Calcula bonificacion servicio
+          const calculateServiceBounty = await this.calculateServiceBounty(
+            employment,
+            formPeriod,
+            salary,
+            serviceBountyPercentage,
+            360
+          );
+
+          //3. Calcula deduccion salud
+          const calculatedDeductionHealth = await this.calculateHealthDeduction(
+            employment,
+            formPeriod,
+            parameters
+          );
+
+          // 4. Calcula deduccion de pension
+          const calculatedDeductionPension =
+            await this.calculateRetirementDeduction(
+              employment,
+              formPeriod,
+              parameters
+            );
+
+          //5. Fondo solidaridad deduccion
+          const calculatedSolidarityFund = await this.calculateSolidarityFund(
+            employment,
+            formPeriod,
+            smlvValue,
+            solidarityFundTable
+          );
+
+          // 6. Deducciones ciclicas
+          const deductionsCiclical = await this.calculateCiclicalDeductions(
+            employment,
+            formPeriod
+          );
+
+          // 7. Deducciones eventuales
+          const deductionEvetual = await this.calculateEventualDeductions(
+            employment,
+            formPeriod
+          );
+
+          // Calcula Renta
+
+          // Ingresos brutos al mes
+          const isrCalculated = await this.calculateISR(
+            employment,
+            formPeriod,
+            uvtValue,
+            incomeTaxTable
+          );
+
+          return {
+            calculateServiceBounty,
             calculatedDeductionHealth,
             calculatedDeductionPension,
             calculatedSolidarityFund,

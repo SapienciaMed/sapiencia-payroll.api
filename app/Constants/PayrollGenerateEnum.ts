@@ -16,6 +16,7 @@ export enum EPayrollTypes {
   biweekly = 1,
   monthly = 2,
   vacation = 8,
+  serviceBounty=10
 }
 
 export enum EIncomeTypes {

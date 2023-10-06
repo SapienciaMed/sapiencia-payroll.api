@@ -1,4 +1,5 @@
 import { IBooking } from "App/Interfaces/BookingInterfaces";
+import { IcontractSuspension } from "App/Interfaces/ContractSuspensionInterfaces";
 import { ICyclicalDeductionInstallment } from "App/Interfaces/CyclicalDeductionInstallmentInterface";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
@@ -19,6 +20,7 @@ import { IRelative } from "App/Interfaces/RelativeInterfaces";
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
 import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
+import ContractSuspension from "App/Models/ContractSuspension";
 import CyclicalDeductionInstallment from "App/Models/CyclicalDeductionInstallment";
 import Deduction from "App/Models/Deduction";
 import DeductionType from "App/Models/DeductionType";
@@ -40,6 +42,7 @@ import { DateTime } from "luxon";
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
   getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
+  getActiveEmploymentsContracts(dateStart: Date): Promise<IEmploymentResult[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
   getMonthlyValuePerGrouper(
     gruperId: number,
@@ -53,6 +56,11 @@ export interface IPayrollGenerateRepository {
     dateStart: DateTime,
     dateEnd: DateTime
   ): Promise<ILicenceResult[]>;
+  getSuspensionPeriodByEmployment(
+    idEmployement: number,
+    dateStart: DateTime,
+    dateEnd: DateTime
+  ): Promise<IcontractSuspension[]>;
   getIncapacitiesPeriodByEmployment(
     idEmployement: number,
     dateEnd: DateTime
@@ -73,6 +81,7 @@ export interface IPayrollGenerateRepository {
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   getDeductionTypesByName(name: string): Promise<IDeductionType>;
   createIncome(income: IIncome): Promise<IIncome>;
+  createManyIncome(income: IIncome[]): Promise<IIncome[]>;
   createDeduction(deduction: IDeduction): Promise<IDeduction>;
   createManyDeduction(deductions: IDeduction[]): Promise<IDeduction[]>;
   createCiclycalInstallmentDeduction(
@@ -96,6 +105,16 @@ export interface IPayrollGenerateRepository {
   ): Promise<IIncapcityDaysProcessed[] | null>;
   createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
   getRelatives(workerId: number): Promise<IRelative[]>;
+  getLastServiceBonus(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome>;
+  getLastPrimaService(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -188,6 +207,24 @@ export default class PayrollGenerateRepository
     return res.map((i) => i.serialize() as IEmploymentResult);
   }
 
+  async getActiveEmploymentsContracts(
+    dateStart: Date
+  ): Promise<IEmploymentResult[]> {
+    const res = await Employment.query()
+      .preload("worker")
+      .preload("charges")
+      .preload("salaryHistories", (query) => {
+        query.andWhere("validity", true);
+      })
+      .whereHas("typesContracts", (contractsQuery) => {
+        contractsQuery.where("temporary", true);
+      })
+      .where("startDate", "<=", dateStart)
+      .andWhere("state", "=", true);
+
+    return res.map((i) => i.serialize() as IEmploymentResult);
+  }
+
   async getByIdGrouper(id: number): Promise<IGrouper> {
     const res = await Grouper.findByOrFail("id", id);
 
@@ -205,6 +242,18 @@ export default class PayrollGenerateRepository
       .whereBetween("dateStart", [dateStart.toString(), dateEnd.toString()])
       .whereBetween("dateEnd", [dateStart.toString(), dateEnd.toString()]);
     return res.map((i) => i.serialize() as ILicenceResult);
+  }
+
+  async getSuspensionPeriodByEmployment(
+    idEmployement: number,
+    dateStart: DateTime,
+    dateEnd: DateTime
+  ): Promise<IcontractSuspension[]> {
+    const res = await ContractSuspension.query()
+      .where("codEmployment", idEmployement)
+      .whereBetween("dateStart", [dateStart.toString(), dateEnd.toString()])
+      .whereBetween("dateEnd", [dateStart.toString(), dateEnd.toString()]);
+    return res.map((i) => i.serialize() as IcontractSuspension);
   }
   async getIncapacitiesPeriodByEmployment(
     idEmployement: number,
@@ -294,6 +343,12 @@ export default class PayrollGenerateRepository
     toCreate.fill({ ...income });
     await toCreate.save();
     return toCreate.serialize() as IIncome;
+  }
+
+  async createManyIncome(incomes: IIncome[]): Promise<IIncome[]> {
+    const toCreate = await Income.createMany(incomes);
+
+    return toCreate.map((i) => i.serialize() as IIncome);
   }
 
   async createDeduction(deduction: IDeduction): Promise<IDeduction> {
@@ -404,5 +459,33 @@ export default class PayrollGenerateRepository
     const Relatives = await Relative.query().where("workerId", workerId);
 
     return Relatives.map((i) => i.serialize() as IRelative);
+  }
+
+  async getLastServiceBonus(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome> {
+    const lastServiceBonus = await Income.query()
+      .where("ING_CODPPL_PLANILLA", codFormPeriod)
+      .where("ING_CODEMP_EMPLEO", codEmployment)
+      .where("ING_CODTIG_TIPO_INGRESO", typeIncome)
+      .orderBy("ING_CODIGO", "desc");
+
+    return lastServiceBonus[0].serialize() as IIncome;
+  }
+
+  async getLastPrimaService(
+    codFormPeriod: number,
+    codEmployment: number,
+    typeIncome: number
+  ): Promise<IIncome> {
+    const lastPrimaService = await Income.query()
+      .where("ING_CODPPL_PLANILLA", codFormPeriod)
+      .where("ING_CODEMP_EMPLEO", codEmployment)
+      .where("ING_CODTIG_TIPO_INGRESO", typeIncome)
+      .orderBy("ING_CODIGO", "desc");
+
+    return lastPrimaService[0].serialize() as IIncome;
   }
 }

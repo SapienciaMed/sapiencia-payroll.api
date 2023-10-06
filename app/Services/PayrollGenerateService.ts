@@ -30,7 +30,9 @@ export default class PayrollGenerateService
       return new ApiResponse({ error: "fallo" }, EResponseCodes.FAIL, "....");
     }
     const hashTableCases = {
-      [EPayrollTypes.biweekly]: this.generatePayrollBiweekly(formPeriod),
+      [EPayrollTypes.biweekly]: this.generatePayrollBiweekly,
+      [EPayrollTypes.monthly]: this.generatePayrollMonthly,
+      [EPayrollTypes.vacation]: this.generatePayrollVacations,
     };
 
     // 2. Elimina todos los elemento calculados (Historico, Reservas, Ingresos ...)
@@ -40,8 +42,17 @@ export default class PayrollGenerateService
     await this.payrollGenerateRepository.deleteIncapacityProcessedDays(id);
     await this.payrollGenerateRepository.deleteHistoryPayroll(id);
 
-    result = await hashTableCases[formPeriod.idFormType];
+    //result = await hashTableCases[formPeriod.idFormType](formPeriod);
     // 3. Genera la planilla segun el tipo
+    if (EPayrollTypes.biweekly === formPeriod.idFormType) {
+      result = await this.generatePayrollBiweekly(formPeriod);
+    } else if (EPayrollTypes.monthly === formPeriod.idFormType) {
+      result = await this.generatePayrollMonthly(formPeriod);
+    } else if (EPayrollTypes.vacation === formPeriod.idFormType) {
+      result = await this.generatePayrollVacations(formPeriod);
+    } else {
+      result = {};
+    }
     // switch (formPeriod.idFormType) {
     //   case EPayrollTypes.biweekly: // Planilla Quincenal
     //     result = await this.generatePayrollBiweekly(formPeriod);

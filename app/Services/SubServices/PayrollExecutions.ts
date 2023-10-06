@@ -563,14 +563,14 @@ export class PayrollExecutions extends PayrollCalculations {
             360
           );
 
-          //3. Calcula deduccion salud
+          //2. Calcula deduccion salud
           const calculatedDeductionHealth = await this.calculateHealthDeduction(
             employment,
             formPeriod,
             parameters
           );
 
-          // 4. Calcula deduccion de pension
+          // 3. Calcula deduccion de pension
           const calculatedDeductionPension =
             await this.calculateRetirementDeduction(
               employment,
@@ -578,7 +578,7 @@ export class PayrollExecutions extends PayrollCalculations {
               parameters
             );
 
-          //5. Fondo solidaridad deduccion
+          //4. Fondo solidaridad deduccion
           const calculatedSolidarityFund = await this.calculateSolidarityFund(
             employment,
             formPeriod,
@@ -586,7 +586,7 @@ export class PayrollExecutions extends PayrollCalculations {
             solidarityFundTable
           );
 
-          // 6. Deducciones ciclicas
+          // 5. Deducciones ciclicas
           const deductionsCiclical = await this.calculateCiclicalDeductions(
             employment,
             formPeriod

@@ -8,7 +8,7 @@ import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import { IGetIncapacity } from "App/Interfaces/IncapacityInterfaces";
 import { IIncapcityDaysProcessed } from "App/Interfaces/IncapcityDaysProcessedInterfaces";
-import { IIncome } from "App/Interfaces/IncomeInterfaces";
+import { IIncome, IIncomePayroll } from "App/Interfaces/IncomeInterfaces";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
 import {
@@ -78,6 +78,10 @@ export interface IPayrollGenerateRepository {
     idEmployement: number
   ): Promise<IManualCiclicalDeduction[]>;
   getSalarybyEmployment(idEmployement: number): Promise<ISalaryHistory>;
+  getIncomeByTypeAndEmployment(
+    idEmployment: number,
+    idTypeIncome: number
+  ): Promise<IIncomePayroll[]>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   getDeductionTypesByName(name: string): Promise<IDeductionType>;
   createIncome(income: IIncome): Promise<IIncome>;
@@ -103,6 +107,9 @@ export interface IPayrollGenerateRepository {
   deleteIncapacityProcessedDays(
     codPayroll: number
   ): Promise<IIncapcityDaysProcessed[] | null>;
+  deleteCyclicalDeductionInstallment(
+    codPayroll: number
+  ): Promise<ICyclicalDeductionInstallment[] | null>;
   createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
   getRelatives(workerId: number): Promise<IRelative[]>;
   getLastServiceBonus(
@@ -326,11 +333,22 @@ export default class PayrollGenerateRepository
     return res?.serialize() as ISalaryHistory;
   }
 
+  async getIncomeByTypeAndEmployment(
+    idEmployment: number,
+    idTypeIncome: number
+  ): Promise<IIncomePayroll[]> {
+    const res = await Income.query()
+      .where("idEmployment", idEmployment)
+      .andWhere("idTypeIncome", idTypeIncome)
+      .preload("formPeriod");
+    return res.map((i) => i.serialize() as IIncomePayroll);
+  }
   async getIncomesTypesByName(name: string): Promise<IIncomeType> {
     const res = await IncomeType.query().where("name", name).first();
 
     return res?.serialize() as IIncomeType;
   }
+
   async getDeductionTypesByName(name: string): Promise<IDeductionType> {
     const res = await DeductionType.query().where("name", name).first();
 
@@ -446,6 +464,19 @@ export default class PayrollGenerateRepository
     codPayroll: number
   ): Promise<IIncapcityDaysProcessed[] | null> {
     const res = await IncapacityDaysProcessed.query()
+      .where("codFormPeriod", codPayroll)
+      .delete();
+
+    if (!res) {
+      return null;
+    }
+    return res;
+  }
+
+  async deleteCyclicalDeductionInstallment(
+    codPayroll: number
+  ): Promise<ICyclicalDeductionInstallment[] | null> {
+    const res = await CyclicalDeductionInstallment.query()
       .where("codFormPeriod", codPayroll)
       .delete();
 

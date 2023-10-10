@@ -65,7 +65,6 @@ export default class PayrollGenerateService
     //   default:
     //     break;
     // }
-    console.log(result);
     return new ApiResponse(result, EResponseCodes.OK);
   }
 }

@@ -348,13 +348,15 @@ export class PayrollCalculations {
     if (periodDays < 365 || !incomePrevious) {
       return {};
     }
-
-    const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
+    if(incomePrevious.length > 0){
+      const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
       .formPeriod.dateStart;
-
-    if (calculateDifferenceDays(lastIncomeDate) < 365) {
-      return {};
+      
+      if (calculateDifferenceDays(lastIncomeDate) < 365) {
+        return {};
+      }
     }
+
 
     const bountyValue = salary * (percentageBounty / 100);
 
@@ -441,6 +443,10 @@ export class PayrollCalculations {
     time?: number,
     unitTime?: string
   ): Promise<object> {
+    const employeeValue = Number(
+      parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_EMPLEADO")
+        ?.value
+    );
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -449,10 +455,6 @@ export class PayrollCalculations {
         employment.id || 0,
         formPeriod.id
       );
-    const employeeValue = Number(
-      parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_EMPLEADO")
-        ?.value
-    );
     const employerValue = Number(
       parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_PATRONAL")
         ?.value
@@ -463,8 +465,8 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.SocialSecurity,
       value: Number(affectionValue) * (employeeValue / 100),
       patronalValue: Number(affectionValue) * (employerValue / 100),
-      time: time,
-      unitTime: unitTime,
+      time: time ?? null,
+      unitTime: unitTime ?? null,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
@@ -480,7 +482,7 @@ export class PayrollCalculations {
     unitTime?: string
   ): Promise<object> {
     const employeeValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value || 4
+      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value ?? 4
     );
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
@@ -491,7 +493,7 @@ export class PayrollCalculations {
         formPeriod.id
       );
     const employerValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value || 12
+      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value ?? 12
     );
     const deduction = {
       idTypePayroll: formPeriod.id,
@@ -499,8 +501,8 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.retirementFund,
       value: Number(affectionValue) * (employeeValue / 100),
       patronalValue: Number(affectionValue) * (employerValue / 100),
-      time: time,
-      unitTime: unitTime,
+      time: time ?? null,
+      unitTime: unitTime ?? null,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
@@ -523,7 +525,7 @@ export class PayrollCalculations {
     const tableValue = Number(affectionValue) / smlv;
 
     const range = solidarityFundTable.find(
-      (i) => tableValue > i.start && tableValue <= i.end
+      (i) => tableValue >= i.start && tableValue <= i.end
     );
 
     if (!range) {
@@ -536,7 +538,7 @@ export class PayrollCalculations {
       solidarityFundValue * Number(affectionValue)
     ).toFixed(2);
 
-    this.payrollGenerateRepository.createDeduction({
+    await this.payrollGenerateRepository.createDeduction({
       value: Number(solidarityFundValueFixed),
       idEmployment: employment.id || 0,
       idTypePayroll: formPeriod.id || 0,
@@ -791,7 +793,7 @@ export class PayrollCalculations {
     const tableValue = affectionValue / uvtValue;
 
     const range = incomeTaxTable.find(
-      (i) => tableValue > i.start && tableValue <= i.end
+      (i) => tableValue >= i.start && tableValue <= i.end
     );
 
     if (!range) {

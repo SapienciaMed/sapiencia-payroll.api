@@ -381,26 +381,21 @@ export class PayrollCalculations {
     salary: number
   ): Promise<{ severancePayInterest: object; value: number }> {
     const serviceBounty =
-      await this.payrollGenerateRepository.getLastServiceBonus(
-        formPeriod.id ?? 0,
+      await this.payrollGenerateRepository.getLastIncomeType(
         employment.id ?? 0,
         EIncomeTypes.serviceBonus
       );
-    const primaService =
-      await this.payrollGenerateRepository.getLastPrimaService(
-        formPeriod.id ?? 0,
-        employment.id ?? 0,
-        EIncomeTypes.primaService
-      );
+    const primaService = await this.payrollGenerateRepository.getLastIncomeType(
+      employment.id ?? 0,
+      EIncomeTypes.primaService
+    );
     const christmasBonus =
-      await this.payrollGenerateRepository.getLastServiceBonus(
-        formPeriod.id ?? 0,
+      await this.payrollGenerateRepository.getLastIncomeType(
         employment.id ?? 0,
         EIncomeTypes.primaChristmas
       );
     const vacationBonus =
-      await this.payrollGenerateRepository.getLastPrimaService(
-        formPeriod.id ?? 0,
+      await this.payrollGenerateRepository.getLastIncomeType(
         employment.id ?? 0,
         EIncomeTypes.primaVacations
       );
@@ -1115,14 +1110,12 @@ export class PayrollCalculations {
   ): Promise<IIncome[]> {
     const lastServiceBonus =
       await this.payrollGenerateRepository.getLastIncomeType(
-        formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.serviceBonus
       );
 
     const lastPrimaService =
       await this.payrollGenerateRepository.getLastIncomeType(
-        formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.primaService
       );
@@ -1182,7 +1175,6 @@ export class PayrollCalculations {
 
     const lastServiceBonus =
       await this.payrollGenerateRepository.getLastIncomeType(
-        formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.serviceBonus
       );
@@ -1194,12 +1186,12 @@ export class PayrollCalculations {
       );
 
       const calculatePrimaService =
-        (salary + lastServiceBonus.value / 12 / 720) * daysLiquidate;
+        ((salary + lastServiceBonus.value / 12) / 720) * daysLiquidate;
 
       const primaService = await this.payrollGenerateRepository.createIncome({
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
-        idTypeIncome: EIncomeTypes.incapacity,
+        idTypeIncome: EIncomeTypes.primaService,
         value: Math.round(calculatePrimaService),
         time: daysLiquidate,
         unitTime: "Dias",
@@ -1208,12 +1200,12 @@ export class PayrollCalculations {
       return primaService;
     } else {
       const calculatePrimaService =
-        (salary + lastServiceBonus.value / 12 / 720) * 360;
+        ((salary + lastServiceBonus.value / 12) / 720) * 360;
 
       const primaService = await this.payrollGenerateRepository.createIncome({
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
-        idTypeIncome: EIncomeTypes.incapacity,
+        idTypeIncome: EIncomeTypes.primaService,
         value: Math.round(calculatePrimaService),
         time: 360,
         unitTime: "Dias",
@@ -1237,21 +1229,18 @@ export class PayrollCalculations {
 
     const lastServiceBonus =
       await this.payrollGenerateRepository.getLastIncomeType(
-        formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.serviceBonus
       );
 
     const lastPrimaService =
       await this.payrollGenerateRepository.getLastIncomeType(
-        formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.primaService
       );
 
     const lastPrimaVacations =
       await this.payrollGenerateRepository.getLastIncomeType(
-        formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.primaVacations
       );

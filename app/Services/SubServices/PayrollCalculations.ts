@@ -348,13 +348,15 @@ export class PayrollCalculations {
     if (periodDays < 365 || !incomePrevious) {
       return {};
     }
-
-    const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
+    if(incomePrevious.length > 0){
+      const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
       .formPeriod.dateStart;
-
-    if (calculateDifferenceDays(lastIncomeDate) < 365) {
-      return {};
+      
+      if (calculateDifferenceDays(lastIncomeDate) < 365) {
+        return {};
+      }
     }
+
 
     const bountyValue = salary * (percentageBounty / 100);
 
@@ -441,6 +443,10 @@ export class PayrollCalculations {
     time?: number,
     unitTime?: string
   ): Promise<object> {
+    const employeeValue = Number(
+      parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_EMPLEADO")
+        ?.value
+    );
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -449,10 +455,6 @@ export class PayrollCalculations {
         employment.id || 0,
         formPeriod.id
       );
-    const employeeValue = Number(
-      parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_EMPLEADO")
-        ?.value
-    );
     const employerValue = Number(
       parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_PATRONAL")
         ?.value
@@ -463,8 +465,8 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.SocialSecurity,
       value: Number(affectionValue) * (employeeValue / 100),
       patronalValue: Number(affectionValue) * (employerValue / 100),
-      time: time,
-      unitTime: unitTime,
+      time: time ?? null,
+      unitTime: unitTime ?? null,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
@@ -480,7 +482,7 @@ export class PayrollCalculations {
     unitTime?: string
   ): Promise<object> {
     const employeeValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value || 4
+      parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value ?? 4
     );
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
@@ -491,7 +493,7 @@ export class PayrollCalculations {
         formPeriod.id
       );
     const employerValue = Number(
-      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value || 12
+      parameter.find((item) => item.id == "PCT_PENSION_PATRONAL")?.value ?? 12
     );
     const deduction = {
       idTypePayroll: formPeriod.id,
@@ -499,8 +501,8 @@ export class PayrollCalculations {
       idTypeDeduction: EDeductionTypes.retirementFund,
       value: Number(affectionValue) * (employeeValue / 100),
       patronalValue: Number(affectionValue) * (employerValue / 100),
-      time: time,
-      unitTime: unitTime,
+      time: time ?? null,
+      unitTime: unitTime ?? null,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
@@ -523,7 +525,7 @@ export class PayrollCalculations {
     const tableValue = Number(affectionValue) / smlv;
 
     const range = solidarityFundTable.find(
-      (i) => tableValue > i.start && tableValue <= i.end
+      (i) => tableValue >= i.start && tableValue <= i.end
     );
 
     if (!range) {
@@ -536,7 +538,7 @@ export class PayrollCalculations {
       solidarityFundValue * Number(affectionValue)
     ).toFixed(2);
 
-    this.payrollGenerateRepository.createDeduction({
+    await this.payrollGenerateRepository.createDeduction({
       value: Number(solidarityFundValueFixed),
       idEmployment: employment.id || 0,
       idTypePayroll: formPeriod.id || 0,
@@ -791,7 +793,7 @@ export class PayrollCalculations {
     const tableValue = affectionValue / uvtValue;
 
     const range = incomeTaxTable.find(
-      (i) => tableValue > i.start && tableValue <= i.end
+      (i) => tableValue >= i.start && tableValue <= i.end
     );
 
     if (!range) {
@@ -1112,14 +1114,14 @@ export class PayrollCalculations {
     vacationDays: number
   ): Promise<IIncome[]> {
     const lastServiceBonus =
-      await this.payrollGenerateRepository.getLastServiceBonus(
+      await this.payrollGenerateRepository.getLastIncomeType(
         formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.serviceBonus
       );
 
     const lastPrimaService =
-      await this.payrollGenerateRepository.getLastPrimaService(
+      await this.payrollGenerateRepository.getLastIncomeType(
         formPeriod.id ?? 0,
         employment.id ?? 0,
         EIncomeTypes.primaService
@@ -1164,5 +1166,139 @@ export class PayrollCalculations {
       );
 
     return vacationsBonus;
+  }
+
+  async calculatePrimaServices(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<IIncome> {
+    const currentYear = new Date().getFullYear();
+    const previousYear = currentYear - 1;
+
+    const dateVinculation = new Date(String(employment.startDate));
+
+    const oneJulyPreviusYear = new Date(previousYear, 6, 1);
+
+    const lastServiceBonus =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus
+      );
+
+    if (dateVinculation > oneJulyPreviusYear) {
+      const daysLiquidate = calculateDifferenceDays(
+        dateVinculation,
+        new Date(currentYear, 5, 30)
+      );
+
+      const calculatePrimaService =
+        (salary + lastServiceBonus.value / 12 / 720) * daysLiquidate;
+
+      const primaService = await this.payrollGenerateRepository.createIncome({
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.incapacity,
+        value: Math.round(calculatePrimaService),
+        time: daysLiquidate,
+        unitTime: "Dias",
+      });
+
+      return primaService;
+    } else {
+      const calculatePrimaService =
+        (salary + lastServiceBonus.value / 12 / 720) * 360;
+
+      const primaService = await this.payrollGenerateRepository.createIncome({
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.incapacity,
+        value: Math.round(calculatePrimaService),
+        time: 360,
+        unitTime: "Dias",
+      });
+
+      return primaService;
+    }
+  }
+
+  async calculatePrimaChristmas(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<IIncome> {
+    const currentYear = new Date().getFullYear();
+    const previousYear = currentYear - 1;
+
+    const dateVinculation = new Date(String(employment.startDate));
+
+    const oneDecemberPreviusYear = new Date(previousYear, 11, 1);
+
+    const lastServiceBonus =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus
+      );
+
+    const lastPrimaService =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.primaService
+      );
+
+    const lastPrimaVacations =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.primaVacations
+      );
+
+    if (dateVinculation > oneDecemberPreviusYear) {
+      const daysLiquidate = calculateDifferenceDays(
+        dateVinculation,
+        new Date(currentYear, 10, 30)
+      );
+
+      const calculatePrimaChristmas =
+        ((salary +
+          lastServiceBonus.value / 12 +
+          lastPrimaService.value / 12 +
+          lastPrimaVacations.value / 12) /
+          360) *
+        daysLiquidate;
+
+      const primaService = await this.payrollGenerateRepository.createIncome({
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.incapacity,
+        value: Math.round(calculatePrimaChristmas),
+        time: daysLiquidate,
+        unitTime: "Dias",
+      });
+
+      return primaService;
+    } else {
+      const calculatePrimaChristmas =
+        ((salary +
+          lastServiceBonus.value / 12 +
+          lastPrimaService.value / 12 +
+          lastPrimaVacations.value / 12) /
+          360) *
+        360;
+
+      const primaService = await this.payrollGenerateRepository.createIncome({
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.incapacity,
+        value: Math.round(calculatePrimaChristmas),
+        time: 360,
+        unitTime: "Dias",
+      });
+
+      return primaService;
+    }
   }
 }

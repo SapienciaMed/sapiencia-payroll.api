@@ -42,6 +42,7 @@ export default class PayrollGenerateService
     await this.payrollGenerateRepository.deleteReserves(id);
     await this.payrollGenerateRepository.deleteIncapacityProcessedDays(id);
     await this.payrollGenerateRepository.deleteHistoryPayroll(id);
+    await this.payrollGenerateRepository.deleteCyclicalDeductionInstallment(id);
 
     //result = await hashTableCases[formPeriod.idFormType](formPeriod);
     // 3. Genera la planilla segun el tipo
@@ -52,7 +53,7 @@ export default class PayrollGenerateService
     } else if (EPayrollTypes.vacation === formPeriod.idFormType) {
       result = await this.generatePayrollVacations(formPeriod);
     } else if (EPayrollTypes.serviceBounty === formPeriod.idFormType) {
-      result = await this.generatePayrollVacations(formPeriod);
+      result = await this.generatePayrollBountyService(formPeriod);
     } else {
       result = {};
     }

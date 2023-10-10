@@ -1,3 +1,5 @@
+import { IFormPeriod } from "./FormPeriodInterface";
+
 export interface IIncome {
   id?: number;
   idTypePayroll: number;
@@ -6,4 +8,15 @@ export interface IIncome {
   value: number;
   time?: number;
   unitTime?: string;
+}
+
+export interface IIncomePayroll {
+  id: number;
+  idTypePayroll: number;
+  idEmployment: number;
+  idTypeIncome: number;
+  value: number;
+  time?: number;
+  unitTime?: string;
+  formPeriod: IFormPeriod;
 }

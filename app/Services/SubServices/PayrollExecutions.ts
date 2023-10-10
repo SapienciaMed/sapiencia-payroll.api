@@ -37,6 +37,7 @@ export class PayrollExecutions extends PayrollCalculations {
       "PCT_SEGURIDAD_SOCIAL_EMPLEADO",
       "PCT_SEGURIDAD_SOCIAL_PATRONAL",
       "SMLV",
+      "FECHA_PAGO_INTERES_CESANTIAS",
     ]);
 
     const uvtValue = Number(
@@ -46,6 +47,10 @@ export class PayrollExecutions extends PayrollCalculations {
     const smlvValue = Number(
       parameters.find((i) => i.id == "SMLV")?.value || 0
     );
+
+    const paidDate =
+      parameters.find((i) => i.id == "FECHA_PAGO_INTERES_CESANTIAS")?.value ||
+      0;
     return Promise.all(
       employments.map(async (employment) => {
         try {
@@ -191,8 +196,8 @@ export class PayrollExecutions extends PayrollCalculations {
             bonusService.value,
             bonusVacation.value
           );
-          //censatias
-          const severancePay = await this.calculateReserveSeverancePay(
+          //reserva censatias
+          const reserveSeverancePay = await this.calculateReserveSeverancePay(
             employment,
             formPeriod,
             salaryCalculated.days,
@@ -201,14 +206,23 @@ export class PayrollExecutions extends PayrollCalculations {
             bonusVacation.value,
             bonusChristmas.value
           );
-          //interes de cesantias
-          const severancePayInterest =
+          //reserva interes de cesantias
+          const reserveSeverancePayInterest =
             await this.calculateReserveSeverancePayInterest(
               employment,
               formPeriod,
-              severancePay.value,
+              reserveSeverancePay.value,
               salaryCalculated.days
             );
+
+          if (new Date(paidDate.toString()) == new Date()) {
+            await this.calculateSeverancePayInterest(
+              employment,
+              formPeriod,
+              360,
+              salary
+            );
+          }
 
           await this.calculateHistoricalPayroll(
             employment,
@@ -236,8 +250,8 @@ export class PayrollExecutions extends PayrollCalculations {
             vacationReserve,
             bonusVacation,
             bonusChristmas,
-            severancePay,
-            severancePayInterest,
+            reserveSeverancePay,
+            reserveSeverancePayInterest,
           };
         } catch (error) {
           // Crea historico Fallido
@@ -510,7 +524,6 @@ export class PayrollExecutions extends PayrollCalculations {
       await this.payrollGenerateRepository.getActiveEmployments(
         new Date(String(formPeriod.dateEnd))
       );
-
     // Busca los parametro o recurosos a utilizar
 
     const incomeTaxTable =

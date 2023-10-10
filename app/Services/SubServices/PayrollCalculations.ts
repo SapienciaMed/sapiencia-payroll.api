@@ -337,7 +337,27 @@ export class PayrollCalculations {
     percentageBounty: number,
     days: number
   ): Promise<Object> {
+    const incomePrevious =
+      await this.payrollGenerateRepository.getIncomeByTypeAndEmployment(
+        employment.id ?? 0,
+        formPeriod.idFormType
+      );
+
+    const periodDays = calculateDifferenceDays(employment.startDate);
+
+    if (periodDays < 365 || !incomePrevious) {
+      return {};
+    }
+
+    const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
+      .formPeriod.dateStart;
+
+    if (calculateDifferenceDays(lastIncomeDate) < 365) {
+      return {};
+    }
+
     const bountyValue = salary * (percentageBounty / 100);
+
     const income = {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
@@ -346,10 +366,74 @@ export class PayrollCalculations {
       time: days,
       unitTime: "Dias",
     };
+
     await this.payrollGenerateRepository.createIncome(income as IIncome);
+
     return { income };
   }
 
+  async calculateSeverancePayInterest(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    daysWorked: number,
+    salary: number
+  ): Promise<{ severancePayInterest: object; value: number }> {
+    const serviceBounty =
+      await this.payrollGenerateRepository.getLastServiceBonus(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus
+      );
+    const primaService =
+      await this.payrollGenerateRepository.getLastPrimaService(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.primaService
+      );
+    const christmasBonus =
+      await this.payrollGenerateRepository.getLastServiceBonus(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.primaChristmas
+      );
+    const vacationBonus =
+      await this.payrollGenerateRepository.getLastPrimaService(
+        formPeriod.id ?? 0,
+        employment.id ?? 0,
+        EIncomeTypes.primaVacations
+      );
+    //cesantías x12%
+    //para calcular los intereses a la cesantías primero calculamos un subtotal con la siguiente fórmula: ((salario básico+ (última bonificación de servicio/12)+(última prima de servicio/12 )+(última prima de vacaciones/12)+(última prima de navidad/12))/360)*días a liquidar
+    const reserveValueSubtotal =
+      ((salary +
+        serviceBounty.value / 12 +
+        primaService.value / 12 +
+        vacationBonus.value / 12 +
+        christmasBonus.value / 12) /
+        360) *
+      daysWorked;
+    const severancePayTotal =
+      ((reserveValueSubtotal * 0.12) / 360) * daysWorked;
+    this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.serviceBonus,
+      value: severancePayTotal,
+      time: daysWorked,
+      unitTime: "Dias",
+    });
+    return {
+      severancePayInterest: {
+        idTypePayroll: formPeriod.id,
+        idEmployment: employment.id,
+        idTypeIncome: EIncomeTypes.severancePayInterest,
+        value: severancePayTotal,
+        time: daysWorked,
+        unitTime: "Dias",
+      },
+      value: severancePayTotal,
+    };
+  }
   async calculateHealthDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,

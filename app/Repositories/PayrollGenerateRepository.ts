@@ -477,9 +477,8 @@ export default class PayrollGenerateRepository
     codPayroll: number
   ): Promise<ICyclicalDeductionInstallment[] | null> {
     const res = await CyclicalDeductionInstallment.query()
-      .where("codFormPeriod", codPayroll)
+      .where("idTypePayroll", codPayroll)
       .delete();
-
     if (!res) {
       return null;
     }

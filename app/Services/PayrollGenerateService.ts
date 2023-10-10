@@ -54,6 +54,8 @@ export default class PayrollGenerateService
       result = await this.generatePayrollVacations(formPeriod);
     } else if (EPayrollTypes.serviceBounty === formPeriod.idFormType) {
       result = await this.generatePayrollBountyService(formPeriod);
+    } else if (EPayrollTypes.primaService === formPeriod.idFormType) {
+      result = await this.generatePayrollPrimaService(formPeriod);
     } else {
       result = {};
     }

@@ -113,7 +113,6 @@ export interface IPayrollGenerateRepository {
   createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
   getRelatives(workerId: number): Promise<IRelative[]>;
   getLastIncomeType(
-    codFormPeriod: number,
     codEmployment: number,
     typeIncome: number
   ): Promise<IIncome>;
@@ -487,16 +486,19 @@ export default class PayrollGenerateRepository
   }
 
   async getLastIncomeType(
-    codFormPeriod: number,
     codEmployment: number,
     typeIncome: number
   ): Promise<IIncome> {
     const lastIncome = await Income.query()
-      .where("ING_CODPPL_PLANILLA", codFormPeriod)
       .where("ING_CODEMP_EMPLEO", codEmployment)
       .where("ING_CODTIG_TIPO_INGRESO", typeIncome)
-      .orderBy("ING_CODIGO", "desc");
+      .orderBy("ING_CODIGO", "desc")
+      .limit(1);
 
-    return lastIncome[0].serialize() as IIncome;
+    if (lastIncome.length > 0) {
+      return lastIncome[0].serialize() as IIncome;
+    }
+
+    return { value: 0 } as IIncome;
   }
 }

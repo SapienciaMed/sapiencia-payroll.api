@@ -17,7 +17,7 @@ export enum EPayrollTypes {
   monthly = 2,
   vacation = 8,
   serviceBounty = 10,
-  primaService = 13,
+  primaService = 5,
 }
 
 export enum EIncomeTypes {

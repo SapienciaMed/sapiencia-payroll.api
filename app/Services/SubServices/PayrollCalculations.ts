@@ -348,15 +348,14 @@ export class PayrollCalculations {
     if (periodDays < 365 || !incomePrevious) {
       return {};
     }
-    if(incomePrevious.length > 0){
+    if (incomePrevious.length > 0) {
       const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
-      .formPeriod.dateStart;
-      
+        .formPeriod.dateStart;
+
       if (calculateDifferenceDays(lastIncomeDate) < 365) {
         return {};
       }
     }
-
 
     const bountyValue = salary * (percentageBounty / 100);
 
@@ -377,9 +376,30 @@ export class PayrollCalculations {
   async calculateSeverancePayInterest(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
-    daysWorked: number,
     salary: number
-  ): Promise<{ severancePayInterest: object; value: number }> {
+  ): Promise<{ severancePayInterest?: object; value: number }> {
+    const lastPaid =
+      await this.payrollGenerateRepository.getIncomeByTypeAndEmployment(
+        employment.id ?? 0,
+        EIncomeTypes.severancePayInterest
+      );
+    const monthLastPaid = lastPaid.sort((a, b) => a.id - b.id)[0].formPeriod
+      .month;
+    const yearLastPaid = lastPaid.sort((a, b) => a.id - b.id)[0].formPeriod
+      .year;
+    if (
+      monthLastPaid == new Date().getMonth() + 1 &&
+      yearLastPaid == new Date().getFullYear()
+    ) {
+      return { value: 0 };
+    }
+    const currentYear = new Date().getFullYear();
+    const previousYear = currentYear - 1;
+    const endDate = new Date(previousYear, 11, 31);
+    let daysWorked = calculateDifferenceDays(employment.startDate, endDate);
+    if (daysWorked > 360) {
+      daysWorked = 360;
+    }
     const serviceBounty =
       await this.payrollGenerateRepository.getLastIncomeType(
         employment.id ?? 0,

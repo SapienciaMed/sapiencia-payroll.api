@@ -60,8 +60,17 @@ export class PayrollExecutions extends PayrollCalculations {
           ) {
             throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary);
 
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
           //1. Calcula Licencia
           const licenceDays = await this.calculateLicense(
             employment,
@@ -215,11 +224,12 @@ export class PayrollExecutions extends PayrollCalculations {
               salaryCalculated.days
             );
 
-          if (new Date(paidDate.toString()) == new Date()) {
+          if (
+            new Date(paidDate.toString()).getMonth() == new Date().getMonth()
+          ) {
             await this.calculateSeverancePayInterest(
               employment,
               formPeriod,
-              360,
               salary
             );
           }

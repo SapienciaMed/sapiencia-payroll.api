@@ -317,7 +317,16 @@ export class PayrollExecutions extends PayrollCalculations {
           ) {
             throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary);
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
 
           //1. Calcula Licencia
           const suspensionDays = await this.calculateSuspension(
@@ -437,7 +446,16 @@ export class PayrollExecutions extends PayrollCalculations {
           ) {
             throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary);
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
 
           // 1. calcular dias vacaciones
           const vacationDays = await this.calculateVacation(
@@ -571,7 +589,16 @@ export class PayrollExecutions extends PayrollCalculations {
           ) {
             throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary);
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
 
           // 1. Calcular prima de servicios
           const calculatePrimaServices = await this.calculatePrimaServices(
@@ -655,7 +682,16 @@ export class PayrollExecutions extends PayrollCalculations {
           ) {
             throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary);
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
 
           // 1. Calcular prima de navidad
           const calculatePrimaChristmas = await this.calculatePrimaChristmas(
@@ -743,7 +779,16 @@ export class PayrollExecutions extends PayrollCalculations {
           ) {
             throw new Error("Salario no ubicado");
           }
-          const salary = Number(employment.salaryHistories[0].salary);
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
 
           //1. Calcula bonificacion servicio
           const calculateServiceBounty = await this.calculateServiceBounty(
@@ -777,18 +822,6 @@ export class PayrollExecutions extends PayrollCalculations {
             solidarityFundTable
           );
 
-          // 5. Deducciones ciclicas
-          const deductionsCiclical = await this.calculateCiclicalDeductions(
-            employment,
-            formPeriod
-          );
-
-          // 7. Deducciones eventuales
-          const deductionEvetual = await this.calculateEventualDeductions(
-            employment,
-            formPeriod
-          );
-
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -804,8 +837,6 @@ export class PayrollExecutions extends PayrollCalculations {
             calculatedDeductionHealth,
             calculatedDeductionPension,
             calculatedSolidarityFund,
-            deductionsCiclical,
-            deductionEvetual,
             isrCalculated,
           };
         } catch (error) {

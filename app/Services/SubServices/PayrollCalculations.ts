@@ -866,11 +866,11 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number,
-    daysWorked: number
+    daysWorked: number,
+    bonusService: number
   ): Promise<{ serviceBonus: object; value: number }> {
     //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12))/2
-    const reserveValue =
-      ((salary / 360) * daysWorked + (salary * 0.35) / 12) / 2;
+    const reserveValue = ((salary / 360) * daysWorked + bonusService / 12) / 2;
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,
@@ -925,15 +925,14 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number,
-    daysWorked: number
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number
   ): Promise<{ vacationReserve: object; value: number }> {
     //((((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 ))/2
     const reserveValue =
-      ((salary / 360) * daysWorked +
-        (salary * 0.35) / 12 +
-        (((salary + (salary * 0.35) / 12) / 720) * 360) / 12) /
+      ((salary / 360) * daysWorked + bountyService / 12 + bonusService / 12) /
       2;
-
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,
@@ -959,13 +958,13 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number,
-    daysWorked: number
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number
   ): Promise<{ bonusVacation: object; value: number }> {
     //((((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 ))/2
     const reserveValue =
-      ((salary / 360) * daysWorked +
-        (salary * 0.35) / 12 +
-        (((salary + (salary * 0.35) / 12) / 720) * 360) / 12) /
+      ((salary / 360) * daysWorked + bountyService / 12 + bonusService / 12) /
       2;
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
@@ -991,20 +990,17 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number,
-    daysWorked: number
+    daysWorked: number,
+    bountyService: number,
+    bonusService: number,
+    vacationBonus: number
   ): Promise<{ christmasBonus: object; value: number }> {
     //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12))
     const reserveValue =
       (salary / 360) * daysWorked +
-      (salary * 0.35) / 12 +
-      (((salary + (salary * 0.35) / 12) / 720) * 360) / 12 +
-      (((salary +
-        (salary * 0.35) / 12 +
-        (((salary + (salary * 0.35) / 12) / 720) * 360) / 12) /
-        360) *
-        180) /
-        12;
-
+      bountyService / 12 +
+      bonusService / 12 +
+      vacationBonus / 12;
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,
@@ -1029,32 +1025,19 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     daysWorked: number,
+    bountyService: number,
+    bonusService: number,
+    vacationBonus: number,
+    christmasBonus: number
   ): Promise<{ severancePay: object; value: number }> {
     //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12)+(prima de navidad/12)))
     const salary = Number(employment.salaryHistories[0].salary);
     const reserveValue =
       (salary / 360) * daysWorked +
-      (salary * 0.35) / 12 +
-      (((salary + (salary * 0.35) / 12) / 720) * 360) / 12 +
-      (((salary +
-        (salary * 0.35) / 12 +
-        (((salary + (salary * 0.35) / 12) / 720) * 360) / 12) /
-        360) *
-        180) /
-        12 +
-      (((salary +
-        (salary * 0.35) / 12 +
-        (((salary + (salary * 0.35) / 12) / 720) * 360) / 12 +
-        (((salary +
-          (salary * 0.35) / 12 +
-          (((salary + (salary * 0.35) / 12) / 720) * 360) / 12) /
-          360) *
-          180) /
-          12) /
-        360) *
-        360) /
-        12;
-
+      bountyService / 12 +
+      bonusService / 12 +
+      vacationBonus / 12 +
+      christmasBonus / 12;
     this.payrollGenerateRepository.createReserve({
       idTypePayroll: formPeriod.id || 0,
       idEmployment: employment.id || 0,

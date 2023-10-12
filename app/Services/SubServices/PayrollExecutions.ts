@@ -167,8 +167,7 @@ export class PayrollExecutions extends PayrollCalculations {
             employment,
             formPeriod,
             salary,
-            salaryCalculated.days,
-            bountyService.value
+            salaryCalculated.days
           );
           //bono de recreación
           const recreationBounty = await this.calculateReserveRecreationBounty(
@@ -182,38 +181,27 @@ export class PayrollExecutions extends PayrollCalculations {
             employment,
             formPeriod,
             salary,
-            salaryCalculated.days,
-            bountyService.value,
-            bonusService.value
+            salaryCalculated.days
           );
           //reserva de vacaciones (bonus)
           const bonusVacation = await this.calculateReserveVacationBonus(
             employment,
             formPeriod,
             salary,
-            salaryCalculated.days,
-            bountyService.value,
-            bonusService.value
+            salaryCalculated.days
           );
           //reserva de navidad
           const bonusChristmas = await this.calculateReserveChristmasBonus(
             employment,
             formPeriod,
             salary,
-            salaryCalculated.days,
-            bountyService.value,
-            bonusService.value,
-            bonusVacation.value
+            salaryCalculated.days
           );
           //reserva censatias
           const reserveSeverancePay = await this.calculateReserveSeverancePay(
             employment,
             formPeriod,
-            salaryCalculated.days,
-            bountyService.value,
-            bonusService.value,
-            bonusVacation.value,
-            bonusChristmas.value
+            salaryCalculated.days
           );
           //reserva interes de cesantias
           const reserveSeverancePayInterest =

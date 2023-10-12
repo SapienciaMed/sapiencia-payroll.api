@@ -42,7 +42,7 @@ export interface IVinculationService {
     filters: IFilterEmployment
   ): Promise<ApiResponse<IPagingData<IEmployment>>>;
   getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
-  getActiveWorkers(): Promise<ApiResponse<IWorker[]>>;
+  getActiveWorkers(temporary: string): Promise<ApiResponse<IWorker[]>>;
   getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>>;
   createVinculation(
     data: ICreateOrUpdateVinculation,
@@ -266,8 +266,8 @@ export default class VinculationService implements IVinculationService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getActiveWorkers(): Promise<ApiResponse<IWorker[]>> {
-    const res = await this.workerRepository.getActivesWorkers();
+  async getActiveWorkers(temporary: string): Promise<ApiResponse<IWorker[]>> {
+    const res = await this.workerRepository.getActivesWorkers(temporary);
     if (!res) {
       return new ApiResponse(
         {} as IWorker[],

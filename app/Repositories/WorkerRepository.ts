@@ -13,7 +13,7 @@ export interface IWorkerRepository {
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
-  getActivesWorkers(): Promise<IWorker[]>;
+  getActivesWorkers(temporary: string): Promise<IWorker[]>;
   getActivesContractorworkers(): Promise<IWorker[]>;
   createWorker(
     worker: IWorker,
@@ -33,7 +33,8 @@ export default class WorkerRepository implements IWorkerRepository {
       q1.where("state", 1).preload("charge", (q2) => q2.preload("unit"))
     );
 
-    if (filters.documentList) query.whereIn("numberDocument", filters.documentList);
+    if (filters.documentList)
+      query.whereIn("numberDocument", filters.documentList);
     const res = await query;
     return res.map((i) => i.serialize() as IWorker);
   }
@@ -412,12 +413,30 @@ export default class WorkerRepository implements IWorkerRepository {
     return res ? (res.serialize() as IWorker) : null;
   }
 
-  async getActivesWorkers(): Promise<IWorker[]> {
+  async getActivesWorkers(temporary: string): Promise<IWorker[]> {
     const res = await Worker.query()
       .whereHas("employment", (employmentQuery) => {
-        employmentQuery.where("state", "1");
+        employmentQuery.where("state", true);
+
+        employmentQuery.whereHas("typesContracts", (typesContractsQuery) => {
+          if (temporary === "no") {
+            typesContractsQuery.where("temporary", false);
+          }
+          //  else {
+          //   typesContractsQuery.where("temporary", true);
+          // }
+        });
       })
-      .preload("employment");
+      .preload("employment", (employmentQuery) => {
+        employmentQuery.where("state", true);
+        employmentQuery.preload("typesContracts", (typesContractsQuery) => {
+          if (temporary === "no") {
+            typesContractsQuery.where("temporary", false);
+          } else {
+            typesContractsQuery.where("temporary", true);
+          }
+        });
+      });
     return res as IWorker[];
   }
 

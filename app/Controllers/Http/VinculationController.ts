@@ -148,9 +148,12 @@ export default class VinculationController {
     }
   }
 
-  public async getActiveWorkers({ response }: HttpContextContract) {
+  public async getActiveWorkers({ response, request }: HttpContextContract) {
     try {
-      return response.send(await VinculationProvider.getActiveWorkers());
+      const { temporary } = request.qs() as { temporary: string };
+      return response.send(
+        await VinculationProvider.getActiveWorkers(temporary)
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

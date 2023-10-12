@@ -24,14 +24,12 @@ Route.get("/", async () => {
   return "Api de servicios Transversales de SAPIENCIA";
 });
 
-
-
 Route.group(() => {
-  Route.get("/generate-by-id/:id", "PayrollGenerateController.payrollGenerateById");
+  Route.get(
+    "/generate-by-id/:id",
+    "PayrollGenerateController.payrollGenerateById"
+  );
 }).prefix("/api/v1/payroll-generate");
-
-
-
 
 Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
@@ -47,6 +45,10 @@ Route.group(() => {
   );
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.get("/employment/:id", "VinculationController.getEmploymentById");
+  Route.post(
+    "/worker/get-by-filters/",
+    "VinculationController.getWorkersByFilters"
+  );
   Route.post("/get-paginated", "VinculationController.getVinculationsPaginate");
   Route.post("/", "VinculationController.createVinculation");
   Route.post(
@@ -99,7 +101,10 @@ Route.group(() => {
 }).prefix("/api/v1/payroll");
 
 Route.group(() => {
-  Route.get("/type/:type", "ManualDeductionsController.getDeductionTypesByType");
+  Route.get(
+    "/type/:type",
+    "ManualDeductionsController.getDeductionTypesByType"
+  );
   Route.get("/:id", "ManualDeductionsController.getManualDeductionById");
   Route.post("/", "ManualDeductionsController.createDeduction");
   Route.post(

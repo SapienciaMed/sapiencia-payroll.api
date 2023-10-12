@@ -27,16 +27,16 @@ export interface IWorkerRepository {
 export default class WorkerRepository implements IWorkerRepository {
   constructor() {}
 
-  async getWorkersByFilters(filters: IWorkerFilters): Promise<IWorker[]> {
-    const query = Worker.query().preload("employment", (q1) =>
-      q1.where("state", 1).preload("charge", (q2) => q2.preload("unit"))
-    );
+  // async getWorkersByFilters(filters: IWorkerFilters): Promise<IWorker[]> {
+  //   const query = Worker.query().preload("employment", (q1) =>
+  //     q1.where("state", 1).preload("charge", (q2) => q2.preload("unit"))
+  //   );
 
-    if (filters.documentList)
-      query.whereIn("numberDocument", filters.documentList);
-    const res = await query;
-    return res.map((i) => i.serialize() as IWorker);
-  }
+  //   if (filters.documentList)
+  //     query.whereIn("numberDocument", filters.documentList);
+  //   const res = await query;
+  //   return res.map((i) => i.serialize() as IWorker);
+  // }
 
   async getVinculation(
     filters: IFilterVinculation
@@ -415,13 +415,26 @@ export default class WorkerRepository implements IWorkerRepository {
   async getActivesWorkers(temporary: string): Promise<IWorker[]> {
     const res = await Worker.query()
       .whereHas("employment", (employmentQuery) => {
-        employmentQuery.where("state", "1");
+        employmentQuery.where("state", true);
 
-        employmentQuery.preload("typesContracts", (typesContractsQuery) => {
-          if (temporary === "no") typesContractsQuery.where("temporary", false);
+        employmentQuery.whereHas("typesContracts", (typesContractsQuery) => {
+          if (temporary === "no") {
+            typesContractsQuery.where("temporary", false);
+          } else {
+            typesContractsQuery.where("temporary", true);
+          }
         });
       })
-      .preload("employment");
+      .preload("employment", (employmentQuery) => {
+        employmentQuery.where("state", true);
+        employmentQuery.preload("typesContracts", (typesContractsQuery) => {
+          if (temporary === "no") {
+            typesContractsQuery.where("temporary", false);
+          } else {
+            typesContractsQuery.where("temporary", true);
+          }
+        });
+      });
     return res as IWorker[];
   }
 

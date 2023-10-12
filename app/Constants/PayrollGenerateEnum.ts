@@ -10,6 +10,7 @@ export enum EGroupers {
   incomeTaxGrouper = 1,
   incomeCyclicDeduction = 5,
   totalDeductions = 6,
+  incomeBountyService = 7
 }
 
 export enum EPayrollTypes {

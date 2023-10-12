@@ -1031,7 +1031,16 @@ export class PayrollCalculations {
     christmasBonus: number
   ): Promise<{ severancePay: object; value: number }> {
     //(((salario básico/360)* días trabajados)+ (bonificación de servicio/12)+(prima de servicio/12 )+(prima de vacaciones/12)+(prima de navidad/12)))
-    const salary = Number(employment.salaryHistories[0].salary);
+    let salary = Number(
+      employment.salaryHistories[0].previousSalary ??
+        employment.salaryHistories[0].salary
+    );
+    if (
+      new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+      new Date()
+    ) {
+      salary = Number(employment.salaryHistories[0].salary);
+    }
     const reserveValue =
       (salary / 360) * daysWorked +
       bountyService / 12 +

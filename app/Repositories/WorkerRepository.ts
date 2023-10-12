@@ -420,9 +420,10 @@ export default class WorkerRepository implements IWorkerRepository {
         employmentQuery.whereHas("typesContracts", (typesContractsQuery) => {
           if (temporary === "no") {
             typesContractsQuery.where("temporary", false);
-          } else {
-            typesContractsQuery.where("temporary", true);
           }
+          //  else {
+          //   typesContractsQuery.where("temporary", true);
+          // }
         });
       })
       .preload("employment", (employmentQuery) => {

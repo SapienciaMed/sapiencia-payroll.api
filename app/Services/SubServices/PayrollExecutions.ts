@@ -54,6 +54,7 @@ export class PayrollExecutions extends PayrollCalculations {
     return Promise.all(
       employments.map(async (employment) => {
         try {
+          let severancePayInterest = {};
           if (
             !employment.salaryHistories ||
             employment.salaryHistories.length == 0
@@ -227,14 +228,14 @@ export class PayrollExecutions extends PayrollCalculations {
           if (
             new Date(paidDate.toString()).getMonth() == new Date().getMonth()
           ) {
-            await this.calculateSeverancePayInterest(
+            severancePayInterest = await this.calculateSeverancePayInterest(
               employment,
               formPeriod,
               salary
             );
           }
 
-          await this.calculateHistoricalPayroll(
+          const historical = await this.calculateHistoricalPayroll(
             employment,
             formPeriod,
             salaryCalculated.days,
@@ -262,6 +263,8 @@ export class PayrollExecutions extends PayrollCalculations {
             bonusChristmas,
             reserveSeverancePay,
             reserveSeverancePayInterest,
+            severancePayInterest,
+            historical,
           };
         } catch (error) {
           // Crea historico Fallido

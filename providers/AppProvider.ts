@@ -9,6 +9,7 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** SERVICES ********************************/
     /**************************************************************************/
+    const TaxDeductibleService = await import("App/Services/TaxDeductibleService");
     const VinculationProvider = await import("App/Services/VinculationService");
     const VacationService = await import("App/Services/VacationService");
     const IncapacityService = await import("App/Services/IncapacityService");
@@ -34,6 +35,7 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
+    const TaxDeductibleRepository = await import("App/Repositories/TaxDeductibleRepository");
     const WorkerRepository = await import("App/Repositories/WorkerRepository");
     const PayrollGenerateRepository = await import(
       "App/Repositories/PayrollGenerateRepository"
@@ -83,6 +85,16 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
+
+
+
+    this.app.container.singleton(
+      "core.TaxDeductibleProvider",
+      () =>
+        new TaxDeductibleService.default(
+          new TaxDeductibleRepository.default()
+        )
+    );
 
     this.app.container.singleton(
       "core.PayrollGenerateProvider",

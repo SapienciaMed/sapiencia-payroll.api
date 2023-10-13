@@ -24,6 +24,9 @@ export interface IEmployment {
   userCreate?: string;
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
+
+
+  worker?: IWorker
 }
 
 export interface IEmploymentResult {

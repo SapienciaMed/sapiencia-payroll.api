@@ -1103,7 +1103,7 @@ export class PayrollCalculations {
     salary: number,
     state: string,
     error?: string
-  ): Promise<void> {
+  ): Promise<object> {
     const incomes =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -1129,6 +1129,17 @@ export class PayrollCalculations {
       state: state,
       observation: error ?? "",
     });
+    return {
+      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id || 0,
+      workedDay: daysWorked,
+      salary: salary,
+      totalIncome: incomes,
+      totalDeduction: deductions,
+      total: Number(incomes) + Number(deductions),
+      state: state,
+      observation: error ?? "",
+    };
   }
 
   async calculateVacationsBonus(

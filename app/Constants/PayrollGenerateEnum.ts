@@ -10,7 +10,7 @@ export enum EGroupers {
   incomeTaxGrouper = 1,
   incomeCyclicDeduction = 5,
   totalDeductions = 6,
-  incomeBountyService = 7
+  incomeBountyService = 7,
 }
 
 export enum EPayrollTypes {
@@ -33,6 +33,11 @@ export enum EIncomeTypes {
   primaVacations = 14,
   bonusRecreation = 15,
   severancePayInterest = 16,
+}
+
+export enum EIncapacityTypes {
+  general = 1,
+  occupational = 2,
 }
 
 export enum EReserveTypes {

@@ -153,8 +153,8 @@ export class PayrollCalculations {
         const endDayProcess = daysProcessed + daysToProcess;
         // Recorre la tabla para establecer los dias a procesar
         for (const table of incapacityTable) {
-          if (startDayProcess > table.start && startDayProcess <= table.end) {
-            if (endDayProcess > table.start && endDayProcess <= table.end) {
+          if (startDayProcess >= table.start && startDayProcess <= table.end) {
+            if (endDayProcess >= table.start && endDayProcess <= table.end) {
               // si todos los rangos se encuentran en el mismo rango
               toProccess.push({
                 days: endDayProcess - startDayProcess + 1,
@@ -192,7 +192,7 @@ export class PayrollCalculations {
 
       // Calcula el valor a pagar de todas la incapacidees
       const toPay = toProccess.reduce(
-        (sum, i) => sum + (salary / 30) * (i.pct / 100) * i.days,
+        (sum, i) => sum + (salary / 30) * (Number(i.pct) / 100) * i.days,
         0
       );
 

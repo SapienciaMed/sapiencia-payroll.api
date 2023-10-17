@@ -1304,7 +1304,7 @@ export class PayrollCalculations {
       const primaService = await this.payrollGenerateRepository.createIncome({
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
-        idTypeIncome: EIncomeTypes.incapacity,
+        idTypeIncome: EIncomeTypes.primaChristmas,
         value: Math.round(calculatePrimaChristmas),
         time: daysLiquidate,
         unitTime: "Dias",

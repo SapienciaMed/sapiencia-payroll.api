@@ -436,7 +436,7 @@ export class PayrollCalculations {
     this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
-      idTypeIncome: EIncomeTypes.serviceBonus,
+      idTypeIncome: EIncomeTypes.severancePayInterest,
       value: severancePayTotal,
       time: daysWorked,
       unitTime: "Dias",
@@ -1304,7 +1304,7 @@ export class PayrollCalculations {
       const primaService = await this.payrollGenerateRepository.createIncome({
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
-        idTypeIncome: EIncomeTypes.incapacity,
+        idTypeIncome: EIncomeTypes.primaChristmas,
         value: Math.round(calculatePrimaChristmas),
         time: daysLiquidate,
         unitTime: "Dias",
@@ -1323,7 +1323,7 @@ export class PayrollCalculations {
       const primaService = await this.payrollGenerateRepository.createIncome({
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
-        idTypeIncome: EIncomeTypes.incapacity,
+        idTypeIncome: EIncomeTypes.primaChristmas,
         value: Math.round(calculatePrimaChristmas),
         time: 360,
         unitTime: "Dias",

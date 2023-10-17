@@ -383,10 +383,12 @@ export class PayrollCalculations {
         employment.id ?? 0,
         EIncomeTypes.severancePayInterest
       );
-    const monthLastPaid = lastPaid.sort((a, b) => a.id - b.id)[0].formPeriod
-      .month;
-    const yearLastPaid = lastPaid.sort((a, b) => a.id - b.id)[0].formPeriod
-      .year;
+    let yearLastPaid = 0;
+    let monthLastPaid = 0;
+    if (lastPaid.length > 0) {
+      monthLastPaid = lastPaid.sort((a, b) => a.id - b.id)[0].formPeriod.month;
+      yearLastPaid = lastPaid.sort((a, b) => a.id - b.id)[0].formPeriod.year;
+    }
     if (
       monthLastPaid == new Date().getMonth() + 1 &&
       yearLastPaid == new Date().getFullYear()

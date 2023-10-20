@@ -71,7 +71,9 @@ Route.group(() => {
     "/employment/retirement",
     "VinculationController.retirementEmployment"
   );
-}).prefix("/api/v1/vinculation");
+})
+  .prefix("/api/v1/vinculation")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get("/", "VacationsController.getVacations");
@@ -79,7 +81,9 @@ Route.group(() => {
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
   Route.post("/get-paginated", "VacationsController.getVacationsPaginate");
   Route.put("/", "VacationsController.updateVacationPeriod");
-}).prefix("/api/v1/vacations");
+})
+  .prefix("/api/v1/vacations")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get("/incapacity-types", "IncapacityController.getIncapacityTypes");
@@ -87,14 +91,18 @@ Route.group(() => {
   Route.post("/create", "IncapacityController.createIncapacity");
   Route.post("/get-paginated", "IncapacityController.getIncapacityPaginate");
   Route.put("/update", "IncapacityController.updateIncapacity");
-}).prefix("/api/v1/incapacity");
+})
+  .prefix("/api/v1/incapacity")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get("/types", "LicencesController.getLicenceTypes");
   Route.get("/:id", "LicencesController.getLicenseById");
   Route.post("/", "LicencesController.createLicence");
   Route.post("/get-paginated", "LicencesController.getLicencePaginate");
-}).prefix("/api/v1/licence");
+})
+  .prefix("/api/v1/licence")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get("/types", "FormPeriodsController.getFormTypes");
@@ -104,7 +112,9 @@ Route.group(() => {
   Route.post("/", "FormPeriodsController.createFormPeriod");
   Route.post("get-paginated", "FormPeriodsController.getFormPeriodPaginate");
   Route.put("/", "FormPeriodsController.updateFormPeriod");
-}).prefix("/api/v1/payroll");
+})
+  .prefix("/api/v1/payroll")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get(
@@ -118,7 +128,9 @@ Route.group(() => {
     "ManualDeductionsController.getManualDeductionPaginate"
   );
   Route.put("/", "ManualDeductionsController.updateManualDeduction");
-}).prefix("/api/v1/deduction");
+})
+  .prefix("/api/v1/deduction")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get("/:id", "SalaryIncrementsController.getSalaryIncrementById");
@@ -128,4 +140,6 @@ Route.group(() => {
     "SalaryIncrementsController.getSalaryHistoriesPaginate"
   );
   Route.put("/", "SalaryIncrementsController.updateSalaryIncrements");
-}).prefix("/api/v1/salaryIncrease");
+})
+  .prefix("/api/v1/salaryIncrease")
+  .middleware("auth");

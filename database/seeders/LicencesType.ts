@@ -9,30 +9,36 @@ export default class extends BaseSeeder {
       {
        name:"Licencia de maternidad",
        numberDays:126,
-       daysType:"Calendario"
+       daysType:"Calendario",
+       paid:true
       },
       {
         name:"Licencia de paternidad",
         numberDays: 30,
-        daysType:"Calendario"
+        daysType:"Calendario",
+        paid:true
       },
       {
         name:"Licencia de luto",
         numberDays: 5,
-        daysType:"Habil"
+        daysType:"Habil",
+        paid:true
       },
       {
         name:"Licencia por calamidad doméstica",
         numberDays: 3,
-        daysType:"Habil"
+        daysType:"Habil",
+        paid:true
       },
       {
         name:"permiso no remunerado",
-        daysType:"Habil"
+        daysType:"Habil",
+        paid:false
       },
       {
         name:"permiso remunerado",
-        daysType:"Habil"
+        daysType:"Habil",
+        paid:true
       },
     ]);
   }

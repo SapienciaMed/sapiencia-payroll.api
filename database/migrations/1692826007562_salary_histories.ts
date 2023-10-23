@@ -16,18 +16,12 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("HPA_CODEMP_EMPLEO")
-        .unsigned().references("EMP_CODIGO")
+        .unsigned()
+        .references("EMP_CODIGO")
         .inTable("EMP_EMPLEOS")
         .unsigned()
         .notNullable()
         .comment("codigo del empleo (FK EMP_EMPLEOS)");
-      table
-        .integer("HPA_CODISA_INCREMENTO")
-        .unsigned().references("ISA_CODIGO")
-        .inTable("ISA_INCREMENTOS_SALARIALES")
-        .unsigned()
-        .nullable()
-        .comment("codigo del incremento (FK ISA_INCREMENTOS_SALARIALES)");
       table
         .decimal("HPA_SALARIO_ANTERIOR", 15, 2)
         .nullable()
@@ -44,6 +38,14 @@ export default class extends BaseSchema {
         .boolean("HPA_ES_VIGENTE")
         .notNullable()
         .comment("Indicado de que si es salario vigente");
+      table
+        .integer("HPA_CODISA_INCREMENTO")
+        .unsigned()
+        .references("ISA_CODIGO")
+        .inTable("ISA_INCREMENTOS_SALARIALES")
+        .unsigned()
+        .nullable()
+        .comment("codigo del incremento (FK ISA_INCREMENTOS_SALARIALES)");
     });
   }
 

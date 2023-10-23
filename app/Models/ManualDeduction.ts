@@ -43,13 +43,6 @@ export default class ManualDeduction extends BaseModel {
   public numberInstallments: number;
 
   @column({
-    columnName: "DDM_APLICAR_EXTRAORINARIAS",
-    serializeAs: "applyExtraordinary",
-    prepare: (val) => (String(val) === "true" ? 1 : 0),
-    serialize: (val) => Boolean(val),
-  })
-  public applyExtraordinary: boolean;
-  @column({
     columnName: "DDM_ES_PORCENTUAL",
     serializeAs: "porcentualValue",
     prepare: (val) => (String(val) === "true" ? 1 : 0),
@@ -67,9 +60,6 @@ export default class ManualDeduction extends BaseModel {
 
   @column({ columnName: "DDM_ESTADO", serializeAs: "state" })
   public state: string;
-
-  @column({ columnName: "DDM_OBSERVACIONES", serializeAs: "observation" })
-  public observation: string;
 
   @column({
     columnName: "DDM_USUARIO_MODIFICO",

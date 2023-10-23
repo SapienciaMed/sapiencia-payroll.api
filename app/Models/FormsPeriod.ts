@@ -60,9 +60,6 @@ export default class FormsPeriod extends BaseModel {
   @column({ columnName: "PPL_ESTADO", serializeAs: "state" })
   public state: string;
 
-  @column({ columnName: "PPL_OBSERVACIONES", serializeAs: "observation" })
-  public observation: string;
-
   @column({
     columnName: "PPL_USUARIO_MODIFICO",
     serializeAs: "userModified",

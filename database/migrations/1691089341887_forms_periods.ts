@@ -43,10 +43,6 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Año al que corresponde la planilla");
       table
-        .string("PPL_OBSERVACIONES", 500)
-        .notNullable()
-        .comment("Observaciones de la planilla");
-      table
         .string("PPL_USUARIO_MODIFICO", 15)
         .comment(
           "Numero del documento del ultimo usuario que hizo una modificacion"

@@ -41,12 +41,6 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("valor de la deduccion / cuota");
       table
-        .boolean("DDM_APLICAR_EXTRAORINARIAS")
-        .nullable()
-        .comment(
-          "Indicador de que la cuota de la ciclica se aplica en planillas extraordinarias"
-        );
-      table
         .integer("DDM_NUMERO_CUOTAS")
         .nullable()
         .comment("Numero de cuotas que se deben aplicar para las ciclicas");
@@ -54,6 +48,7 @@ export default class extends BaseSchema {
         .decimal("DDM_MONTO_TOTAL", 15, 2)
         .nullable()
         .comment("valor de la deduccion / cuota");
+
       table
         .integer("DDM_CODPPL")
         .references("PPL_CODIGO")
@@ -65,10 +60,6 @@ export default class extends BaseSchema {
         .string("DDM_ESTADO", 20)
         .notNullable()
         .comment("Estado de la deduccion (Vigente, Finalizada)");
-      table
-        .string("DDM_OBSERVACIONES", 500)
-        .nullable()
-        .comment("Observaciones de la deducción");
       table
         .string("DDM_USUARIO_MODIFICO", 15)
         .comment(

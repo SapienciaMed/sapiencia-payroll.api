@@ -6,12 +6,13 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.comment("Tabla que contiene las unidades");
-      table.increments("UNI_CODIGO").primary().comment("llave primaria");
-      table.string("UNI_NOMBRE", 100).notNullable().comment("Nombre del cargo");
+      table.increments("DEP_CODIGO").primary().comment("llave primaria");
+      table.string("DEP_NOMBRE", 100).notNullable().comment("Nombre del cargo");
       table
-        .integer("UNI_CODUNI_SUPERIOR")
-        .unsigned().references("UNI_CODIGO")
-        .inTable("UNI_UNIDADES")
+        .integer("DEP_CODDEP_SUPERIOR")
+        .unsigned()
+        .references("DEP_CODIGO")
+        .inTable("DEP_DEPENDENCIAS")
         .comment("codigo unidad superior (FK UNI_UNIDADES)");
     });
   }

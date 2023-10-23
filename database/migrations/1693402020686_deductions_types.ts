@@ -20,7 +20,14 @@ export default class extends BaseSchema {
       table
         .string("TDD_TIPO", 15)
         .nullable()
-        .comment("Indicador de tipo de procesamiento (Ciclica, Eventual, Automatica)");
+        .comment(
+          "Indicador de tipo de procesamiento (Ciclica, Eventual, Automatica)"
+        );
+
+      table
+        .string("TDD_CUENTA_CONTABLE", 50)
+        .nullable()
+        .comment("Numero de cuenta contable");
     });
   }
 

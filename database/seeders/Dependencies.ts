@@ -1,10 +1,10 @@
 import BaseSeeder from "@ioc:Adonis/Lucid/Seeder";
-import Unit from "App/Models/Unit";
+import Dependencies from "App/Models/Dependence";
 
 export default class extends BaseSeeder {
   public async run() {
     // Write your database queries inside the run method
-    await Unit.createMany([
+    await Dependencies.createMany([
       {
         name: "Administrativa",
       },

@@ -13,4 +13,10 @@ export default class DeductionType extends BaseModel {
     serializeAs: "type",
   })
   public type: string;
+
+  @column({
+    columnName: "TDD_CUENTA_CONTABLE",
+    serializeAs: "accountingAccount",
+  })
+  public accountingAccount: string;
 }

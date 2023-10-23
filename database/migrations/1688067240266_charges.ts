@@ -11,23 +11,32 @@ export default class extends BaseSchema {
         .string("CRG_NOMBRE", 100)
         .notNullable()
         .comment("nombre del cargo ");
-      table
-        .integer("CRG_CODUNI_UNIDAD")
-        .notNullable()
-        .unsigned().references("UNI_CODIGO")
-        .inTable("UNI_UNIDADES")
-        .comment("codigo de la unidad (FK UNI_UNIDADES)");
+      // table
+      //   .integer("CRG_CODUNI_UNIDAD")
+      //   .notNullable()
+      //   .unsigned()
+      //   .references("UNI_CODIGO")
+      //   .inTable("UNI_UNIDADES")
+      //   .comment("codigo de la unidad (FK UNI_UNIDADES)"); // Pendiente de revisar
       table
         .integer("CRG_CODTCG_TIPO_CARGO")
         .notNullable()
-        .unsigned().references("TCG_CODIGO")
+        .unsigned()
+        .references("TCG_CODIGO")
         .inTable("TCG_TIPOS_CARGOS")
         .comment("codigo del tipo de cargo (FK TCG_TIPOS_CARGOS)");
+      table
+        .string("CRG_OBSERVACIONES", 5000)
+        .notNullable()
+        .comment("decripcion de las funciones del cargo");
       table
         .decimal("CRG_SALARIO_BASE", 10, 2)
         .notNullable()
         .comment("salario base del cargo ");
-      table.string("CRG_ESTADO", 10).notNullable().comment("estado del cargo ");
+      table
+        .boolean("CRG_ACTIVO")
+        .notNullable()
+        .comment("Indicador de que si el cargo esta activo");
       table
         .string("CRG_USUARIO_MODIFICO", 15)
         .comment(

@@ -14,6 +14,7 @@ import TypesContract from "./TypesContract";
 import Worker from "./Worker";
 import ReasonsForWithdrawal from "./ReasonsForWithdrawal";
 import SalaryHistory from "./SalaryHistory";
+import Dependence from "./Dependence";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -23,6 +24,12 @@ export default class Employment extends BaseModel {
 
   @column({ columnName: "EMP_CODTRA_TRABAJADOR", serializeAs: "workerId" })
   public workerId: number;
+
+  @column({
+    columnName: "EMP_CODDEP_DEPENDENCIA",
+    serializeAs: "idDependence",
+  })
+  public idDependence: number;
 
   @column({
     columnName: "EMP_CODCRG_CARGO",
@@ -69,6 +76,18 @@ export default class Employment extends BaseModel {
   public endDate: DateTime;
 
   @column({
+    columnName: "EMP_OBLIGACIONES_ESPECIFICAS",
+    serializeAs: "specificObligations",
+  })
+  public specificObligations: string;
+
+  @column({
+    columnName: "EMP_OBJECTO_CONTRACTUAL",
+    serializeAs: "contractualObject",
+  })
+  public contractualObject: string;
+
+  @column({
     columnName: "EMP_ESTADO",
     serializeAs: "state",
   })
@@ -89,22 +108,6 @@ export default class Employment extends BaseModel {
     },
   })
   public retirementDate: DateTime;
-
-  @column({
-    columnName: "EMP_SALARIO",
-    serializeAs: "salary",
-  })
-  public salary: number;
-  @column({
-    columnName: "EMP_VALOR_TOTAL",
-    serializeAs: "totalValue",
-  })
-  public totalValue: number;
-  @column({
-    columnName: "EMP_OBSERVACION",
-    serializeAs: "observation",
-  })
-  public observation: string;
 
   @column({
     columnName: "EMP_USUARIO_MODIFICO",
@@ -134,19 +137,23 @@ export default class Employment extends BaseModel {
   })
   public dateCreate: DateTime;
 
+  @hasOne(() => Dependence, {
+    localKey: "idDependence",
+    foreignKey: "id",
+  })
+  public dependence: HasOne<typeof Dependence>;
+
   @hasMany(() => Charge, {
     localKey: "idCharge",
     foreignKey: "id",
   })
   public charges: HasMany<typeof Charge>;
 
-
   @hasOne(() => Charge, {
     localKey: "idCharge",
     foreignKey: "id",
   })
   public charge: HasOne<typeof Charge>;
-
 
   @hasMany(() => ReasonsForWithdrawal, {
     localKey: "idReasonRetirement",

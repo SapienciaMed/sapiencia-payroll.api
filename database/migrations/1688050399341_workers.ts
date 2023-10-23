@@ -34,6 +34,10 @@ export default class extends BaseSchema {
         .string("TRA_SEGUNDO_APELLIDO", 50)
         .comment("Segundo apellido del colaborador");
       table
+        .timestamp("TRA_FECHA_NACIMIENTO")
+        .notNullable()
+        .comment("Fecha de nacimiento");
+      table
         .string("TRA_GENERO", 10)
         .notNullable()
         .comment("Genero (Listados Genericos)");
@@ -41,10 +45,6 @@ export default class extends BaseSchema {
         .string("TRA_TIPO_SANGRE", 10)
         .notNullable()
         .comment("Tipo de sangre");
-      table
-        .timestamp("TRA_FECHA_NACIMIENTO")
-        .notNullable()
-        .comment("Fecha de nacimiento");
       table
         .string("TRA_NACIONALIDAD", 10)
         .notNullable()
@@ -81,11 +81,11 @@ export default class extends BaseSchema {
         .comment("Fondo de cesantias (Listados Genericos)");
       table.string("TRA_ARL", 10).comment("Arl (Listados Genericos)");
       table
-        .string("TRA_FONDO_PENSION", 10)
-        .comment("Fondo de pension (Listados Genericos)");
-      table
         .string("TRA_NIVEL_RIESGO", 10)
         .comment("Nivel de riesgo (Listados Genericos)");
+      table
+        .string("TRA_FONDO_PENSION", 10)
+        .comment("Fondo de pension (Listados Genericos)");
       table
         .string("TRA_TIPO_VIVIENDA", 10)
         .comment("Tipo de vivienda (Listados Genericos)");

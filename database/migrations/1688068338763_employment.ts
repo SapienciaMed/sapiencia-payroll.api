@@ -10,30 +10,39 @@ export default class extends BaseSchema {
       table
         .integer("EMP_CODTRA_TRABAJADOR")
         .notNullable()
-        .unsigned().references("TRA_CODIGO")
+        .unsigned()
+        .references("TRA_CODIGO")
         .inTable("TRA_TRABAJADORES")
         .comment("codigo del expediente (FK TRA_TRABAJADORES)");
       table
+        .integer("EMP_CODDEP_DEPENDENCIA")
+        .notNullable()
+        .unsigned()
+        .references("DEP_CODIGO")
+        .inTable("DEP_DEPENDENCIAS")
+        .comment("Codigo de la dependencia (FK DEP)");
+      table
         .integer("EMP_CODCRG_CARGO")
         .notNullable()
-        .unsigned().references("CRG_CODIGO")
+        .unsigned()
+        .references("CRG_CODIGO")
         .inTable("CRG_CARGOS")
         .comment("codigo del cargo (FK CRG_CARGOS)");
-      table
-        .integer("EMP_CODTCO_TIPO_CONTRATO")
-        .notNullable()
-        .comment("Tipo de contrato de vinculacionn del empleado")
-        .unsigned().references("TCO_CODIGO")
-        .inTable("TCO_TIPOS_CONTRATO");
       table
         .string("EMP_CORREO_INSTITUCIONAL", 50)
         .notNullable()
         .comment("Correon institucional ");
       table
+        .integer("EMP_CODTCO_TIPO_CONTRATO")
+        .notNullable()
+        .comment("Tipo de contrato de vinculacionn del empleado")
+        .unsigned()
+        .references("TCO_CODIGO")
+        .inTable("TCO_TIPOS_CONTRATO");
+      table
         .string("EMP_NUMERO_CONTRATO", 10)
         .notNullable()
         .comment("Numero del contrato ");
-
       table
         .date("EMP_FECHA_INICIO")
         .notNullable()
@@ -42,32 +51,24 @@ export default class extends BaseSchema {
         .date("EMP_FECHA_FIN")
         .comment("Fecha de finalizacion del contrato ");
       table
+        .string("EMP_OBLIGACIONES_ESPECIFICAS", 500)
+        .comment("Texto donde se definen las obligaciones de la contratacion");
+      table
+        .string("EMP_OBJECTO_CONTRACTUAL", 500)
+        .comment("Objeto contractual del empleo");
+      table
         .string("EMP_ESTADO", 10)
         .notNullable()
         .comment("Estado del empleos");
       table
         .integer("EMP_CODTMR_MOTIVO_RETIRO")
-        .unsigned().references("TMR_CODIGO")
+        .unsigned()
+        .references("TMR_CODIGO")
         .inTable("TMR_TIPOS_MOTIVOS_RETIRO")
         .comment("codigo del motivo de retiro (FK TMR_TIPOS_MOTIVOS_RETIRO)");
       table
         .date("EMP_FECHA_RETIRO")
         .comment("Fecha en que se retiro el empleado");
-
-      table
-        .decimal("EMP_SALARIO", 10, 2)
-        .comment("salario del empleado vinculado")
-        .defaultTo(0)
-        .nullable();
-      table
-        .decimal("EMP_VALOR_TOTAL", 10, 2)
-        .comment("valor del contrato asignado al contratista")
-        .defaultTo(0)
-        .nullable();
-      table
-        .string("EMP_OBSERVACION", 1000)
-        .comment("observación al contrato de un contratista")
-        .nullable();
       table
         .string("EMP_USUARIO_MODIFICO", 10)
         .comment(

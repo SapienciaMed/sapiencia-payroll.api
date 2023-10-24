@@ -76,7 +76,7 @@ export default class CreateAndUpdateWorkerValidator {
       idReasonRetirement: schema.number.optional(),
       retirementDate: schema.date.optional(),
       observation: schema.string.optional(),
-      salary: schema.number.optional(),
+      // salary: schema.number.optional(),
       totalValue: schema.number.optional(),
       userModified: schema.string.optional([rules.maxLength(10)]),
       userCreate: schema.string.optional([rules.maxLength(15)]),

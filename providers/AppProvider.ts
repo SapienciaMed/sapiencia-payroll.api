@@ -9,7 +9,9 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** SERVICES ********************************/
     /**************************************************************************/
-    const TaxDeductibleService = await import("App/Services/TaxDeductibleService");
+    const TaxDeductibleService = await import(
+      "App/Services/TaxDeductibleService"
+    );
     const VinculationProvider = await import("App/Services/VinculationService");
     const VacationService = await import("App/Services/VacationService");
     const IncapacityService = await import("App/Services/IncapacityService");
@@ -35,7 +37,9 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
-    const TaxDeductibleRepository = await import("App/Repositories/TaxDeductibleRepository");
+    const TaxDeductibleRepository = await import(
+      "App/Repositories/TaxDeductibleRepository"
+    );
     const WorkerRepository = await import("App/Repositories/WorkerRepository");
     const PayrollGenerateRepository = await import(
       "App/Repositories/PayrollGenerateRepository"
@@ -86,14 +90,10 @@ export default class AppProvider {
     /******************************** CORE  ***********************************/
     /**************************************************************************/
 
-
-
     this.app.container.singleton(
       "core.TaxDeductibleProvider",
       () =>
-        new TaxDeductibleService.default(
-          new TaxDeductibleRepository.default()
-        )
+        new TaxDeductibleService.default(new TaxDeductibleRepository.default())
     );
 
     this.app.container.singleton(
@@ -116,8 +116,8 @@ export default class AppProvider {
           new TypesContractsRepository.default(),
           new ChargesRepository.default(),
           new ContractSuspensionRepository.default(),
-          new SalaryHistoryRepository.default(),
-          new SalaryIncrementRepository.default()
+          new SalaryHistoryRepository.default()
+          //new SalaryIncrementRepository.default()
         )
     );
 

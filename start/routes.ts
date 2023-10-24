@@ -24,11 +24,11 @@ Route.get("/", async () => {
   return "Api de servicios Transversales de SAPIENCIA";
 });
 
-
 Route.group(() => {
-  Route.get("/get-by-id/:id","TaxDeductibleController.getTaxDeductibleById");
-}).prefix("/api/v1/tax-deductible").middleware('auth')
-
+  Route.get("/get-by-id/:id", "TaxDeductibleController.getTaxDeductibleById");
+})
+  .prefix("/api/v1/tax-deductible")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get(
@@ -143,3 +143,13 @@ Route.group(() => {
 })
   .prefix("/api/v1/salaryIncrease")
   .middleware("auth");
+
+Route.group(() => {
+  Route.get("/:id", "TaxDeductibleController.getTaxDeductibleById");
+  Route.post("/", "TaxDeductibleController.createTaxDeductible");
+  Route.post(
+    "get-paginated",
+    "TaxDeductibleController.getTaxDeductiblePaginate"
+  );
+  Route.put("/", "TaxDeductibleController.updateTaxDeductible");
+}).prefix("/api/v1/taxDeductible");

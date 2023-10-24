@@ -30,7 +30,7 @@ import {
 import { IContractSuspensionRepository } from "App/Repositories/ContractSuspensionRepository";
 import { ISalaryHistoryRepository } from "App/Repositories/SalaryHistoryRepository";
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
-import { ISalaryIncrementRepository } from "App/Repositories/SalaryIncrementRepository";
+//import { ISalaryIncrementRepository } from "App/Repositories/SalaryIncrementRepository";
 import { DateTime } from "luxon";
 
 export interface IVinculationService {
@@ -78,11 +78,12 @@ export default class VinculationService implements IVinculationService {
     private TypesContractsRepository: ITypesContractsRepository,
     private typesChargesRepository: IChargesRepository,
     private contractSuspensionRepository: IContractSuspensionRepository,
-    private salaryHistoryRepository: ISalaryHistoryRepository,
-    private salaryIncrementRepository: ISalaryIncrementRepository
+    private salaryHistoryRepository: ISalaryHistoryRepository // private salaryIncrementRepository: ISalaryIncrementRepository
   ) {}
 
-  async getWorkersByFilters(filters: IWorkerFilters): Promise<ApiResponse<IWorker[]>> {
+  async getWorkersByFilters(
+    filters: IWorkerFilters
+  ): Promise<ApiResponse<IWorker[]>> {
     const workers = await this.workerRepository.getWorkersByFilters(filters);
 
     return new ApiResponse(workers, EResponseCodes.OK);
@@ -222,22 +223,16 @@ export default class VinculationService implements IVinculationService {
     const charge = await this.typesChargesRepository.getChargeById(
       employment.idCharge
     );
-    const salaryIncrement =
-      await this.salaryIncrementRepository.getSalaryIncrementByChargeID(
-        employment.idCharge
-      );
+
     await this.salaryHistoryRepository.createManySalaryHistory(
       [
         {
           codEmployment: employment.id,
-          codIncrement: salaryIncrement?.id,
-          previousSalary: salaryIncrement?.previousSalary,
+          // codIncrement: salaryIncrement?.id,
+          previousSalary: 0,
           salary: charge?.baseSalary,
           validity: true,
-          effectiveDate: DateTime.fromFormat(
-            String(salaryIncrement?.effectiveDate),
-            "yyyy/MM/dd"
-          ),
+          effectiveDate: data.employment.startDate,
         } as ISalaryHistory,
       ],
       trx

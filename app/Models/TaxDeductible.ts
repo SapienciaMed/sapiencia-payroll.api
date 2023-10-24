@@ -1,5 +1,6 @@
-import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
+import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
+import Employment from "./Employment";
 
 export default class TaxDeductible extends BaseModel {
   public static table = "DER_DEDUCIBLES_RENTA";
@@ -10,8 +11,8 @@ export default class TaxDeductible extends BaseModel {
   @column({ columnName: "DER_ANIO", serializeAs: "year" })
   public year: number;
 
-  @column({ columnName: "DER_CODEMP_EMPLEO", serializeAs: "idEmployment" })
-  public idEmployment: number;
+  @column({ columnName: "DER_CODEMP_EMPLEO", serializeAs: "codEmployment" })
+  public codEmployment: number;
 
   @column({ columnName: "DER_TIPO", serializeAs: "type" })
   public type: string;
@@ -49,4 +50,10 @@ export default class TaxDeductible extends BaseModel {
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
+
+  @belongsTo(() => Employment, {
+    localKey: "id",
+    foreignKey: "codEmployment",
+  })
+  public employment: BelongsTo<typeof Employment>;
 }

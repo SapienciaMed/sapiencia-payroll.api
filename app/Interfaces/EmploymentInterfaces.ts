@@ -17,7 +17,7 @@ export interface IEmployment {
   idReasonRetirement?: number;
   retirementDate?: DateTime;
   observation?: string;
-  salary?: number;
+  // salary?: number;
   totalValue?: number;
   userModified?: string;
   dateModified?: DateTime;
@@ -25,8 +25,7 @@ export interface IEmployment {
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
 
-
-  worker?: IWorker
+  worker?: IWorker;
 }
 
 export interface IEmploymentResult {
@@ -51,7 +50,7 @@ export interface IEmploymentResult {
   typesContracts?: ITypesContracts[];
   worker: IWorker;
   charges: ICharge[];
-  salaryHistories: ISalaryHistory[]
+  salaryHistories: ISalaryHistory[];
 }
 
 export interface IEmploymentWorker extends IEmployment {

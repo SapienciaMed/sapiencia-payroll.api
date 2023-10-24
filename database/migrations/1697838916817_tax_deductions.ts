@@ -14,7 +14,7 @@ export default class extends BaseSchema {
         .unique();
 
       table
-        .integer("DER_AÑO")
+        .integer("DER_ANIO")
         .notNullable()
         .comment("Año en que se aplica el deduccible");
 

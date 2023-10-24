@@ -7,6 +7,10 @@ export default class TaxDeductibleValidator {
   public schema = schema.create({
     id: schema.number.optional(),
     year: schema.number(),
+    codEmployment: schema.number(),
+    type: schema.string(),
+    value: schema.number(),
+    state: schema.string(),
   });
 
   public messages: CustomMessages = { err: "error" };

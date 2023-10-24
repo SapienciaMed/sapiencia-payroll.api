@@ -1,7 +1,7 @@
 import BaseSchema from "@ioc:Adonis/Lucid/Schema";
 
 export default class extends BaseSchema {
-  protected tableName = "UNI_UNIDADES";
+  protected tableName = "DEP_DEPENDENCIAS";
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -13,7 +13,7 @@ export default class extends BaseSchema {
         .unsigned()
         .references("DEP_CODIGO")
         .inTable("DEP_DEPENDENCIAS")
-        .comment("codigo unidad superior (FK UNI_UNIDADES)");
+        .comment("codigo unidad superior (FK DEP_DEPENDENCIAS)");
     });
   }
 

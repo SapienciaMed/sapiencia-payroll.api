@@ -30,6 +30,7 @@ export default class AppProvider {
     const ManualDeductionService = await import(
       "App/Services/ManualDeductionService"
     );
+    const OtherIncomeService = await import("App/Services/OtherIncomeService");
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
@@ -85,6 +86,9 @@ export default class AppProvider {
     );
     const ManualDeductionRepository = await import(
       "App/Repositories/ManualDeductionRepository"
+    );
+    const OtherIncomeRepository = await import(
+      "App/Repositories/OtherIncomeRepository"
     );
     /**************************************************************************/
     /******************************** CORE  ***********************************/
@@ -184,6 +188,11 @@ export default class AppProvider {
           new ManualDeductionRepository.default(),
           new EmploymentRepository.default()
         )
+    );
+
+    this.app.container.singleton(
+      "core.OtherIncomeProvider",
+      () => new OtherIncomeService.default(new OtherIncomeRepository.default())
     );
   }
 

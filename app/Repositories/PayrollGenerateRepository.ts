@@ -116,6 +116,7 @@ export interface IPayrollGenerateRepository {
     codEmployment: number,
     typeIncome: number
   ): Promise<IIncome>;
+  getIncomeTypeByType(type: string): Promise<IIncomeType[]>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -500,5 +501,13 @@ export default class PayrollGenerateRepository
     }
 
     return { value: 0 } as IIncome;
+  }
+
+  async getIncomeTypeByType(type: string): Promise<IIncomeType[]> {
+    const typeIncomes = await IncomeType.query().where("type", type);
+
+    console.log(IncomeType.query().where("type", type).toQuery());
+
+    return typeIncomes.map((i) => i.serialize() as IncomeType);
   }
 }

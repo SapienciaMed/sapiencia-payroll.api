@@ -5,7 +5,6 @@ import ChargesRepository from "App/Repositories/ChargesRepository";
 const chargeFake: ICharge = {
   id: 1,
   name: "Ejemplo",
-  codUnit: 1,
   observations: "Ejemplo",
   codChargeType: 1,
   baseSalary: 0,

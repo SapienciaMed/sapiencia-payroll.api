@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
-import Dependencies from "./Dependence";
 import TypesCharge from "./TypesCharge";
 
 export default class Charge extends BaseModel {
@@ -11,12 +10,6 @@ export default class Charge extends BaseModel {
 
   @column({ columnName: "CRG_NOMBRE", serializeAs: "name" })
   public name: string;
-
-  @column({
-    columnName: "CRG_CODUNI_UNIDAD",
-    serializeAs: "codUnit",
-  })
-  public codUnit: number;
 
   @column({
     columnName: "CRG_CODTCG_TIPO_CARGO",
@@ -69,11 +62,6 @@ export default class Charge extends BaseModel {
   })
   public dateCreate: DateTime;
 
-  @hasOne(() => Dependencies, {
-    localKey: "codUnit",
-    foreignKey: "id",
-  })
-  public dependencies: HasOne<typeof Dependencies>;
 
   @hasOne(() => TypesCharge, {
     localKey: "codChargeType",

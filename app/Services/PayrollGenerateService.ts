@@ -5,9 +5,11 @@ import FormsPeriodRepository from "App/Repositories/FormsPeriodRepository";
 import CoreService from "./External/CoreService";
 import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
 import { PayrollExecutions } from "./SubServices/PayrollExecutions";
+import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<object>>;
+  getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>>;
 }
 
 export default class PayrollGenerateService
@@ -70,5 +72,19 @@ export default class PayrollGenerateService
     //     break;
     // }
     return new ApiResponse(result, EResponseCodes.OK);
+  }
+
+  async getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>> {
+    const res = await this.payrollGenerateRepository.getIncomeTypeByType(type);
+
+    if (!res) {
+      return new ApiResponse(
+        {} as IIncomeType[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
   }
 }

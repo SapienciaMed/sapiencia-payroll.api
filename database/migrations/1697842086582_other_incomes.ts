@@ -43,12 +43,12 @@ export default class extends BaseSchema {
         );
 
       table
-        .decimal("DER_VALOR", 15, 2)
+        .decimal("OIN_VALOR", 15, 2)
         .notNullable()
         .comment("Total del valor certificado");
 
       table
-        .string("DER_ESTADO", 15)
+        .string("OIN_ESTADO", 15)
         .notNullable()
         .comment("Estado del deduccible (Pendiente, Aplicado)");
 

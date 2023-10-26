@@ -126,6 +126,12 @@ export default class Worker extends BaseModel {
   public socioEconomic: string;
 
   @column({
+    columnName: "TRA_CODIGO_IDENTIFICACION_FISCAL",
+    serializeAs: "fiscalIdentification",
+  })
+  public fiscalIdentification: string;
+
+  @column({
     columnName: "TRA_EPS",
     serializeAs: "eps",
   })

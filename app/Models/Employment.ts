@@ -15,6 +15,7 @@ import Worker from "./Worker";
 import ReasonsForWithdrawal from "./ReasonsForWithdrawal";
 import SalaryHistory from "./SalaryHistory";
 import Dependence from "./Dependence";
+import ManualDeduction from "./ManualDeduction";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -172,6 +173,12 @@ export default class Employment extends BaseModel {
     foreignKey: "codEmployment",
   })
   public salaryHistories: HasMany<typeof SalaryHistory>;
+
+  @hasMany(() => ManualDeduction, {
+    localKey: "id",
+    foreignKey: "codEmployment",
+  })
+  public manualDeduction: HasMany<typeof ManualDeduction>;
 
   @belongsTo(() => Worker, {
     localKey: "id",

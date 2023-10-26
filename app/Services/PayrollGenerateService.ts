@@ -8,6 +8,7 @@ import { PayrollExecutions } from "./SubServices/PayrollExecutions";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<object>>;
+  payrollDownloadById(id: number): Promise<ApiResponse<any>>;
 }
 
 export default class PayrollGenerateService
@@ -69,6 +70,20 @@ export default class PayrollGenerateService
     //   default:
     //     break;
     // }
+    return new ApiResponse(result, EResponseCodes.OK);
+  }
+
+  async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
+    const formPeriod =
+      await this.payrollGenerateRepository.getPayrollInformation(id);
+    if (formPeriod?.employmentInfo?.length <= 0) {
+      return new ApiResponse(
+        { error: "fallo" },
+        EResponseCodes.FAIL,
+        "El reporte que intentas generar no tiene registros o existen problemas"
+      );
+    }
+    const result = this.payrollGenerateRepository.generateXlsx(formPeriod);
     return new ApiResponse(result, EResponseCodes.OK);
   }
 }

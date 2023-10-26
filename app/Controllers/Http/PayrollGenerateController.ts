@@ -16,6 +16,21 @@ export default class PayrollGenerateController {
       );
     }
   }
+  public async payrollDownloadById({ response, request }: HttpContextContract) {
+    try {
+      const { id } = request.params();
+      response.header("Content-Type", "application/vnd.ms-excel");
+      response.header(
+        "Content-Disposition",
+        "attachment; filename=ReportePlanilla.xlsx"
+      );
+      response.send(await PayrollGenerateProvider.payrollDownloadById(id));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 
   public async getTypesIncomes({ response, request }: HttpContextContract) {
     try {

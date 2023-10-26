@@ -1,3 +1,4 @@
+import * as XLSX from "xlsx";
 import { IBooking } from "App/Interfaces/BookingInterfaces";
 import { IcontractSuspension } from "App/Interfaces/ContractSuspensionInterfaces";
 import { ICyclicalDeductionInstallment } from "App/Interfaces/CyclicalDeductionInstallmentInterface";
@@ -38,6 +39,7 @@ import Relative from "App/Models/Relative";
 import SalaryHistory from "App/Models/SalaryHistory";
 import Vacation from "App/Models/Vacation";
 import { DateTime } from "luxon";
+import FormsPeriod from "App/Models/FormsPeriod";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
@@ -84,6 +86,7 @@ export interface IPayrollGenerateRepository {
   ): Promise<IIncomePayroll[]>;
   getIncomesTypesByName(name: string): Promise<IIncomeType>;
   getDeductionTypesByName(name: string): Promise<IDeductionType>;
+  getPayrollInformation(codPayroll: number): Promise<any>;
   createIncome(income: IIncome): Promise<IIncome>;
   createManyIncome(income: IIncome[]): Promise<IIncome[]>;
   createDeduction(deduction: IDeduction): Promise<IDeduction>;
@@ -116,6 +119,7 @@ export interface IPayrollGenerateRepository {
     codEmployment: number,
     typeIncome: number
   ): Promise<IIncome>;
+  generateXlsx(rows: any): Promise<any>;
   getIncomeTypeByType(type: string): Promise<IIncomeType[]>;
 }
 export default class PayrollGenerateRepository
@@ -501,6 +505,151 @@ export default class PayrollGenerateRepository
     }
 
     return { value: 0 } as IIncome;
+  }
+
+  async getPayrollInformation(codPayroll: number): Promise<any> {
+    const payrollInfo: any = {};
+
+    // Consulta para la información de empleo
+    payrollInfo.employmentInfo = await FormsPeriod.query()
+      .select(
+        "TRA_TRABAJADORES.TRA_TIPO_DOCUMENTO as tipo_documento",
+        "TRA_TRABAJADORES.TRA_NUMERO_DOCUMENTO as numero_documento",
+        "TRA_TRABAJADORES.TRA_CODIGO_IDENTIFICACION_FISCAL as identificacion_fiscal",
+        "TRA_TRABAJADORES.TRA_PRIMER_NOMBRE as primer_nombre",
+        "TRA_TRABAJADORES.TRA_SEGUNDO_NOMBRE as segundo_nombre",
+        "TRA_TRABAJADORES.TRA_PRIMER_APELLIDO as primer_apellido",
+        "TRA_TRABAJADORES.TRA_SEGUNDO_APELLIDO as segundo_apellido",
+        "TRA_TRABAJADORES.TRA_BANCO as banco",
+        "TRA_TRABAJADORES.TRA_CUENTA_BANCARIA as nro_cuenta_bancaria",
+        "DEP_DEPENDENCIAS.DEP_NOMBRE as dependencia",
+        "EMP_EMPLEOS.EMP_NUMERO_CONTRATO",
+        "TCO_TIPOS_CONTRATO.TCO_NOMBRE as tipo_contrato"
+      )
+      .join("HPL_HISTORICOS_PLANILLA", "HPL_CODPPL_PLANILLA", "PPL_CODIGO")
+      .join("EMP_EMPLEOS", "EMP_CODIGO", "HPL_CODEMP_EMPLEO")
+      .join("TCO_TIPOS_CONTRATO", "TCO_CODIGO", "EMP_CODTCO_TIPO_CONTRATO")
+      .join("CRG_CARGOS", "CRG_CODIGO", "EMP_CODCRG_CARGO")
+      .join("TRA_TRABAJADORES", "TRA_CODIGO", "EMP_CODTRA_TRABAJADOR")
+      .join("DEP_DEPENDENCIAS", "DEP_CODIGO", "EMP_CODDEP_DEPENDENCIA")
+      .where("id", codPayroll);
+
+    // Consulta para ingresos
+    payrollInfo.incomes = await FormsPeriod.query()
+      .select(
+        "TIG_TIPOS_INGRESO.TIG_NOMBRE as tipo_ingreso",
+        "ING_INGRESOS.ING_VALOR as valor",
+        "ING_INGRESOS.ING_TIEMPO as tiempo",
+        "ING_INGRESOS.ING_UNIDAD_TIEMPO as unidad_tiempo"
+      )
+      .join("ING_INGRESOS", "ING_CODPPL_PLANILLA", "PPL_CODIGO")
+      .join("TIG_TIPOS_INGRESO", "TIG_CODIGO", "ING_CODTIG_TIPO_INGRESO")
+      .where("id", codPayroll);
+
+    // Consulta para deducciones
+    payrollInfo.deductions = await FormsPeriod.query()
+      .select(
+        "TDD_TIPOS_DEDUCCIONES.TDD_NOMBRE as tipo_deduccion",
+        "DED_DEDUCCIONES.DED_VALOR as valor",
+        "DED_DEDUCCIONES.DED_VALOR_PATRONAL as valor_patronal",
+        "DED_DEDUCCIONES.DED_TIEMPO as tiempo",
+        "DED_DEDUCCIONES.DED_UNIDAD_TIEMPO as unidad_tiempo"
+      )
+      .join("DED_DEDUCCIONES", "DED_CODPPL_PLANILLA", "PPL_CODIGO")
+      .join("TDD_TIPOS_DEDUCCIONES", "TDD_CODIGO", "DED_CODTDD_TIPO_DEDUCCION")
+      .where("id", codPayroll);
+
+    // Consulta para reservas
+    payrollInfo.reserves = await FormsPeriod.query()
+      .select(
+        "TRS_TIPOS_RESERVAS.TRS_NOMBRE as tipo_reserva",
+        "RSV_RESERVAS.RSV_VALOR as valor",
+        "RSV_RESERVAS.RSV_TIEMPO as tiempo",
+        "RSV_RESERVAS.RSV_UNIDAD_TIEMPO as unidad_tiempo"
+      )
+      .join("RSV_RESERVAS", "RSV_CODPPL_PLANILLA", "PPL_CODIGO")
+      .join("TRS_TIPOS_RESERVAS", "TRS_CODIGO", "RSV_CODTRS_TIPO_RESERVA")
+      .where("id", codPayroll);
+
+    // Consulta para días de incapacidad
+    payrollInfo.incapacityDays = await FormsPeriod.query()
+      .select(
+        "DIP_DIAS_INCAPACIDAD_PROCESADOS.DIP_FECHA_INICIO as fecha_inicio_procesado",
+        "DIP_DIAS_INCAPACIDAD_PROCESADOS.DIP_FECHA_FIN as fecha_fin_procesado",
+        "INC_INCAPACIDADES.INC_FECHA_INICIO as fecha_inicio",
+        "INC_INCAPACIDADES.INC_FECHA_FIN as fecha_fin",
+        "TIN_TIPOS_INCAPACIDAD.TIN_NOMBRE as tipo_incapacidad",
+        "DIP_DIAS_INCAPACIDAD_PROCESADOS.DIP_DIAS as cantidad_dias"
+      )
+      .join(
+        "DIP_DIAS_INCAPACIDAD_PROCESADOS",
+        "DIP_CODPPL_PLANILLA",
+        "PPL_CODIGO"
+      )
+      .join("INC_INCAPACIDADES", "INC_CODIGO", "DIP_CODINC_INCAPACIDAD")
+      .join(
+        "TIN_TIPOS_INCAPACIDAD",
+        "TIN_CODIGO",
+        "INC_CODTIN_TIPO_INCAPACIDAD"
+      )
+      .where("id", codPayroll);
+
+    // Consulta para días de licencia
+    payrollInfo.licenceDays = await FormsPeriod.query()
+      .select(
+        "LIC_LICENCIAS.LIC_FECHA_INICIO as fecha_inicio_licencia",
+        "LIC_LICENCIAS.LIC_FECHA_FIN as fecha_fin_licencia",
+        "LIC_LICENCIAS.LIC_NUMERO_RESOLUCION as numero_resolucion",
+        "LIC_LICENCIAS.LIC_ESTADO as estado"
+      )
+      .join("HPL_HISTORICOS_PLANILLA", "HPL_CODPPL_PLANILLA", "PPL_CODIGO")
+      .join("EMP_EMPLEOS", "EMP_CODIGO", "HPL_CODEMP_EMPLEO")
+      .join("LIC_LICENCIAS", "LIC_CODEMP_EMPLEO", "EMP_CODIGO")
+      .whereRaw(
+        "LIC_LICENCIAS.LIC_FECHA_INICIO BETWEEN PPL_FECHA_INICIO and PPL_FECHA_FIN or LIC_LICENCIAS.LIC_FECHA_FIN BETWEEN PPL_FECHA_INICIO and PPL_FECHA_FIN"
+      )
+      .where("id", codPayroll);
+
+    // Consulta para deducciones manuales
+    payrollInfo.manualDeduction = await FormsPeriod.query()
+      .select(
+        "DDM_DEDUCCIONES_MANUALES.DDM_ES_PORCENTUAL as porcentual",
+        "DDM_DEDUCCIONES_MANUALES.DDM_VALOR as valor",
+        "DDM_DEDUCCIONES_MANUALES.DDM_ES_CICLICA as ciclica",
+        "DDM_DEDUCCIONES_MANUALES.DDM_NUMERO_CUOTAS as numero_cuotas",
+        "DDM_DEDUCCIONES_MANUALES.DDM_MONTO_TOTAL as monto_total",
+        "DDM_DEDUCCIONES_MANUALES.DDM_ESTADO as estado",
+        "CDC_CUOTAS_DEDUCCION_CICLICA.CDC_NUMERO_CUOTA as numero_cuota",
+        "CDC_CUOTAS_DEDUCCION_CICLICA.CDC_VALOR_CUOTA as valor_cuota"
+      )
+      .join("HPL_HISTORICOS_PLANILLA", "HPL_CODPPL_PLANILLA", "PPL_CODIGO")
+      .join("EMP_EMPLEOS", "EMP_CODIGO", "HPL_CODEMP_EMPLEO")
+      .join("DDM_DEDUCCIONES_MANUALES", (query) => {
+        query.on((subquery) => {
+          subquery
+            .on("DDM_CODPPL", "=", "PPL_CODIGO")
+            .orOn("DDM_CODEMP_EMPLEO", "=", "EMP_CODIGO");
+        });
+      })
+      .join("CDC_CUOTAS_DEDUCCION_CICLICA", (query) => {
+        query.on((subquery) => {
+          subquery
+            .on("CDC_CODDDM_DEDUCCION", "=", "DDM_CODIGO")
+            .andOn("CDC_CODPPL_PLANILLA", "=", "PPL_CODIGO");
+        });
+      })
+      .where("id", codPayroll);
+
+    return payrollInfo;
+  }
+
+  async generateXlsx(rows: any): Promise<any> {
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+    const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+    return buffer;
   }
 
   async getIncomeTypeByType(type: string): Promise<IIncomeType[]> {

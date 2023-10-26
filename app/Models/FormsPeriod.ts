@@ -2,6 +2,10 @@ import { DateTime } from "luxon";
 import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
 import FormsType from "./FormsType";
+import Income from "./Income";
+import Deduction from "./Deduction";
+import Booking from "./Booking";
+import HistoricalPayroll from "./HistoricalPayroll";
 
 export default class FormsPeriod extends BaseModel {
   public static table = "PPL_PERIODOS_PLANILLA";
@@ -93,4 +97,28 @@ export default class FormsPeriod extends BaseModel {
     foreignKey: "id",
   })
   public formsType: HasMany<typeof FormsType>;
+
+  @hasMany(() => Income, {
+    localKey: "id",
+    foreignKey: "idTypePayroll",
+  })
+  public incomes: HasMany<typeof Income>;
+
+  @hasMany(() => Deduction, {
+    localKey: "id",
+    foreignKey: "idTypePayroll",
+  })
+  public deductions: HasMany<typeof Deduction>;
+
+  @hasMany(() => Booking, {
+    localKey: "id",
+    foreignKey: "idTypePayroll",
+  })
+  public reserves: HasMany<typeof Booking>;
+
+  @hasMany(() => HistoricalPayroll, {
+    localKey: "id",
+    foreignKey: "idTypePayroll",
+  })
+  public historicalPayroll: HasMany<typeof HistoricalPayroll>;
 }

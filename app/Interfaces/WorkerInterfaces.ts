@@ -18,6 +18,7 @@ export interface IWorker {
   municipality: string;
   neighborhood: string;
   address: string;
+  fiscalIdentification?:string;
   socioEconomic?: string;
   eps?: string;
   severanceFund?: string;

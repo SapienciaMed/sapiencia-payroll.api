@@ -40,6 +40,26 @@ export default class extends BaseSeeder {
         name: "Menor valor descontado",
         type: "Eventual",
       },
+      {
+        name: "Seguridad Social",
+        type: "Automatico",
+      },
+      {
+        name: "Pensión",
+        type: "Automatico",
+      },
+      {
+        name: "Impuesto a la renta",
+        type: "Automatico",
+      },
+      {
+        name: "Fondo de solidaridad",
+        type: "Automatico",
+      },
+      {
+        name: "Familiares dependientes",
+        type: "Automatico",
+      },
     ]);
   }
 }

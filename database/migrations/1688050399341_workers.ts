@@ -75,6 +75,9 @@ export default class extends BaseSchema {
       table
         .string("TRA_ESTRATO_SOCIOECONOMICO", 2)
         .comment("Estrato socioeconomico (Listados Genericos)");
+      table
+        .string("TRA_CODIGO_IDENTIFICACION_FISCAL", 20)
+        .comment("Codigo de indentifcion Fiscal");
       table.string("TRA_EPS", 10).comment("EPS afiliado (Listados Genericos)");
       table
         .string("TRA_FONDO_CESANTIAS", 10)

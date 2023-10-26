@@ -25,10 +25,17 @@ Route.get("/", async () => {
 });
 
 Route.group(() => {
+  Route.get("/get-by-id/:id", "TaxDeductibleController.getTaxDeductibleById");
+})
+  .prefix("/api/v1/tax-deductible")
+  .middleware("auth");
+
+Route.group(() => {
   Route.get(
     "/generate-by-id/:id",
     "PayrollGenerateController.payrollGenerateById"
   );
+  Route.get("/download/:id", "PayrollGenerateController.payrollDownloadById");
 
   Route.get("/incomeType", "PayrollGenerateController.getTypesIncomes");
 }).prefix("/api/v1/payroll-generate");

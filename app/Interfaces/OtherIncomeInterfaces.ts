@@ -1,11 +1,12 @@
 import { DateTime } from "luxon";
 import { IEmploymentWorker } from "./EmploymentInterfaces";
+import { IIncomeType } from "./IncomeTypesInterfaces";
 
-export interface ITaxDeductible {
+export interface IOtherIncome {
   id?: number;
-  year: number;
+  codTypeIncome: number;
   codEmployment: number;
-  type: string;
+  codPayroll: number;
   value: number;
   state: string;
   userModified?: string;
@@ -14,13 +15,14 @@ export interface ITaxDeductible {
   dateCreate?: DateTime;
 }
 
-export interface IGetTaxDeductible extends ITaxDeductible {
+export interface IGetOtherIncome extends IOtherIncome {
   employment: IEmploymentWorker;
+  typeIncome: IIncomeType;
 }
 
-export interface IFilterTaxDeductible {
+export interface IFilterOtherIncome {
   page: number;
   perPage: number;
-  year: number;
+  codPayroll: number;
   codEmployment: number;
 }

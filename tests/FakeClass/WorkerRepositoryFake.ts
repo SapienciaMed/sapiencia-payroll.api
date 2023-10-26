@@ -105,17 +105,16 @@ const employmentFake: IEmployment = {
   state: "1",
   idTypeContract: 3,
   observation: "",
-  salary: 234345,
+  // salary: 234345,
   totalValue: 400000,
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
-
-getWorkersByFilters(_filters: IWorkerFilters): Promise<IWorker[]> {
-  return new Promise((res) => {
-    res([]);
-  });
-}
+  getWorkersByFilters(_filters: IWorkerFilters): Promise<IWorker[]> {
+    return new Promise((res) => {
+      res([]);
+    });
+  }
 
   getActivesContractorworkers(): Promise<IWorker[]> {
     return new Promise((res) => {

@@ -6,9 +6,10 @@ const chargeFake: ICharge = {
   id: 1,
   name: "Ejemplo",
   codUnit: 1,
+  observations: "Ejemplo",
   codChargeType: 1,
   baseSalary: 0,
-  state: "Activo",
+  state: true,
 };
 
 export class ChargesRepositoryFake implements ChargesRepository {

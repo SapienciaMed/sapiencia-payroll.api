@@ -56,18 +56,18 @@ export default class ManualDeductionRepository
     if (manualDeduction.numberInstallments !== undefined) {
       toUpdate.numberInstallments = manualDeduction.numberInstallments;
     }
-    if (manualDeduction.applyExtraordinary !== undefined) {
-      toUpdate.applyExtraordinary = manualDeduction.applyExtraordinary;
-    }
+    // if (manualDeduction.applyExtraordinary !== undefined) {
+    //   toUpdate.applyExtraordinary = manualDeduction.applyExtraordinary;
+    // }
     if (manualDeduction.porcentualValue !== undefined) {
       toUpdate.porcentualValue = manualDeduction.porcentualValue;
     }
     if (manualDeduction.codFormsPeriod !== undefined) {
       toUpdate.codFormsPeriod = manualDeduction.codFormsPeriod;
     }
-    if (manualDeduction.observation !== undefined) {
-      toUpdate.observation = manualDeduction.observation;
-    }
+    // if (manualDeduction.observation !== undefined) {
+    //   toUpdate.observation = manualDeduction.observation;
+    // }
     if (manualDeduction.value) {
       toUpdate.value = manualDeduction.value;
     }

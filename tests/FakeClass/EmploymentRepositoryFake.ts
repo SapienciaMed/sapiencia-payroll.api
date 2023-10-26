@@ -20,7 +20,7 @@ const employmentFake: IEmployment = {
   state: "1",
   idTypeContract: 3,
   observation: "",
-  salary: 234345,
+  //salary: 234345,
   totalValue: 400000,
 };
 

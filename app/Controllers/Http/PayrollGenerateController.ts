@@ -31,4 +31,17 @@ export default class PayrollGenerateController {
       );
     }
   }
+
+  public async getTypesIncomes({ response, request }: HttpContextContract) {
+    try {
+      const { type } = request.qs();
+      return response.send(
+        await PayrollGenerateProvider.getTypesIncomeList(type)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

@@ -12,7 +12,7 @@ import { DateTime } from "luxon";
 import Database from "@ioc:Adonis/Lucid/Database";
 import { ContractSuspensionRepositoryFake } from "./FakeClass/ContractSuspensionFake";
 import { SalaryHistoryRepositoryFake } from "./FakeClass/SalaryHistoryRepositoryFake";
-import { SalaryIncrementRepositoryFake } from "./FakeClass/SalaryIncrementRepositoryFake";
+//import { SalaryIncrementRepositoryFake } from "./FakeClass/SalaryIncrementRepositoryFake";
 import {
   IFilterContractSuspension,
   IcontractSuspension,
@@ -25,8 +25,8 @@ const service = new VinculationService(
   new TypesContractsRepositoryFake(),
   new ChargesRepositoryFake(),
   new ContractSuspensionRepositoryFake(),
-  new SalaryHistoryRepositoryFake(),
-  new SalaryIncrementRepositoryFake()
+  new SalaryHistoryRepositoryFake()
+  //new SalaryIncrementRepositoryFake()
 );
 
 test.group("VinculationService TEST for createVinculation", () => {
@@ -76,7 +76,7 @@ test.group("VinculationService TEST for createVinculation", () => {
       state: "1",
       idTypeContract: 3,
       observation: "",
-      salary: 234345,
+      // salary: 234345,
       totalValue: 400000,
     },
   };
@@ -157,7 +157,7 @@ test.group("VinculationService TEST for editVinculation", () => {
       state: "1",
       idTypeContract: 3,
       observation: "",
-      salary: 234345,
+      // salary: 234345,
       totalValue: 400000,
     },
   };

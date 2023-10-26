@@ -30,7 +30,7 @@ export default class WorkerRepository implements IWorkerRepository {
 
   async getWorkersByFilters(filters: IWorkerFilters): Promise<IWorker[]> {
     const query = Worker.query().preload("employment", (q1) =>
-      q1.where("state", 1).preload("charge", (q2) => q2.preload("unit"))
+      q1.where("state", 1).preload("charge", (q2) => q2.preload("dependencies"))
     );
 
     if (filters.documentList)

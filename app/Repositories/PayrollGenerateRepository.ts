@@ -121,6 +121,7 @@ export interface IPayrollGenerateRepository {
     typeIncome: number
   ): Promise<IIncome>;
   generateXlsx(rows: any): Promise<any>;
+  getIncomeTypeByType(type: string): Promise<IIncomeType[]>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -650,5 +651,13 @@ export default class PayrollGenerateRepository
 
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
     return buffer;
+  }
+
+  async getIncomeTypeByType(type: string): Promise<IIncomeType[]> {
+    const typeIncomes = await IncomeType.query().where("type", type);
+
+    console.log(IncomeType.query().where("type", type).toQuery());
+
+    return typeIncomes.map((i) => i.serialize() as IncomeType);
   }
 }

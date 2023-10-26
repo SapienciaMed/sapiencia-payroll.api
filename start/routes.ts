@@ -36,6 +36,8 @@ Route.group(() => {
     "PayrollGenerateController.payrollGenerateById"
   );
   Route.get("/download/:id", "PayrollGenerateController.payrollDownloadById");
+
+  Route.get("/incomeType", "PayrollGenerateController.getTypesIncomes");
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {
@@ -144,3 +146,20 @@ Route.group(() => {
 })
   .prefix("/api/v1/salaryIncrease")
   .middleware("auth");
+
+Route.group(() => {
+  Route.get("/:id", "TaxDeductibleController.getTaxDeductibleById");
+  Route.post("/", "TaxDeductibleController.createTaxDeductible");
+  Route.post(
+    "get-paginated",
+    "TaxDeductibleController.getTaxDeductiblePaginate"
+  );
+  Route.put("/", "TaxDeductibleController.updateTaxDeductible");
+}).prefix("/api/v1/taxDeductible");
+
+Route.group(() => {
+  Route.get("/:id", "OtherIncomesController.getOtherIncomeById");
+  Route.post("/", "OtherIncomesController.createOtherIncome");
+  Route.post("get-paginated", "OtherIncomesController.getOtherIncomePaginate");
+  Route.put("/", "OtherIncomesController.updateOtherIncome");
+}).prefix("/api/v1/otherIncome");

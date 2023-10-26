@@ -40,7 +40,6 @@ import SalaryHistory from "App/Models/SalaryHistory";
 import Vacation from "App/Models/Vacation";
 import { DateTime } from "luxon";
 import FormsPeriod from "App/Models/FormsPeriod";
-import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;

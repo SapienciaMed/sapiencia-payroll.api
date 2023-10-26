@@ -1,4 +1,8 @@
 import { DateTime } from "luxon";
+import { IHistoricalPayroll } from "./HistoricalPayrollInterfaces";
+import { IDeduction } from "./DeductionsInterfaces";
+import Income from '../Models/Income';
+import { IIncome } from './IncomeInterfaces';
 
 export interface IFormPeriod {
   id?: number;
@@ -14,6 +18,11 @@ export interface IFormPeriod {
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
+
+  historicalPayroll?: IHistoricalPayroll[]
+  deductions?: IDeduction[]
+  incomes?: IIncome[]
+
 }
 
 export interface IFormPeriodFilters {

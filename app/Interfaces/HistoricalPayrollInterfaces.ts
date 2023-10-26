@@ -1,3 +1,5 @@
+import { IEmployment } from "./EmploymentInterfaces";
+
 export interface IHistoricalPayroll {
   id?: number;
   idTypePayroll: number;
@@ -9,4 +11,6 @@ export interface IHistoricalPayroll {
   total: number;
   state: string;
   observation: string;
+
+  employment?: IEmployment
 }

@@ -76,17 +76,94 @@ export default class PayrollGenerateService
   }
 
   async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
+    const toSend: any[] = []
+    const incomeTypeList =
+      await this.payrollGenerateRepository.getAllIncomesTypes();
     const formPeriod =
       await this.payrollGenerateRepository.getPayrollInformation(id);
-    if (formPeriod?.employmentInfo?.length <= 0) {
+
+    if (!formPeriod || !formPeriod.historicalPayroll || !formPeriod.incomes) {
       return new ApiResponse(
-        { error: "fallo" },
+        false,
         EResponseCodes.FAIL,
-        "El reporte que intentas generar no tiene registros o existen problemas"
+        "Recurso no encontrado"
       );
     }
-    const result = this.payrollGenerateRepository.generateXlsx(formPeriod);
-    return new ApiResponse(result, EResponseCodes.OK);
+
+    const incomeTypeToShow = incomeTypeList.filter((type) =>
+      formPeriod.incomes?.find((i) => i.idTypeIncome === type.id)
+    );
+
+
+
+
+    // nombres.forEach(nombre => {
+    //   nombresObjeto[nombre] = true;
+    // });
+
+    for (const historical of formPeriod.historicalPayroll) {
+
+      let temp = {
+        "Nombre": historical.employment?.worker?.firstName,
+        "Dias Trabajados": historical.workedDay,
+        "Salario Base": historical.salary
+      }
+
+
+      incomeTypeToShow.forEach((iType) => {
+       const income = formPeriod.incomes?.find(
+          (income) =>
+            income.idTypeIncome == iType.id &&
+            income.idEmployment == historical.idEmployment
+        );
+
+        temp[iType.name] = income ? income.value :  0;
+
+
+      });
+
+      toSend.push(temp)
+    }
+
+    console.log(toSend)
+
+    // incomeTypeToShow.forEach(i => {
+
+    // })
+
+    // const valuesForkeys = [];
+
+    // for (const [key, value] of Object.entries(object1)) {
+    //   valuesForKeys.push(value);
+    // }
+
+    //     const pivotData = [];
+    // data.ventas.forEach(item => {
+    //   const producto = item.producto;
+    //   for (const key in item) {
+    //     if (key !== "producto") {
+    //       pivotData.push({
+    //         producto,
+    //         mes: key,
+    //         valor: item[key]
+    //       });
+    //     }
+    //   }
+    // });
+
+    // for (const historical of formPeriod.historicalPayroll) {
+
+    // }
+
+    //   if (formPeriod?.employmentInfo?.length <= 0) {
+    //   return new ApiResponse(
+    //     { error: "fallo" },
+    //     EResponseCodes.FAIL,
+    //     "El reporte que intentas generar no tiene registros o existen problemas"
+    //   );
+    // }
+    // const result = this.payrollGenerateRepository.generateXlsx(formPeriod);
+    return new ApiResponse("", EResponseCodes.OK);
   }
 
   async getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>> {

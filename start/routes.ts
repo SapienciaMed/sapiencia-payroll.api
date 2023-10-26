@@ -40,6 +40,7 @@ Route.group(() => {
   Route.get("/incomeType", "PayrollGenerateController.getTypesIncomes");
 }).prefix("/api/v1/payroll-generate");
 
+
 Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
   Route.get("/charges", "VinculationController.getCharges");

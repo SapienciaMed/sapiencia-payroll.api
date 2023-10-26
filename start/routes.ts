@@ -156,7 +156,9 @@ Route.group(() => {
     "TaxDeductibleController.getTaxDeductiblePaginate"
   );
   Route.put("/", "TaxDeductibleController.updateTaxDeductible");
-}).prefix("/api/v1/taxDeductible");
+})
+  .prefix("/api/v1/taxDeductible")
+  .middleware("auth");
 
 Route.group(() => {
   Route.get("/:id", "OtherIncomesController.getOtherIncomeById");

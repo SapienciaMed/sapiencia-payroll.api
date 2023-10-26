@@ -24,7 +24,8 @@ export default class PayrollGenerateController {
         "Content-Disposition",
         "attachment; filename=ReportePlanilla.xlsx"
       );
-      response.send(await PayrollGenerateProvider.payrollDownloadById(id));
+      const result = await PayrollGenerateProvider.payrollDownloadById(id);
+      response.send(new ApiResponse(result, EResponseCodes.OK));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

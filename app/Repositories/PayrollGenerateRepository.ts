@@ -41,6 +41,8 @@ import Vacation from "App/Models/Vacation";
 import { DateTime } from "luxon";
 import FormsPeriod from "App/Models/FormsPeriod";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
+import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
+import ReserveType from "App/Models/ReserveType";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
@@ -125,6 +127,8 @@ export interface IPayrollGenerateRepository {
 
   // mover
   getAllIncomesTypes(): Promise<IIncomeType[]>;
+  getAllDeductionsTypes(): Promise<IDeductionType[]>;
+  getAllReservesTypes(): Promise<IReserveType[]>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -679,9 +683,19 @@ export default class PayrollGenerateRepository
 
     return typeIncomes.map((i) => i.serialize() as IncomeType);
   }
-
+  //mover
   async getAllIncomesTypes(): Promise<IIncomeType[]> {
     const res = await IncomeType.query();
     return res.map((i) => i.serialize() as IIncomeType);
+  }
+
+  async getAllDeductionsTypes(): Promise<IDeductionType[]> {
+    const res = await DeductionType.query();
+    return res.map((i) => i.serialize() as IDeductionType);
+  }
+
+  async getAllReservesTypes(): Promise<IReserveType[]> {
+    const res = await ReserveType.query();
+    return res.map((i) => i.serialize() as IReserveType);
   }
 }

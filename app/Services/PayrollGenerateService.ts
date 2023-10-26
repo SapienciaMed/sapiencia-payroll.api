@@ -76,9 +76,13 @@ export default class PayrollGenerateService
   }
 
   async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
-    const toSend: any[] = []
+    const toSend: any[] = [];
     const incomeTypeList =
       await this.payrollGenerateRepository.getAllIncomesTypes();
+    const deductionsTypeList =
+      await this.payrollGenerateRepository.getAllDeductionsTypes();
+    const reserveTypeList =
+      await this.payrollGenerateRepository.getAllReservesTypes();
     const formPeriod =
       await this.payrollGenerateRepository.getPayrollInformation(id);
 
@@ -94,38 +98,66 @@ export default class PayrollGenerateService
       formPeriod.incomes?.find((i) => i.idTypeIncome === type.id)
     );
 
+    const deductionTypeToShow = deductionsTypeList.filter((type) =>
+      formPeriod.deductions?.find((i) => i.idTypeDeduction === type.id)
+    );
 
-
+    const reserveTypeToShow = reserveTypeList.filter((type) =>
+      formPeriod.reserves?.find((i) => i.idTypeReserve === type.id)
+    );
 
     // nombres.forEach(nombre => {
     //   nombresObjeto[nombre] = true;
     // });
 
     for (const historical of formPeriod.historicalPayroll) {
-
       let temp = {
-        "Nombre": historical.employment?.worker?.firstName,
+        Nombre: `${historical.employment?.worker?.firstName} ${
+          historical.employment?.worker?.secondName ?? ""
+        } ${historical.employment?.worker?.surname} ${
+          historical.employment?.worker?.secondName
+        }`,
         "Dias Trabajados": historical.workedDay,
-        "Salario Base": historical.salary
-      }
-
+        "Salario Base": historical.salary,
+        "Total ingresos": historical.totalIncome,
+        "Total deducciones": historical.totalDeduction,
+        Total: historical.total,
+      };
 
       incomeTypeToShow.forEach((iType) => {
-       const income = formPeriod.incomes?.find(
+        const income = formPeriod.incomes?.find(
           (income) =>
             income.idTypeIncome == iType.id &&
             income.idEmployment == historical.idEmployment
         );
 
-        temp[iType.name] = income ? income.value :  0;
-
-
+        temp[iType.name] = income ? income.value : 0;
       });
 
-      toSend.push(temp)
+      deductionTypeToShow.forEach((iType) => {
+        const deduction = formPeriod.deductions?.find(
+          (deduction) =>
+            deduction.idTypeDeduction == iType.id &&
+            deduction.idEmployment == historical.idEmployment
+        );
+
+        temp[iType.name] = deduction ? deduction.value : 0;
+      });
+
+      reserveTypeToShow.forEach((iType) => {
+        const reserve = formPeriod.reserves?.find(
+          (reserve) =>
+            reserve.idTypeReserve == iType.id &&
+            reserve.idEmployment == historical.idEmployment
+        );
+
+        temp[iType.name] = reserve ? reserve.value : 0;
+      });
+
+      toSend.push(temp);
     }
 
-    console.log(toSend)
+    console.log(toSend);
 
     // incomeTypeToShow.forEach(i => {
 
@@ -162,8 +194,8 @@ export default class PayrollGenerateService
     //     "El reporte que intentas generar no tiene registros o existen problemas"
     //   );
     // }
-    // const result = this.payrollGenerateRepository.generateXlsx(formPeriod);
-    return new ApiResponse("", EResponseCodes.OK);
+    const result = this.payrollGenerateRepository.generateXlsx(toSend);
+    return result;
   }
 
   async getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>> {

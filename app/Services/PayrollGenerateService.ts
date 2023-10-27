@@ -102,6 +102,12 @@ export default class PayrollGenerateService
       formPeriod.deductions?.find((i) => i.idTypeDeduction === type.id)
     );
 
+    const patronalDeductionTypeToShow = deductionsTypeList.filter((type) =>
+      formPeriod.deductions?.find(
+        (i) => i.idTypeDeduction === type.id && i.patronalValue > 0
+      )
+    );
+
     const reserveTypeToShow = reserveTypeList.filter((type) =>
       formPeriod.reserves?.find((i) => i.idTypeReserve === type.id)
     );
@@ -117,6 +123,13 @@ export default class PayrollGenerateService
         } ${historical.employment?.worker?.surname} ${
           historical.employment?.worker?.secondName
         }`,
+        identificacion: historical.employment?.worker?.numberDocument,
+        "Codigo fiscal": historical.employment?.worker?.fiscalIdentification,
+        "Nro. Contrato": historical.employment?.contractNumber,
+        "Cuenta bancaria": historical.employment?.worker?.accountBankNumber,
+        Banco: historical.employment?.worker?.bank,
+        "inicio periodo": formPeriod.dateStart,
+        "fin periodo": formPeriod.dateEnd,
         "Dias Trabajados": historical.workedDay,
         "Salario Base": historical.salary,
         "Total ingresos": historical.totalIncome,
@@ -142,6 +155,18 @@ export default class PayrollGenerateService
         );
 
         temp[iType.name] = deduction ? deduction.value : 0;
+      });
+
+      patronalDeductionTypeToShow.forEach((iType) => {
+        const deduction = formPeriod.deductions?.find(
+          (deduction) =>
+            deduction.idTypeDeduction == iType.id &&
+            deduction.idEmployment == historical.idEmployment
+        );
+
+        temp[`${iType.name} patronal`] = deduction
+          ? deduction.patronalValue
+          : 0;
       });
 
       reserveTypeToShow.forEach((iType) => {

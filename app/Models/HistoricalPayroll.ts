@@ -22,7 +22,7 @@ export default class HistoricalPayroll extends BaseModel {
 
   @column({
     columnName: "HPL_DIAS_TRABAJADOS",
-    serializeAs: "workedDays",
+    serializeAs: "workedDay",
   })
   public workedDay: number;
 
@@ -40,7 +40,7 @@ export default class HistoricalPayroll extends BaseModel {
 
   @column({
     columnName: "HPL_TOTAL_DEDUCCIONES",
-    serializeAs: "totalDeductions",
+    serializeAs: "totalDeduction",
   })
   public totalDeduction: number;
 

@@ -121,7 +121,7 @@ export default class PayrollGenerateService
         Nombre: `${historical.employment?.worker?.firstName} ${
           historical.employment?.worker?.secondName ?? ""
         } ${historical.employment?.worker?.surname} ${
-          historical.employment?.worker?.secondName
+          historical.employment?.worker?.secondSurname
         }`,
         identificacion: historical.employment?.worker?.numberDocument,
         "Codigo fiscal": historical.employment?.worker?.fiscalIdentification,

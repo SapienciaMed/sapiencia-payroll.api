@@ -40,7 +40,6 @@ Route.group(() => {
   Route.get("/incomeType", "PayrollGenerateController.getTypesIncomes");
 }).prefix("/api/v1/payroll-generate");
 
-
 Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
   Route.get("/charges", "VinculationController.getCharges");
@@ -165,4 +164,6 @@ Route.group(() => {
   Route.post("/", "OtherIncomesController.createOtherIncome");
   Route.post("get-paginated", "OtherIncomesController.getOtherIncomePaginate");
   Route.put("/", "OtherIncomesController.updateOtherIncome");
-}).prefix("/api/v1/otherIncome");
+})
+  .prefix("/api/v1/otherIncome")
+  .middleware("auth");

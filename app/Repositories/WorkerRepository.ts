@@ -435,11 +435,16 @@ export default class WorkerRepository implements IWorkerRepository {
     const res = await Worker.query()
       .whereHas("employment", (employmentQuery) => {
         employmentQuery.where("state", "1");
-        employmentQuery.preload("typesContracts", (typesContractQuery) => {
-          typesContractQuery.where("temporary", true);
+        employmentQuery.whereHas("typesContracts", (typesContractsQuery) => {
+          typesContractsQuery.where("temporary", true);
         });
       })
-      .preload("employment");
+      .preload("employment", (employmentQuery) => {
+        employmentQuery.where("state", true);
+        employmentQuery.preload("typesContracts", (typesContractsQuery) => {
+          typesContractsQuery.where("temporary", true);
+        });
+      });
     return res as IWorker[];
   }
 

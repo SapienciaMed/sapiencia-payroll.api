@@ -61,6 +61,10 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Estado de la deduccion (Vigente, Finalizada)");
       table
+        .string("DDM_OBSERVACION", 500)
+        .nullable()
+        .comment("Observaciones de la deduccion");
+      table
         .string("DDM_USUARIO_MODIFICO", 15)
         .comment(
           "Numero del documento del ultimo usuario que hizo una modificacion"

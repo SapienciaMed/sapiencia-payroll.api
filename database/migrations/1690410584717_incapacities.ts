@@ -46,6 +46,11 @@ export default class extends BaseSchema {
         .notNullable()
         .defaultTo(false)
         .comment("Indicador de que si se hizo una modificación de la fecha fin");
+        table
+        .boolean("INC_COMPLETADA")
+        .notNullable()
+        .defaultTo(false)
+        .comment("Indicador de que si se pago");
 
       table
         .string("INC_USUARIO_MODIFICO" , 15)

@@ -43,6 +43,10 @@ import FormsPeriod from "App/Models/FormsPeriod";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import ReserveType from "App/Models/ReserveType";
+import OtherIncome from "App/Models/OtherIncome";
+import { EStatesOtherIncome } from "App/Constants/otherincome.enum";
+import TaxDeductible from "App/Models/TaxDeductible";
+import { EStatesTaxDeduction } from "App/Constants/taxdeduction.enum";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
@@ -169,11 +173,35 @@ export default class PayrollGenerateRepository
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("ING_CODEMP_EMPLEO", employmentId);
 
+    const otherIncome = OtherIncome.query()
+      .select("OIN_VALOR as value", "IAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "OIN_CODPPL_PLANILLA")
+      .join(
+        "IAG_INGRESOS_AGRUPADOR",
+        "IAG_CODTIG_TIPO_INGRESO",
+        "OIN_CODTIG_TIPO_INGRESO"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("IAG_CODAGR_AGRUPADOR", gruperId)
+      .where("OIN_CODEMP_EMPLEO", employmentId)
+      .where("OIN_ESTADO", EStatesOtherIncome.Pendiente);
+
     if (payrollPeriodId) {
       incomesq.where("PPL_CODIGO", payrollPeriodId);
     }
+
     const incomes = await incomesq;
+
+    const otherIncomes = await otherIncome;
+
     const totalIncomes = incomes.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    const totalOtherIncomes = otherIncomes.reduce(
       (sum, i) =>
         sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
       0
@@ -195,14 +223,31 @@ export default class PayrollGenerateRepository
     if (payrollPeriodId) {
       deductionsq.where("PPL_CODIGO", payrollPeriodId);
     }
+
+    const taxDeduction = TaxDeductible.query()
+      .select("DER_VALOR as value")
+      .where("DER_ANIO", year)
+      .where("DER_CODEMP_EMPLEO", employmentId)
+      .where("DER_ESTADO", EStatesTaxDeduction.Pendiente);
+
     const deductions = await deductionsq;
+    const taxDeductions = await taxDeduction;
+
     const totalDeductions = deductions.reduce(
       (sum, i) =>
         sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
       0
     );
 
-    return (totalIncomes || 0) - (totalDeductions || 0);
+    const totalTaxDeduction = taxDeductions.reduce(
+      (sum, i) => sum + Number(i.$extras.value),
+      0
+    );
+
+    return (
+      (totalIncomes || 0 + totalOtherIncomes || 0) -
+      (totalDeductions || 0 + totalTaxDeduction || 0)
+    );
   }
 
   async getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]> {

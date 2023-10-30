@@ -152,7 +152,7 @@ export default class VinculationController {
     try {
       const { temporary } = request.qs() as { temporary: string };
       return response.send(
-        await VinculationProvider.getActiveWorkers(temporary)
+        await VinculationProvider.getActiveWorkers(temporary == "true")
       );
     } catch (err) {
       return response.badRequest(

@@ -13,7 +13,7 @@ export interface IWorkerRepository {
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
-  getActivesWorkers(temporary: string): Promise<IWorker[]>;
+  getActivesWorkers(temporary: boolean): Promise<IWorker[]>;
   getActivesContractorworkers(): Promise<IWorker[]>;
   createWorker(
     worker: IWorker,
@@ -413,28 +413,19 @@ export default class WorkerRepository implements IWorkerRepository {
     return res ? (res.serialize() as IWorker) : null;
   }
 
-  async getActivesWorkers(temporary: string): Promise<IWorker[]> {
+  async getActivesWorkers(temporary: boolean): Promise<IWorker[]> {
     const res = await Worker.query()
       .whereHas("employment", (employmentQuery) => {
         employmentQuery.where("state", true);
 
         employmentQuery.whereHas("typesContracts", (typesContractsQuery) => {
-          if (temporary === "no") {
-            typesContractsQuery.where("temporary", false);
-          }
-          //  else {
-          //   typesContractsQuery.where("temporary", true);
-          // }
+          typesContractsQuery.where("temporary", Boolean(temporary));
         });
       })
       .preload("employment", (employmentQuery) => {
         employmentQuery.where("state", true);
         employmentQuery.preload("typesContracts", (typesContractsQuery) => {
-          if (temporary === "no") {
-            typesContractsQuery.where("temporary", false);
-          } else {
-            typesContractsQuery.where("temporary", true);
-          }
+          typesContractsQuery.where("temporary", Boolean(temporary));
         });
       });
     return res as IWorker[];

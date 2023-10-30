@@ -25,6 +25,10 @@ export default class extends BaseSchema {
         .boolean("DDM_ES_CICLICA")
         .notNullable()
         .comment("Indicado de que si la deduccion es ciclica o no");
+        table
+        .boolean("DDM_APLICA_EXTRAORDINARIA")
+        .nullable()
+        .comment("Indicado de que si la deduccion se aplica a extraordinaria");
       table
         .integer("DDM_CODTDD_TIPO_DEDUCCION")
         .references("TDD_CODIGO")

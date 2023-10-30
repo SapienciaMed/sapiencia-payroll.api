@@ -49,6 +49,14 @@ export default class ManualDeduction extends BaseModel {
     serialize: (val) => Boolean(val),
   })
   public porcentualValue: boolean;
+
+  @column({
+    columnName: "DDM_APLICA_EXTRAORDINARIA",
+    serializeAs: "applyExtraordinary",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
+  public applyExtraordinary: boolean;
   @column({ columnName: "DDM_VALOR", serializeAs: "value" })
   public value: number;
 

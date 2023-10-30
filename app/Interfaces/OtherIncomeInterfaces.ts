@@ -23,6 +23,6 @@ export interface IGetOtherIncome extends IOtherIncome {
 export interface IFilterOtherIncome {
   page: number;
   perPage: number;
-  codPayroll: number;
-  codEmployment: number;
+  codPayroll: number | null;
+  codEmployment: number | null;
 }

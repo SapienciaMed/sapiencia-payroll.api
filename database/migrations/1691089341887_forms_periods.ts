@@ -25,6 +25,10 @@ export default class extends BaseSchema {
         .string("PPL_ESTADO", 10)
         .notNullable()
         .comment("Referencia del estado de la planilla");
+        table
+        .string("PPL_OBSERVACION", 500)
+        .notNullable()
+        .comment("Observaciones de la planilla");
       table
         .date("PPL_FECHA_INICIO")
         .notNullable()

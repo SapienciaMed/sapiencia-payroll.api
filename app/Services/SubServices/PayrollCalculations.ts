@@ -401,7 +401,7 @@ export class PayrollCalculations {
     let daysWorked = calculateDifferenceDays(employment.startDate, endDate);
     if (daysWorked > 360) {
       daysWorked = 360;
-    }else if(daysWorked<=0){
+    } else if (daysWorked <= 0) {
       daysWorked = 0;
     }
     const serviceBounty =
@@ -1234,10 +1234,14 @@ export class PayrollCalculations {
       );
 
     if (dateVinculation > oneJulyPreviusYear) {
-      const daysLiquidate = calculateDifferenceDays(
+      let daysLiquidate = calculateDifferenceDays(
         dateVinculation,
         new Date(currentYear, 5, 30)
       );
+
+      if (daysLiquidate <= 0) {
+        daysLiquidate = 0;
+      }
 
       const calculatePrimaService =
         ((salary + lastServiceBonus.value / 12) / 720) * daysLiquidate;
@@ -1300,11 +1304,13 @@ export class PayrollCalculations {
       );
 
     if (dateVinculation > oneDecemberPreviusYear) {
-      const daysLiquidate = calculateDifferenceDays(
+      let daysLiquidate = calculateDifferenceDays(
         dateVinculation,
         new Date(currentYear, 10, 30)
       );
-
+      if (daysLiquidate <= 0) {
+        daysLiquidate = 0;
+      }
       const calculatePrimaChristmas =
         ((salary +
           lastServiceBonus.value / 12 +

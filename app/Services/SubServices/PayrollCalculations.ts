@@ -470,6 +470,7 @@ export class PayrollCalculations {
         formPeriod.month,
         formPeriod.year,
         employment.id || 0,
+        false,
         formPeriod.id
       );
     const employerValue = Number(
@@ -507,6 +508,7 @@ export class PayrollCalculations {
         formPeriod.month,
         formPeriod.year,
         employment.id || 0,
+        false,
         formPeriod.id
       );
     const employerValue = Number(
@@ -625,6 +627,7 @@ export class PayrollCalculations {
         formPeriod.month,
         formPeriod.year,
         employment.id || 0,
+        false,
         formPeriod.id
       );
     if (employment.id) {
@@ -682,6 +685,7 @@ export class PayrollCalculations {
         formPeriod.month,
         formPeriod.year,
         employment.id,
+        false,
         formPeriod.id
       );
 
@@ -760,6 +764,7 @@ export class PayrollCalculations {
         formPeriod.month,
         formPeriod.year,
         employment.id ?? 0,
+        false,
         formPeriod.id
       );
 
@@ -800,7 +805,8 @@ export class PayrollCalculations {
         EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
-        employment.id ?? 0
+        employment.id ?? 0,
+        true
       );
 
     // si tiene dependiente le restamos segun el calculo
@@ -1111,14 +1117,18 @@ export class PayrollCalculations {
         EGroupers.incomeCyclicDeduction,
         formPeriod.month,
         formPeriod.year,
-        employment.id ?? 0
+        employment.id ?? 0,
+        false,
+        formPeriod.id
       );
     const deductions =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.totalDeductions,
         formPeriod.month,
         formPeriod.year,
-        employment.id ?? 0
+        employment.id ?? 0,
+        false,
+        formPeriod.id
       );
     this.payrollGenerateRepository.createHistoricalPayroll({
       idTypePayroll: formPeriod.id || 0,

@@ -22,7 +22,11 @@ export default class extends BaseSchema {
       table.integer("RNG_INICIO").notNullable().comment("rango inicial");
       table.integer("RNG_FIN").notNullable().comment("rango final");
       table
-        .integer("RNG_VALOR")
+        .decimal("RNG_VALOR", 10, 2)
+        .notNullable()
+        .comment("valor asociado al rango");
+      table
+        .decimal("RNG_VALOR_2", 10, 2)
         .notNullable()
         .comment("valor asociado al rango");
     });

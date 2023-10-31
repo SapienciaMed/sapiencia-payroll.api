@@ -519,6 +519,14 @@ export class PayrollExecutions extends PayrollCalculations {
             incomeTaxTable
           );
 
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            vacationDays.number,
+            salary,
+            "Exitoso"
+          );
+
           return {
             vacationDays,
             calculateVacationsBonus,
@@ -618,6 +626,14 @@ export class PayrollExecutions extends PayrollCalculations {
             incomeTaxTable
           );
 
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            calculatePrimaServices.time ?? 0,
+            salary,
+            "Exitoso"
+          );
+
           return {
             calculatePrimaServices,
             isrCalculated,
@@ -709,6 +725,14 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod,
             uvtValue,
             incomeTaxTable
+          );
+
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            calculatePrimaChristmas.time ?? 0,
+            salary,
+            "Exitoso"
           );
 
           return {
@@ -833,6 +857,14 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod,
             uvtValue,
             incomeTaxTable
+          );
+
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            calculateServiceBounty.days,
+            salary,
+            "Exitoso"
           );
 
           return {

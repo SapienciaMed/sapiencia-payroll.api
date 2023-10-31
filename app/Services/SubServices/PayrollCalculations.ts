@@ -336,7 +336,7 @@ export class PayrollCalculations {
     salary: number,
     percentageBounty: number,
     days: number
-  ): Promise<Object> {
+  ): Promise<{ income?: Object; days: number }> {
     const incomePrevious =
       await this.payrollGenerateRepository.getIncomeByTypeAndEmployment(
         employment.id ?? 0,
@@ -346,14 +346,14 @@ export class PayrollCalculations {
     const periodDays = calculateDifferenceDays(employment.startDate);
 
     if (periodDays < 365 || !incomePrevious) {
-      return {};
+      return { days: 0 };
     }
     if (incomePrevious.length > 0) {
       const lastIncomeDate = incomePrevious.sort((a, b) => b.id - a.id)[0]
         .formPeriod.dateStart;
 
       if (calculateDifferenceDays(lastIncomeDate) < 365) {
-        return {};
+        return { days: 0 };
       }
     }
 
@@ -370,7 +370,7 @@ export class PayrollCalculations {
 
     await this.payrollGenerateRepository.createIncome(income as IIncome);
 
-    return { income };
+    return { income, days };
   }
 
   async calculateSeverancePayInterest(

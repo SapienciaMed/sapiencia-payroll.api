@@ -108,7 +108,6 @@ export default class ReportService implements IReportService {
 
         temp[`${iType.name} reserva`] = reserve ? reserve.value : 0;
       });
-
       toSend.push(temp);
     }
 

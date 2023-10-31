@@ -401,6 +401,8 @@ export class PayrollCalculations {
     let daysWorked = calculateDifferenceDays(employment.startDate, endDate);
     if (daysWorked > 360) {
       daysWorked = 360;
+    }else if(daysWorked<=0){
+      daysWorked = 0;
     }
     const serviceBounty =
       await this.payrollGenerateRepository.getLastIncomeType(

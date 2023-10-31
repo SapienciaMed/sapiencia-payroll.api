@@ -53,14 +53,14 @@ export default class ReportService implements IReportService {
         } ${historical.employment?.worker?.surname} ${
           historical.employment?.worker?.secondSurname
         }`,
-        Identificacion: historical.employment?.worker?.numberDocument,
+        Identificación: historical.employment?.worker?.numberDocument,
         "Código fiscal": historical.employment?.worker?.fiscalIdentification,
         "Nro. Contrato": historical.employment?.contractNumber,
         "Cuenta bancaria": historical.employment?.worker?.accountBankNumber,
         Banco: historical.employment?.worker?.bank,
         "Inicio periodo": formPeriod.dateStart,
         "Fin periodo": formPeriod.dateEnd,
-        "Dias Trabajados": historical.workedDay,
+        "Días Trabajados": historical.workedDay,
         "Salario Base": historical.salary,
         "Total ingresos": historical.totalIncome,
         "Total deducciones": historical.totalDeduction,

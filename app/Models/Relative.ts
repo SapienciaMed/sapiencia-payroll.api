@@ -19,9 +19,13 @@ export default class Relative extends BaseModel {
   @column({ columnName: "FAM_GENERO", serializeAs: "gender" })
   public gender: string;
 
-  @column.dateTime({
+  @column.date({
     columnName: "FAM_FECHA_NACIMIENTO",
     serializeAs: "birthDate",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public birthDate: DateTime;
 }

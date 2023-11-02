@@ -1,5 +1,10 @@
 import { DateTime } from "luxon";
-import { BaseModel, HasMany, HasOne, column, hasMany, hasOne } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  HasOne,
+  column,
+  hasOne,
+} from "@ioc:Adonis/Lucid/Orm";
 import Employment from "./Employment";
 import LicenceType from "./LicenceType";
 
@@ -18,19 +23,31 @@ export default class Licence extends BaseModel {
   })
   public idLicenceType: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column.date({
     columnName: "LIC_FECHA_INICIO",
     serializeAs: "dateStart",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public dateStart: DateTime;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column.date({
     columnName: "LIC_FECHA_FIN",
     serializeAs: "dateEnd",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public dateEnd: DateTime;
+
+  @column({
+    columnName: "LIC_NUMERO_RESOLUCION",
+    serializeAs: "resolutionNumber",
+  })
+  public resolutionNumber: string;
 
   @column({ columnName: "LIC_ESTADO", serializeAs: "licenceState" })
   public licenceState: string;
@@ -44,9 +61,16 @@ export default class Licence extends BaseModel {
   })
   public employment: HasOne<typeof Employment>;
 
-  @hasMany(() => LicenceType, {
+  //   @belongsTo(() => LicenceType, {
+  //     localKey: "idLicenceType",
+  //     foreignKey: "id",
+  //     serializeAs: "licenceType",
+  //   })
+  //   public licenceType: BelongsTo<typeof LicenceType>;
+
+  @hasOne(() => LicenceType, {
     localKey: "idLicenceType",
     foreignKey: "id",
   })
-  public licenceType: HasMany<typeof LicenceType>;
+  public licenceType: HasOne<typeof LicenceType>;
 }

@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import Env from "@ioc:Adonis/Core/Env";
 import Vacation from "./Vacation";
+import FormsPeriod from "./FormsPeriod";
 
 export default class VacationDay extends BaseModel {
   public static table = "DVA_DIAS_VACACIONES";
@@ -12,24 +13,35 @@ export default class VacationDay extends BaseModel {
   @column({ columnName: "DVA_CODVAC_VACACION", serializeAs: "codVacation" })
   public codVacation: number;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column.date({
     columnName: "DVA_FECHA_DESDE",
     serializeAs: "dateFrom",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public dateFrom: DateTime;
 
-  @column.dateTime({
-    autoCreate: false,
+  @column.date({
     columnName: "DVA_FECHA_HASTA",
     serializeAs: "dateUntil",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public dateUntil: DateTime;
 
   @column({ columnName: "DVA_DIAS", serializeAs: "enjoyedDays" })
   public enjoyedDays: number;
 
-  @column({ columnName: "DVA_PAGADAS", serializeAs: "paid" })
+  @column({
+    columnName: "DVA_PAGADAS",
+    serializeAs: "paid",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
   public paid: boolean;
 
   @column({ columnName: "DVA_CODPPL_PLANILLA", serializeAs: "codForm" })
@@ -51,7 +63,7 @@ export default class VacationDay extends BaseModel {
     autoUpdate: true,
     columnName: "DVA_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -65,14 +77,15 @@ export default class VacationDay extends BaseModel {
     autoCreate: true,
     columnName: "DVA_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
-  // @hasOne(() => Employment, {
-  //   localKey: "codEmployment",
-  //   foreignKey: "id",
-  // })
-  // public typeCharge: HasOne<typeof Employment>;
+
+  @hasOne(() => FormsPeriod, {
+    localKey: "codForm",
+    foreignKey: "id",
+  })
+  public formPeriod: HasOne<typeof FormsPeriod>;
 
   @hasOne(() => Vacation, {
     localKey: "codVacation",

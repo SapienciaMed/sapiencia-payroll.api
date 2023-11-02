@@ -3,10 +3,11 @@ import { ILicenceType } from "App/Interfaces/LicenceTypesInterface";
 import Licence from "App/Models/Licence";
 import LicenceType from "App/Models/LicenceType";
 import { IPagingData } from "App/Utils/ApiResponses";
+import { DateTime } from "luxon";
 
 export interface ILicenceRepository {
   createLicence(licence: ILicence): Promise<ILicence>;
-  getLicenceDateCodEmployment(licence: ILicence): Promise<ILicence[]>;
+  getLicenceDateCodEmployment(codEmployment:number,dateStart:DateTime,dateEnd:DateTime): Promise<ILicence[]>;
   getLicenceTypes(): Promise<ILicenceType[]>;
   getLicencePaginate(filters: ILicenceFilters): Promise<IPagingData<ILicence>>;
   getLicenceById(id: number): Promise<ILicence[] | null>;
@@ -23,13 +24,13 @@ export default class LicenceRepository implements ILicenceRepository {
     return toCreate.serialize() as ILicence;
   }
 
-  async getLicenceDateCodEmployment(licence: ILicence): Promise<ILicence[]> {
-    const incapacityFind = await Licence.query()
-      .where("codEmployment", licence.codEmployment)
-      .where("dateStart", licence.dateStart.toString())
-      .where("dateEnd", licence.dateEnd.toString());
+  async getLicenceDateCodEmployment(codEmployment:number,dateStart:DateTime,dateEnd:DateTime): Promise<ILicence[]> {
+    const licenceFind = await Licence.query()
+      .where("codEmployment", codEmployment)
+      .andWhereBetween("dateStart", [dateStart.toString(),dateEnd.toString()])
+      .andWhereBetween("dateEnd", [dateStart.toString(),dateEnd.toString()]);
 
-    return incapacityFind as ILicence[];
+    return licenceFind as ILicence[];
   }
 
   async getLicenceTypes(): Promise<ILicenceType[]> {
@@ -53,8 +54,8 @@ export default class LicenceRepository implements ILicenceRepository {
       res.where("idLicenceType", filters.idLicenceType);
     }
 
-    if (filters.state) {
-      res.where("licenceState", filters.state);
+    if (filters.licenceState) {
+      res.where("licenceState", filters.licenceState);
     }
     res.preload("employment", (employmentQuery) => {
       employmentQuery.preload("charges");

@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
-import Unit from "./Unit";
 import TypesCharge from "./TypesCharge";
 
 export default class Charge extends BaseModel {
@@ -13,16 +12,13 @@ export default class Charge extends BaseModel {
   public name: string;
 
   @column({
-    columnName: "CRG_CODUNI_UNIDAD",
-    serializeAs: "codUnit",
-  })
-  public codUnit: number;
-
-  @column({
     columnName: "CRG_CODTCG_TIPO_CARGO",
     serializeAs: "codChargeType",
   })
   public codChargeType: number;
+
+  @column({ columnName: "CRG_OBSERVACIONES", serializeAs: "observations" })
+  public observations: string;
 
   @column({
     columnName: "CRG_SALARIO_BASE",
@@ -31,10 +27,12 @@ export default class Charge extends BaseModel {
   public baseSalary: number;
 
   @column({
-    columnName: "CRG_ESTADO",
+    columnName: "CRG_ACTIVO",
     serializeAs: "state",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
   })
-  public state: string;
+  public state: boolean;
 
   @column({
     columnName: "CRG_USUARIO_MODIFICO",
@@ -46,7 +44,7 @@ export default class Charge extends BaseModel {
     autoUpdate: true,
     columnName: "CRG_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -60,15 +58,10 @@ export default class Charge extends BaseModel {
     autoCreate: true,
     columnName: "CRG_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
 
-  @hasOne(() => Unit, {
-    localKey: "codUnit",
-    foreignKey: "id",
-  })
-  public unit: HasOne<typeof Unit>;
 
   @hasOne(() => TypesCharge, {
     localKey: "codChargeType",

@@ -6,11 +6,16 @@ import {
   hasMany,
   belongsTo,
   BelongsTo,
+  hasOne,
+  HasOne,
 } from "@ioc:Adonis/Lucid/Orm";
 import Charge from "./Charge";
 import TypesContract from "./TypesContract";
 import Worker from "./Worker";
 import ReasonsForWithdrawal from "./ReasonsForWithdrawal";
+import SalaryHistory from "./SalaryHistory";
+import Dependence from "./Dependence";
+import ManualDeduction from "./ManualDeduction";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -20,6 +25,12 @@ export default class Employment extends BaseModel {
 
   @column({ columnName: "EMP_CODTRA_TRABAJADOR", serializeAs: "workerId" })
   public workerId: number;
+
+  @column({
+    columnName: "EMP_CODDEP_DEPENDENCIA",
+    serializeAs: "codDependence",
+  })
+  public codDependence: number;
 
   @column({
     columnName: "EMP_CODCRG_CARGO",
@@ -45,21 +56,37 @@ export default class Employment extends BaseModel {
   })
   public contractNumber: string;
 
-  @column.dateTime({
+  @column.date({
     columnName: "EMP_FECHA_INICIO",
     serializeAs: "startDate",
-    // serialize: (value) =>
-    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public startDate: DateTime;
 
-  @column.dateTime({
+  @column.date({
     columnName: "EMP_FECHA_FIN",
     serializeAs: "endDate",
-    // serialize: (value) =>
-    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public endDate: DateTime;
+
+  @column({
+    columnName: "EMP_OBLIGACIONES_ESPECIFICAS",
+    serializeAs: "specificObligations",
+  })
+  public specificObligations: string;
+
+  @column({
+    columnName: "EMP_OBJECTO_CONTRACTUAL",
+    serializeAs: "contractualObject",
+  })
+  public contractualObject: string;
 
   @column({
     columnName: "EMP_ESTADO",
@@ -73,29 +100,15 @@ export default class Employment extends BaseModel {
   })
   public idReasonRetirement: number;
 
-  @column.dateTime({
+  @column.date({
     columnName: "EMP_FECHA_RETIRO",
     serializeAs: "retirementDate",
-    // serialize: (value) =>
-    //   value ? "" : DateTime.fromISO(value).toLocaleString(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
   })
   public retirementDate: DateTime;
-
-  @column({
-    columnName: "EMP_SALARIO",
-    serializeAs: "salary",
-  })
-  public salary: number;
-  @column({
-    columnName: "EMP_VALOR_TOTAL",
-    serializeAs: "totalValue",
-  })
-  public totalValue: number;
-  @column({
-    columnName: "EMP_OBSERVACION",
-    serializeAs: "observation",
-  })
-  public observation: string;
 
   @column({
     columnName: "EMP_USUARIO_MODIFICO",
@@ -107,7 +120,7 @@ export default class Employment extends BaseModel {
     autoUpdate: true,
     columnName: "EMP_FECHA_MODIFICO",
     serializeAs: "dateModified",
-    prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateModified: DateTime;
 
@@ -121,15 +134,27 @@ export default class Employment extends BaseModel {
     autoCreate: true,
     columnName: "EMP_FECHA_CREO",
     serializeAs: "dateCreate",
-    prepare: () => DateTime.now().toSQL(),
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
+
+  @belongsTo(() => Dependence, {
+    localKey: "id",
+    foreignKey: "codDependence",
+  })
+  public dependence: BelongsTo<typeof Dependence>;
 
   @hasMany(() => Charge, {
     localKey: "idCharge",
     foreignKey: "id",
   })
   public charges: HasMany<typeof Charge>;
+
+  @hasOne(() => Charge, {
+    localKey: "idCharge",
+    foreignKey: "id",
+  })
+  public charge: HasOne<typeof Charge>;
 
   @hasMany(() => ReasonsForWithdrawal, {
     localKey: "idReasonRetirement",
@@ -142,6 +167,18 @@ export default class Employment extends BaseModel {
     foreignKey: "id",
   })
   public typesContracts: HasMany<typeof TypesContract>;
+
+  @hasMany(() => SalaryHistory, {
+    localKey: "id",
+    foreignKey: "codEmployment",
+  })
+  public salaryHistories: HasMany<typeof SalaryHistory>;
+
+  @hasMany(() => ManualDeduction, {
+    localKey: "id",
+    foreignKey: "codEmployment",
+  })
+  public manualDeduction: HasMany<typeof ManualDeduction>;
 
   @belongsTo(() => Worker, {
     localKey: "id",

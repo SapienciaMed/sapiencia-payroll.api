@@ -3,10 +3,10 @@ import { DateTime } from "luxon";
 export interface ICharge {
   id?: number;
   name?: string;
-  codUnit: number;
   codChargeType: number;
+  observations: string;
   baseSalary: number;
-  state: string;
+  state: boolean;
   userModify?: string;
   dateModified?: DateTime;
   userCreate?: string;

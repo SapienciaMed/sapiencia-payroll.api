@@ -22,6 +22,7 @@ export interface IVacationDayValidator {
   enjoyedDays: number;
   avaibleDays: number;
   refundDays?: number;
+  days?: number;
   formedDays?: number;
 }
 
@@ -31,6 +32,7 @@ export interface IEditVacation {
   dateFrom: DateTime;
   dateUntil: DateTime;
   observation?: string;
+  days?: number;
   available: number;
   refundTypes: string;
   refund: number;

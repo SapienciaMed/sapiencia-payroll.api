@@ -19,6 +19,22 @@ const vacationDayFake: IVacationDay[] = [{
 }];
 
 export class VacationDaysRepositoryFake implements VacationDaysRepository {
+    
+    getVacationDateCodEmployment(_codEmployment:number,_dateStart:DateTime,_dateEnd:DateTime): Promise<IVacationDay[]> {
+        const list = vacationDayFake;
+    
+        return new Promise((res) => {
+          const vacation = list.find(
+            (licence) => licence.dateFrom === _dateStart
+          );
+    
+          if (!vacation) {
+            return res([]);
+          }
+    
+          return res(vacationDayFake);
+        });
+      }
     updateVacationRefund(_daysVacation: IEditVacation, _trx: TransactionClientContract): Promise<IVacationDay | null> {
         const list = vacationDayFake;
 

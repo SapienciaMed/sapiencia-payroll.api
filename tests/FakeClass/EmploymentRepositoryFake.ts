@@ -1,3 +1,4 @@
+import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import {
   IEmployment,
   IEmploymentWorker,
@@ -19,7 +20,7 @@ const employmentFake: IEmployment = {
   state: "1",
   idTypeContract: 3,
   observation: "",
-  salary: 234345,
+  //salary: 234345,
   totalValue: 400000,
 };
 
@@ -29,6 +30,45 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  getChargeEmployment(_idEmployment: number): Promise<ICharge> {
+    throw new Error("Method not implemented.");
+  }
+  updateContractDate(
+    _idEmployment: number,
+    _date: DateTime
+  ): Promise<IEmployment | null> {
+    const list = [employmentFake];
+
+    return new Promise((res) => {
+      let employments = list.find(
+        (employment) => employment.id === _idEmployment
+      );
+      if (employments) employments = { ...employments, endDate: _date };
+      if (!employments) {
+        return res(null);
+      }
+
+      return res(employments);
+    });
+  }
+  getEmploymentsbyCharge(_idCharge: number): Promise<IEmployment[]> {
+    const list = [
+      { ...employmentFake },
+      { ...employmentFake },
+    ] as IEmployment[];
+
+    return new Promise((res) => {
+      const employment = list.find(
+        (employment) => employment.idCharge === _idCharge
+      );
+
+      if (!employment) {
+        return res([]);
+      }
+
+      return res([employment] as IEmploymentWorker[]);
+    });
+  }
   getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
     const list = [
       { ...employmentFake },

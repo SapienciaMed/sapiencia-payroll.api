@@ -4,10 +4,13 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import VinculationProvider from "@ioc:core.VinculationProvider";
 
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
+import { IFilterContractSuspension } from "App/Interfaces/ContractSuspensionInterfaces";
 import { IFilterEmployment } from "App/Interfaces/EmploymentInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
+import { IWorkerFilters } from "App/Interfaces/WorkerInterfaces";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import CreateAndUpdateWorkerValidator from "App/Validators/CreateAndUpdateVinculationValidator";
+import CreateContractSuspensionValidator from "App/Validators/CreateContractSuspensionValidator";
 import RetirementEmploymentValidator from "App/Validators/RetirementEmploymentValidator";
 
 export default class VinculationController {
@@ -122,6 +125,18 @@ export default class VinculationController {
     }
   }
 
+  public async getWorkersByFilters({ response, request }: HttpContextContract) {
+    try {
+      const data = request.body() as IWorkerFilters;
+
+      return response.send(await VinculationProvider.getWorkersByFilters(data));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
   public async getEmploymentById({ response, request }: HttpContextContract) {
     try {
       const { id } = request.params();
@@ -133,9 +148,24 @@ export default class VinculationController {
     }
   }
 
-  public async getActiveWorkers({ response }: HttpContextContract) {
+  public async getActiveWorkers({ response, request }: HttpContextContract) {
     try {
-      return response.send(await VinculationProvider.getActiveWorkers());
+      const { temporary } = request.qs() as { temporary: string };
+      return response.send(
+        await VinculationProvider.getActiveWorkers(temporary == "true")
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async getActivesContractorworkers({ response }: HttpContextContract) {
+    try {
+      return response.send(
+        await VinculationProvider.getActivesContractorworkers()
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
@@ -153,5 +183,45 @@ export default class VinculationController {
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
       );
     }
+  }
+
+  public async getContractSuspensionPaginate({
+    response,
+    request,
+  }: HttpContextContract) {
+    try {
+      const data = request.body() as IFilterContractSuspension;
+      return response.send(
+        await VinculationProvider.getContractSuspensionPaginate(data)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
+  public async createContractSuspension({
+    request,
+    response,
+  }: HttpContextContract) {
+    await Database.transaction(async (trx) => {
+      try {
+        const contractSuspension = await request.validate(
+          CreateContractSuspensionValidator
+        );
+        return response.send(
+          await VinculationProvider.createContractSuspension(
+            contractSuspension,
+            trx
+          )
+        );
+      } catch (err) {
+        await trx.rollback();
+        return response.badRequest(
+          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        );
+      }
+    });
   }
 }

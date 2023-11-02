@@ -12,6 +12,12 @@ export default class extends BaseSchema {
         .comment("Llave primaria")
         .unique();
       table
+        .boolean("TPL_ES_ESPECIAL")
+        .notNullable()
+        .comment(
+          "Indicado que si es una planilla de tipo espcial o de regular"
+        );
+      table
         .string("TPL_NOMBRE", 20)
         .notNullable()
         .comment("Nombre del tipo de planilla");

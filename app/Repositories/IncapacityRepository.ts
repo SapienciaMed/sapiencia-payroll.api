@@ -7,7 +7,7 @@ import {
 import Incapacity from "App/Models/Incapacity";
 
 import { IPagingData } from "App/Utils/ApiResponses";
-
+import { DateTime } from "luxon";
 
 export interface IIncapacityRepository {
   createIncapacity(incapacity: IIncapacity): Promise<IIncapacity>;
@@ -20,7 +20,9 @@ export interface IIncapacityRepository {
     id: number
   ): Promise<IIncapacity | null>;
   getIncapacityDateCodEmployment(
-    incapacity: IIncapacity
+    codEmployment: number,
+    dateInitial: DateTime,
+    dateFinish: DateTime
   ): Promise<IGetIncapacity[]>;
 }
 
@@ -124,7 +126,7 @@ export default class IncapacityRepository implements IIncapacityRepository {
       return null;
     }
 
-    toUpdate.fill({ ...incapacity });
+    toUpdate.fill({ ...toUpdate, ...incapacity });
 
     await toUpdate.save();
 
@@ -132,12 +134,20 @@ export default class IncapacityRepository implements IIncapacityRepository {
   }
 
   async getIncapacityDateCodEmployment(
-    incapacity: IIncapacity
+    codEmployment: number,
+    dateInitial: DateTime,
+    dateFinish: DateTime
   ): Promise<IGetIncapacity[]> {
     const incapacityFind = await Incapacity.query()
-      .where("codEmployment", incapacity.codEmployment)
-      .where("dateInitial", incapacity.dateInitial.toString())
-      .where("dateFinish", incapacity.dateFinish.toString());
+      .where("codEmployment", codEmployment)
+      .andWhereBetween("dateInitial", [
+        dateInitial.toString(),
+        dateFinish.toString(),
+      ])
+      .andWhereBetween("dateFinish", [
+        dateInitial.toString(),
+        dateFinish.toString(),
+      ]);
 
     return incapacityFind as IGetIncapacity[];
   }

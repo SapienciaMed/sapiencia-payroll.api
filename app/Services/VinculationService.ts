@@ -15,7 +15,7 @@ import { ITypesContractsRepository } from "App/Repositories/TypesContractsReposi
 import { IChargesRepository } from "App/Repositories/ChargesRepository";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
-import { IWorker } from "App/Interfaces/WorkerInterfaces";
+import { IWorker, IWorkerFilters } from "App/Interfaces/WorkerInterfaces";
 import {
   IEmployment,
   IEmploymentWorker,
@@ -23,8 +23,18 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IFilterContractSuspension,
+  IcontractSuspension,
+} from "App/Interfaces/ContractSuspensionInterfaces";
+import { IContractSuspensionRepository } from "App/Repositories/ContractSuspensionRepository";
+import { ISalaryHistoryRepository } from "App/Repositories/SalaryHistoryRepository";
+import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
+//import { ISalaryIncrementRepository } from "App/Repositories/SalaryIncrementRepository";
+import { DateTime } from "luxon";
 
 export interface IVinculationService {
+  getWorkersByFilters(filters: IWorkerFilters): Promise<ApiResponse<IWorker[]>>;
   getVinculationPaginate(
     filters: IFilterVinculation
   ): Promise<ApiResponse<IPagingData<IGetVinculation>>>;
@@ -32,7 +42,8 @@ export interface IVinculationService {
     filters: IFilterEmployment
   ): Promise<ApiResponse<IPagingData<IEmployment>>>;
   getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
-  getActiveWorkers(): Promise<ApiResponse<IWorker[]>>;
+  getActiveWorkers(temporary: boolean): Promise<ApiResponse<IWorker[]>>;
+  getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>>;
   createVinculation(
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
@@ -50,6 +61,13 @@ export interface IVinculationService {
   retirementEmployment(
     data: IRetirementEmployment
   ): Promise<ApiResponse<IEmployment>>;
+  getContractSuspensionPaginate(
+    filters: IFilterContractSuspension
+  ): Promise<ApiResponse<IPagingData<IcontractSuspension>>>;
+  createContractSuspension(
+    contractSuspension: IcontractSuspension,
+    trx: TransactionClientContract
+  ): Promise<ApiResponse<IcontractSuspension>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -58,8 +76,18 @@ export default class VinculationService implements IVinculationService {
     private relativeRepository: IRelativeRepository,
     private employmentRepository: IEmploymentRepository,
     private TypesContractsRepository: ITypesContractsRepository,
-    private typesChargesRepository: IChargesRepository
+    private typesChargesRepository: IChargesRepository,
+    private contractSuspensionRepository: IContractSuspensionRepository,
+    private salaryHistoryRepository: ISalaryHistoryRepository // private salaryIncrementRepository: ISalaryIncrementRepository
   ) {}
+
+  async getWorkersByFilters(
+    filters: IWorkerFilters
+  ): Promise<ApiResponse<IWorker[]>> {
+    const workers = await this.workerRepository.getWorkersByFilters(filters);
+
+    return new ApiResponse(workers, EResponseCodes.OK);
+  }
 
   async getVinculationPaginate(
     filters: IFilterVinculation
@@ -108,6 +136,67 @@ export default class VinculationService implements IVinculationService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  async createContractSuspension(
+    contractSuspension: IcontractSuspension,
+    trx: TransactionClientContract
+  ): Promise<ApiResponse<IcontractSuspension>> {
+    const existingSuspension =
+      await this.contractSuspensionRepository.getContractSuspensionBetweenDate(
+        contractSuspension.codEmployment,
+        contractSuspension.dateStart,
+        contractSuspension.dateEnd
+      );
+
+    if (existingSuspension.length > 0) {
+      return new ApiResponse(
+        {} as IcontractSuspension,
+        EResponseCodes.FAIL,
+        "Ya existe una suspensión en las fechas indicadas"
+      );
+    }
+
+    const newContractDate =
+      contractSuspension.newDateEnd >
+      DateTime.local()
+        .endOf("year")
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        ? DateTime.local()
+            .endOf("year")
+            .set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+        : contractSuspension.newDateEnd;
+
+    const adjustContractDate =
+      contractSuspension.newDateEnd >
+      DateTime.local()
+        .endOf("year")
+        .set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+
+    const suspensionData = {
+      ...contractSuspension,
+      newDateEnd: newContractDate,
+      adjustEndDate: adjustContractDate,
+    };
+
+    const suspensionResult =
+      await this.contractSuspensionRepository.createContractSuspension(
+        suspensionData,
+        trx
+      );
+
+    await this.employmentRepository.updateContractDate(
+      contractSuspension.codEmployment,
+      newContractDate,
+      trx
+    );
+
+    await trx.commit();
+
+    return new ApiResponse(
+      suspensionResult,
+      EResponseCodes.OK,
+      "La suspensión ha sido registrada exitosamente."
+    );
+  }
   async createVinculation(
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
@@ -124,11 +213,28 @@ export default class VinculationService implements IVinculationService {
       trx
     );
 
-    await this.employmentRepository.createEmployment(
+    const employment = await this.employmentRepository.createEmployment(
       {
         ...data.employment,
         workerId: worker.id!,
       },
+      trx
+    );
+    const charge = await this.typesChargesRepository.getChargeById(
+      employment.idCharge
+    );
+
+    await this.salaryHistoryRepository.createManySalaryHistory(
+      [
+        {
+          codEmployment: employment.id,
+          // codIncrement: salaryIncrement?.id,
+          previousSalary: 0,
+          salary: charge?.baseSalary,
+          validity: true,
+          effectiveDate: data.employment.startDate,
+        } as ISalaryHistory,
+      ],
       trx
     );
 
@@ -155,8 +261,21 @@ export default class VinculationService implements IVinculationService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
-  async getActiveWorkers(): Promise<ApiResponse<IWorker[]>> {
-    const res = await this.workerRepository.getActivesWorkers();
+  async getActiveWorkers(temporary: boolean): Promise<ApiResponse<IWorker[]>> {
+    const res = await this.workerRepository.getActivesWorkers(temporary);
+    if (!res) {
+      return new ApiResponse(
+        {} as IWorker[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>> {
+    const res = await this.workerRepository.getActivesContractorworkers();
     if (!res) {
       return new ApiResponse(
         {} as IWorker[],
@@ -292,5 +411,15 @@ export default class VinculationService implements IVinculationService {
     }
 
     return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getContractSuspensionPaginate(
+    filters: IFilterContractSuspension
+  ): Promise<ApiResponse<IPagingData<IcontractSuspension>>> {
+    const Employments =
+      await this.contractSuspensionRepository.getContractSuspensionPaginate(
+        filters
+      );
+    return new ApiResponse(Employments, EResponseCodes.OK);
   }
 }

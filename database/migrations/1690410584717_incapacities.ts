@@ -27,12 +27,12 @@ export default class extends BaseSchema {
         .comment("Código del empleo (FK EMP_EMPLEOS)");
 
       table
-        .timestamp("INC_FECHA_INICIO")
+        .date("INC_FECHA_INICIO")
         .notNullable()
         .comment("Fecha de inicio de la incapacidad");
 
       table
-        .timestamp("INC_FECHA_FIN")
+        .date("INC_FECHA_FIN")
         .notNullable()
         .comment("Fecha de finalización de la incapacidad");
 
@@ -46,6 +46,11 @@ export default class extends BaseSchema {
         .notNullable()
         .defaultTo(false)
         .comment("Indicador de que si se hizo una modificación de la fecha fin");
+        table
+        .boolean("INC_COMPLETADA")
+        .notNullable()
+        .defaultTo(false)
+        .comment("Indicador de que si se pago");
 
       table
         .string("INC_USUARIO_MODIFICO" , 15)
@@ -53,7 +58,7 @@ export default class extends BaseSchema {
         .comment("Número del documento del último usuario que hizo una modificación");
 
       table
-        .timestamp("INC_FECHA_MODIFICO")
+        .dateTime("INC_FECHA_MODIFICO")
         .comment("Fecha y hora de la última modificación");
 
       table
@@ -62,7 +67,7 @@ export default class extends BaseSchema {
         .comment("Número del documento del usuario que creo el registro");
 
       table
-        .timestamp("INC_FECHA_CREO")
+        .dateTime("INC_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creación del registro");
 

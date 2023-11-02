@@ -1,0 +1,287 @@
+/api/v1/licence:
+  post:
+    tags:
+      - Licence
+    summary: Permite la creación de un periodo de licencia.
+    description: Crea un periodo de licencia.
+    operationId: createLicence
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/licence"
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 1,
+                          "codEmployment": 1,
+                          "dateStart": "2023-07-11T13:48:28.204-05:00",
+                          "dateEnd": "2023-07-15T13:48:28.204-05:00",
+                          "idLicenceType": 1,
+                          "licenceState": "En progreso",
+                          "resolutionNumber": "12345 de julio",
+                          "observation": "test",
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/licence/types:
+  get:
+    tags:
+      - Licence
+    summary: Obtiene los tipos de licencia.
+    description: Obtiene todos los tipos de licencia y sus propiedades.
+    operationId: getTypes
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "daysType": "Habil",
+                          "id": 1,
+                          "name": "Licencia remunerada",
+                          "numberDays": 3,
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/licence/:
+  get:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: number
+        required: true
+        description: Id del emplep
+    tags:
+      - Licence
+    summary: Obtener la información de licencia de un trabajador.
+    description: Obtiene el periodo por id.
+    operationId: get-Licencebyid
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      codEmployment: 1
+                      idLicenceType: 2
+                      dateStart: "2023-07-11T13:48:28.204-05:00"
+                      dateEnd: "2023-07-15T13:48:28.204-05:00"
+                      licenceState: "Finalizado"
+                      observation: "test"
+                      resolutionNumber: "xxx de julio de 2023"
+                      licenceType:
+                        - daysType: "Habil"
+                          id: 1
+                          name: "Licencia remunerada"
+                          numberDays: 3
+                      employment:
+                        id: 1
+                        workerId: 3
+                        idCharge: 5
+                        idTypeContract: 3
+                        institutionalMail: "jhon.doe@institutional.com"
+                        contractNumber: "908763512"
+                        startDate: "2023-07-14T00:00:00.000-05:00"
+                        endDate: "2023-08-03T00:00:00.000-05:00"
+                        state: "1"
+                        idReasonRetirement: ""
+                        salary: "5000000.00"
+                        totalValue: "0.00"
+                        observation: ""
+                        userModified: ""
+                        dateModified: "2023-08-04T09:37:54.544-05:00"
+                        userCreate: ""
+                        dateCreate: "2023-08-04T09:37:54.545-05:00"
+                        worker:
+                          userCreate: ""
+                          id: 3
+                          typeDocument: "CC"
+                          numberDocument: "123456789"
+                          firstName: "Jhon"
+                          secondName: "James"
+                          surname: "Doe"
+                          secondSurname: "Smith"
+                          gender: "M"
+                          bloodType: "7"
+                          birthDate: "1990-01-26T05:00:00.000Z"
+                          nationality: "COL"
+                          email: "jhon.doe@example.co"
+                          contactNumber: "3012345678"
+                          department: "5"
+                          municipality: "1"
+                          neighborhood: "20"
+                          address: "cl 98 28 29"
+                          socioEconomic: "4"
+                          eps: "7"
+                          severanceFund: "5"
+                          arl: "1"
+                          fundPension: "2"
+                          riskLevel: "riesgo-3"
+                          housingType: "2"
+                          bank: "null"
+                          accountBankType: ""
+                          accountBankNumber: "7717170011"
+                          userModified: ""
+                          dateModified: "2023-08-04T09:37:54.306-05:00"
+                          dateCreate: "2023-08-04T09:37:54.306-05:00"
+                  operation: { code: "OK", message: "" }
+
+/api/v1/licence/get-paginated:
+  post:
+    tags:
+      - Licence
+    summary: Obtener la información de licencia de un trabajador.
+    description: Obtiene los periodos de licencia según los filtros.
+    operationId: get-paginated-Licence
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              codEmployment:
+                type: number
+                example: 1
+                description: ID del empleo.
+                required: false
+              idLicenceType:
+                type: number
+                example: 1
+                description: tipo de licencia.
+                required: false
+              licenceState:
+                type: string
+                example: "Finalizado"
+                description: estado de la licencia.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      codEmployment: 1
+                      idLicenceType: 2
+                      dateStart: "2023-07-11T13:48:28.204-05:00"
+                      dateEnd: "2023-07-15T13:48:28.204-05:00"
+                      licenceState: "Finalizado"
+                      observation: "test"
+                      resolutionNumber: "xxx de julio de 2023"
+                      licenceType:
+                        - daysType: "Habil"
+                          id: 1
+                          name: "Licencia remunerada"
+                          numberDays: 3
+                      employment:
+                        id: 1
+                        workerId: 3
+                        idCharge: 5
+                        idTypeContract: 3
+                        institutionalMail: "jhon.doe@institutional.com"
+                        contractNumber: "908763512"
+                        startDate: "2023-07-14T00:00:00.000-05:00"
+                        endDate: "2023-08-03T00:00:00.000-05:00"
+                        state: "1"
+                        idReasonRetirement: ""
+                        salary: "5000000.00"
+                        totalValue: "0.00"
+                        observation: ""
+                        userModified: ""
+                        dateModified: "2023-08-04T09:37:54.544-05:00"
+                        userCreate: ""
+                        dateCreate: "2023-08-04T09:37:54.545-05:00"
+                        worker:
+                          userCreate: ""
+                          id: 3
+                          typeDocument: "CC"
+                          numberDocument: "123456789"
+                          firstName: "Jhon"
+                          secondName: "James"
+                          surname: "Doe"
+                          secondSurname: "Smith"
+                          gender: "M"
+                          bloodType: "7"
+                          birthDate: "1990-01-26T05:00:00.000Z"
+                          nationality: "COL"
+                          email: "jhon.doe@example.co"
+                          contactNumber: "3012345678"
+                          department: "5"
+                          municipality: "1"
+                          neighborhood: "20"
+                          address: "cl 98 28 29"
+                          socioEconomic: "4"
+                          eps: "7"
+                          severanceFund: "5"
+                          arl: "1"
+                          fundPension: "2"
+                          riskLevel: "riesgo-3"
+                          housingType: "2"
+                          bank: "null"
+                          accountBankType: ""
+                          accountBankNumber: "7717170011"
+                          userModified: ""
+                          dateModified: "2023-08-04T09:37:54.306-05:00"
+                          dateCreate: "2023-08-04T09:37:54.306-05:00"
+                  operation: { code: "OK", message: "" }
+
+components:
+  schemas:
+    licence:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        codEmployment:
+          type: number
+          example: 1
+        dateStart:
+          type: date
+          example: "2023-07-11T09:40:02.350-05:00"
+        dateEnd:
+          type: date
+          example: "2023-07-11T09:40:02.350-05:00"
+        licenceState:
+          type: string
+          example: "En progreso"
+        resolutionNumber:
+          type: string
+          example: "123 de julio 2023"
+        observation:
+          type: string
+          example: "test"

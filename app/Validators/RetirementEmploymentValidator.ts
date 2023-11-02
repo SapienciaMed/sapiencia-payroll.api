@@ -25,7 +25,7 @@ export default class RetirementEmploymentValidator {
    */
   public schema = schema.create({
     idReasonRetirement: schema.number(),
-    retirementDate: schema.date(),
+    retirementDate: schema.date({ format: "yyyy/MM/dd" }),
     observation: schema.string([rules.maxLength(1000)]),
     idEmployment: schema.number(),
     state: schema.string(),

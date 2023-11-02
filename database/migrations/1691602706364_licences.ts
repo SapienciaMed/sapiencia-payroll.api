@@ -27,13 +27,17 @@ export default class extends BaseSchema {
         .nullable()
         .comment("codigo del tipo de licencia (FK TLC_TIPOS_LICENCIAS)");
       table
-        .timestamp("LIC_FECHA_INICIO")
+        .date("LIC_FECHA_INICIO")
         .notNullable()
         .comment("fecha de inicio de la licencia");
       table
-        .timestamp("LIC_FECHA_FIN")
+        .date("LIC_FECHA_FIN")
         .notNullable()
         .comment("fecha de finalizacion de la licencia");
+        table
+        .string("LIC_NUMERO_RESOLUCION",50)
+        .notNullable()
+        .comment("número de resolución de la licencia");
       table
         .string("LIC_ESTADO", 20)
         .notNullable()

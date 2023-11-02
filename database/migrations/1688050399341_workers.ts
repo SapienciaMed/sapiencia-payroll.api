@@ -34,6 +34,10 @@ export default class extends BaseSchema {
         .string("TRA_SEGUNDO_APELLIDO", 50)
         .comment("Segundo apellido del colaborador");
       table
+        .timestamp("TRA_FECHA_NACIMIENTO")
+        .notNullable()
+        .comment("Fecha de nacimiento");
+      table
         .string("TRA_GENERO", 10)
         .notNullable()
         .comment("Genero (Listados Genericos)");
@@ -41,10 +45,6 @@ export default class extends BaseSchema {
         .string("TRA_TIPO_SANGRE", 10)
         .notNullable()
         .comment("Tipo de sangre");
-      table
-        .timestamp("TRA_FECHA_NACIMIENTO")
-        .notNullable()
-        .comment("Fecha de nacimiento");
       table
         .string("TRA_NACIONALIDAD", 10)
         .notNullable()
@@ -75,22 +75,25 @@ export default class extends BaseSchema {
       table
         .string("TRA_ESTRATO_SOCIOECONOMICO", 2)
         .comment("Estrato socioeconomico (Listados Genericos)");
+      table
+        .string("TRA_CODIGO_IDENTIFICACION_FISCAL", 20)
+        .comment("Codigo de indentifcion Fiscal");
       table.string("TRA_EPS", 10).comment("EPS afiliado (Listados Genericos)");
       table
         .string("TRA_FONDO_CESANTIAS", 10)
         .comment("Fondo de cesantias (Listados Genericos)");
       table.string("TRA_ARL", 10).comment("Arl (Listados Genericos)");
       table
-        .string("TRA_FONDO_PENSION", 10)
-        .comment("Fondo de pension (Listados Genericos)");
-      table
         .string("TRA_NIVEL_RIESGO", 10)
         .comment("Nivel de riesgo (Listados Genericos)");
+      table
+        .string("TRA_FONDO_PENSION", 10)
+        .comment("Fondo de pension (Listados Genericos)");
       table
         .string("TRA_TIPO_VIVIENDA", 10)
         .comment("Tipo de vivienda (Listados Genericos)");
       table
-        .string("TRA_BANCO", 10)
+        .string("TRA_BANCO", 50)
         .comment("Codigo del Banco (Listados Genericos)");
       table
         .string("TRA_TIPO_CUENTA_BANCARIA", 10)
@@ -104,14 +107,14 @@ export default class extends BaseSchema {
           "Numero del documento del ultimo usuario que hizo una modificacion"
         );
       table
-        .timestamp("TRA_FECHA_MODIFICO")
+        .dateTime("TRA_FECHA_MODIFICO")
         .comment("Fecha y hora de la ultima modificacion");
       table
         .string("TRA_USUARIO_CREO", 15)
         .notNullable()
         .comment("Numero del documento del usuario que creo el registro");
       table
-        .timestamp("TRA_FECHA_CREO")
+        .dateTime("TRA_FECHA_CREO")
         .notNullable()
         .comment("Fecha y hora de creacion del registro");
     });

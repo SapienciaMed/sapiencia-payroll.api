@@ -10,6 +10,7 @@ export default class CreateLicenceValidator {
     idLicenceType: schema.number.optional(),
     dateStart: schema.date(),
     dateEnd: schema.date(),
+    resolutionNumber: schema.string([rules.maxLength(50)]),
     licenceState: schema.string.optional([rules.maxLength(20)]),
     observation: schema.string.optional([rules.maxLength(500)]),
   });

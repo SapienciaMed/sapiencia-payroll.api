@@ -18,6 +18,7 @@ export interface IWorker {
   municipality: string;
   neighborhood: string;
   address: string;
+  fiscalIdentification?:string;
   socioEconomic?: string;
   eps?: string;
   severanceFund?: string;
@@ -32,4 +33,8 @@ export interface IWorker {
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
+}
+
+export interface IWorkerFilters {
+  documentList?: string[]
 }

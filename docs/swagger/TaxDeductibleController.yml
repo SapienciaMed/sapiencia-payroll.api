@@ -1,0 +1,202 @@
+paths:
+  /api/v1/taxDeductible/:
+    post:
+      tags:
+        - TaxDeductible
+      summary: Permite la creación de una deduccion de renta.
+      description: Crea una deduccion de renta apartir de los campos requeridos.
+      operationId: createTaxDeductible
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/taxDeductible"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        {
+                          "id": 1,
+                          "codEmployment": 11,
+                          "type": "D01",
+                          "year": 2023,
+                          "state": "Pendiente",
+                          "value": 15000000.0,
+                        },
+                      "operation": { "code": "OK" },
+                    }
+    put:
+      tags:
+        - TaxDeductible
+      summary: Permite la edición de una deduccion de renta.
+      description: Edita una deduccion de renta a partir de los campos requeridos.
+      operationId: editWorker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/taxDeductible"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        {
+                          "id": 1,
+                          "codEmployment": 11,
+                          "type": "D01",
+                          "year": 2023,
+                          "state": "Pendiente",
+                          "value": 15000000.0,
+                        },
+                      "operation": { "code": "OK" },
+                    }
+
+/api/v1/taxDeductible/{id}:
+  get:
+    tags:
+      - TaxDeductible
+    summary: Permite obtener una deduccion de renta.
+    description: Obtiene una deduccion de renta a partir del parametro requerido.
+    operationId: getTaxDeductibleById
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: id de la deduccion de renta
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      {
+                        "id": 1,
+                        "codEmployment": 11,
+                        "type": "D01",
+                        "year": 2023,
+                        "state": "Pendiente",
+                        "value": 15000000.0,
+                      },
+                    "operation": { "code": "OK" },
+                  }
+
+/api/v1/taxDeductible/get-paginated:
+  post:
+    tags:
+      - TaxDeductible
+    summary: Permite consultar las deducciones de renta.
+    description: Permite la consulta de deducciones de renta.
+    operationId: getPaginatedTaxDeductible
+    requestBody:
+      content:
+        application/json:
+          schema:
+            taxDeductible:
+            type: object
+            properties:
+              codEmployment:
+                type: integer
+              year:
+                type: integer
+              page:
+                type: integer
+              perPage:
+                type: integer
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 1,
+                          "codEmployment": 11,
+                          "type": "D01",
+                          "year": 2023,
+                          "state": "Pendiente",
+                          "value": 15000000.0,
+                          "employment":
+                            {
+                              "id": 2,
+                              "workerId": 2,
+                              "idCharge": 2,
+                              "institutionalMail": "jhondoe@gmail.com",
+                              "contractNumber": "378578483",
+                              "startDate": DateTime.now(),
+                              "state": "1",
+                              "idTypeContract": 3,
+                              "observation": "",
+                              "totalValue": 400000,
+                              "worker":
+                                {
+                                  "id": 4,
+                                  "typeDocument": "CC",
+                                  "numberDocument": "1030523782",
+                                  "firstName": "Jeisson",
+                                  "secondName": "Andrés",
+                                  "surname": "González",
+                                  "secondSurname": "Martínez",
+                                  "gender": "",
+                                  "bloodType": "",
+                                  "birthDate": 02/16/2023",
+                                  "nationality": "",
+                                  "contactNumber": "",
+                                  "department": "",
+                                  "municipality": "",
+                                  "neighborhood": "",
+                                  "address": "",
+                                },
+                            },
+                        },
+                      ],
+                    "operation": { "code": "OK" },
+                  }
+components:
+  schemas:
+    taxDeductible:
+      type: object
+      properties:
+        id:
+          type: integer
+        codEmployment:
+          type: integer
+        type:
+          type: string
+        year:
+          type: integer
+        state:
+          type: string
+        value:
+          type: number
+          format: double

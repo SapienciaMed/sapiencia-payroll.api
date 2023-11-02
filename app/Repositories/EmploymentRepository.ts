@@ -1,4 +1,5 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
+import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import {
   IEmployment,
   IEmploymentWorker,
@@ -6,9 +7,11 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
+import Charge from "App/Models/Charge";
 import Employment from "App/Models/Employment";
 import ReasonsForWithdrawal from "App/Models/ReasonsForWithdrawal";
 import { IPagingData } from "App/Utils/ApiResponses";
+import { DateTime } from "luxon";
 
 export interface IEmploymentRepository {
   createEmployment(
@@ -20,14 +23,26 @@ export interface IEmploymentRepository {
     filters: IFilterEmployment
   ): Promise<IPagingData<IEmployment>>;
   getEmploymentById(id: number): Promise<IEmploymentWorker[] | null>;
+  getEmploymentsbyCharge(idCharge: number): Promise<IEmployment[]>;
+  getChargeEmployment(idEmployment: number): Promise<ICharge>;
   getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]>;
   retirementEmployment(
     data: IRetirementEmployment
+  ): Promise<IEmployment | null>;
+  updateContractDate(
+    idEmployment: number,
+    date: DateTime,
+    trx: TransactionClientContract
   ): Promise<IEmployment | null>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
   constructor() {}
+  async getChargeEmployment(idEmployment: number): Promise<ICharge> {
+    const employment = await Employment.findOrFail(idEmployment);
+    const res = await Charge.query().where("id", employment.idCharge).first();
+    return res as ICharge;
+  }
 
   async getEmploymentWorker(
     filters: IFilterEmployment
@@ -55,6 +70,12 @@ export default class EmploymentRepository implements IEmploymentRepository {
     return res as IEmployment[];
   }
 
+  async getEmploymentsbyCharge(idCharge: number): Promise<IEmployment[]> {
+    const res = await Employment.query()
+      .where("state", 1)
+      .andWhere("idCharge", idCharge);
+    return res as IEmployment[];
+  }
   async getEmploymentById(id: number): Promise<IEmploymentWorker[] | null> {
     const res = Employment.query().where("id", id);
 
@@ -90,11 +111,33 @@ export default class EmploymentRepository implements IEmploymentRepository {
 
     if (!toUpdate) return null;
 
-    await toUpdate.merge({ ...dataRetirement }).save();
+    await toUpdate.merge({ ...toUpdate, ...dataRetirement }).save();
 
     return toUpdate.serialize() as IEmployment;
   }
 
+  async updateContractDate(
+    idEmployment: number,
+    date: DateTime,
+    trx: TransactionClientContract
+  ): Promise<IEmployment | null> {
+    // Realiza la actualización
+    const employment = await Employment.query()
+      .where("id", idEmployment)
+      .update({endDate: new Date(date?.toJSDate()),dateModified: new Date()})
+      .useTransaction(trx);
+
+    if (employment) {
+      // Busca el registro actualizado
+      const updatedEmployment = await Employment.find(idEmployment);
+
+      if (updatedEmployment) {
+        return updatedEmployment.serialize() as IEmployment;
+      }
+    }
+
+    return null;
+  }
   async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
     const res = await ReasonsForWithdrawal.all();
     return res as IReasonsForWithdrawal[];

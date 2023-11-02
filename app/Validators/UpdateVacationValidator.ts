@@ -26,8 +26,8 @@ export default class UpdateVacationValidator {
   public schema = schema.create({
     id: schema.number(),
     idVacationDay: schema.number(),
-    dateFrom: schema.date(),
-    dateUntil: schema.date(),
+    dateFrom: schema.date({ format: "yyyy/MM/dd" }),
+    dateUntil: schema.date({ format: "yyyy/MM/dd" }),
     observation: schema.string.optional(),
     available: schema.number(),
     refundTypes: schema.string(),

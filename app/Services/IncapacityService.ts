@@ -9,6 +9,8 @@ import { IIncapacityTypes } from "App/Interfaces/TypesIncapacityInterface";
 
 import { IIncapacityRepository } from "App/Repositories/IncapacityRepository";
 import { IIncapacityTypesRepository } from "App/Repositories/IncapacityTypesRepository";
+import { ILicenceRepository } from "App/Repositories/LicenceRepository";
+import { IVacationDaysRepository } from "App/Repositories/VacationDaysRepository";
 
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
@@ -28,7 +30,9 @@ export interface IIncapacityService {
 export default class IncapacityService implements IIncapacityService {
   constructor(
     private incapacityRepository: IIncapacityRepository,
-    private incapacityTypesRepository: IIncapacityTypesRepository
+    private incapacityTypesRepository: IIncapacityTypesRepository,
+    private licenceRepository: ILicenceRepository,
+    private vacationDaysRepository: IVacationDaysRepository
   ) {}
 
   //?CREAR INCAPACIDAD
@@ -37,7 +41,23 @@ export default class IncapacityService implements IIncapacityService {
   ): Promise<ApiResponse<IIncapacity>> {
     const incapacityFind =
       await this.incapacityRepository.getIncapacityDateCodEmployment(
-        incapacity
+        incapacity.codEmployment,
+        incapacity.dateInitial,
+        incapacity.dateFinish
+      );
+
+    const licenceFind =
+      await this.licenceRepository.getLicenceDateCodEmployment(
+        incapacity.codEmployment,
+        incapacity.dateInitial,
+        incapacity.dateFinish
+      );
+
+    const vacationDayFind =
+      await this.vacationDaysRepository.getVacationDateCodEmployment(
+        incapacity.codEmployment,
+        incapacity.dateInitial,
+        incapacity.dateFinish
       );
 
     if (incapacityFind.length > 0) {
@@ -45,6 +65,22 @@ export default class IncapacityService implements IIncapacityService {
         {} as IIncapacity,
         EResponseCodes.FAIL,
         "El empleado ya tiene registrada una incapacidad con las mismas fechas"
+      );
+    }
+
+    if (licenceFind.length > 0) {
+      return new ApiResponse(
+        {} as IIncapacity,
+        EResponseCodes.FAIL,
+        "El empleado ya tiene registrada una licencia con las mismas fechas"
+      );
+    }
+
+    if (vacationDayFind.length > 0) {
+      return new ApiResponse(
+        {} as IIncapacity,
+        EResponseCodes.FAIL,
+        "El empleado ya tiene registrada vacaciones con las mismas fechas"
       );
     }
 

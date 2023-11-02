@@ -24,11 +24,11 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Referencia del periodo de vacaciones del empleado ");
       table
-        .timestamp("VAC_FECHA_DESDE")
+        .date("VAC_FECHA_DESDE")
         .notNullable()
         .comment("Fecha de inicio del periodo");
       table
-        .timestamp("VAC_FECHA_HASTA")
+        .date("VAC_FECHA_HASTA")
         .notNullable()
         .comment("Fecha de finalizacion del periodo");
       table

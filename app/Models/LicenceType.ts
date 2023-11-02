@@ -9,8 +9,22 @@ export default class LicenceType extends BaseModel {
   public name: string;
 
   @column({
+    columnName: "TLC_ES_REMUNERADA",
+    serializeAs: "paid",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
+  public paid: boolean;
+
+  @column({
     columnName: "TLC_NUMERO_DIAS",
     serializeAs: "numberDays",
   })
   public numberDays: number;
+
+  @column({
+    columnName: "TLC_TIPO_DIAS",
+    serializeAs: "daysType",
+  })
+  public daysType: string;
 }

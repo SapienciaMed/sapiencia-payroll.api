@@ -19,7 +19,9 @@ export default Env.rules({
   PORT: Env.schema.number(),
   APP_KEY: Env.schema.string(),
   USER_ID: Env.schema.string.optional(),
-
+  CURRENT_AUTHORIZATION: Env.schema.string(),
+  CURRENT_USER_DOCUMENT: Env.schema.string(),
+  CURRENT_PERMISSIONS: Env.schema.string(),
   APP_NAME: Env.schema.string(),
   DRIVE_DISK: Env.schema.enum(["local"] as const),
   NODE_ENV: Env.schema.enum(["development", "production", "test"] as const),

@@ -1,62 +1,116 @@
-/api/v1/employment/:
-  post:
-    tags:
-      - Payroll
-    summary: Permite la creación de una vinculación de un trabajador.
-    description: Crea una vinculación a partir de los campos requeridos.
-    operationId: createWorker
-    requestBody:
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/createWorker"
-    produces:
-      - application/json
-    responses:
-      200:
-        description: OK
+paths:
+  /api/v1/vinculation/:
+    post:
+      tags:
+        - Vinculation
+      summary: Permite la creación de una vinculación de un trabajador.
+      description: Crea una vinculación a partir de los campos requeridos.
+      operationId: createWorker
+      requestBody:
         content:
           application/json:
-            examples:
-              Action:
-                value:
-                  {
-                    "data":
-                      [
-                        {
-                          "FundPension": 1,
-                          "address": "cl 98 28 29",
-                          "birthDate": "2000-01-12T00:00:00.000-05:00",
-                          "bloodType": "O+",
-                          "contactNumber": "908637216",
-                          "dateCreate": "2023-07-11T13:48:28.204-05:00",
-                          "dateModified": "2023-07-11T13:48:28.204-05:00",
-                          "department": "Antioquia",
-                          "email": "jane.doe@example.co",
-                          "eps": "Sura",
-                          "firstName": "Jane",
-                          "gender": "F",
-                          "housingType": "Propia",
-                          "id": 7,
-                          "municipality": "Medellín",
-                          "nationality": "COL",
-                          "neighborhood": "Aranjuez",
-                          "numberDocument": "098765",
-                          "riskLevel": "riesgo-3",
-                          "secondSurname": "smith",
-                          "severanceFund": "Protección",
-                          "socioEconomic": "2",
-                          "surname": "doe",
-                          "typeDocument": "TI",
-                        },
-                      ],
-                    "operation": { "code": "OK", "message": "" },
-                  }
+            schema:
+              $ref: "#/components/schemas/createWorker"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        [
+                          {
+                            "FundPension": 1,
+                            "address": "cl 98 28 29",
+                            "birthDate": "2000-01-12T00:00:00.000-05:00",
+                            "bloodType": "O+",
+                            "contactNumber": "908637216",
+                            "dateCreate": "2023-07-11T13:48:28.204-05:00",
+                            "dateModified": "2023-07-11T13:48:28.204-05:00",
+                            "department": "Antioquia",
+                            "email": "jane.doe@example.co",
+                            "eps": "Sura",
+                            "firstName": "Jane",
+                            "gender": "F",
+                            "housingType": "Propia",
+                            "id": 7,
+                            "municipality": "Medellín",
+                            "nationality": "COL",
+                            "neighborhood": "Aranjuez",
+                            "numberDocument": "098765",
+                            "riskLevel": "riesgo-3",
+                            "secondSurname": "smith",
+                            "severanceFund": "Protección",
+                            "socioEconomic": "2",
+                            "surname": "doe",
+                            "typeDocument": "TI",
+                          },
+                        ],
+                      "operation": { "code": "OK", "message": "" },
+                    }
+    put:
+      tags:
+        - Vinculation
+      summary: Permite la edición de una vinculación de un trabajador.
+      description: Edita una vinculación a partir de los campos requeridos.
+      operationId: editWorker
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createWorker"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        [
+                          {
+                            "FundPension": 1,
+                            "address": "cl 98 28 29",
+                            "birthDate": "2000-01-12T00:00:00.000-05:00",
+                            "bloodType": "O+",
+                            "contactNumber": "908637216",
+                            "dateCreate": "2023-07-11T13:48:28.204-05:00",
+                            "dateModified": "2023-07-11T13:48:28.204-05:00",
+                            "department": "Antioquia",
+                            "email": "jane.doe@example.co",
+                            "eps": "Sura",
+                            "firstName": "Jane",
+                            "gender": "F",
+                            "housingType": "Propia",
+                            "id": 7,
+                            "municipality": "Medellín",
+                            "nationality": "COL",
+                            "neighborhood": "Aranjuez",
+                            "numberDocument": "098765",
+                            "riskLevel": "riesgo-3",
+                            "secondSurname": "smith",
+                            "severanceFund": "Protección",
+                            "socioEconomic": "2",
+                            "surname": "doe",
+                            "typeDocument": "TI",
+                          },
+                        ],
+                      "operation": { "code": "OK", "message": "" },
+                    }
 
-/api/v1/employment/charges:
+/api/v1/vinculation/charges:
   get:
     tags:
-      - Payroll
+      - Vinculation
     summary: Permite la consulta de los cargos.
     description: Permite la consulta de la lista de los cargos.
     operationId: getCharges
@@ -89,10 +143,10 @@
                     "operation": { "code": "OK", "message": "" },
                   }
 
-/api/v1/employment/typesContracts:
+/api/v1/vinculation/typesContracts:
   get:
     tags:
-      - Payroll
+      - Vinculation
     summary: Permite la consulta de los tipos de contratos.
     description: Permite la consulta de la lista de los tipos de contratos.
     operationId: getTypesContracts
@@ -117,6 +171,592 @@
                       ],
                     "operation": { "code": "OK", "message": "" },
                   }
+
+/api/v1/vinculation/reasonsForWithdrawal:
+  get:
+    tags:
+      - Vinculation
+    summary: Permite la consulta de los motivos de retiro.
+    description: Permite la consulta de los motivos de retiro.
+    operationId: getReasonsForWithdrawal
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data": [{ "id": 1, "name": "Incumplimiento de labor" }],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/vinculation/worker:
+  get:
+    tags:
+      - Vinculation
+    summary: Permite la consulta de los trabajadores activos.
+    description: Permite la consulta de la lista de los trabajadores activos.
+    operationId: getWorkers
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - $ref: "#/components/schemas/createWorker"
+                  operation:
+                    code: OK
+                    message: ""
+
+/api/v1/vinculation/contractors:
+  get:
+    tags:
+      - Vinculation
+    summary: Permite la consulta de los trabajadores contratistas activos.
+    description: Permite la consulta de la lista de los trabajadores contratistas activos.
+    operationId: getContractors
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - $ref: "#/components/schemas/createWorker"
+                  operation:
+                    code: OK
+                    message: ""
+
+/api/v1/vinculation/{id}:
+  get:
+    tags:
+      - Vinculation
+    summary: Permite la consulta de un trabajador por id.
+    description: Permite la consulta de un trabajador por id.
+    operationId: getVinculationById
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - $ref: "#/components/schemas/createWorker"
+                  operation:
+                    code: OK
+                    message: ""
+
+/api/v1/vinculation/suspension:
+  post:
+    tags:
+      - Vinculation
+    summary: Permite la creación de una suspensión a un contratista.
+    description: Crea una suspensión a partir de los campos requeridos.
+    operationId: createSuspension
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              codEmployment:
+                type: number
+                example: 12
+              dateStart:
+                type: date
+                example: "2023-08-31T00:00:00.000-05:00"
+              dateEnd:
+                type: date
+                example: "2023-09-15T00:00:00.000-05:00"
+              adjustEndDate:
+                type: boolean
+                example: true
+              newDateEnd:
+                type: string
+                example: "2023-09-16T00:00:00.000-05:00"
+              observation:
+                type: string
+                example: "test"
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "codEmployment": 12,
+                          "dateStart": "2023-08-31T00:00:00.000-05:00",
+                          "dateEnd": "2023-09-15T00:00:00.000-05:00",
+                          "adjustEndDate": false,
+                          "newDateEnd": "2023-09-16T00:00:00.000-05:00",
+                          "observation": "test",
+                          "dateModified": "2023-09-04T14:37:25.381-05:00",
+                          "dateCreate": "2023-09-04T14:37:25.381-05:00",
+                          "id": 10,
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/vinculation/employment/retirement:
+  put:
+    tags:
+      - Vinculation
+    summary: Permite el retiro de un empleado.
+    description: retira un empleado de los campos requeridos.
+    operationId: createRetirement
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              idReasonRetirement:
+                type: number
+                example: 1
+              retirementDate:
+                type: date
+                example: "2023-08-17T16:05:15.495-05:00"
+              observation:
+                type: string
+                example: "test"
+              idEmployment:
+                type: number
+                example: 5
+              state:
+                type: string
+                example: "0"
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 5,
+                          "workerId": 7,
+                          "idCharge": 7,
+                          "idTypeContract": 4,
+                          "institutionalMail": "pruebas@pruebas.com",
+                          "contractNumber": "654351",
+                          "startDate": "2023-08-01T00:00:00.000-05:00",
+                          "endDate": "2023-10-06T00:00:00.000-05:00",
+                          "state": "0",
+                          "idReasonRetirement": 1,
+                          "retirementDate": "2023-08-17T16:05:15.495-05:00",
+                          "salary": "12000000.15",
+                          "totalValue": "0.00",
+                          "observation": "test",
+                          "userModified": null,
+                          "dateModified": "2023-09-04T15:42:14.743-05:00",
+                          "userCreate": null,
+                          "dateCreate": "2023-08-11T10:42:58.917-05:00",
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+
+/api/v1/vinculation/employment/{id}:
+  get:
+    tags:
+      - Vinculation
+    summary: Permite la consulta de los cargos.
+    description: Permite la consulta de la lista de los cargos.
+    operationId: getCharges
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [
+                        {
+                          "id": 10,
+                          "workerId": 14,
+                          "idCharge": 2,
+                          "idTypeContract": 2,
+                          "institutionalMail": "james@pruebas.com",
+                          "contractNumber": "7772",
+                          "startDate": "2022-01-01T00:00:00.000-05:00",
+                          "endDate": "2023-12-31T00:00:00.000-05:00",
+                          "state": "0",
+                          "idReasonRetirement": 1,
+                          "retirementDate": "2023-08-01T00:00:00.000-05:00",
+                          "salary": "15600000.00",
+                          "totalValue": "0.00",
+                          "observation": "ninguna",
+                          "userModified": null,
+                          "dateModified": "2023-08-22T13:22:47.958-05:00",
+                          "userCreate": null,
+                          "dateCreate": "2023-08-17T16:05:15.862-05:00",
+                          "worker":
+                            {
+                              "userCreate": null,
+                              "id": 14,
+                              "typeDocument": "CC",
+                              "numberDocument": "666777999",
+                              "firstName": "James",
+                              "secondName": "Mark",
+                              "surname": "Lotta",
+                              "secondSurname": "Chauw",
+                              "gender": "M",
+                              "bloodType": "7",
+                              "birthDate": "2000-02-17T05:00:00.000Z",
+                              "nationality": "USA",
+                              "email": "james@pruebas.com",
+                              "contactNumber": "3213226598",
+                              "department": "5",
+                              "municipality": "1",
+                              "neighborhood": "3",
+                              "address": "cra 1 # 2 3",
+                              "socioEconomic": "6",
+                              "eps": "1",
+                              "severanceFund": "1",
+                              "arl": "1",
+                              "fundPension": "1",
+                              "riskLevel": "riesgo-1",
+                              "housingType": "1",
+                              "bank": null,
+                              "accountBankType": null,
+                              "accountBankNumber": null,
+                              "userModified": null,
+                              "dateModified": "2023-08-17T16:05:15.495-05:00",
+                              "dateCreate": "2023-08-17T16:05:15.495-05:00",
+                            },
+                          "typesContracts":
+                            [
+                              {
+                                "id": 2,
+                                "name": "De Periodo",
+                                "temporary": false,
+                              },
+                            ],
+                        },
+                      ],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+/api/v1/vinculation/get-paginated:
+  post:
+    tags:
+      - Vinculation
+    summary: Obtener la información de vinculaciones.
+    description: Obtiene la información de vinculaciones.
+    operationId: get-paginated-vinculation
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              documentNumber:
+                type: string
+                example: "998978"
+                description: Documento.
+                required: false
+              firstName:
+                type: string
+                example: "Jhon"
+                description: Primer nombre.
+                required: false
+              state:
+                type: string
+                example: "1"
+                description: Estado del empleado.
+                required: false
+              secondName:
+                type: string
+                example: ""
+                description: Segundo nombre.
+                required: false
+              secondSurname:
+                type: string
+                example: ""
+                description: Segundo apellido.
+                required: false
+              surname:
+                type: string
+                example: "EEUU"
+                description: Primer apellido.
+                required: false
+              vinculationType:
+                type: number
+                example: 4
+                description: Tipo de cargo.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    userCreate: null
+                    id: 15
+                    typeDocument: "TI"
+                    numberDocument: "998978"
+                    firstName: "Jhon"
+                    secondName: ""
+                    surname: "EEUU"
+                    secondSurname: ""
+                    gender: "M"
+                    bloodType: "1"
+                    birthDate: "2001-02-14T05:00:00.000Z"
+                    nationality: "COL"
+                    email: null
+                    contactNumber: "4567890409"
+                    department: "5"
+                    municipality: "1"
+                    neighborhood: "1"
+                    address: "cl 98 28 29888"
+                    socioEconomic: null
+                    eps: "1"
+                    severanceFund: null
+                    arl: null
+                    fundPension: null
+                    riskLevel: null
+                    housingType: null
+                    bank: null
+                    accountBankType: null
+                    accountBankNumber: null
+                    userModified: null
+                    dateModified: "2023-08-18T09:34:55.179-05:00"
+                    dateCreate: "2023-08-18T09:34:55.179-05:00"
+                    employment:
+                      id: 11
+                      workerId: 15
+                      idCharge: 7
+                      idTypeContract: 4
+                      institutionalMail: "eeuu@gmail.com"
+                      contractNumber: "4646456"
+                      startDate: "2023-08-01T00:00:00.000-05:00"
+                      endDate: "2023-08-07T00:00:00.000-05:00"
+                      state: "1"
+                      idReasonRetirement: null
+                      retirementDate: null
+                      salary: "0.00"
+                      totalValue: "0.00"
+                      observation: null
+                      userModified: null
+                      dateModified: "2023-09-01T17:26:31.433-05:00"
+                      userCreate: null
+                      dateCreate: "2023-08-18T09:32:53.633-05:00"
+                      typesContracts:
+                        - id: 4
+                          name: "Prestación de servicios"
+                          temporary: true
+                  operation:
+                    code: "OK"
+                    message: ""
+
+/api/v1/vinculation/employment/get-paginated:
+  post:
+    tags:
+      - Vinculation
+    summary: Obtener la información de empleos por codigo de trabajador.
+    description: Obtiene los empleos por codigo de trabajador.
+    operationId: get-paginated-employment
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              workerId:
+                type: string
+                example: "15"
+                description: codigo de empleado.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    id: 11
+                    workerId: 15
+                    idCharge: 7
+                    idTypeContract: 4
+                    institutionalMail: "eeuu@gmail.com"
+                    contractNumber: "4646456"
+                    startDate: "2023-08-01T00:00:00.000-05:00"
+                    endDate: "2023-08-07T00:00:00.000-05:00"
+                    state: "1"
+                    idReasonRetirement: null
+                    retirementDate: null
+                    salary: "0.00"
+                    totalValue: "0.00"
+                    observation: null
+                    userModified: null
+                    dateModified: "2023-09-01T17:26:31.433-05:00"
+                    userCreate: null
+                    dateCreate: "2023-08-18T09:32:53.633-05:00"
+                    typesContracts:
+                      - id: 4
+                        name: "Prestación de servicios"
+                        temporary: true
+                    charges:
+                      - id: 7
+                        name: "Director Técnico de Fondos"
+                        codUnit: 1
+                        codChargeType: 1
+                        baseSalary: "4000000.00"
+                        state: "Activo"
+                        userModify: null
+                        dateModified: "2023-08-29T11:22:45.926-05:00"
+                        userCreate: "test"
+                        dateCreate: "2023-08-10T11:39:35.354-05:00"
+                  operation:
+                    code: "OK"
+                    message: ""
+
+/api/v1/vinculation/suspension/get-paginated:
+  post:
+    tags:
+      - Vinculation
+    summary: Obtener la información de las suspensiones.
+    description: Obtiene las suspensiones.
+    operationId: get-paginated-suspension
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              codEmployment:
+                type: number
+                example: 1
+                description: Código de empleado.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    id: 10
+                    codEmployment: 12
+                    dateStart: "2023-08-31T00:00:00.000-05:00"
+                    dateEnd: "2023-09-15T00:00:00.000-05:00"
+                    adjustEndDate: false
+                    newDateEnd: "2023-09-16T00:00:00.000-05:00"
+                    observation: "test"
+                    userModified: null
+                    dateModified: "2023-09-04T14:37:25.383-05:00"
+                    dateCreate: "2023-09-04T14:37:25.383-05:00"
+                    employment:
+                      id: 12
+                      workerId: 16
+                      idCharge: 6
+                      idTypeContract: 3
+                      institutionalMail: "pruebas@pruebas.com"
+                      contractNumber: "33321"
+                      startDate: "2023-08-18T00:00:00.000-05:00"
+                      endDate: "2023-09-16T00:00:00.000-05:00"
+                      state: "1"
+                      idReasonRetirement: null
+                      retirementDate: null
+                      salary: "5600000.00"
+                      totalValue: "0.00"
+                      observation: null
+                      userModified: null
+                      dateModified: "2023-09-04T14:37:25.576-05:00"
+                      userCreate: null
+                      dateCreate: "2023-08-18T09:41:14.217-05:00"
+                      charges:
+                        - id: 6
+                          name: "Jefe de Control Interno"
+                          codUnit: 1
+                          codChargeType: 1
+                          baseSalary: "1068000.00"
+                          state: "Activo"
+                          userModify: null
+                          dateModified: "2023-08-31T15:58:34.742-05:00"
+                          userCreate: "test"
+                          dateCreate: "2023-08-10T11:39:35.251-05:00"
+                      worker:
+                        userCreate: null
+                        id: 16
+                        typeDocument: "CC"
+                        numberDocument: "1141119966"
+                        firstName: "Usuario"
+                        secondName: "pruebas"
+                        surname: "gonzalez"
+                        secondSurname: "sanchez"
+                        gender: "F"
+                        bloodType: "2"
+                        birthDate: "2000-05-23T05:00:00.000Z"
+                        nationality: "COL"
+                        email: "JEISSONGM@HOTMAIL.COM"
+                        contactNumber: "3183606968"
+                        department: "5"
+                        municipality: "1"
+                        neighborhood: "3"
+                        address: "cra 24 c # 9 sur 79"
+                        socioEconomic: "3"
+                        eps: null
+                        severanceFund: null
+                        arl: null
+                        fundPension: null
+                        riskLevel: null
+                        housingType: "1"
+                        bank: null
+                        accountBankType: null
+                        accountBankNumber: null
+                        userModified: null
+                        dateModified: "2023-08-18T09:41:14.162-05:00"
+                        dateCreate: "2023-08-18T09:41:14.164-05:00"
+                      typesContracts:
+                        - id: 3
+                          name: "Carrera Administrativa"
+                          temporary: false
+                  operation:
+                    code: "OK"
+                    message: ""
 
 components:
   schemas:

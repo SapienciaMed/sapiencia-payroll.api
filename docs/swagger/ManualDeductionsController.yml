@@ -1,0 +1,418 @@
+paths:
+  /api/v1/deduction:
+    post:
+      tags:
+        - ManualDeductions
+      summary: Permite la creación de una deducción.
+      description: Crea una deducción.
+      operationId: createManualDeduction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codEmployment:
+                  type: number
+                  example: 1
+                  description: Código de empleo.
+                codDeductionType:
+                  type: number
+                  example: 1
+                  description: Código del tipo de deducción.
+                cyclic:
+                  type: boolean
+                  example: true
+                  description: Indica si es cíclica.
+                numberInstallments:
+                  type: number
+                  example: 5
+                  description: Indica el número de cuotas.
+                applyExtraordinary:
+                  type: boolean
+                  example: false
+                  description: Indica si se aplican las deducciones en planillas extraordinarias.
+                value:
+                  type: number
+                  example: 5000
+                  description: Valor total de la cuota.
+                state:
+                  type: string
+                  example: "Vigente"
+                  description: Estado de la deducción.
+                observation:
+                  type: string
+                  example: "test"
+                  description: Observaciones.
+                porcentualValue:
+                  type: boolean
+                  example: false
+                  description: Indica si el valor es porcentual.
+                codFormsPeriod:
+                  type: number
+                  example: 1
+                  description: Código de la planilla asignada.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        [
+                          {
+                            "id": 1,
+                            "codEmployment": 1,
+                            "codDeductionType": 1,
+                            "cyclic": true,
+                            "numberInstallments": 5,
+                            "applyExtraordinary": false,
+                            "value": 5000,
+                            "state": "Vigente",
+                            "observation": "test",
+                            "porcentualValue": false,
+                            "codFormsPeriod": 1,
+                          },
+                        ],
+                      "operation": { "code": "OK", "message": "" },
+                    }
+    put:
+      tags:
+        - ManualDeductions
+      summary: Actualizar una deducion.
+      description: Actualiza una deducion.
+      operationId: updateDeduction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codEmployment:
+                  type: number
+                  example: 1
+                  description: Código de empleo.
+                codDeductionType:
+                  type: number
+                  example: 1
+                  description: Código del tipo de deducción.
+                cyclic:
+                  type: boolean
+                  example: true
+                  description: Indica si es cíclica.
+                numberInstallments:
+                  type: number
+                  example: 5
+                  description: Indica el número de cuotas.
+                applyExtraordinary:
+                  type: boolean
+                  example: false
+                  description: Indica si se aplican las deducciones en planillas extraordinarias.
+                value:
+                  type: number
+                  example: 6000
+                  description: Valor total de la cuota.
+                state:
+                  type: string
+                  example: "Vigente"
+                  description: Estado de la deducción.
+                observation:
+                  type: string
+                  example: "test"
+                  description: Observaciones.
+                porcentualValue:
+                  type: boolean
+                  example: false
+                  description: Indica si el valor es porcentual.
+                codFormsPeriod:
+                  type: number
+                  example: 1
+                  description: Código de la planilla asignada.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              examples:
+                Action:
+                  value:
+                    {
+                      "data":
+                        [
+                          {
+                            "id": 1,
+                            "codEmployment": 1,
+                            "codDeductionType": 1,
+                            "cyclic": true,
+                            "numberInstallments": 5,
+                            "applyExtraordinary": false,
+                            "value": 5000,
+                            "state": "Vigente",
+                            "observation": "test",
+                            "porcentualValue": false,
+                            "codFormsPeriod": 1,
+                          },
+                        ],
+                      "operation": { "code": "OK", "message": "" },
+                    }
+/api/v1/deduction/get-paginated:
+  post:
+    tags:
+      - ManualDeductions
+    summary: Obtener la información de una deducción.
+    description: Obtiene las deducciones según los filtros.
+    operationId: get-paginated-ManualDeductions
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              codEmployment:
+                type: string
+                example: "123"
+                description: código del empleado.
+                required: false
+              codFormsPeriod:
+                type: number
+                example: 1
+                description: código de la planilla.
+                required: false
+              type:
+                type: string
+                example: "Ciclica"
+                description: tipo de deducción.
+                required: false
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      codEmployment: 12
+                      codDeductionType: 1
+                      cyclic: true
+                      salary: "50000.00"
+                      numberInstallments: 5
+                      applyExtraordinary: false
+                      value: 1000
+                      state: "Vigente"
+                      totalMount: 5000
+                      porcentualValue: false
+                      observation: "test"
+                      codFormsPeriod: 1
+                      userModified: null
+                      dateModified: "2023-08-18T09:41:14.162-05:00"
+                      userCreate: null
+                      dateCreate: "2023-08-18T09:41:14.164-05:00"
+                      employment:
+                        id: 12
+                        workerId: 16
+                        idCharge: 6
+                        idTypeContract: 7
+                        institutionalMail: "pruebas@pruebas.com"
+                        contractNumber: "33321"
+                        startDate: "2023-08-18T00:00:00.000-05:00"
+                        endDate: "2023-12-31T00:00:00.000-05:00"
+                        state: "1"
+                        idReasonRetirement: null
+                        retirementDate: null
+                        salary: "5600000.00"
+                        totalValue: "0.00"
+                        observation: null
+                        userModified: null
+                        dateModified: "2023-08-18T09:41:14.217-05:00"
+                        userCreate: null
+                        dateCreate: "2023-08-18T09:41:14.217-05:00"
+                        charge:
+                          id: 6
+                          name: "Jefe de Control Interno"
+                          codUnit: 1
+                          codChargeType: 1
+                          baseSalary: "1780000.00"
+                          state: "Activo"
+                          userModify: null
+                          dateModified: "2023-08-29T16:29:35.835-05:00"
+                          userCreate: "test"
+                          dateCreate: "2023-08-10T11:39:35.251-05:00"
+                        worker:
+                          userCreate: null
+                          id: 16
+                          typeDocument: "CC"
+                          numberDocument: "1141119966"
+                          firstName: "Usuario"
+                          secondName: "pruebas"
+                          surname: "gonzalez"
+                          secondSurname: "sanchez"
+                          gender: "F"
+                          bloodType: "2"
+                          birthDate: "2000-05-23T05:00:00.000Z"
+                          nationality: "COL"
+                          email: "JEISSONGM@HOTMAIL.COM"
+                          contactNumber: "3183606968"
+                          department: "5"
+                          municipality: "1"
+                          neighborhood: "3"
+                          address: "cra 24 c # 9 sur 79"
+                          socioEconomic: "3"
+                          eps: null
+                          severanceFund: null
+                          arl: null
+                          fundPension: null
+                          riskLevel: null
+                          housingType: "1"
+                          bank: null
+                          accountBankType: null
+                          accountBankNumber: null
+                          userModified: null
+                          dateModified: "2023-08-18T09:41:14.162-05:00"
+                          dateCreate: "2023-08-18T09:41:14.164-05:00"
+                  operation: { code: "OK", message: "" }
+
+/api/v1/deduction/types/{type}:
+  get:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          example: "Ciclica"
+        required: true
+        description: tipo de deducción
+    tags:
+      - ManualDeductions
+    summary: Obtiene los tipos de deducción segun el tipo.
+    description: Obtiene los tipos de deducción segun el tipo seleccionado.
+    operationId: getTypes
+    produces:
+      - application/json
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  {
+                    "data":
+                      [{ "id": 1, "name": "Aportes AFC", "type": "Ciclica" }],
+                    "operation": { "code": "OK", "message": "" },
+                  }
+/api/v1/deduction/{id}:
+  get:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: number
+          example: 1
+        required: true
+        description: Id de la deducción
+    tags:
+      - ManualDeductions
+    summary: Obtener la información de una deducción.
+    description: Obtiene el deducción por id.
+    operationId: getDeductionById
+    produces:
+      - application/json
+    responses:
+      "200":
+        description: OK
+        content:
+          application/json:
+            examples:
+              Action:
+                value:
+                  data:
+                    - id: 1
+                      codEmployment: 12
+                      codDeductionType: 1
+                      cyclic: true
+                      salary: "50000.00"
+                      numberInstallments: 5
+                      applyExtraordinary: false
+                      value: 1000
+                      state: "Vigente"
+                      totalMount: 5000
+                      porcentualValue: false
+                      observation: "test"
+                      codFormsPeriod: 1
+                      userModified: null
+                      dateModified: "2023-08-18T09:41:14.162-05:00"
+                      userCreate: null
+                      dateCreate: "2023-08-18T09:41:14.164-05:00"
+                      employment:
+                        id: 12
+                        workerId: 16
+                        idCharge: 6
+                        idTypeContract: 7
+                        institutionalMail: "pruebas@pruebas.com"
+                        contractNumber: "33321"
+                        startDate: "2023-08-18T00:00:00.000-05:00"
+                        endDate: "2023-12-31T00:00:00.000-05:00"
+                        state: "1"
+                        idReasonRetirement: null
+                        retirementDate: null
+                        salary: "5600000.00"
+                        totalValue: "0.00"
+                        observation: null
+                        userModified: null
+                        dateModified: "2023-08-18T09:41:14.217-05:00"
+                        userCreate: null
+                        dateCreate: "2023-08-18T09:41:14.217-05:00"
+                        charge:
+                          id: 6
+                          name: "Jefe de Control Interno"
+                          codUnit: 1
+                          codChargeType: 1
+                          baseSalary: "1780000.00"
+                          state: "Activo"
+                          userModify: null
+                          dateModified: "2023-08-29T16:29:35.835-05:00"
+                          userCreate: "test"
+                          dateCreate: "2023-08-10T11:39:35.251-05:00"
+                        worker:
+                          userCreate: null
+                          id: 16
+                          typeDocument: "CC"
+                          numberDocument: "1141119966"
+                          firstName: "Usuario"
+                          secondName: "pruebas"
+                          surname: "gonzalez"
+                          secondSurname: "sanchez"
+                          gender: "F"
+                          bloodType: "2"
+                          birthDate: "2000-05-23T05:00:00.000Z"
+                          nationality: "COL"
+                          email: "JEISSONGM@HOTMAIL.COM"
+                          contactNumber: "3183606968"
+                          department: "5"
+                          municipality: "1"
+                          neighborhood: "3"
+                          address: "cra 24 c # 9 sur 79"
+                          socioEconomic: "3"
+                          eps: null
+                          severanceFund: null
+                          arl: null
+                          fundPension: null
+                          riskLevel: null
+                          housingType: "1"
+                          bank: null
+                          accountBankType: null
+                          accountBankNumber: null
+                          userModified: null
+                          dateModified: "2023-08-18T09:41:14.162-05:00"
+                          dateCreate: "2023-08-18T09:41:14.164-05:00"
+                  operation: { code: "OK", message: "" }

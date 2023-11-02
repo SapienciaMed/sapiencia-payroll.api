@@ -47,6 +47,7 @@ import OtherIncome from "App/Models/OtherIncome";
 import { EStatesOtherIncome } from "App/Constants/OtherIncome.enum";
 import TaxDeductible from "App/Models/TaxDeductible";
 import { EStatesTaxDeduction } from "App/Constants/TaxDeduction.enum";
+import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
@@ -129,7 +130,11 @@ export interface IPayrollGenerateRepository {
   ): Promise<IIncome>;
   generateXlsx(rows: any): Promise<any>;
   getIncomeTypeByType(type: string): Promise<IIncomeType[]>;
-
+  getTotalValueISRLast(
+    month: number,
+    year: number,
+    employmentId: number
+  ): Promise<number>;
   // mover
   getAllIncomesTypes(): Promise<IIncomeType[]>;
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
@@ -224,6 +229,7 @@ export default class PayrollGenerateRepository
       .where("IAG_CODAGR_AGRUPADOR", gruperId)
       .where("OIN_CODEMP_EMPLEO", employmentId)
       .where("OIN_ESTADO", EStatesOtherIncome.Pendiente);
+
     const otherIncomes = await otherIncome;
 
     const totalOtherIncomes = otherIncomes.reduce(
@@ -247,8 +253,9 @@ export default class PayrollGenerateRepository
 
     if (ISR) {
       return (
-        (totalIncomes || 0 + totalOtherIncomes || 0) -
-        (totalDeductions || 0 + totalTaxDeduction || 0)
+        (totalIncomes ?? 0) +
+        (totalOtherIncomes ?? 0) -
+        ((totalDeductions ?? 0) + (totalTaxDeduction ?? 0))
       );
     }
     return (totalIncomes || 0) - (totalDeductions || 0);
@@ -562,6 +569,29 @@ export default class PayrollGenerateRepository
     }
 
     return { value: 0 } as IIncome;
+  }
+
+  async getTotalValueISRLast(
+    month: number,
+    year: number,
+    employmentId: number
+  ): Promise<number> {
+    const deductionsq = Deduction.query()
+      .select("DED_VALOR as value")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("DED_CODEMP_EMPLEO", employmentId)
+      .where("DED_CODTDD_TIPO_DEDUCCION", EDeductionTypes.incomeTax);
+
+    const deductions = await deductionsq;
+
+    const totalDeductions = deductions.reduce(
+      (sum, i) => sum + Number(i.$extras.value),
+      0
+    );
+
+    return Math.round(totalDeductions);
   }
 
   async getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null> {

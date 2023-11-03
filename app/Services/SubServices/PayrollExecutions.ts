@@ -139,7 +139,7 @@ export class PayrollExecutions extends PayrollCalculations {
           );
 
           //10. Calcular rentas exentas
-          const rentExempt = await this.calculateDeductionRelatives(
+          const rentExempt = await this.calculateRentExempt(
             employment,
             formPeriod,
             uvtValue
@@ -370,7 +370,7 @@ export class PayrollExecutions extends PayrollCalculations {
             uvtValue
           );
           //10. Calcular rentas exentas
-          const rentExempt = await this.calculateDeductionRelatives(
+          const rentExempt = await this.calculateRentExempt(
             employment,
             formPeriod,
             uvtValue

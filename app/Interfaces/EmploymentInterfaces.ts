@@ -70,7 +70,7 @@ export interface IReasonsForWithdrawal {
 
 export interface IRetirementEmployment {
   idReasonRetirement: number;
-  retirementDate: DateTime;
+  retirementDate?: DateTime;
   observation: string;
   idEmployment: number;
   state: string;

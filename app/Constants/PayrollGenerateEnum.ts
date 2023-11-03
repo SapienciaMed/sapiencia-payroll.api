@@ -4,6 +4,7 @@ export enum EDeductionTypes {
   SocialSecurity = 10,
   retirementFund = 11,
   dependentPeople = 14,
+  rentExempt = 15,
 }
 
 export enum EGroupers {
@@ -11,6 +12,7 @@ export enum EGroupers {
   incomeCyclicDeduction = 5,
   totalDeductions = 6,
   incomeBountyService = 7,
+  deductionRentExempt = 8,
 }
 
 export enum EPayrollTypes {

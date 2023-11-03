@@ -16,7 +16,6 @@ import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { addCalendarDays, calculateDifferenceDays } from "App/Utils/functions";
 import { DateTime } from "luxon";
 
-
 export class PayrollCalculations {
   constructor(
     public payrollGenerateRepository: IPayrollGenerateRepository,
@@ -1273,18 +1272,17 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     uvtValue: number
   ): Promise<object> {
-    const relatives = await this.payrollGenerateRepository.getRelatives(
-      employment.workerId ?? 0
-    );
+    const relatives =
+      await this.payrollGenerateRepository.getRelativesDependent(
+        employment.workerId ?? 0
+      );
 
     const affectionValue =
-      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+      await this.payrollGenerateRepository.getTotalIncomeForMonthPerGrouper(
         EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
-        employment.id ?? 0,
-        false,
-        formPeriod.id
+        employment.id ?? 0
       );
 
     if (relatives.length > 0) {
@@ -1311,6 +1309,68 @@ export class PayrollCalculations {
       };
     }
     return {};
+  }
+
+  async calculateRentExempt(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    uvtValue: number
+  ): Promise<object> {
+    const affectionValueRentExempt =
+      await this.payrollGenerateRepository.getValueRentExempt(
+        EGroupers.deductionRentExempt,
+        formPeriod.year,
+        employment.id ?? 0,
+        formPeriod.month
+      );
+
+    const affectionValueRentExemptYear =
+      await this.payrollGenerateRepository.getValueRentExempt(
+        EGroupers.deductionRentExempt,
+        formPeriod.year,
+        employment.id ?? 0,
+        formPeriod.month
+      );
+
+    const affectionValue =
+      await this.payrollGenerateRepository.getTotalIncomeForMonthPerGrouper(
+        EGroupers.deductionRentExempt,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+
+    const percent30AffectionValue = (affectionValue * 30) / 100;
+
+    const uvt3800 = uvtValue * 3800;
+
+    let valueRentExempt = affectionValueRentExempt;
+
+    if (affectionValueRentExempt > percent30AffectionValue) {
+      valueRentExempt = affectionValueRentExemptYear + percent30AffectionValue;
+    } else {
+      valueRentExempt += affectionValueRentExemptYear;
+    }
+
+    if (valueRentExempt > uvt3800) {
+      valueRentExempt = uvt3800 - affectionValueRentExemptYear;
+    }
+
+    await this.payrollGenerateRepository.createDeduction({
+      value: Number(valueRentExempt),
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
+      idTypeDeduction: EDeductionTypes.rentExempt,
+      patronalValue: 0,
+    });
+
+    return {
+      value: Number(valueRentExempt),
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
+      idTypeDeduction: EDeductionTypes.rentExempt,
+      patronalValue: 0,
+    };
   }
 
   async calculateISR(

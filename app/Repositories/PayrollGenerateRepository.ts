@@ -63,6 +63,19 @@ export interface IPayrollGenerateRepository {
     ISR: boolean,
     payrollPeriodId?: number
   ): Promise<number>;
+  getTotalIncomeForMonthPerGrouper(
+    gruperId: number,
+    month: number,
+    year: number,
+    employmentId: number,
+    payrollPeriodId?: number
+  ): Promise<number>;
+  getValueRentExempt(
+    gruperId: number,
+    year: number,
+    employmentId: number,
+    month?: number
+  ): Promise<number>;
   getLicencesPeriodByEmployment(
     idEmployement: number,
     dateStart: DateTime,
@@ -125,7 +138,7 @@ export interface IPayrollGenerateRepository {
     codPayroll: number
   ): Promise<ICyclicalDeductionInstallment[] | null>;
   createIncapacityDaysProcessed(data: IIncapcityDaysProcessed): Promise<void>;
-  getRelatives(workerId: number): Promise<IRelative[]>;
+  getRelativesDependent(workerId: number): Promise<IRelative[]>;
   getLastIncomeType(
     codEmployment: number,
     typeIncome: number,
@@ -262,6 +275,106 @@ export default class PayrollGenerateRepository
       );
     }
     return (totalIncomes || 0) - (totalDeductions || 0);
+  }
+
+  async getTotalIncomeForMonthPerGrouper(
+    gruperId: number,
+    month: number,
+    year: number,
+    employmentId: number,
+    payrollPeriodId?: number
+  ): Promise<number> {
+    const incomesq = Income.query()
+      .select("ING_VALOR as value", "IAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "ING_CODPPL_PLANILLA")
+      .join(
+        "IAG_INGRESOS_AGRUPADOR",
+        "IAG_CODTIG_TIPO_INGRESO",
+        "ING_CODTIG_TIPO_INGRESO"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("IAG_CODAGR_AGRUPADOR", gruperId)
+      .where("ING_CODEMP_EMPLEO", employmentId);
+
+    if (payrollPeriodId) {
+      incomesq.where("PPL_CODIGO", payrollPeriodId);
+    }
+
+    const incomes = await incomesq;
+
+    const totalIncomes = incomes.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    const otherIncome = OtherIncome.query()
+      .select("OIN_VALOR as value", "IAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "OIN_CODPPL_PLANILLA")
+      .join(
+        "IAG_INGRESOS_AGRUPADOR",
+        "IAG_CODTIG_TIPO_INGRESO",
+        "OIN_CODTIG_TIPO_INGRESO"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("IAG_CODAGR_AGRUPADOR", gruperId)
+      .where("OIN_CODEMP_EMPLEO", employmentId)
+      .where("OIN_ESTADO", EStatesOtherIncome.Pendiente);
+
+    const otherIncomes = await otherIncome;
+
+    const totalOtherIncomes = otherIncomes.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    return (totalIncomes ?? 0) + (totalOtherIncomes ?? 0);
+  }
+
+  async getValueRentExempt(
+    gruperId: number,
+    year: number,
+    employmentId: number,
+    month?: number
+  ): Promise<number> {
+    const deductionsq = Deduction.query()
+      .select("DED_VALOR as value", "DAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .join(
+        "DAG_DEDUCCIONES_AGRUPADOR",
+        "DAG_CODTDD_TIPO_DEDUCCION",
+        "DED_CODTDD_TIPO_DEDUCCION"
+      )
+      .where("PPL_ANIO", year)
+      .where("DAG_CODAGR_AGRUPADOR", gruperId)
+      .where("DED_CODEMP_EMPLEO", employmentId);
+
+    if (month) {
+      deductionsq.where("PPL_MES", month);
+
+      const deductions = await deductionsq;
+
+      const totalDeductions = deductions.reduce(
+        (sum, i) =>
+          sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+        0
+      );
+
+      return totalDeductions;
+    } else {
+      const deductions = await deductionsq;
+
+      const totalDeductions = deductions.reduce(
+        (sum, i) =>
+          sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+        0
+      );
+
+      return totalDeductions;
+    }
   }
 
   async getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]> {
@@ -581,8 +694,10 @@ export default class PayrollGenerateRepository
     return res;
   }
 
-  async getRelatives(workerId: number): Promise<IRelative[]> {
-    const Relatives = await Relative.query().where("workerId", workerId);
+  async getRelativesDependent(workerId: number): Promise<IRelative[]> {
+    const Relatives = await Relative.query()
+      .where("workerId", workerId)
+      .where("dependent", true);
 
     return Relatives.map((i) => i.serialize() as IRelative);
   }

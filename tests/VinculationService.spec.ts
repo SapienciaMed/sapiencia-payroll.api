@@ -65,6 +65,7 @@ test.group("VinculationService TEST for createVinculation", () => {
         birthDate: DateTime.now(),
         gender: "F",
         relationship: "2",
+        dependent: true,
       },
     ],
     employment: {
@@ -146,6 +147,7 @@ test.group("VinculationService TEST for editVinculation", () => {
         birthDate: DateTime.now(),
         gender: "F",
         relationship: "2",
+        dependent: true,
       },
     ],
     employment: {

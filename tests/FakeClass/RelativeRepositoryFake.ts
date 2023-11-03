@@ -9,6 +9,7 @@ const relativeFake: IRelative = {
   birthDate: DateTime.now(),
   gender: "F",
   relationship: "2",
+  dependent: true,
 };
 
 export class RelativeRepositoryFake implements IRelativeRepository {

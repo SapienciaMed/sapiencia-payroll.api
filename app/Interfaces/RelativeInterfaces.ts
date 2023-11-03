@@ -7,4 +7,5 @@ export interface IRelative {
   relationship: string;
   gender?: string;
   birthDate?: DateTime;
+  dependent: boolean;
 }

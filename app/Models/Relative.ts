@@ -28,4 +28,12 @@ export default class Relative extends BaseModel {
     },
   })
   public birthDate: DateTime;
+
+  @column({
+    columnName: "FAM_ES_DEPENDIENTE",
+    serializeAs: "dependent",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
+  public dependent: boolean;
 }

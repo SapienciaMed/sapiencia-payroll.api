@@ -62,6 +62,7 @@ export default class CreateAndUpdateWorkerValidator {
         relationship: schema.string([rules.maxLength(10)]),
         gender: schema.string.optional([rules.maxLength(10)]),
         birthDate: schema.date.optional(),
+        dependent: schema.boolean(),
       })
     ),
     employment: schema.object().members({

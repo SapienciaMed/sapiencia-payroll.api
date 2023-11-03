@@ -137,6 +137,13 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod,
             uvtValue
           );
+
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
           // Calcula Renta
 
           // //calcular planilla vacaciones
@@ -266,6 +273,7 @@ export class PayrollExecutions extends PayrollCalculations {
             reserveSeverancePayInterest,
             severancePayInterest,
             historical,
+            rentExempt,
           };
         } catch (error) {
           // Crea historico Fallido
@@ -361,6 +369,12 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod,
             uvtValue
           );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -385,6 +399,7 @@ export class PayrollExecutions extends PayrollCalculations {
             ciclicalDeductions,
             eventualDeductions,
             relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {

@@ -20,6 +20,7 @@ export enum EPayrollTypes {
   serviceBounty = 10,
   primaService = 5,
   primaChristmas = 4,
+  liquidation = 7,
 }
 
 export enum EIncomeTypes {
@@ -33,6 +34,7 @@ export enum EIncomeTypes {
   primaVacations = 14,
   bonusRecreation = 15,
   severancePayInterest = 16,
+  severancePay = 19,
 }
 
 export enum EIncapacityTypes {

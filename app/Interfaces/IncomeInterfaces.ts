@@ -8,6 +8,7 @@ export interface IIncome {
   value: number;
   time?: number;
   unitTime?: string;
+  formPeriod?:IFormPeriod;
 }
 
 export interface IIncomePayroll {

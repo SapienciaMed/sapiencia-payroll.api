@@ -19,7 +19,7 @@ import {
 import { IRange } from "App/Interfaces/RangeInterfaces";
 import { IRelative } from "App/Interfaces/RelativeInterfaces";
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
-import { IVacationResult } from "App/Interfaces/VacationsInterfaces";
+import { IVacation, IVacationResult } from "App/Interfaces/VacationsInterfaces";
 import Booking from "App/Models/Booking";
 import ContractSuspension from "App/Models/ContractSuspension";
 import CyclicalDeductionInstallment from "App/Models/CyclicalDeductionInstallment";
@@ -52,6 +52,7 @@ export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
   getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getActiveEmploymentsContracts(dateStart: Date): Promise<IEmploymentResult[]>;
+  getRetiredEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
   getMonthlyValuePerGrouper(
     gruperId: number,
@@ -80,9 +81,10 @@ export interface IPayrollGenerateRepository {
     dateStart: DateTime,
     dateEnd: DateTime
   ): Promise<IVacationResult[]>;
+  getVacationsPendingByEmployment(idEmployement: number): Promise<IVacation[]>;
   getEventualDeductionsByEmployment(
     idEmployement: number,
-    codPayroll: number
+    codPayroll?: number
   ): Promise<IManualDeduction[]>;
   getCyclicDeductionsByEmployment(
     idEmployement: number
@@ -125,7 +127,8 @@ export interface IPayrollGenerateRepository {
   getRelatives(workerId: number): Promise<IRelative[]>;
   getLastIncomeType(
     codEmployment: number,
-    typeIncome: number
+    typeIncome: number,
+    codPayroll?: number
   ): Promise<IIncome>;
   generateXlsx(rows: any): Promise<any>;
   getIncomeTypeByType(type: string): Promise<IIncomeType[]>;
@@ -270,6 +273,22 @@ export default class PayrollGenerateRepository
     return res.map((i) => i.serialize() as IEmploymentResult);
   }
 
+  async getRetiredEmployments(dateStart: Date): Promise<IEmploymentResult[]> {
+    const res = await Employment.query()
+      .preload("worker")
+      .preload("charges")
+      .preload("salaryHistories", (query) => {
+        query.andWhere("validity", true);
+      })
+      .whereHas("typesContracts", (contractsQuery) => {
+        contractsQuery.where("temporary", false);
+      })
+      .where("startDate", "<=", dateStart)
+      .andWhere("state", "=", false);
+
+    return res.map((i) => i.serialize() as IEmploymentResult);
+  }
+
   async getActiveEmploymentsContracts(
     dateStart: Date
   ): Promise<IEmploymentResult[]> {
@@ -358,15 +377,29 @@ export default class PayrollGenerateRepository
     return res.map((i) => i.serialize() as IVacationResult);
   }
 
+  async getVacationsPendingByEmployment(
+    idEmployement: number
+  ): Promise<IVacation[]> {
+    const res = await Vacation.query()
+      .where("codEmployment", idEmployement)
+      .andWhere("available", ">", 0)
+      .andWhere("periodClosed", false);
+
+    return res.map((i) => i.serialize() as IVacation);
+  }
+
   async getEventualDeductionsByEmployment(
     idEmployement: number,
-    codPayroll: number
+    codPayroll?: number
   ): Promise<IManualDeduction[]> {
-    const res = await ManualDeduction.query()
-      .where("codEmployment", idEmployement)
-      .andWhere("codFormsPeriod", codPayroll)
-      .andWhere("cyclic", false);
-    return res.map((i) => i.serialize() as IManualDeduction);
+    const res = ManualDeduction.query().where("codEmployment", idEmployement);
+    res.andWhere("cyclic", false);
+    res.andWhere("state", "Vigente");
+    if (codPayroll) {
+      res.andWhere("codFormsPeriod", codPayroll);
+    }
+    const result = await res;
+    return result.map((i) => i.serialize() as IManualDeduction);
   }
 
   async getCyclicDeductionsByEmployment(
@@ -549,16 +582,20 @@ export default class PayrollGenerateRepository
 
   async getLastIncomeType(
     codEmployment: number,
-    typeIncome: number
+    typeIncome: number,
+    codPayroll?: number
   ): Promise<IIncome> {
-    const lastIncome = await Income.query()
-      .where("ING_CODEMP_EMPLEO", codEmployment)
-      .where("ING_CODTIG_TIPO_INGRESO", typeIncome)
-      .orderBy("ING_CODIGO", "desc")
-      .limit(1);
-
-    if (lastIncome.length > 0) {
-      return lastIncome[0].serialize() as IIncome;
+    const lastIncome = Income.query().preload("formPeriod");
+    lastIncome.where("ING_CODEMP_EMPLEO", codEmployment);
+    lastIncome.where("ING_CODTIG_TIPO_INGRESO", typeIncome);
+    if (codPayroll) {
+      lastIncome.andWhere("idTypePayroll", "<>", codPayroll);
+    }
+    lastIncome.orderBy("ING_CODIGO", "desc");
+    lastIncome.limit(1);
+    const result = await lastIncome;
+    if (result.length > 0) {
+      return result[0].serialize() as IIncome;
     }
 
     return { value: 0 } as IIncome;

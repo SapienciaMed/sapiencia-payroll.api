@@ -1344,7 +1344,16 @@ export class PayrollCalculations {
 
     const isr = (tableValue - range.start) * (range.value / 100) + range.value2;
 
-    const isrValue = (isr * uvtValue).toFixed(2);
+    const isrTotalValueLast =
+      await this.payrollGenerateRepository.getTotalValueISRLast(
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+
+    const isrValueCurrent = (isr * uvtValue).toFixed(2);
+
+    const isrValue = Number(isrValueCurrent) - isrTotalValueLast;
 
     this.payrollGenerateRepository.createDeduction({
       value: Number(isrValue),

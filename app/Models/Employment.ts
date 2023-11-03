@@ -28,9 +28,9 @@ export default class Employment extends BaseModel {
 
   @column({
     columnName: "EMP_CODDEP_DEPENDENCIA",
-    serializeAs: "idDependence",
+    serializeAs: "codDependence",
   })
-  public idDependence: number;
+  public codDependence: number;
 
   @column({
     columnName: "EMP_CODCRG_CARGO",
@@ -138,11 +138,11 @@ export default class Employment extends BaseModel {
   })
   public dateCreate: DateTime;
 
-  @hasOne(() => Dependence, {
-    localKey: "idDependence",
-    foreignKey: "id",
+  @belongsTo(() => Dependence, {
+    localKey: "id",
+    foreignKey: "codDependence",
   })
-  public dependence: HasOne<typeof Dependence>;
+  public dependence: BelongsTo<typeof Dependence>;
 
   @hasMany(() => Charge, {
     localKey: "idCharge",

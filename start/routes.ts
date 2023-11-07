@@ -25,6 +25,14 @@ Route.get("/", async () => {
 });
 
 Route.group(() => {
+  Route.get("/get-all", "DependenceController.getAllDependencies");
+})
+  .prefix("/api/v1/dependence")
+  // .middleware("auth");
+
+
+  
+Route.group(() => {
   Route.get("/get-by-id/:id", "TaxDeductibleController.getTaxDeductibleById");
 })
   .prefix("/api/v1/tax-deductible")

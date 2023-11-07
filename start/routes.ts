@@ -28,7 +28,7 @@ Route.group(() => {
   Route.get("/get-all", "DependenceController.getAllDependencies");
 })
   .prefix("/api/v1/dependence")
-  // .middleware("auth");
+  .middleware("auth");
 
 
   

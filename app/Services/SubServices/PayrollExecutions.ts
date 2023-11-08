@@ -4,6 +4,7 @@ import { IPayrollGenerateRepository } from "App/Repositories/PayrollGenerateRepo
 import CoreService from "../External/CoreService";
 import { PayrollCalculations } from "./PayrollCalculations";
 import { calculateDifferenceDays } from "App/Utils/functions";
+import { EPayrollState } from "App/Constants/States.enum";
 
 export class PayrollExecutions extends PayrollCalculations {
   constructor(
@@ -251,6 +252,11 @@ export class PayrollExecutions extends PayrollCalculations {
             "Exitoso"
           );
 
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
+
           return {
             licenceDays,
             incapacitiesDays,
@@ -391,6 +397,11 @@ export class PayrollExecutions extends PayrollCalculations {
             salaryCalculated.days,
             salary,
             "Exitoso"
+          );
+
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
           );
 
           return {
@@ -542,6 +553,10 @@ export class PayrollExecutions extends PayrollCalculations {
             salary,
             "Exitoso"
           );
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
 
           return {
             vacationDays,
@@ -649,6 +664,10 @@ export class PayrollExecutions extends PayrollCalculations {
             salary,
             "Exitoso"
           );
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
 
           return {
             calculatePrimaServices,
@@ -749,6 +768,11 @@ export class PayrollExecutions extends PayrollCalculations {
             calculatePrimaChristmas.time ?? 0,
             salary,
             "Exitoso"
+          );
+
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
           );
 
           return {
@@ -881,6 +905,11 @@ export class PayrollExecutions extends PayrollCalculations {
             calculateServiceBounty.days,
             salary,
             "Exitoso"
+          );
+
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
           );
 
           return {
@@ -1083,6 +1112,11 @@ export class PayrollExecutions extends PayrollCalculations {
             ),
             salary,
             "Exitoso"
+          );
+
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
           );
 
           return {

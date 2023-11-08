@@ -460,7 +460,11 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     salary: number,
     interestPorcentage: number
-  ): Promise<{ severancePayInterest?: object; value: number }> {
+  ): Promise<{
+    severancePay?: IIncome;
+    severancePayInterest?: IIncome;
+    value: number;
+  }> {
     const currentYear = new Date().getFullYear();
     let severancePayDays = 0;
     if (new Date(employment.startDate.toString()).getFullYear() < currentYear) {
@@ -524,11 +528,19 @@ export class PayrollCalculations {
       unitTime: "Dias",
     });
     return {
-      severancePayInterest: {
-        idTypePayroll: formPeriod.id,
-        idEmployment: employment.id,
-        idTypeIncome: EIncomeTypes.severancePayInterest,
+      severancePay: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.severancePay,
         value: severancePayTotal,
+        time: severancePayDays,
+        unitTime: "Dias",
+      },
+      severancePayInterest: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.severancePayInterest,
+        value: severancePayInterest,
         time: severancePayDays,
         unitTime: "Dias",
       },

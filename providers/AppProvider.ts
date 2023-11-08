@@ -12,6 +12,7 @@ export default class AppProvider {
     const TaxDeductibleService = await import(
       "App/Services/TaxDeductibleService"
     );
+    const DependenceService = await import("App/Services/DependenceService");
     const VinculationProvider = await import("App/Services/VinculationService");
     const VacationService = await import("App/Services/VacationService");
     const IncapacityService = await import("App/Services/IncapacityService");
@@ -39,6 +40,9 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** REPOSITORIES ****************************/
     /**************************************************************************/
+    const DependenceRepository = await import(
+      "App/Repositories/DependenceRepository"
+    );
     const TaxDeductibleRepository = await import(
       "App/Repositories/TaxDeductibleRepository"
     );
@@ -95,6 +99,11 @@ export default class AppProvider {
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
+    this.app.container.singleton(
+      "core.DependenceProvider",
+      () =>
+        new DependenceService.default(new DependenceRepository.default())
+    );
 
     this.app.container.singleton(
       "core.TaxDeductibleProvider",

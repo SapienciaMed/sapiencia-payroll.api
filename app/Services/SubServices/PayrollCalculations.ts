@@ -797,7 +797,7 @@ export class PayrollCalculations {
       formPeriod.id
     );
     const liquidationDays = calculateDifferenceDays(
-      lastSalary.formPeriod?.paidDate,
+      lastSalary.formPeriod?.paidDate ?? employment.startDate,
       employment.retirementDate
     );
 

@@ -38,6 +38,10 @@ Route.group(() => {
   Route.get("/download/:id", "ReportController.payrollDownloadById");
 
   Route.get("/incomeType", "PayrollGenerateController.getTypesIncomes");
+  Route.get(
+    "/authorization:id",
+    "PayrollGenerateController.payrollAuthorization"
+  );
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {

@@ -7,11 +7,14 @@ import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
 import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
-import { IGetIncapacity } from "App/Interfaces/IncapacityInterfaces";
+import {
+  IGetIncapacity,
+  IIncapacity,
+} from "App/Interfaces/IncapacityInterfaces";
 import { IIncapcityDaysProcessed } from "App/Interfaces/IncapcityDaysProcessedInterfaces";
 import { IIncome, IIncomePayroll } from "App/Interfaces/IncomeInterfaces";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
-import { ILicenceResult } from "App/Interfaces/LicenceInterfaces";
+import { ILicence, ILicenceResult } from "App/Interfaces/LicenceInterfaces";
 import {
   IManualCiclicalDeduction,
   IManualDeduction,
@@ -155,6 +158,17 @@ export interface IPayrollGenerateRepository {
   getAllIncomesTypes(): Promise<IIncomeType[]>;
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
+  updateStateManualDeduction(
+    idPayroll: number,
+    state: string
+  ): Promise<IManualDeduction[]>;
+  updateStateIncapacities(idPayroll: number): Promise<IIncapacity[]>;
+  updateStateLicences(
+    dateStart: DateTime,
+    dateEnd: DateTime,
+    state: string
+  ): Promise<ILicence[]>;
+  updateStatePayroll(id: number, state: string): Promise<IFormPeriod>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -747,8 +761,6 @@ export default class PayrollGenerateRepository
   }
 
   async getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null> {
-    const payrollInfo: any = {};
-
     const res = await FormsPeriod.query()
       .preload("deductions")
       .preload("incomes")
@@ -764,138 +776,6 @@ export default class PayrollGenerateRepository
     }
 
     return res.serialize() as IFormPeriod;
-
-    // // Consulta para la información de empleo
-    // payrollInfo.employmentInfo = await FormsPeriod.query()
-    //   .select(
-    //     "TRA_TRABAJADORES.TRA_TIPO_DOCUMENTO as tipo_documento",
-    //     "TRA_TRABAJADORES.TRA_NUMERO_DOCUMENTO as numero_documento",
-    //     "TRA_TRABAJADORES.TRA_CODIGO_IDENTIFICACION_FISCAL as identificacion_fiscal",
-    //     "TRA_TRABAJADORES.TRA_PRIMER_NOMBRE as primer_nombre",
-    //     "TRA_TRABAJADORES.TRA_SEGUNDO_NOMBRE as segundo_nombre",
-    //     "TRA_TRABAJADORES.TRA_PRIMER_APELLIDO as primer_apellido",
-    //     "TRA_TRABAJADORES.TRA_SEGUNDO_APELLIDO as segundo_apellido",
-    //     "TRA_TRABAJADORES.TRA_BANCO as banco",
-    //     "TRA_TRABAJADORES.TRA_CUENTA_BANCARIA as nro_cuenta_bancaria",
-    //     "DEP_DEPENDENCIAS.DEP_NOMBRE as dependencia",
-    //     "EMP_EMPLEOS.EMP_NUMERO_CONTRATO",
-    //     "TCO_TIPOS_CONTRATO.TCO_NOMBRE as tipo_contrato"
-    //   )
-    //   .join("HPL_HISTORICOS_PLANILLA", "HPL_CODPPL_PLANILLA", "PPL_CODIGO")
-    //   .join("EMP_EMPLEOS", "EMP_CODIGO", "HPL_CODEMP_EMPLEO")
-    //   .join("TCO_TIPOS_CONTRATO", "TCO_CODIGO", "EMP_CODTCO_TIPO_CONTRATO")
-    //   .join("CRG_CARGOS", "CRG_CODIGO", "EMP_CODCRG_CARGO")
-    //   .join("TRA_TRABAJADORES", "TRA_CODIGO", "EMP_CODTRA_TRABAJADOR")
-    //   .join("DEP_DEPENDENCIAS", "DEP_CODIGO", "EMP_CODDEP_DEPENDENCIA")
-    //   .where("id", codPayroll);
-
-    // // Consulta para ingresos
-    // payrollInfo.incomes = await FormsPeriod.query()
-    //   .select(
-    //     "TIG_TIPOS_INGRESO.TIG_NOMBRE as tipo_ingreso",
-    //     "ING_INGRESOS.ING_VALOR as valor",
-    //     "ING_INGRESOS.ING_TIEMPO as tiempo",
-    //     "ING_INGRESOS.ING_UNIDAD_TIEMPO as unidad_tiempo"
-    //   )
-    //   .join("ING_INGRESOS", "ING_CODPPL_PLANILLA", "PPL_CODIGO")
-    //   .join("TIG_TIPOS_INGRESO", "TIG_CODIGO", "ING_CODTIG_TIPO_INGRESO")
-    //   .where("id", codPayroll);
-
-    // // Consulta para deducciones
-    // payrollInfo.deductions = await FormsPeriod.query()
-    //   .select(
-    //     "TDD_TIPOS_DEDUCCIONES.TDD_NOMBRE as tipo_deduccion",
-    //     "DED_DEDUCCIONES.DED_VALOR as valor",
-    //     "DED_DEDUCCIONES.DED_VALOR_PATRONAL as valor_patronal",
-    //     "DED_DEDUCCIONES.DED_TIEMPO as tiempo",
-    //     "DED_DEDUCCIONES.DED_UNIDAD_TIEMPO as unidad_tiempo"
-    //   )
-    //   .join("DED_DEDUCCIONES", "DED_CODPPL_PLANILLA", "PPL_CODIGO")
-    //   .join("TDD_TIPOS_DEDUCCIONES", "TDD_CODIGO", "DED_CODTDD_TIPO_DEDUCCION")
-    //   .where("id", codPayroll);
-
-    // // Consulta para reservas
-    // payrollInfo.reserves = await FormsPeriod.query()
-    //   .select(
-    //     "TRS_TIPOS_RESERVAS.TRS_NOMBRE as tipo_reserva",
-    //     "RSV_RESERVAS.RSV_VALOR as valor",
-    //     "RSV_RESERVAS.RSV_TIEMPO as tiempo",
-    //     "RSV_RESERVAS.RSV_UNIDAD_TIEMPO as unidad_tiempo"
-    //   )
-    //   .join("RSV_RESERVAS", "RSV_CODPPL_PLANILLA", "PPL_CODIGO")
-    //   .join("TRS_TIPOS_RESERVAS", "TRS_CODIGO", "RSV_CODTRS_TIPO_RESERVA")
-    //   .where("id", codPayroll);
-
-    // // Consulta para días de incapacidad
-    // payrollInfo.incapacityDays = await FormsPeriod.query()
-    //   .select(
-    //     "DIP_DIAS_INCAPACIDAD_PROCESADOS.DIP_FECHA_INICIO as fecha_inicio_procesado",
-    //     "DIP_DIAS_INCAPACIDAD_PROCESADOS.DIP_FECHA_FIN as fecha_fin_procesado",
-    //     "INC_INCAPACIDADES.INC_FECHA_INICIO as fecha_inicio",
-    //     "INC_INCAPACIDADES.INC_FECHA_FIN as fecha_fin",
-    //     "TIN_TIPOS_INCAPACIDAD.TIN_NOMBRE as tipo_incapacidad",
-    //     "DIP_DIAS_INCAPACIDAD_PROCESADOS.DIP_DIAS as cantidad_dias"
-    //   )
-    //   .join(
-    //     "DIP_DIAS_INCAPACIDAD_PROCESADOS",
-    //     "DIP_CODPPL_PLANILLA",
-    //     "PPL_CODIGO"
-    //   )
-    //   .join("INC_INCAPACIDADES", "INC_CODIGO", "DIP_CODINC_INCAPACIDAD")
-    //   .join(
-    //     "TIN_TIPOS_INCAPACIDAD",
-    //     "TIN_CODIGO",
-    //     "INC_CODTIN_TIPO_INCAPACIDAD"
-    //   )
-    //   .where("id", codPayroll);
-
-    // // Consulta para días de licencia
-    // payrollInfo.licenceDays = await FormsPeriod.query()
-    //   .select(
-    //     "LIC_LICENCIAS.LIC_FECHA_INICIO as fecha_inicio_licencia",
-    //     "LIC_LICENCIAS.LIC_FECHA_FIN as fecha_fin_licencia",
-    //     "LIC_LICENCIAS.LIC_NUMERO_RESOLUCION as numero_resolucion",
-    //     "LIC_LICENCIAS.LIC_ESTADO as estado"
-    //   )
-    //   .join("HPL_HISTORICOS_PLANILLA", "HPL_CODPPL_PLANILLA", "PPL_CODIGO")
-    //   .join("EMP_EMPLEOS", "EMP_CODIGO", "HPL_CODEMP_EMPLEO")
-    //   .join("LIC_LICENCIAS", "LIC_CODEMP_EMPLEO", "EMP_CODIGO")
-    //   .whereRaw(
-    //     "LIC_LICENCIAS.LIC_FECHA_INICIO BETWEEN PPL_FECHA_INICIO and PPL_FECHA_FIN or LIC_LICENCIAS.LIC_FECHA_FIN BETWEEN PPL_FECHA_INICIO and PPL_FECHA_FIN"
-    //   )
-    //   .where("id", codPayroll);
-
-    // // Consulta para deducciones manuales
-    // payrollInfo.manualDeduction = await FormsPeriod.query()
-    //   .select(
-    //     "DDM_DEDUCCIONES_MANUALES.DDM_ES_PORCENTUAL as porcentual",
-    //     "DDM_DEDUCCIONES_MANUALES.DDM_VALOR as valor",
-    //     "DDM_DEDUCCIONES_MANUALES.DDM_ES_CICLICA as ciclica",
-    //     "DDM_DEDUCCIONES_MANUALES.DDM_NUMERO_CUOTAS as numero_cuotas",
-    //     "DDM_DEDUCCIONES_MANUALES.DDM_MONTO_TOTAL as monto_total",
-    //     "DDM_DEDUCCIONES_MANUALES.DDM_ESTADO as estado",
-    //     "CDC_CUOTAS_DEDUCCION_CICLICA.CDC_NUMERO_CUOTA as numero_cuota",
-    //     "CDC_CUOTAS_DEDUCCION_CICLICA.CDC_VALOR_CUOTA as valor_cuota"
-    //   )
-    //   .join("HPL_HISTORICOS_PLANILLA", "HPL_CODPPL_PLANILLA", "PPL_CODIGO")
-    //   .join("EMP_EMPLEOS", "EMP_CODIGO", "HPL_CODEMP_EMPLEO")
-    //   .join("DDM_DEDUCCIONES_MANUALES", (query) => {
-    //     query.on((subquery) => {
-    //       subquery
-    //         .on("DDM_CODPPL", "=", "PPL_CODIGO")
-    //         .orOn("DDM_CODEMP_EMPLEO", "=", "EMP_CODIGO");
-    //     });
-    //   })
-    //   .join("CDC_CUOTAS_DEDUCCION_CICLICA", (query) => {
-    //     query.on((subquery) => {
-    //       subquery
-    //         .on("CDC_CODDDM_DEDUCCION", "=", "DDM_CODIGO")
-    //         .andOn("CDC_CODPPL_PLANILLA", "=", "PPL_CODIGO");
-    //     });
-    //   })
-    //   .where("id", codPayroll);
-
-    return payrollInfo;
   }
 
   async generateXlsx(rows: any): Promise<any> {
@@ -928,5 +808,61 @@ export default class PayrollGenerateRepository
   async getAllReservesTypes(): Promise<IReserveType[]> {
     const res = await ReserveType.query();
     return res.map((i) => i.serialize() as IReserveType);
+  }
+
+  async updateStatePayroll(id: number, state: string): Promise<IFormPeriod> {
+    const res = (await FormsPeriod.findOrFail(id)).merge({ state: state });
+    return res.serialize() as IFormPeriod;
+  }
+
+  async updateStateLicences(
+    dateStart: DateTime,
+    dateEnd: DateTime,
+    state: string
+  ): Promise<ILicence[]> {
+    const licence = await Licence.query()
+      .whereBetween("dateEnd", [dateStart.toString(), dateEnd.toString()])
+      .update("licenceState", state);
+    return licence.map((i) => i.serialize() as ILicence);
+  }
+
+  async updateStateIncapacities(idPayroll: number): Promise<IIncapacity[]> {
+    const incapacitiesProcess = await IncapacityDaysProcessed.query().where(
+      "codFormPeriod",
+      idPayroll
+    );
+    const idIncapacity = incapacitiesProcess.map(
+      (incapacity) => incapacity.codFormPeriod
+    );
+    const res = await Incapacity.query()
+      .whereIn("id", idIncapacity)
+      .update("isComplete", true);
+    return res.map((i) => i.serialize() as IIncapacity);
+  }
+
+  async updateStateManualDeduction(
+    idPayroll: number,
+    state: string
+  ): Promise<IManualDeduction[]> {
+    const eventualDeduction = await ManualDeduction.query()
+      .where("cyclic", false)
+      .andWhere("codFormsPeriod", idPayroll)
+      .update("state", state);
+
+    const ciclycalDeductionInstallment =
+      await CyclicalDeductionInstallment.query().where(
+        "idTypePayroll",
+        idPayroll
+      );
+    if (ciclycalDeductionInstallment.length > 0) {
+      const idCiclycalDeduction = ciclycalDeductionInstallment.map(
+        (deduction) => deduction.idDeductionManual
+      );
+      const ciclycalDeduction = await ManualDeduction.query()
+        .whereIn("id", idCiclycalDeduction)
+        .update("state", state);
+      eventualDeduction.push(ciclycalDeduction);
+    }
+    return eventualDeduction.map((i) => i.serialize() as IManualDeduction);
   }
 }

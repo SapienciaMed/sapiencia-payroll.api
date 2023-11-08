@@ -16,16 +16,15 @@ export default class PayrollGenerateController {
       );
     }
   }
-  public async payrollDownloadById({ response, request }: HttpContextContract) {
+  public async payrollAuthorization({
+    response,
+    request,
+  }: HttpContextContract) {
     try {
       const { id } = request.params();
-      response.header("Content-Type", "application/vnd.ms-excel");
-      response.header(
-        "Content-Disposition",
-        "attachment; filename=ReportePlanilla.xlsx"
+      return response.send(
+        await PayrollGenerateProvider.authorizationPayroll(id)
       );
-      const result = await PayrollGenerateProvider.payrollDownloadById(id);
-      response.send(new ApiResponse(result, EResponseCodes.OK));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

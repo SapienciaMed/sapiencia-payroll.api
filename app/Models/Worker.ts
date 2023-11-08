@@ -55,6 +55,16 @@ export default class Worker extends BaseModel {
   })
   public secondSurname: string;
 
+  @column.date({
+    columnName: "TRA_FECHA_NACIMIENTO",
+    serializeAs: "birthDate",
+    prepare: (value: DateTime) => new Date(value?.toJSDate()),
+    serialize: (value: DateTime) => {
+      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
+    },
+  })
+  public birthDate: DateTime;
+
   @column({
     columnName: "TRA_GENERO",
     serializeAs: "gender",
@@ -66,16 +76,6 @@ export default class Worker extends BaseModel {
     serializeAs: "bloodType",
   })
   public bloodType: string;
-
-  @column.date({
-    columnName: "TRA_FECHA_NACIMIENTO",
-    serializeAs: "birthDate",
-    prepare: (value: DateTime) => new Date(value?.toJSDate()),
-    serialize: (value: DateTime) => {
-      return value ? value.setLocale("zh").toFormat("yyyy/MM/dd") : value;
-    },
-  })
-  public birthDate: DateTime;
 
   @column({
     columnName: "TRA_NACIONALIDAD",
@@ -120,6 +120,12 @@ export default class Worker extends BaseModel {
   public address: string;
 
   @column({
+    columnName: "TRA_TIPO_VIVIENDA",
+    serializeAs: "housingType",
+  })
+  public housingType: string;
+
+  @column({
     columnName: "TRA_ESTRATO_SOCIOECONOMICO",
     serializeAs: "socioEconomic",
   })
@@ -144,6 +150,12 @@ export default class Worker extends BaseModel {
   public severanceFund: string;
 
   @column({
+    columnName: "TRA_FONDO_PENSION",
+    serializeAs: "fundPension",
+  })
+  public fundPension: string;
+
+  @column({
     columnName: "TRA_ARL",
     serializeAs: "arl",
   })
@@ -154,18 +166,6 @@ export default class Worker extends BaseModel {
     serializeAs: "riskLevel",
   })
   public riskLevel: string;
-
-  @column({
-    columnName: "TRA_TIPO_VIVIENDA",
-    serializeAs: "housingType",
-  })
-  public housingType: string;
-
-  @column({
-    columnName: "TRA_FONDO_PENSION",
-    serializeAs: "fundPension",
-  })
-  public fundPension: string;
 
   @column({
     columnName: "TRA_BANCO",

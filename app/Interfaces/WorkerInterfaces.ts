@@ -8,9 +8,9 @@ export interface IWorker {
   secondName?: string;
   surname: string;
   secondSurname?: string;
+  birthDate: DateTime;
   gender: string;
   bloodType: string;
-  birthDate: DateTime;
   nationality: string;
   email?: string;
   contactNumber: string;
@@ -18,14 +18,14 @@ export interface IWorker {
   municipality: string;
   neighborhood: string;
   address: string;
-  fiscalIdentification?:string;
+  housingType?: string;
   socioEconomic?: string;
+  fiscalIdentification?: string;
   eps?: string;
   severanceFund?: string;
+  fundPension?: string;
   arl?: string;
   riskLevel?: string;
-  housingType?: string;
-  fundPension?: string;
   bank?: string;
   accountBankType?: string;
   accountBankNumber?: string;
@@ -36,5 +36,5 @@ export interface IWorker {
 }
 
 export interface IWorkerFilters {
-  documentList?: string[]
+  documentList?: string[];
 }

@@ -1,3 +1,5 @@
-export interface  IDependence {
-
+export interface IDependence {
+  id: number;
+  name: string;
+  depAbove: number;
 }

@@ -811,7 +811,9 @@ export default class PayrollGenerateRepository
   }
 
   async updateStatePayroll(id: number, state: string): Promise<IFormPeriod> {
-    const res = (await FormsPeriod.findOrFail(id)).merge({ state: state });
+    const res = await FormsPeriod.findOrFail(id);
+    res.merge({ state });
+    await res.save();
     return res.serialize() as IFormPeriod;
   }
 

@@ -1023,7 +1023,7 @@ export default class PayrollGenerateRepository
     if (vacation.length == 0) {
       return [];
     }
-    return vacation.map((i) => i.serialize() as IVacationDay);
+    return vacation;
   }
   async updateStateIncapacities(
     idPayroll: number,

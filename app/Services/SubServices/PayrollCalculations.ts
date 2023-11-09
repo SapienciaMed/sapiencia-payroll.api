@@ -434,7 +434,7 @@ export class PayrollCalculations {
       daysWorked;
     const severancePayTotal =
       ((reserveValueSubtotal * 0.12) / 360) * daysWorked;
-  await  this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePayInterest,
@@ -511,7 +511,7 @@ export class PayrollCalculations {
     const severancePayInterest =
       ((severancePayTotal * (interestPorcentage / 100)) / 360) *
       severancePayDays;
-  await  this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePay,
@@ -519,7 +519,7 @@ export class PayrollCalculations {
       time: severancePayDays,
       unitTime: "Dias",
     });
-  await  this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePayInterest,
@@ -711,7 +711,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     });
 
-  await  this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.vacation,
@@ -720,7 +720,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     });
 
-  await  this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.bonusRecreation,
@@ -790,7 +790,7 @@ export class PayrollCalculations {
 
     const ServiceBountyTotal =
       ((salary * (serviceBountyPercentage / 100)) / 360) * liquidationDays;
-   await this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.serviceBonus,
@@ -816,22 +816,22 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     salary: number
   ): Promise<{ salary?: IIncome; value: number }> {
-    let liquidationDays = 0
+    let liquidationDays = 0;
     const lastSalary = await this.payrollGenerateRepository.getLastIncomeType(
       employment.id ?? 0,
       EIncomeTypes.salary,
       formPeriod.id
     );
-    if(lastSalary.formPeriod){
-     liquidationDays = calculateDifferenceDays(
-      lastSalary.formPeriod[0].paidDate ?? employment.startDate,
-      employment.retirementDate
-    );
+    if (lastSalary.formPeriod) {
+      liquidationDays = calculateDifferenceDays(
+        lastSalary.formPeriod[0].paidDate ?? employment.startDate,
+        employment.retirementDate
+      );
     }
 
     const SalaryTotal = (salary / 30) * liquidationDays;
 
-   await this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.salary,
@@ -1419,12 +1419,11 @@ export class PayrollCalculations {
       );
 
     const percent25SubTotal1 = (affectionValue * 25) / 100;
+
     const uvt790 = uvtValue * 790;
 
     const rentaWorkExempt =
-      affectionValue * percent25SubTotal1 > uvt790
-        ? uvt790
-        : affectionValue * percent25SubTotal1;
+      percent25SubTotal1 > uvt790 ? uvt790 : percent25SubTotal1;
 
     const subtTotal2 = await this.payrollGenerateRepository.getSubTotalTwo(
       rentaWorkExempt,
@@ -1465,7 +1464,8 @@ export class PayrollCalculations {
       throw new Error("Tabla de la renta no encontrada");
     }
 
-    const isr = (tableValue - range.start) * (range.value / 100) + range.value2;
+    const isr =
+      (tableValue - range.start) * (Number(range.value) / 100) + range.value2;
 
     const isrTotalValueLast =
       await this.payrollGenerateRepository.getTotalValueISRLast(
@@ -1478,15 +1478,19 @@ export class PayrollCalculations {
 
     const isrValue = Number(isrValueCurrent) - isrTotalValueLast;
 
+    const isrValueValid = this.payrollGenerateRepository.validNumberNegative(
+      Number(isrValue)
+    );
+
     this.payrollGenerateRepository.createDeduction({
-      value: Number(isrValue),
+      value: Number(isrValueValid),
       idEmployment: employment.id ?? 0,
       idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     });
     return {
-      value: Number(isrValue),
+      value: Number(isrValueValid),
       idEmployment: employment.id ?? 0,
       idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,

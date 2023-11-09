@@ -7,24 +7,24 @@ import { ISalaryHistory } from "./SalaryHistoryInterfaces";
 export interface IEmployment {
   id?: number;
   workerId?: number;
+  codDependence: number;
   idCharge: number;
   institutionalMail: string;
+  idTypeContract: number;
   contractNumber: string;
   startDate: DateTime;
   endDate?: DateTime;
+  specificObligations?: string;
+  contractualObject?: string;
   state: string;
-  idTypeContract: number;
   idReasonRetirement?: number;
   retirementDate?: DateTime;
-  observation?: string;
-  // salary?: number;
-  totalValue?: number;
+  settlementPaid?: boolean;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
-
   worker?: IWorker;
 }
 

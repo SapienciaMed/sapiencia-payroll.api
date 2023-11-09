@@ -19,9 +19,10 @@ const employmentFake: IEmployment = {
   startDate: DateTime.now(),
   state: "1",
   idTypeContract: 3,
-  observation: "",
+  codDependence: 1,
+  // observation: "",
   //salary: 234345,
-  totalValue: 400000,
+  // totalValue: 400000,
 };
 
 const reasonsForWithdrawalFake: IReasonsForWithdrawal = {

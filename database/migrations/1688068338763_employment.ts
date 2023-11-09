@@ -69,9 +69,14 @@ export default class extends BaseSchema {
       table
         .date("EMP_FECHA_RETIRO")
         .comment("Fecha en que se retiro el empleado");
-        table
-        .string("EMP_OBSERVACION")
-        .comment("observacion retiro");
+      table
+        .boolean("EMP_LIQUIDACION_PAGADA")
+        .comment(
+          "Indicador de que a la persona ya se le calculo y autorizo la liquidacion"
+        );
+      // table
+      // .string("EMP_OBSERVACION")
+      // .comment("observacion retiro");
       table
         .string("EMP_USUARIO_MODIFICO", 10)
         .comment(

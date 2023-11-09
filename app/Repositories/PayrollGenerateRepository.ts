@@ -80,7 +80,8 @@ export interface IPayrollGenerateRepository {
     gruperId: number,
     year: number,
     employmentId: number,
-    month?: number
+    month?: number,
+    payrollPeriodId?: number
   ): Promise<number>;
   getLicencesPeriodByEmployment(
     idEmployement: number,
@@ -368,7 +369,8 @@ export default class PayrollGenerateRepository
     gruperId: number,
     year: number,
     employmentId: number,
-    month?: number
+    month?: number,
+    payrollPeriodId?: number
   ): Promise<number> {
     const deductionsq = Deduction.query()
       .select("DED_VALOR as value", "DAG_SIGNO as sign")
@@ -379,11 +381,16 @@ export default class PayrollGenerateRepository
         "DED_CODTDD_TIPO_DEDUCCION"
       )
       .where("PPL_ANIO", year)
+
       .where("DAG_CODAGR_AGRUPADOR", gruperId)
       .where("DED_CODEMP_EMPLEO", employmentId);
 
     if (month) {
       deductionsq.where("PPL_MES", month);
+
+      if (payrollPeriodId) {
+        deductionsq.where("PPL_CODIGO", payrollPeriodId);
+      }
 
       const deductions = await deductionsq;
 

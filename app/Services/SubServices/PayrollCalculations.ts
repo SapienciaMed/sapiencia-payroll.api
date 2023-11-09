@@ -1333,15 +1333,15 @@ export class PayrollCalculations {
         EGroupers.deductionRentExempt,
         formPeriod.year,
         employment.id ?? 0,
-        formPeriod.month
+        formPeriod.month,
+        formPeriod.id ?? 0
       );
 
     const affectionValueRentExemptYear =
       await this.payrollGenerateRepository.getValueRentExempt(
         EGroupers.deductionRentExempt,
         formPeriod.year,
-        employment.id ?? 0,
-        formPeriod.month
+        employment.id ?? 0
       );
 
     const affectionValue =

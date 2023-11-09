@@ -41,7 +41,7 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Codigo del tipo de ingreso (FK TIG)");
       table
-        .decimal("ING_VALOR", 10, 2)
+        .decimal("ING_VALOR", 14, 2)
         .notNullable()
         .comment("Valor de dinero");
       table

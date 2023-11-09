@@ -434,7 +434,7 @@ export class PayrollCalculations {
       daysWorked;
     const severancePayTotal =
       ((reserveValueSubtotal * 0.12) / 360) * daysWorked;
-    this.payrollGenerateRepository.createIncome({
+  await  this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePayInterest,
@@ -511,7 +511,7 @@ export class PayrollCalculations {
     const severancePayInterest =
       ((severancePayTotal * (interestPorcentage / 100)) / 360) *
       severancePayDays;
-    this.payrollGenerateRepository.createIncome({
+  await  this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePay,
@@ -519,7 +519,7 @@ export class PayrollCalculations {
       time: severancePayDays,
       unitTime: "Dias",
     });
-    this.payrollGenerateRepository.createIncome({
+  await  this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePayInterest,
@@ -594,7 +594,7 @@ export class PayrollCalculations {
         360) *
       liquidationDays;
 
-    this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.primaChristmas,
@@ -644,7 +644,7 @@ export class PayrollCalculations {
     const ServiceBonusTotal =
       ((salary + serviceBounty.value / 12) / 720) * liquidationDays;
 
-    this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.primaService,
@@ -711,7 +711,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     });
 
-    this.payrollGenerateRepository.createIncome({
+  await  this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.vacation,
@@ -720,7 +720,7 @@ export class PayrollCalculations {
       unitTime: "Dias",
     });
 
-    this.payrollGenerateRepository.createIncome({
+  await  this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.bonusRecreation,
@@ -747,11 +747,11 @@ export class PayrollCalculations {
     salary: number,
     serviceBountyPercentage: number
   ): Promise<{ ServiceBountyLiquidation?: object; value: number }> {
-    const actualYear = new Date(employment.startDate.toString()).getFullYear();
+    const actualYear = new Date().getFullYear();
     const monthAniversary = new Date(
       employment.startDate.toString()
     ).getMonth();
-    const dayAniversary = new Date().getDay();
+    const dayAniversary = new Date(employment.startDate.toString()).getDay();
     let liquidationDays = 0;
     if (
       new Date().getFullYear() ==
@@ -777,7 +777,7 @@ export class PayrollCalculations {
 
     const ServiceBountyTotal =
       ((salary * (serviceBountyPercentage / 100)) / 360) * liquidationDays;
-    this.payrollGenerateRepository.createIncome({
+   await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.serviceBonus,
@@ -803,19 +803,22 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     salary: number
   ): Promise<{ salary?: IIncome; value: number }> {
+    let liquidationDays = 0
     const lastSalary = await this.payrollGenerateRepository.getLastIncomeType(
       employment.id ?? 0,
       EIncomeTypes.salary,
       formPeriod.id
     );
-    const liquidationDays = calculateDifferenceDays(
-      lastSalary.formPeriod?.paidDate ?? employment.startDate,
+    if(lastSalary.formPeriod){
+     liquidationDays = calculateDifferenceDays(
+      lastSalary.formPeriod[0].paidDate ?? employment.startDate,
       employment.retirementDate
     );
+    }
 
     const SalaryTotal = (salary / 30) * liquidationDays;
 
-    this.payrollGenerateRepository.createIncome({
+   await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.salary,
@@ -1737,7 +1740,7 @@ export class PayrollCalculations {
       salary: salary,
       totalIncome: incomes,
       totalDeduction: deductions,
-      total: Number(incomes) + Number(deductions),
+      total: Number(incomes) - Number(deductions),
       state: state,
       observation: error ?? "",
     });

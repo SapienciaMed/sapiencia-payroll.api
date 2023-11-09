@@ -39,11 +39,11 @@ export default class extends BaseSchema {
         .notNullable()
         .comment("Codigo del tipo de ingreso (FK TDD)");
       table
-        .decimal("DED_VALOR", 10, 2)
+        .decimal("DED_VALOR", 14, 2)
         .notNullable()
         .comment("Valor de dinero");
       table
-        .decimal("DED_VALOR_PATRONAL", 10, 2)
+        .decimal("DED_VALOR_PATRONAL", 14, 2)
         .notNullable()
         .comment("Valor correspondiente a pagar de la parte patronal");
       table

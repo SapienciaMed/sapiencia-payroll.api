@@ -13,6 +13,8 @@ export enum EGroupers {
   totalDeductions = 6,
   incomeBountyService = 7,
   deductionRentExempt = 8,
+  grouperSub2 = 9,
+  grouperSub3 = 10,
 }
 
 export enum EPayrollTypes {

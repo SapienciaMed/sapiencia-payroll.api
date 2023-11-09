@@ -50,7 +50,7 @@ import OtherIncome from "App/Models/OtherIncome";
 import { EStatesOtherIncome } from "App/Constants/OtherIncome.enum";
 import TaxDeductible from "App/Models/TaxDeductible";
 import { EStatesTaxDeduction } from "App/Constants/TaxDeduction.enum";
-import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
+import { EDeductionTypes, EGroupers } from "App/Constants/PayrollGenerateEnum";
 import VacationDay from "App/Models/VacationDay";
 import { IVacationDay } from "App/Interfaces/VacationDaysInterface";
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
@@ -67,6 +67,27 @@ export interface IPayrollGenerateRepository {
     year: number,
     employmentId: number,
     ISR: boolean,
+    payrollPeriodId?: number
+  ): Promise<number>;
+  getSubTotalTwo(
+    rentWorkerExempt: number,
+    employmentId: number,
+    month: number,
+    year: number,
+    payrollPeriodId?: number
+  ): Promise<number>;
+  getSubTotalThree(
+    uvtValue: number,
+    employmentId: number,
+    month: number,
+    year: number,
+    payrollPeriodId?: number
+  ): Promise<number>;
+  getSubTotalFive(
+    sub4: number,
+    employmentId: number,
+    month: number,
+    year: number,
     payrollPeriodId?: number
   ): Promise<number>;
   getTotalIncomeForMonthPerGrouper(
@@ -306,6 +327,135 @@ export default class PayrollGenerateRepository
       );
     }
     return (totalIncomes || 0) - (totalDeductions || 0);
+  }
+
+  async getSubTotalTwo(
+    rentWorkerExempt: number,
+    employmentId: number,
+    month: number,
+    year: number,
+    payrollPeriodId?: number
+  ): Promise<number> {
+    const deductionsq = Deduction.query()
+      .select("DED_VALOR as value", "DAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .join(
+        "DAG_DEDUCCIONES_AGRUPADOR",
+        "DAG_CODTDD_TIPO_DEDUCCION",
+        "DED_CODTDD_TIPO_DEDUCCION"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("DAG_CODAGR_AGRUPADOR", EGroupers.grouperSub2)
+      .where("DED_CODEMP_EMPLEO", employmentId);
+
+    const deductions = await deductionsq;
+
+    const totalDeductions = deductions.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    const taxDeduction = TaxDeductible.query()
+      .select("DER_VALOR as value")
+      .where("DER_ANIO", year)
+      .where("DER_CODEMP_EMPLEO", employmentId)
+      .where("DER_ESTADO", EStatesTaxDeduction.Pendiente);
+
+    const taxDeductions = await taxDeduction;
+
+    const totalTaxDeduction = taxDeductions.reduce(
+      (sum, i) => sum + Number(i.$extras.value),
+      0
+    );
+
+    const sub2 =
+      (totalDeductions || 0) +
+      (totalTaxDeduction || 0) +
+      (rentWorkerExempt || 0);
+
+    return Math.round(sub2);
+  }
+
+  async getSubTotalThree(
+    uvtValue: number,
+    employmentId: number,
+    month: number,
+    year: number,
+    payrollPeriodId?: number
+  ): Promise<number> {
+    const deductionsq = Deduction.query()
+      .select("DED_VALOR as value", "DAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .join(
+        "DAG_DEDUCCIONES_AGRUPADOR",
+        "DAG_CODTDD_TIPO_DEDUCCION",
+        "DED_CODTDD_TIPO_DEDUCCION"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("DAG_CODAGR_AGRUPADOR", EGroupers.grouperSub3)
+      .where("DED_CODEMP_EMPLEO", employmentId);
+
+    const deductions = await deductionsq;
+
+    const totalDeductions = deductions.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    const percent40 = (totalDeductions * 40) / 100;
+
+    const uvt1340 = uvtValue * 1340;
+
+    const sub3 =
+      totalDeductions * percent40 > uvt1340
+        ? uvt1340
+        : totalDeductions * percent40;
+
+    return Math.round(sub3);
+  }
+
+  async getSubTotalFive(
+    sub4: number,
+    employmentId: number,
+    month: number,
+    year: number,
+    payrollPeriodId?: number
+  ): Promise<number> {
+    const incomesTotal = await this.getTotalIncomeForMonthPerGrouper(
+      EGroupers.incomeTaxGrouper,
+      month,
+      year,
+      employmentId
+    );
+
+    const deductionsq = Deduction.query()
+      .select("DED_VALOR as value", "DAG_SIGNO as sign")
+      .join("PPL_PERIODOS_PLANILLA", "PPL_CODIGO", "DED_CODPPL_PLANILLA")
+      .join(
+        "DAG_DEDUCCIONES_AGRUPADOR",
+        "DAG_CODTDD_TIPO_DEDUCCION",
+        "DED_CODTDD_TIPO_DEDUCCION"
+      )
+      .where("PPL_MES", month)
+      .where("PPL_ANIO", year)
+      .where("DAG_CODAGR_AGRUPADOR", EGroupers.grouperSub3)
+      .where("DED_CODEMP_EMPLEO", employmentId);
+
+    const deductions = await deductionsq;
+
+    const totalDeductions = deductions.reduce(
+      (sum, i) =>
+        sum + Number(i.$extras.value) * (i.$extras.sign == "-" ? -1 : 1),
+      0
+    );
+
+    const sub5 = incomesTotal - totalDeductions - sub4;
+
+    return Math.round(sub5);
   }
 
   async getTotalIncomeForMonthPerGrouper(

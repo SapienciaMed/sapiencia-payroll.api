@@ -1349,7 +1349,7 @@ export class PayrollCalculations {
 
     const affectionValue =
       await this.payrollGenerateRepository.getTotalIncomeForMonthPerGrouper(
-        EGroupers.deductionRentExempt,
+        EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
         employment.id ?? 0
@@ -1359,15 +1359,17 @@ export class PayrollCalculations {
 
     const uvt3800 = uvtValue * 3800;
 
+    let valueValidLimit = affectionValueRentExempt;
     let valueRentExempt = affectionValueRentExempt;
 
     if (affectionValueRentExempt > percent30AffectionValue) {
-      valueRentExempt = affectionValueRentExemptYear + percent30AffectionValue;
+      valueValidLimit += percent30AffectionValue;
+      valueRentExempt = percent30AffectionValue;
     } else {
-      valueRentExempt += affectionValueRentExemptYear;
+      valueValidLimit += affectionValueRentExemptYear;
     }
 
-    if (valueRentExempt > uvt3800) {
+    if (valueValidLimit > uvt3800) {
       valueRentExempt = uvt3800 - affectionValueRentExemptYear;
     }
 
@@ -1403,11 +1405,44 @@ export class PayrollCalculations {
         true
       );
 
-    // si tiene dependiente le restamos segun el calculo
+    const percent25SubTotal1 = (affectionValue * 25) / 100;
+    const uvt790 = uvtValue * 790;
 
-    // Si tiene Certificado Alivio tributario le resta
+    const rentaWorkExempt =
+      affectionValue * percent25SubTotal1 > uvt790
+        ? uvt790
+        : affectionValue * percent25SubTotal1;
 
-    const tableValue = affectionValue / uvtValue;
+    const subtTotal2 = await this.payrollGenerateRepository.getSubTotalTwo(
+      rentaWorkExempt,
+      employment.id ?? 0,
+      formPeriod.month,
+      formPeriod.year
+    );
+
+    const subtTotal3 = await this.payrollGenerateRepository.getSubTotalThree(
+      uvtValue,
+      employment.id ?? 0,
+      formPeriod.month,
+      formPeriod.year
+    );
+
+    let subTotal4 = 0;
+
+    if (subtTotal2 > subtTotal3) {
+      subTotal4 = subtTotal3;
+    } else {
+      subTotal4 = subtTotal2;
+    }
+
+    const subtTotal5 = await this.payrollGenerateRepository.getSubTotalFive(
+      subTotal4,
+      employment.id ?? 0,
+      formPeriod.month,
+      formPeriod.year
+    );
+
+    const tableValue = subtTotal5 / uvtValue;
 
     const range = incomeTaxTable.find(
       (i) => tableValue >= i.start && tableValue <= i.end
@@ -1432,15 +1467,15 @@ export class PayrollCalculations {
 
     this.payrollGenerateRepository.createDeduction({
       value: Number(isrValue),
-      idEmployment: employment.id || 0,
-      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     });
     return {
       value: Number(isrValue),
-      idEmployment: employment.id || 0,
-      idTypePayroll: formPeriod.id || 0,
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     };

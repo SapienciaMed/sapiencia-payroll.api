@@ -669,7 +669,7 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     salary: number
-  ): Promise<{ vacationBonusLiquidation?: object; value: number }> {
+  ): Promise<{ vacationBonusLiquidation?: IIncome;vacationLiquidation?:IIncome;recreationBounty?:IIncome; value: number }> {
     let vacationDays = 0;
     const serviceBounty =
       await this.payrollGenerateRepository.getLastIncomeType(
@@ -702,7 +702,7 @@ export class PayrollCalculations {
       vacationDays;
     const recreationBounty = (((salary / 30) * 2) / 360) * vacationDays;
 
-    this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.primaVacations,
@@ -729,14 +729,27 @@ export class PayrollCalculations {
       unitTime: "Dias",
     });
     return {
+      
       vacationBonusLiquidation: {
         idTypePayroll: formPeriod.id ?? 0,
         idEmployment: employment.id ?? 0,
-        idTypeIncome: EIncomeTypes.primaService,
+        idTypeIncome: EIncomeTypes.primaVacations,
         value: vacationBonusTotal,
         time: vacationDays,
         unitTime: "Dias",
       },
+      vacationLiquidation:{idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.primaVacations,
+      value: vacationBonusTotal,
+      time: vacationDays,
+      unitTime: "Dias",},
+      recreationBounty:{idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.bonusRecreation,
+        value: recreationBounty,
+        time: vacationDays,
+        unitTime: "Dias"},
       value: vacationBonusTotal,
     };
   }

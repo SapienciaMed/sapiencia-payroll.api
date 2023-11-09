@@ -47,7 +47,7 @@ Route.group(() => {
 
   Route.get("/incomeType", "PayrollGenerateController.getTypesIncomes");
   Route.get(
-    "/authorization:id",
+    "/authorization/:id",
     "PayrollGenerateController.payrollAuthorization"
   );
 }).prefix("/api/v1/payroll-generate");

@@ -11,11 +11,12 @@ import {
   EManualDeductionState,
   EPayrollState,
 } from "App/Constants/States.enum";
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<object>>;
   getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>>;
-  authorizationPayroll(id: number): Promise<ApiResponse<object>>;
+  authorizationPayroll(id: number, trx: TransactionClientContract): Promise<ApiResponse<object>>;
 }
 
 export default class PayrollGenerateService
@@ -82,23 +83,31 @@ export default class PayrollGenerateService
     return new ApiResponse(result, EResponseCodes.OK);
   }
 
-  async authorizationPayroll(id: number): Promise<ApiResponse<object>> {
+  async authorizationPayroll(id: number, trx: TransactionClientContract): Promise<ApiResponse<object>> {
     const payroll = await this.payrollGenerateRepository.updateStatePayroll(
       id,
-      EPayrollState.authorized
+      EPayrollState.authorized,
+      trx
     );
+    let licence = {};
+    if (payroll.idFormType == EPayrollTypes.biweekly) {
+      licence = await this.payrollGenerateRepository.updateStateLicences(
+        payroll.dateStart,
+        payroll.dateEnd,
+        ELicenceState.finished,trx
+      );
+    }
     const incapacity =
-      await this.payrollGenerateRepository.updateStateIncapacities(id);
-    const licence = await this.payrollGenerateRepository.updateStateLicences(
-      payroll.dateStart,
-      payroll.dateEnd,
-      ELicenceState.finished
-    );
+      await this.payrollGenerateRepository.updateStateIncapacities(id,trx);
+
     const manualDeductions =
       await this.payrollGenerateRepository.updateStateManualDeduction(
         id,
-        EManualDeductionState.finished
+        EManualDeductionState.finished,
+        trx
       );
+
+    await trx.commit();
 
     if (!payroll) {
       return new ApiResponse(

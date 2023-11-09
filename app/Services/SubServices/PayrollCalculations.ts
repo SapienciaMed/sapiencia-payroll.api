@@ -1760,6 +1760,17 @@ export class PayrollCalculations {
     salary: number,
     vacationDays: number
   ): Promise<IIncome[]> {
+    const vacations =
+      await this.payrollGenerateRepository.getVacationsPeriodByEmployment(
+        employment.id ?? 0,
+        formPeriod.dateStart,
+        formPeriod.dateEnd
+      );
+    const vacationsId = vacations.map((vacation) => vacation.id ?? 0);
+    await this.payrollGenerateRepository.updateVacationPayroll(
+      vacationsId,
+      formPeriod.id ?? 0
+    );
     const lastServiceBonus =
       await this.payrollGenerateRepository.getLastIncomeType(
         employment.id ?? 0,

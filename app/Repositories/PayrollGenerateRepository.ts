@@ -51,6 +51,9 @@ import { EStatesOtherIncome } from "App/Constants/OtherIncome.enum";
 import TaxDeductible from "App/Models/TaxDeductible";
 import { EStatesTaxDeduction } from "App/Constants/TaxDeduction.enum";
 import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
+import VacationDay from "App/Models/VacationDay";
+import { IVacationDay } from "App/Interfaces/VacationDaysInterface";
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 
 export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
@@ -160,15 +163,28 @@ export interface IPayrollGenerateRepository {
   getAllReservesTypes(): Promise<IReserveType[]>;
   updateStateManualDeduction(
     idPayroll: number,
-    state: string
+    state: string,
+    trx: TransactionClientContract
   ): Promise<IManualDeduction[]>;
-  updateStateIncapacities(idPayroll: number): Promise<IIncapacity[]>;
+  updateStateIncapacities(
+    idPayroll: number,
+    trx: TransactionClientContract
+  ): Promise<IIncapacity[]>;
   updateStateLicences(
     dateStart: DateTime,
     dateEnd: DateTime,
-    state: string
+    state: string,
+    trx: TransactionClientContract
   ): Promise<ILicence[]>;
-  updateStatePayroll(id: number, state: string): Promise<IFormPeriod>;
+  updateStatePayroll(
+    id: number,
+    state: string,
+    trx?: TransactionClientContract
+  ): Promise<IFormPeriod>;
+  updateVacationPayroll(
+    ids: number[],
+    payrollId: number
+  ): Promise<IVacationDay[]>;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -810,46 +826,79 @@ export default class PayrollGenerateRepository
     return res.map((i) => i.serialize() as IReserveType);
   }
 
-  async updateStatePayroll(id: number, state: string): Promise<IFormPeriod> {
+  async updateStatePayroll(
+    id: number,
+    state: string,
+    trx?: TransactionClientContract
+  ): Promise<IFormPeriod> {
     const res = await FormsPeriod.findOrFail(id);
-    res.merge({ state });
-    await res.save();
+    if (trx) {
+      (await res.merge({ state }).save()).useTransaction(trx);
+    } else {
+      await res.merge({ state }).save();
+    }
     return res.serialize() as IFormPeriod;
   }
 
   async updateStateLicences(
     dateStart: DateTime,
     dateEnd: DateTime,
-    state: string
+    state: string,
+    trx: TransactionClientContract
   ): Promise<ILicence[]> {
     const licence = await Licence.query()
       .whereBetween("dateEnd", [dateStart.toString(), dateEnd.toString()])
-      .update("licenceState", state);
-    return licence.map((i) => i.serialize() as ILicence);
+      .update({ licenceState: state })
+      .useTransaction(trx);
+    if (licence.length == 0) {
+      return [];
+    }
+    return licence;
   }
 
-  async updateStateIncapacities(idPayroll: number): Promise<IIncapacity[]> {
+  async updateVacationPayroll(
+    ids: number[],
+    payrollId: number
+  ): Promise<IVacationDay[]> {
+    const vacation = await VacationDay.query()
+      .whereIn("codVacation", ids)
+      .update({ codForm: payrollId });
+    if (vacation.length == 0) {
+      return [];
+    }
+    return vacation.map((i) => i.serialize() as IVacationDay);
+  }
+  async updateStateIncapacities(
+    idPayroll: number,
+    trx: TransactionClientContract
+  ): Promise<IIncapacity[]> {
     const incapacitiesProcess = await IncapacityDaysProcessed.query().where(
       "codFormPeriod",
       idPayroll
     );
+    if (incapacitiesProcess.length <= 0) {
+      return [];
+    }
     const idIncapacity = incapacitiesProcess.map(
       (incapacity) => incapacity.codFormPeriod
     );
     const res = await Incapacity.query()
       .whereIn("id", idIncapacity)
-      .update("isComplete", true);
-    return res.map((i) => i.serialize() as IIncapacity);
+      .update("isComplete", true)
+      .useTransaction(trx);
+    return res;
   }
 
   async updateStateManualDeduction(
     idPayroll: number,
-    state: string
+    state: string,
+    trx: TransactionClientContract
   ): Promise<IManualDeduction[]> {
     const eventualDeduction = await ManualDeduction.query()
       .where("cyclic", false)
       .andWhere("codFormsPeriod", idPayroll)
-      .update("state", state);
+      .update({ state })
+      .useTransaction(trx);
 
     const ciclycalDeductionInstallment =
       await CyclicalDeductionInstallment.query().where(
@@ -857,14 +906,25 @@ export default class PayrollGenerateRepository
         idPayroll
       );
     if (ciclycalDeductionInstallment.length > 0) {
-      const idCiclycalDeduction = ciclycalDeductionInstallment.map(
-        (deduction) => deduction.idDeductionManual
-      );
-      const ciclycalDeduction = await ManualDeduction.query()
-        .whereIn("id", idCiclycalDeduction)
-        .update("state", state);
-      eventualDeduction.push(ciclycalDeduction);
+      ciclycalDeductionInstallment.map(async (deduction) => {
+        const ciclycalDeduction = await ManualDeduction.findOrFail(
+          deduction.idDeductionManual
+        );
+        if (
+          ciclycalDeduction.numberInstallments == deduction.quotaNumber &&
+          !ciclycalDeduction.porcentualValue
+        ) {
+          (await ciclycalDeduction.merge({ state }).save()).useTransaction(trx);
+        }
+      });
+      eventualDeduction.push(ciclycalDeductionInstallment);
     }
-    return eventualDeduction.map((i) => i.serialize() as IManualDeduction);
+    if (
+      eventualDeduction.length == 0 &&
+      ciclycalDeductionInstallment.length == 0
+    ) {
+      return [];
+    }
+    return eventualDeduction;
   }
 }

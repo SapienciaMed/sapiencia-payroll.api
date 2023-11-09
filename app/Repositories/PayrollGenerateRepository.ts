@@ -334,8 +334,8 @@ export default class PayrollGenerateRepository
     rentWorkerExempt: number,
     employmentId: number,
     month: number,
-    year: number,
-    payrollPeriodId?: number
+    year: number
+    // payrollPeriodId?: number
   ): Promise<number> {
     const deductionsq = Deduction.query()
       .select("DED_VALOR as value", "DAG_SIGNO as sign")
@@ -383,8 +383,8 @@ export default class PayrollGenerateRepository
     uvtValue: number,
     employmentId: number,
     month: number,
-    year: number,
-    payrollPeriodId?: number
+    year: number
+    // payrollPeriodId?: number
   ): Promise<number> {
     const deductionsq = Deduction.query()
       .select("DED_VALOR as value", "DAG_SIGNO as sign")
@@ -420,8 +420,8 @@ export default class PayrollGenerateRepository
     sub4: number,
     employmentId: number,
     month: number,
-    year: number,
-    payrollPeriodId?: number
+    year: number
+    // payrollPeriodId?: number
   ): Promise<number> {
     const incomesTotal = await this.getTotalIncomeForMonthPerGrouper(
       EGroupers.incomeTaxGrouper,

@@ -207,6 +207,7 @@ export interface IPayrollGenerateRepository {
     ids: number[],
     payrollId: number
   ): Promise<IVacationDay[]>;
+  validNumberNegative(value: number): number;
 }
 export default class PayrollGenerateRepository
   implements IPayrollGenerateRepository
@@ -410,10 +411,7 @@ export default class PayrollGenerateRepository
 
     const uvt1340 = uvtValue * 1340;
 
-    const sub3 =
-      totalDeductions * percent40 > uvt1340
-        ? uvt1340
-        : totalDeductions * percent40;
+    const sub3 = percent40 > uvt1340 ? uvt1340 : percent40;
 
     return Math.round(sub3);
   }
@@ -1083,5 +1081,13 @@ export default class PayrollGenerateRepository
       return [];
     }
     return eventualDeduction;
+  }
+
+  validNumberNegative(value: number): number {
+    if (value < 0) {
+      return 0;
+    } else {
+      return value;
+    }
   }
 }

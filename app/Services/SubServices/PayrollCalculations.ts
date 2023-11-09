@@ -1427,12 +1427,11 @@ export class PayrollCalculations {
       );
 
     const percent25SubTotal1 = (affectionValue * 25) / 100;
+
     const uvt790 = uvtValue * 790;
 
     const rentaWorkExempt =
-      affectionValue * percent25SubTotal1 > uvt790
-        ? uvt790
-        : affectionValue * percent25SubTotal1;
+      percent25SubTotal1 > uvt790 ? uvt790 : percent25SubTotal1;
 
     const subtTotal2 = await this.payrollGenerateRepository.getSubTotalTwo(
       rentaWorkExempt,
@@ -1473,7 +1472,8 @@ export class PayrollCalculations {
       throw new Error("Tabla de la renta no encontrada");
     }
 
-    const isr = (tableValue - range.start) * (range.value / 100) + range.value2;
+    const isr =
+      (tableValue - range.start) * (Number(range.value) / 100) + range.value2;
 
     const isrTotalValueLast =
       await this.payrollGenerateRepository.getTotalValueISRLast(
@@ -1486,15 +1486,19 @@ export class PayrollCalculations {
 
     const isrValue = Number(isrValueCurrent) - isrTotalValueLast;
 
+    const isrValueValid = this.payrollGenerateRepository.validNumberNegative(
+      Number(isrValue)
+    );
+
     this.payrollGenerateRepository.createDeduction({
-      value: Number(isrValue),
+      value: Number(isrValueValid),
       idEmployment: employment.id ?? 0,
       idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     });
     return {
-      value: Number(isrValue),
+      value: Number(isrValueValid),
       idEmployment: employment.id ?? 0,
       idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,

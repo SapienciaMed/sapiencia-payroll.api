@@ -30,8 +30,6 @@ Route.group(() => {
   .prefix("/api/v1/dependence")
   .middleware("auth");
 
-
-  
 Route.group(() => {
   Route.get("/get-by-id/:id", "TaxDeductibleController.getTaxDeductibleById");
 })
@@ -50,7 +48,7 @@ Route.group(() => {
     "/authorization/:id",
     "PayrollGenerateController.payrollAuthorization"
   );
-  Route.get('/generate-report', 'ReportController.generateWordReport')
+  Route.get("/generate-report", "ReportController.generateWordReport");
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {
@@ -179,4 +177,12 @@ Route.group(() => {
   Route.put("/", "OtherIncomesController.updateOtherIncome");
 })
   .prefix("/api/v1/otherIncome")
+  .middleware("auth");
+
+Route.group(() => {
+  Route.post("/", "ChargeController.createCharge");
+  Route.post("get-paginated", "ChargeController.getChargePaginate");
+  Route.put("/", "ChargeController.updateCharge");
+})
+  .prefix("/api/v1/charges")
   .middleware("auth");

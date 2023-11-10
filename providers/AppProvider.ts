@@ -32,7 +32,8 @@ export default class AppProvider {
       "App/Services/ManualDeductionService"
     );
     const OtherIncomeService = await import("App/Services/OtherIncomeService");
-    const ReportService = await import("App/Services/ReportsService")
+    const ReportService = await import("App/Services/ReportsService");
+    const ChargeService = await import("App/Services/ChargesService");
     /**************************************************************************/
     /************************ EXTERNAL SERVICES ********************************/
     /**************************************************************************/
@@ -95,14 +96,14 @@ export default class AppProvider {
     const OtherIncomeRepository = await import(
       "App/Repositories/OtherIncomeRepository"
     );
-    const ReportRepository = await import("App/Repositories/ReportsRepository")
+    const ReportRepository = await import("App/Repositories/ReportsRepository");
+
     /**************************************************************************/
     /******************************** CORE  ***********************************/
     /**************************************************************************/
     this.app.container.singleton(
       "core.DependenceProvider",
-      () =>
-        new DependenceService.default(new DependenceRepository.default())
+      () => new DependenceService.default(new DependenceRepository.default())
     );
 
     this.app.container.singleton(
@@ -208,6 +209,11 @@ export default class AppProvider {
     this.app.container.singleton(
       "core.ReportProvider",
       () => new ReportService.default(new ReportRepository.default())
+    );
+
+    this.app.container.singleton(
+      "core.ChargeProvider",
+      () => new ChargeService.default(new ChargesRepository.default())
     );
   }
 

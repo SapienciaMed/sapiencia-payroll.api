@@ -536,6 +536,19 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod
           );
 
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -566,6 +579,8 @@ export class PayrollExecutions extends PayrollCalculations {
             calculatedSolidarityFund,
             deductionsCiclical,
             deductionEvetual,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -649,6 +664,20 @@ export class PayrollExecutions extends PayrollCalculations {
             salary
           );
 
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          // Calcula Renta
+
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
             employment,
@@ -671,6 +700,8 @@ export class PayrollExecutions extends PayrollCalculations {
 
           return {
             calculatePrimaServices,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -754,6 +785,19 @@ export class PayrollExecutions extends PayrollCalculations {
             salary
           );
 
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
             employment,
@@ -777,6 +821,8 @@ export class PayrollExecutions extends PayrollCalculations {
 
           return {
             calculatePrimaChristmas,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -891,6 +937,18 @@ export class PayrollExecutions extends PayrollCalculations {
 
           // Calcula Renta
 
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
             employment,
@@ -915,6 +973,8 @@ export class PayrollExecutions extends PayrollCalculations {
           return {
             calculateServiceBounty,
             calculatedDeductionHealth,
+            relativesDeduction,
+            rentExempt,
             calculatedDeductionPension,
             calculatedSolidarityFund,
             isrCalculated,
@@ -1094,6 +1154,17 @@ export class PayrollExecutions extends PayrollCalculations {
               base
             );
           // Calcula Renta
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
 
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
@@ -1129,6 +1200,8 @@ export class PayrollExecutions extends PayrollCalculations {
             calculatedDeductionHealth,
             calculatedDeductionPension,
             calculatedSolidarityFund,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
             eventualDeductionsLiquidation,
             ciclicalDeductionsLiquidation,

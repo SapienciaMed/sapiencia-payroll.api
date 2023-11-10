@@ -146,11 +146,11 @@ export default class Employment extends BaseModel {
   })
   public dateCreate: DateTime;
 
-  // @column({
-  //   columnName: "EMP_OBSERVACION",
-  //   serializeAs: "observation",
-  // })
-  // public observation: string;
+  @column({
+    columnName: "EMP_OBSERVACION",
+    serializeAs: "observation",
+  })
+  public observation: string;
 
   @belongsTo(() => Dependence, {
     localKey: "id",

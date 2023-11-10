@@ -50,6 +50,7 @@ Route.group(() => {
     "/authorization/:id",
     "PayrollGenerateController.payrollAuthorization"
   );
+  Route.get('/generate-report', 'ReportController.generateWordReport')
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {

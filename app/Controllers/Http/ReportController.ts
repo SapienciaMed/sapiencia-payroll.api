@@ -21,4 +21,22 @@ export default class ReportController {
       );
     }
   }
+
+  public async generateWordReport({ response }: HttpContextContract) {
+    try {
+      response.header(
+        "Content-Disposition",
+        "attachment;filename=reporte.docx"
+      );
+      response.type(
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      );
+      const result = await ReportProvider.generateWordReport();
+      response.send(new ApiResponse(result, EResponseCodes.OK));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

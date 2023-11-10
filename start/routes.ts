@@ -180,6 +180,7 @@ Route.group(() => {
   .middleware("auth");
 
 Route.group(() => {
+  Route.get("/:id", "ChargeController.getChargeById");
   Route.post("/", "ChargeController.createCharge");
   Route.post("get-paginated", "ChargeController.getChargePaginate");
   Route.put("/", "ChargeController.updateCharge");

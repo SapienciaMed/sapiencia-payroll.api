@@ -12,6 +12,7 @@ export interface IChargeService {
   getChargesPaginate(
     filters: IChargeFilters
   ): Promise<ApiResponse<IPagingData<ICharge>>>;
+  getChargeById(id: number): Promise<ApiResponse<ICharge>>;
 }
 
 export default class ChargeService implements IChargeService {
@@ -53,5 +54,18 @@ export default class ChargeService implements IChargeService {
   ): Promise<ApiResponse<IPagingData<ICharge>>> {
     const charges = await this.chargeRepository.getChargesPaginate(filters);
     return new ApiResponse(charges, EResponseCodes.OK);
+  }
+  async getChargeById(id: number): Promise<ApiResponse<ICharge>> {
+    const res = await this.chargeRepository.getChargeById(id);
+
+    if (!res) {
+      return new ApiResponse(
+        {} as ICharge,
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
   }
 }

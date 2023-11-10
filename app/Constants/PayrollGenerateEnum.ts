@@ -15,6 +15,7 @@ export enum EGroupers {
   deductionRentExempt = 8,
   grouperSub2 = 9,
   grouperSub3 = 10,
+  deductionRentExemptYear = 11,
 }
 
 export enum EPayrollTypes {

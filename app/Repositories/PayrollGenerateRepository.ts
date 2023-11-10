@@ -529,7 +529,6 @@ export default class PayrollGenerateRepository
         "DED_CODTDD_TIPO_DEDUCCION"
       )
       .where("PPL_ANIO", year)
-
       .where("DAG_CODAGR_AGRUPADOR", gruperId)
       .where("DED_CODEMP_EMPLEO", employmentId);
 

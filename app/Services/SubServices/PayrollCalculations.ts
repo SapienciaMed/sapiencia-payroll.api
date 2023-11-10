@@ -1363,7 +1363,7 @@ export class PayrollCalculations {
 
     const affectionValueRentExemptYear =
       await this.payrollGenerateRepository.getValueRentExempt(
-        EGroupers.deductionRentExempt,
+        EGroupers.deductionRentExemptYear,
         formPeriod.year,
         employment.id ?? 0
       );
@@ -1391,7 +1391,9 @@ export class PayrollCalculations {
     }
 
     if (valueValidLimit > uvt3800) {
-      valueRentExempt = uvt3800 - affectionValueRentExemptYear;
+      valueRentExempt = this.payrollGenerateRepository.validNumberNegative(
+        valueValidLimit - uvt3800
+      );
     }
 
     await this.payrollGenerateRepository.createDeduction({

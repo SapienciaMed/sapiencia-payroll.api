@@ -51,6 +51,12 @@ export default class Employment extends BaseModel {
   public idTypeContract: number;
 
   @column({
+    columnName: "EMP_TOTAL_VALUE",
+    serializeAs: "totalValue",
+  })
+  public totalValue: number;
+
+  @column({
     columnName: "EMP_NUMERO_CONTRATO",
     serializeAs: "contractNumber",
   })

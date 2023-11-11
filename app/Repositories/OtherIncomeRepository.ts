@@ -23,6 +23,7 @@ export default class OtherIncomeRepository implements IOtherIncomeRepository {
   async getOtherIncomePaginate(
     filters: IFilterOtherIncome
   ): Promise<IPagingData<IGetOtherIncome>> {
+
     const res = OtherIncome.query();
 
     if (filters.codEmployment) {

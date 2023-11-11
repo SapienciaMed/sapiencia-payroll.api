@@ -10,7 +10,8 @@ export default class extends BaseSchema {
       table
         .integer("FAM_CODTRA_TRABAJADOR")
         .notNullable()
-        .unsigned().references("TRA_CODIGO")
+        .unsigned()
+        .references("TRA_CODIGO")
         .inTable("TRA_TRABAJADORES")
         .comment("Codigo del expediente (FK TRA_TRABAJADORES)");
       table
@@ -25,6 +26,12 @@ export default class extends BaseSchema {
         .timestamp("FAM_FECHA_NACIMIENTO")
         .comment("Fecha de nacimiento del familiar");
       table.string("FAM_GENERO", 10).comment("Genero (Listados Genericos)");
+      table
+        .boolean("FAM_ES_DEPENDIENTE")
+        .notNullable()
+        .comment(
+          "Indicador de que si el familiar es dependiente y aplicar como deducible de renta"
+        );
     });
   }
 

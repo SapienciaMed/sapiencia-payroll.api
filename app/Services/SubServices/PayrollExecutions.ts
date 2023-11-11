@@ -3,6 +3,8 @@ import FormsPeriodRepository from "App/Repositories/FormsPeriodRepository";
 import { IPayrollGenerateRepository } from "App/Repositories/PayrollGenerateRepository";
 import CoreService from "../External/CoreService";
 import { PayrollCalculations } from "./PayrollCalculations";
+import { calculateDifferenceDays } from "App/Utils/functions";
+import { EPayrollState } from "App/Constants/States.enum";
 
 export class PayrollExecutions extends PayrollCalculations {
   constructor(
@@ -136,6 +138,13 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod,
             uvtValue
           );
+
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
           // Calcula Renta
 
           // //calcular planilla vacaciones
@@ -243,6 +252,11 @@ export class PayrollExecutions extends PayrollCalculations {
             "Exitoso"
           );
 
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
+
           return {
             licenceDays,
             incapacitiesDays,
@@ -265,6 +279,7 @@ export class PayrollExecutions extends PayrollCalculations {
             reserveSeverancePayInterest,
             severancePayInterest,
             historical,
+            rentExempt,
           };
         } catch (error) {
           // Crea historico Fallido
@@ -360,6 +375,12 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod,
             uvtValue
           );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -378,12 +399,18 @@ export class PayrollExecutions extends PayrollCalculations {
             "Exitoso"
           );
 
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
+
           return {
             suspensionDays,
             salaryCalculated,
             ciclicalDeductions,
             eventualDeductions,
             relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -509,6 +536,19 @@ export class PayrollExecutions extends PayrollCalculations {
             formPeriod
           );
 
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
           // Calcula Renta
 
           // Ingresos brutos al mes
@@ -526,6 +566,10 @@ export class PayrollExecutions extends PayrollCalculations {
             salary,
             "Exitoso"
           );
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
 
           return {
             vacationDays,
@@ -535,6 +579,8 @@ export class PayrollExecutions extends PayrollCalculations {
             calculatedSolidarityFund,
             deductionsCiclical,
             deductionEvetual,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -618,6 +664,20 @@ export class PayrollExecutions extends PayrollCalculations {
             salary
           );
 
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          // Calcula Renta
+
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
             employment,
@@ -633,9 +693,15 @@ export class PayrollExecutions extends PayrollCalculations {
             salary,
             "Exitoso"
           );
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
 
           return {
             calculatePrimaServices,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -719,6 +785,19 @@ export class PayrollExecutions extends PayrollCalculations {
             salary
           );
 
+          //9. Calcular deducción renta familiares dependientes.
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
             employment,
@@ -735,8 +814,15 @@ export class PayrollExecutions extends PayrollCalculations {
             "Exitoso"
           );
 
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
+
           return {
             calculatePrimaChristmas,
+            relativesDeduction,
+            rentExempt,
             isrCalculated,
           };
         } catch (error) {
@@ -851,6 +937,18 @@ export class PayrollExecutions extends PayrollCalculations {
 
           // Calcula Renta
 
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
           // Ingresos brutos al mes
           const isrCalculated = await this.calculateISR(
             employment,
@@ -867,12 +965,246 @@ export class PayrollExecutions extends PayrollCalculations {
             "Exitoso"
           );
 
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
+
           return {
             calculateServiceBounty,
             calculatedDeductionHealth,
+            relativesDeduction,
+            rentExempt,
             calculatedDeductionPension,
             calculatedSolidarityFund,
             isrCalculated,
+          };
+        } catch (error) {
+          // Crea historico Fallido
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            0,
+            0,
+            "Fallido",
+            ""
+          );
+          console.log(error);
+          return {
+            err: error,
+          };
+        }
+      })
+    );
+  }
+
+  async generatePayrollLiquidationService(
+    formPeriod: IFormPeriod
+  ): Promise<any> {
+    //buscar los empelados activos de la planilla quincenal.
+
+    const employments =
+      await this.payrollGenerateRepository.getRetiredEmployments(
+        new Date(String(formPeriod.dateEnd))
+      );
+    // Busca los parametro o recurosos a utilizar
+
+    const incomeTaxTable =
+      await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
+
+    const solidarityFundTable =
+      await this.payrollGenerateRepository.getRangeByGrouper(
+        "TABLA_FONDO_SOLIDARIO"
+      );
+
+    const parameters = await this.coreService.getParametersByCodes([
+      "ISR_VALOR_UVT",
+      "PCT_PENSION_EMPLEADO",
+      "PCT_PENSION_PATRONAL",
+      "PCT_SEGURIDAD_SOCIAL_EMPLEADO",
+      "PCT_SEGURIDAD_SOCIAL_PATRONAL",
+      "SMLV",
+      "SERVICE_BOUNTY",
+      "VALOR_INTERES_CESANTIAS",
+    ]);
+
+    const uvtValue = Number(
+      parameters.find((i) => (i.id = "ISR_VALOR_UVT"))?.value || 0
+    );
+
+    const smlvValue = Number(
+      parameters.find((i) => i.id == "SMLV")?.value || 0
+    );
+
+    const serviceBountyPercentage = Number(
+      parameters.find((i) => i.id == "SERVICE_BOUNTY")?.value || 0
+    );
+
+    const severancePayInterestPercentage = Number(
+      parameters.find((i) => i.id == "VALOR_INTERES_CESANTIAS")?.value || 0
+    );
+    return Promise.all(
+      employments.map(async (employment) => {
+        try {
+          if (
+            !employment.salaryHistories ||
+            employment.salaryHistories.length == 0
+          ) {
+            throw new Error("Salario no ubicado");
+          }
+          let salary = Number(
+            employment.salaryHistories[0].previousSalary ??
+              employment.salaryHistories[0].salary
+          );
+          if (
+            new Date(employment.salaryHistories[0].effectiveDate.toString()) <=
+            new Date()
+          ) {
+            salary = Number(employment.salaryHistories[0].salary);
+          }
+
+          //1. Calcula cesantias e interes de cesantias
+          const calculateSeverancePay =
+            await this.calculateSeverancePayLiquidation(
+              employment,
+              formPeriod,
+              salary,
+              severancePayInterestPercentage
+            );
+
+          //2. Calcula vacaciones
+          const vacationLiquidation =
+            await this.calculateVacationBonusLiquidation(
+              employment,
+              formPeriod,
+              salary
+            );
+
+          const ChristmasBonusLiquidation =
+            await this.calculateChristmasBonusLiquidation(
+              employment,
+              formPeriod,
+              salary
+            );
+
+          const serviceBountyLiquidation =
+            await this.calculateServiceBountyLiquidation(
+              employment,
+              formPeriod,
+              salary,
+              serviceBountyPercentage
+            );
+
+          const serviceBonusLiquidation =
+            await this.calculateServiceBonusLiquidation(
+              employment,
+              formPeriod,
+              salary
+            );
+
+          const salaryLiquidation = await this.calculateSalaryLiquidation(
+            employment,
+            formPeriod,
+            salary
+          );
+
+          const base = salaryLiquidation.value + serviceBountyLiquidation.value;
+
+          //2. Calcula deduccion salud
+          const calculatedDeductionHealth = await this.calculateHealthDeduction(
+            employment,
+            formPeriod,
+            parameters,
+            salaryLiquidation.salary?.time,
+            "Dias",
+            base
+          );
+
+          // 3. Calcula deduccion de pension
+          const calculatedDeductionPension =
+            await this.calculateRetirementDeduction(
+              employment,
+              formPeriod,
+              parameters,
+              salaryLiquidation.salary?.time,
+              "Dias",
+              base
+            );
+
+          //4. Fondo solidaridad deduccion
+          const calculatedSolidarityFund = await this.calculateSolidarityFund(
+            employment,
+            formPeriod,
+            smlvValue,
+            solidarityFundTable,
+            base
+          );
+
+          const ciclicalDeductionsLiquidation =
+            await this.calculateCiclicalDeductionsLiquidation(
+              employment,
+              formPeriod,
+              base
+            );
+
+          const eventualDeductionsLiquidation =
+            await this.calculateEventualDeductionsPending(
+              employment,
+              formPeriod,
+              base
+            );
+          // Calcula Renta
+          const relativesDeduction = await this.calculateDeductionRelatives(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+          //10. Calcular rentas exentas
+          const rentExempt = await this.calculateRentExempt(
+            employment,
+            formPeriod,
+            uvtValue
+          );
+
+          // Ingresos brutos al mes
+          const isrCalculated = await this.calculateISR(
+            employment,
+            formPeriod,
+            uvtValue,
+            incomeTaxTable
+          );
+
+          await this.calculateHistoricalPayroll(
+            employment,
+            formPeriod,
+            calculateDifferenceDays(
+              employment.startDate,
+              employment.retirementDate ?? new Date()
+            ),
+            salary,
+            "Exitoso"
+          );
+
+          await this.payrollGenerateRepository.updateStatePayroll(
+            formPeriod.id ?? 0,
+            EPayrollState.generated
+          );
+
+          return {
+            salaryLiquidation,
+            calculateSeverancePay,
+            vacationLiquidation,
+            ChristmasBonusLiquidation,
+            serviceBountyLiquidation,
+            serviceBonusLiquidation,
+            calculatedDeductionHealth,
+            calculatedDeductionPension,
+            calculatedSolidarityFund,
+            relativesDeduction,
+            rentExempt,
+            isrCalculated,
+            eventualDeductionsLiquidation,
+            ciclicalDeductionsLiquidation,
           };
         } catch (error) {
           // Crea historico Fallido

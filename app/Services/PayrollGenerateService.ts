@@ -6,11 +6,17 @@ import CoreService from "./External/CoreService";
 import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
 import { PayrollExecutions } from "./SubServices/PayrollExecutions";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
+import {
+  ELicenceState,
+  EManualDeductionState,
+  EPayrollState,
+} from "App/Constants/States.enum";
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 
 export interface IPayrollGenerateService {
   payrollGenerateById(id: number): Promise<ApiResponse<object>>;
-  payrollDownloadById(id: number): Promise<ApiResponse<any>>;
   getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>>;
+  authorizationPayroll(id: number, trx: TransactionClientContract): Promise<ApiResponse<object>>;
 }
 
 export default class PayrollGenerateService
@@ -61,6 +67,8 @@ export default class PayrollGenerateService
       result = await this.generatePayrollPrimaService(formPeriod);
     } else if (EPayrollTypes.primaChristmas === formPeriod.idFormType) {
       result = await this.generatePayrollChristmas(formPeriod);
+    } else if (EPayrollTypes.liquidation === formPeriod.idFormType) {
+      result = await this.generatePayrollLiquidationService(formPeriod);
     } else {
       result = {};
     }
@@ -75,152 +83,44 @@ export default class PayrollGenerateService
     return new ApiResponse(result, EResponseCodes.OK);
   }
 
-  async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
-    const toSend: any[] = [];
-    const incomeTypeList =
-      await this.payrollGenerateRepository.getAllIncomesTypes();
-    const deductionsTypeList =
-      await this.payrollGenerateRepository.getAllDeductionsTypes();
-    const reserveTypeList =
-      await this.payrollGenerateRepository.getAllReservesTypes();
-    const formPeriod =
-      await this.payrollGenerateRepository.getPayrollInformation(id);
+  async authorizationPayroll(id: number, trx: TransactionClientContract): Promise<ApiResponse<object>> {
+    const payroll = await this.payrollGenerateRepository.updateStatePayroll(
+      id,
+      EPayrollState.authorized,
+      trx
+    );
+    let licence = {};
+    if (payroll.idFormType == EPayrollTypes.biweekly) {
+      licence = await this.payrollGenerateRepository.updateStateLicences(
+        payroll.dateStart,
+        payroll.dateEnd,
+        ELicenceState.finished,trx
+      );
+    }
+    const incapacity =
+      await this.payrollGenerateRepository.updateStateIncapacities(id,trx);
 
-    if (!formPeriod || !formPeriod.historicalPayroll || !formPeriod.incomes) {
+    const manualDeductions =
+      await this.payrollGenerateRepository.updateStateManualDeduction(
+        id,
+        EManualDeductionState.finished,
+        trx
+      );
+
+    await trx.commit();
+
+    if (!payroll) {
       return new ApiResponse(
-        false,
+        {} as object,
         EResponseCodes.FAIL,
-        "Recurso no encontrado"
+        "Registro no encontrado"
       );
     }
 
-    const incomeTypeToShow = incomeTypeList.filter((type) =>
-      formPeriod.incomes?.find((i) => i.idTypeIncome === type.id)
+    return new ApiResponse(
+      { payroll, incapacity, licence, manualDeductions },
+      EResponseCodes.OK
     );
-
-    const deductionTypeToShow = deductionsTypeList.filter((type) =>
-      formPeriod.deductions?.find((i) => i.idTypeDeduction === type.id)
-    );
-
-    const patronalDeductionTypeToShow = deductionsTypeList.filter((type) =>
-      formPeriod.deductions?.find(
-        (i) => i.idTypeDeduction === type.id && i.patronalValue > 0
-      )
-    );
-
-    const reserveTypeToShow = reserveTypeList.filter((type) =>
-      formPeriod.reserves?.find((i) => i.idTypeReserve === type.id)
-    );
-
-    // nombres.forEach(nombre => {
-    //   nombresObjeto[nombre] = true;
-    // });
-
-    for (const historical of formPeriod.historicalPayroll) {
-      let temp = {
-        Nombre: `${historical.employment?.worker?.firstName} ${
-          historical.employment?.worker?.secondName ?? ""
-        } ${historical.employment?.worker?.surname} ${
-          historical.employment?.worker?.secondSurname
-        }`,
-        identificacion: historical.employment?.worker?.numberDocument,
-        "Codigo fiscal": historical.employment?.worker?.fiscalIdentification,
-        "Nro. Contrato": historical.employment?.contractNumber,
-        "Cuenta bancaria": historical.employment?.worker?.accountBankNumber,
-        Banco: historical.employment?.worker?.bank,
-        "inicio periodo": formPeriod.dateStart,
-        "fin periodo": formPeriod.dateEnd,
-        "Dias Trabajados": historical.workedDay,
-        "Salario Base": historical.salary,
-        "Total ingresos": historical.totalIncome,
-        "Total deducciones": historical.totalDeduction,
-        Total: historical.total,
-      };
-
-      incomeTypeToShow.forEach((iType) => {
-        const income = formPeriod.incomes?.find(
-          (income) =>
-            income.idTypeIncome == iType.id &&
-            income.idEmployment == historical.idEmployment
-        );
-
-        temp[iType.name] = income ? income.value : 0;
-      });
-
-      deductionTypeToShow.forEach((iType) => {
-        const deduction = formPeriod.deductions?.find(
-          (deduction) =>
-            deduction.idTypeDeduction == iType.id &&
-            deduction.idEmployment == historical.idEmployment
-        );
-
-        temp[iType.name] = deduction ? deduction.value : 0;
-      });
-
-      patronalDeductionTypeToShow.forEach((iType) => {
-        const deduction = formPeriod.deductions?.find(
-          (deduction) =>
-            deduction.idTypeDeduction == iType.id &&
-            deduction.idEmployment == historical.idEmployment
-        );
-
-        temp[`${iType.name} patronal`] = deduction
-          ? deduction.patronalValue
-          : 0;
-      });
-
-      reserveTypeToShow.forEach((iType) => {
-        const reserve = formPeriod.reserves?.find(
-          (reserve) =>
-            reserve.idTypeReserve == iType.id &&
-            reserve.idEmployment == historical.idEmployment
-        );
-
-        temp[iType.name] = reserve ? reserve.value : 0;
-      });
-
-      toSend.push(temp);
-    }
-
-    console.log(toSend);
-
-    // incomeTypeToShow.forEach(i => {
-
-    // })
-
-    // const valuesForkeys = [];
-
-    // for (const [key, value] of Object.entries(object1)) {
-    //   valuesForKeys.push(value);
-    // }
-
-    //     const pivotData = [];
-    // data.ventas.forEach(item => {
-    //   const producto = item.producto;
-    //   for (const key in item) {
-    //     if (key !== "producto") {
-    //       pivotData.push({
-    //         producto,
-    //         mes: key,
-    //         valor: item[key]
-    //       });
-    //     }
-    //   }
-    // });
-
-    // for (const historical of formPeriod.historicalPayroll) {
-
-    // }
-
-    //   if (formPeriod?.employmentInfo?.length <= 0) {
-    //   return new ApiResponse(
-    //     { error: "fallo" },
-    //     EResponseCodes.FAIL,
-    //     "El reporte que intentas generar no tiene registros o existen problemas"
-    //   );
-    // }
-    const result = this.payrollGenerateRepository.generateXlsx(toSend);
-    return result;
   }
 
   async getTypesIncomeList(type: string): Promise<ApiResponse<IIncomeType[]>> {

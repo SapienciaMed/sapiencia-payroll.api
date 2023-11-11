@@ -65,6 +65,7 @@ test.group("VinculationService TEST for createVinculation", () => {
         birthDate: DateTime.now(),
         gender: "F",
         relationship: "2",
+        dependent: true,
       },
     ],
     employment: {
@@ -75,9 +76,10 @@ test.group("VinculationService TEST for createVinculation", () => {
       startDate: DateTime.now(),
       state: "1",
       idTypeContract: 3,
-      observation: "",
+      codDependence: 1,
+      // observation: "",
       // salary: 234345,
-      totalValue: 400000,
+      // totalValue: 400000,
     },
   };
 
@@ -146,6 +148,7 @@ test.group("VinculationService TEST for editVinculation", () => {
         birthDate: DateTime.now(),
         gender: "F",
         relationship: "2",
+        dependent: true,
       },
     ],
     employment: {
@@ -156,9 +159,11 @@ test.group("VinculationService TEST for editVinculation", () => {
       startDate: DateTime.now(),
       state: "1",
       idTypeContract: 3,
-      observation: "",
+      codDependence: 1,
+
+      // observation: "",
       // salary: 234345,
-      totalValue: 400000,
+      // totalValue: 400000,
     },
   };
 

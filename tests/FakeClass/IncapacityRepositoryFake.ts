@@ -32,6 +32,7 @@ const getIncapacityFake: IGetIncapacity = {
     startDate: DateTime.fromFormat("02/16/2023", "dd/MM/yyyy"),
     state: "test",
     idTypeContract: 1,
+    codDependence: 1,
     worker: {
       id: 4,
       typeDocument: "CC",
@@ -51,7 +52,7 @@ const getIncapacityFake: IGetIncapacity = {
       address: "",
     },
   },
-  isComplete: false
+  isComplete: false,
 };
 export class IncapacityRepositoryFake implements IncapacityRepository {
   createIncapacity(_incapacity: IIncapacity): Promise<IIncapacity> {

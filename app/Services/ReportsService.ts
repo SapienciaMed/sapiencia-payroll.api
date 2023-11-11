@@ -4,10 +4,16 @@ import { IReportsRepository } from "App/Repositories/ReportsRepository";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
+  generateWordReport():Promise<ApiResponse<any>>;
 }
 
 export default class ReportService implements IReportService {
   constructor(public reportRepository: IReportsRepository) {}
+
+  async generateWordReport():Promise<ApiResponse<any>>{
+    const result = this.reportRepository.generateWordReport();
+    return result;
+  }
   async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
     const toSend: any[] = [];
     const incomeTypeList = await this.reportRepository.getAllIncomesTypes();

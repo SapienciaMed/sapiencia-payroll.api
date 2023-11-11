@@ -15,7 +15,6 @@ import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IParameter } from "App/Interfaces/CoreInterfaces";
 import { addCalendarDays, calculateDifferenceDays } from "App/Utils/functions";
 import { DateTime } from "luxon";
-import Income from "App/Models/Income";
 
 export class PayrollCalculations {
   constructor(
@@ -435,7 +434,7 @@ export class PayrollCalculations {
       daysWorked;
     const severancePayTotal =
       ((reserveValueSubtotal * 0.12) / 360) * daysWorked;
-    this.payrollGenerateRepository.createIncome({
+    await this.payrollGenerateRepository.createIncome({
       idTypePayroll: formPeriod.id ?? 0,
       idEmployment: employment.id ?? 0,
       idTypeIncome: EIncomeTypes.severancePayInterest,
@@ -455,17 +454,424 @@ export class PayrollCalculations {
       value: severancePayTotal,
     };
   }
+
+  async calculateSeverancePayLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    interestPorcentage: number
+  ): Promise<{
+    severancePay?: IIncome;
+    severancePayInterest?: IIncome;
+    value: number;
+  }> {
+    const currentYear = new Date().getFullYear();
+    let severancePayDays = 0;
+    if (new Date(employment.startDate.toString()).getFullYear() < currentYear) {
+      severancePayDays = calculateDifferenceDays(
+        new Date(currentYear, 0, 1),
+        employment.retirementDate
+      );
+    } else {
+      severancePayDays = calculateDifferenceDays(
+        employment.startDate,
+        employment.retirementDate
+      );
+    }
+
+    const serviceBounty =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus
+      );
+
+    const primaService = await this.payrollGenerateRepository.getLastIncomeType(
+      employment.id ?? 0,
+      EIncomeTypes.primaService
+    );
+    const christmasBonus =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.primaChristmas
+      );
+    const vacationBonus =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.primaVacations
+      );
+
+    const severancePayTotal =
+      ((salary +
+        serviceBounty.value / 12 +
+        primaService.value / 12 +
+        vacationBonus.value / 12 +
+        christmasBonus.value / 12) /
+        360) *
+      severancePayDays;
+    const severancePayInterest =
+      ((severancePayTotal * (interestPorcentage / 100)) / 360) *
+      severancePayDays;
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.severancePay,
+      value: severancePayTotal,
+      time: severancePayDays,
+      unitTime: "Dias",
+    });
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.severancePayInterest,
+      value: severancePayInterest,
+      time: severancePayDays,
+      unitTime: "Dias",
+    });
+    return {
+      severancePay: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.severancePay,
+        value: severancePayTotal,
+        time: severancePayDays,
+        unitTime: "Dias",
+      },
+      severancePayInterest: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.severancePayInterest,
+        value: severancePayInterest,
+        time: severancePayDays,
+        unitTime: "Dias",
+      },
+      value: severancePayTotal,
+    };
+  }
+
+  async calculateChristmasBonusLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<{ christmasBonusLiquidation?: object; value: number }> {
+    const lastYear = new Date().getFullYear() - 1;
+    let liquidationDays = 0;
+    if (new Date(employment.startDate.toString()) < new Date(lastYear, 11, 1)) {
+      liquidationDays = calculateDifferenceDays(
+        new Date(lastYear, 11, 1),
+        employment.retirementDate
+      );
+    } else {
+      liquidationDays = calculateDifferenceDays(
+        employment.startDate,
+        employment.retirementDate
+      );
+    }
+
+    const serviceBounty =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus,
+        formPeriod.id
+      );
+
+    const primaService = await this.payrollGenerateRepository.getLastIncomeType(
+      employment.id ?? 0,
+      EIncomeTypes.primaService,
+      formPeriod.id
+    );
+    const vacationBonus =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.primaVacations,
+        formPeriod.id
+      );
+
+    const christmasBonusTotal =
+      ((salary +
+        serviceBounty.value / 12 +
+        primaService.value / 12 +
+        vacationBonus.value / 12) /
+        360) *
+      liquidationDays;
+
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.primaChristmas,
+      value: christmasBonusTotal,
+      time: liquidationDays,
+      unitTime: "Dias",
+    });
+    return {
+      christmasBonusLiquidation: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.primaChristmas,
+        value: christmasBonusTotal,
+        time: liquidationDays,
+        unitTime: "Dias",
+      },
+      value: christmasBonusTotal,
+    };
+  }
+
+  async calculateServiceBonusLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<{ ServiceBonusLiquidation?: object; value: number }> {
+    const lastYear = new Date().getFullYear() - 1;
+    let liquidationDays = 0;
+    if (new Date(employment.startDate.toString()) < new Date(lastYear, 6, 1)) {
+      liquidationDays = calculateDifferenceDays(
+        new Date(lastYear, 6, 1),
+        employment.retirementDate
+      );
+    } else {
+      liquidationDays = calculateDifferenceDays(
+        employment.startDate,
+        employment.retirementDate
+      );
+    }
+
+    const serviceBounty =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus,
+        formPeriod.id
+      );
+
+    const ServiceBonusTotal =
+      ((salary + serviceBounty.value / 12) / 720) * liquidationDays;
+
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.primaService,
+      value: ServiceBonusTotal,
+      time: liquidationDays,
+      unitTime: "Dias",
+    });
+    return {
+      ServiceBonusLiquidation: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.primaService,
+        value: ServiceBonusTotal,
+        time: liquidationDays,
+        unitTime: "Dias",
+      },
+      value: ServiceBonusTotal,
+    };
+  }
+
+  async calculateVacationBonusLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<{
+    vacationBonusLiquidation?: IIncome;
+    vacationLiquidation?: IIncome;
+    recreationBounty?: IIncome;
+    value: number;
+  }> {
+    let vacationDays = 0;
+    const serviceBounty =
+      await this.payrollGenerateRepository.getLastIncomeType(
+        employment.id ?? 0,
+        EIncomeTypes.serviceBonus,
+        formPeriod.id
+      );
+
+    const primaService = await this.payrollGenerateRepository.getLastIncomeType(
+      employment.id ?? 0,
+      EIncomeTypes.primaService,
+      formPeriod.id
+    );
+
+    const vacations =
+      await this.payrollGenerateRepository.getVacationsPendingByEmployment(
+        employment.id ?? 0
+      );
+
+    if (vacations.length == 0) {
+      return { value: 0 };
+      // return 0;
+    }
+    for (const vacation of vacations) {
+      vacationDays += Number(vacation.available);
+    }
+
+    const vacationBonusTotal =
+      ((salary + primaService.value / 12 + serviceBounty.value / 12) / 360) *
+      vacationDays;
+    const recreationBounty = (((salary / 30) * 2) / 360) * vacationDays;
+
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.primaVacations,
+      value: vacationBonusTotal,
+      time: vacationDays,
+      unitTime: "Dias",
+    });
+
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.vacation,
+      value: vacationBonusTotal,
+      time: vacationDays,
+      unitTime: "Dias",
+    });
+
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.bonusRecreation,
+      value: recreationBounty,
+      time: vacationDays,
+      unitTime: "Dias",
+    });
+    return {
+      vacationBonusLiquidation: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.primaVacations,
+        value: vacationBonusTotal,
+        time: vacationDays,
+        unitTime: "Dias",
+      },
+      vacationLiquidation: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.primaVacations,
+        value: vacationBonusTotal,
+        time: vacationDays,
+        unitTime: "Dias",
+      },
+      recreationBounty: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.bonusRecreation,
+        value: recreationBounty,
+        time: vacationDays,
+        unitTime: "Dias",
+      },
+      value: vacationBonusTotal,
+    };
+  }
+
+  async calculateServiceBountyLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number,
+    serviceBountyPercentage: number
+  ): Promise<{ ServiceBountyLiquidation?: object; value: number }> {
+    const actualYear = new Date().getFullYear();
+    const monthAniversary = new Date(
+      employment.startDate.toString()
+    ).getMonth();
+    const dayAniversary = new Date(employment.startDate.toString()).getDay();
+    let liquidationDays = 0;
+    if (
+      new Date().getFullYear() ==
+      new Date(employment.startDate.toString()).getFullYear()
+    ) {
+      liquidationDays = calculateDifferenceDays(
+        employment.startDate,
+        employment.retirementDate
+      );
+    } else if (
+      new Date(actualYear, monthAniversary, dayAniversary) > new Date()
+    ) {
+      liquidationDays = calculateDifferenceDays(
+        new Date(actualYear - 1, monthAniversary, dayAniversary),
+        employment.retirementDate
+      );
+    } else {
+      liquidationDays = calculateDifferenceDays(
+        new Date(actualYear, monthAniversary, dayAniversary),
+        employment.retirementDate
+      );
+    }
+
+    const ServiceBountyTotal =
+      ((salary * (serviceBountyPercentage / 100)) / 360) * liquidationDays;
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.serviceBonus,
+      value: ServiceBountyTotal,
+      time: liquidationDays,
+      unitTime: "Dias",
+    });
+    return {
+      ServiceBountyLiquidation: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.serviceBonus,
+        value: ServiceBountyTotal,
+        time: liquidationDays,
+        unitTime: "Dias",
+      },
+      value: ServiceBountyTotal,
+    };
+  }
+
+  async calculateSalaryLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    salary: number
+  ): Promise<{ salary?: IIncome; value: number }> {
+    let liquidationDays = 0;
+    const lastSalary = await this.payrollGenerateRepository.getLastIncomeType(
+      employment.id ?? 0,
+      EIncomeTypes.salary,
+      formPeriod.id
+    );
+    if (lastSalary.formPeriod) {
+      liquidationDays = calculateDifferenceDays(
+        lastSalary.formPeriod[0].paidDate ?? employment.startDate,
+        employment.retirementDate
+      );
+    }
+
+    const SalaryTotal = (salary / 30) * liquidationDays;
+
+    await this.payrollGenerateRepository.createIncome({
+      idTypePayroll: formPeriod.id ?? 0,
+      idEmployment: employment.id ?? 0,
+      idTypeIncome: EIncomeTypes.salary,
+      value: SalaryTotal,
+      time: liquidationDays,
+      unitTime: "Dias",
+    });
+    return {
+      salary: {
+        idTypePayroll: formPeriod.id ?? 0,
+        idEmployment: employment.id ?? 0,
+        idTypeIncome: EIncomeTypes.salary,
+        value: SalaryTotal,
+        time: liquidationDays,
+        unitTime: "Dias",
+      },
+      value: SalaryTotal,
+    };
+  }
   async calculateHealthDeduction(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     parameter: IParameter[],
     time?: number,
-    unitTime?: string
+    unitTime?: string,
+    mountValue?: number
   ): Promise<object> {
     const employeeValue = Number(
       parameter.find((item) => item.id == "PCT_SEGURIDAD_SOCIAL_EMPLEADO")
         ?.value
     );
+
     const affectionValue =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,
@@ -483,15 +889,16 @@ export class PayrollCalculations {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
       idTypeDeduction: EDeductionTypes.SocialSecurity,
-      value: Number(affectionValue) * (employeeValue / 100),
-      patronalValue: Number(affectionValue) * (employerValue / 100),
+      value: Number(mountValue ?? affectionValue) * (employeeValue / 100),
+      patronalValue:
+        Number(mountValue ?? affectionValue) * (employerValue / 100),
       time: time ?? null,
       unitTime: unitTime ?? null,
     };
     await this.payrollGenerateRepository.createDeduction(
       deduction as IDeduction
     );
-    return { ...deduction, ingreso: affectionValue };
+    return { ...deduction, ingreso: mountValue ?? affectionValue };
   }
 
   async calculateRetirementDeduction(
@@ -499,7 +906,8 @@ export class PayrollCalculations {
     formPeriod: IFormPeriod,
     parameter: IParameter[],
     time?: number,
-    unitTime?: string
+    unitTime?: string,
+    mountValue?: number
   ): Promise<object> {
     const employeeValue = Number(
       parameter.find((item) => item.id == "PCT_PENSION_EMPLEADO")?.value ?? 4
@@ -520,8 +928,9 @@ export class PayrollCalculations {
       idTypePayroll: formPeriod.id,
       idEmployment: employment.id,
       idTypeDeduction: EDeductionTypes.retirementFund,
-      value: Number(affectionValue) * (employeeValue / 100),
-      patronalValue: Number(affectionValue) * (employerValue / 100),
+      value: Number(mountValue ?? affectionValue) * (employeeValue / 100),
+      patronalValue:
+        Number(mountValue ?? affectionValue) * (employerValue / 100),
       time: time ?? null,
       unitTime: unitTime ?? null,
     };
@@ -535,7 +944,8 @@ export class PayrollCalculations {
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     smlv: number,
-    solidarityFundTable: IRange[]
+    solidarityFundTable: IRange[],
+    mountValue?: number
   ): Promise<object> {
     const affectionValue = employment.salaryHistories[0].salary;
 
@@ -543,7 +953,7 @@ export class PayrollCalculations {
 
     // Si tiene Certificado Alivio tributario le resta
 
-    const tableValue = Number(affectionValue) / smlv;
+    const tableValue = Number(mountValue ?? affectionValue) / smlv;
 
     const range = solidarityFundTable.find(
       (i) => tableValue >= i.start && tableValue <= i.end
@@ -556,7 +966,7 @@ export class PayrollCalculations {
     const solidarityFundValue = range.value / 100;
 
     const solidarityFundValueFixed = (
-      solidarityFundValue * Number(affectionValue)
+      solidarityFundValue * Number(mountValue ?? affectionValue)
     ).toFixed(2);
 
     await this.payrollGenerateRepository.createDeduction({
@@ -672,6 +1082,60 @@ export class PayrollCalculations {
     return {};
   }
 
+  async calculateEventualDeductionsPending(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    mountValue?: number
+  ): Promise<object> {
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0,
+        false,
+        formPeriod.id
+      );
+    if (employment.id) {
+      const eventualDeductions =
+        await this.payrollGenerateRepository.getEventualDeductionsByEmployment(
+          employment.id
+        );
+
+      if (eventualDeductions.length == 0) {
+        return {};
+      }
+      const deductions = eventualDeductions.map((eventualDeduction) => {
+        if (eventualDeduction.porcentualValue) {
+          return {
+            value:
+              (Number(eventualDeduction.value) / 100) *
+              Number(mountValue ?? affectionValue),
+            idEmployment: employment.id || 0,
+            idTypePayroll: formPeriod.id || 0,
+            idTypeDeduction: eventualDeduction.codDeductionType || 0,
+            patronalValue: 0,
+          };
+        } else {
+          return {
+            value: eventualDeduction.value,
+            idEmployment: employment.id || 0,
+            idTypePayroll: formPeriod.id || 0,
+            idTypeDeduction: eventualDeduction.codDeductionType || 0,
+            patronalValue: 0,
+          };
+        }
+      });
+
+      await this.payrollGenerateRepository.createManyDeduction(deductions);
+      return { deductions };
+    }
+    // 1. buscar liciencias vigentes y que entren en planilla
+    // 2. si no exitiste return
+    // 3. Calcula e inserta en la tabla final de Ingresos
+    return {};
+  }
+
   async calculateCiclicalDeductions(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod
@@ -751,23 +1215,110 @@ export class PayrollCalculations {
     // 3. Calcular e insertar en la tabla final de Ingresos
   }
 
+  async calculateCiclicalDeductionsLiquidation(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    mountValue?: number
+  ): Promise<object> {
+    if (!employment.id) {
+      // Si employment.id no existe, no podemos continuar, así que simplemente retornamos.
+      return {};
+    }
+
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id,
+        false,
+        formPeriod.id
+      );
+
+    if (affectionValue === 0) {
+      // Si el valor de afectación es 0, no necesitamos continuar, así que retornamos.
+      return {};
+    }
+
+    const ciclicalDeductions =
+      await this.payrollGenerateRepository.getCyclicDeductionsByEmployment(
+        employment.id
+      );
+
+    if (ciclicalDeductions.length === 0) {
+      // Si no hay deducciones cíclicas, no necesitamos continuar, así que retornamos.
+      return {};
+    }
+
+    const lastQuotaNumber = ciclicalDeductions.reduce(
+      (maxQuotaNumber, ciclicalDeduction) => {
+        const installments = ciclicalDeduction.installmentsDeduction || [];
+        const lastInstallment = installments.reduce(
+          (maxInstallment, installment) =>
+            Math.max(maxInstallment, installment.quotaNumber),
+          0
+        );
+        return Math.max(maxQuotaNumber, lastInstallment);
+      },
+      0
+    );
+
+    const deductions = ciclicalDeductions.map((ciclicalDeduction) => {
+      let installments = 0;
+      if (ciclicalDeduction.numberInstallments) {
+        installments = ciclicalDeduction.numberInstallments - lastQuotaNumber;
+      }
+      return {
+        idTypePayroll: formPeriod.id,
+        idDeductionManual: ciclicalDeduction.id,
+        quotaNumber: ciclicalDeduction.numberInstallments ?? lastQuotaNumber,
+        quotaValue: ciclicalDeduction.porcentualValue
+          ? mountValue ??
+            affectionValue * (Number(ciclicalDeduction.value) / 100)
+          : ciclicalDeduction.value * installments,
+        applied: true,
+      };
+    });
+
+    const deductionsCiclys = ciclicalDeductions.map((eventualDeduction) => ({
+      value: eventualDeduction.porcentualValue
+        ? (Number(eventualDeduction.value) / 100) *
+          Number(mountValue ?? affectionValue)
+        : eventualDeduction.value,
+      idEmployment: employment.id || 0,
+      idTypePayroll: formPeriod.id || 0,
+      idTypeDeduction: eventualDeduction.codDeductionType || 0,
+      patronalValue: 0,
+    }));
+
+    await Promise.all([
+      this.payrollGenerateRepository.createCiclycalInstallmentDeduction(
+        deductions
+      ),
+      this.payrollGenerateRepository.createManyDeduction(deductionsCiclys),
+    ]);
+    return { deductions, deductionsCiclys };
+    // 1. buscar licencias vigentes y que entren en planilla
+    // 2. si no existen, retornar
+    // 3. Calcular e insertar en la tabla final de Ingresos
+  }
+
   async calculateDeductionRelatives(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
     uvtValue: number
   ): Promise<object> {
-    const relatives = await this.payrollGenerateRepository.getRelatives(
-      employment.workerId ?? 0
-    );
+    const relatives =
+      await this.payrollGenerateRepository.getRelativesDependent(
+        employment.workerId ?? 0
+      );
 
     const affectionValue =
-      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+      await this.payrollGenerateRepository.getTotalIncomeForMonthPerGrouper(
         EGroupers.incomeTaxGrouper,
         formPeriod.month,
         formPeriod.year,
-        employment.id ?? 0,
-        false,
-        formPeriod.id
+        employment.id ?? 0
       );
 
     if (relatives.length > 0) {
@@ -796,6 +1347,72 @@ export class PayrollCalculations {
     return {};
   }
 
+  async calculateRentExempt(
+    employment: IEmploymentResult,
+    formPeriod: IFormPeriod,
+    uvtValue: number
+  ): Promise<object> {
+    const affectionValueRentExempt =
+      await this.payrollGenerateRepository.getValueRentExempt(
+        EGroupers.deductionRentExempt,
+        formPeriod.year,
+        employment.id ?? 0,
+        formPeriod.month,
+        formPeriod.id ?? 0
+      );
+
+    const affectionValueRentExemptYear =
+      await this.payrollGenerateRepository.getValueRentExempt(
+        EGroupers.deductionRentExemptYear,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+
+    const affectionValue =
+      await this.payrollGenerateRepository.getTotalIncomeForMonthPerGrouper(
+        EGroupers.incomeTaxGrouper,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id ?? 0
+      );
+
+    const percent30AffectionValue = (affectionValue * 30) / 100;
+
+    const uvt3800 = uvtValue * 3800;
+
+    let valueValidLimit = affectionValueRentExempt;
+    let valueRentExempt = affectionValueRentExempt;
+
+    if (affectionValueRentExempt > percent30AffectionValue) {
+      valueValidLimit += percent30AffectionValue;
+      valueRentExempt = percent30AffectionValue;
+    } else {
+      valueValidLimit += affectionValueRentExemptYear;
+    }
+
+    if (valueValidLimit > uvt3800) {
+      valueRentExempt = this.payrollGenerateRepository.validNumberNegative(
+        valueValidLimit - uvt3800
+      );
+    }
+
+    await this.payrollGenerateRepository.createDeduction({
+      value: Number(valueRentExempt),
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
+      idTypeDeduction: EDeductionTypes.rentExempt,
+      patronalValue: 0,
+    });
+
+    return {
+      value: Number(valueRentExempt),
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
+      idTypeDeduction: EDeductionTypes.rentExempt,
+      patronalValue: 0,
+    };
+  }
+
   async calculateISR(
     employment: IEmploymentResult,
     formPeriod: IFormPeriod,
@@ -811,11 +1428,43 @@ export class PayrollCalculations {
         true
       );
 
-    // si tiene dependiente le restamos segun el calculo
+    const percent25SubTotal1 = (affectionValue * 25) / 100;
 
-    // Si tiene Certificado Alivio tributario le resta
+    const uvt790 = uvtValue * 790;
 
-    const tableValue = affectionValue / uvtValue;
+    const rentaWorkExempt =
+      percent25SubTotal1 > uvt790 ? uvt790 : percent25SubTotal1;
+
+    const subtTotal2 = await this.payrollGenerateRepository.getSubTotalTwo(
+      rentaWorkExempt,
+      employment.id ?? 0,
+      formPeriod.month,
+      formPeriod.year
+    );
+
+    const subtTotal3 = await this.payrollGenerateRepository.getSubTotalThree(
+      uvtValue,
+      employment.id ?? 0,
+      formPeriod.month,
+      formPeriod.year
+    );
+
+    let subTotal4 = 0;
+
+    if (subtTotal2 > subtTotal3) {
+      subTotal4 = subtTotal3;
+    } else {
+      subTotal4 = subtTotal2;
+    }
+
+    const subtTotal5 = await this.payrollGenerateRepository.getSubTotalFive(
+      subTotal4,
+      employment.id ?? 0,
+      formPeriod.month,
+      formPeriod.year
+    );
+
+    const tableValue = subtTotal5 / uvtValue;
 
     const range = incomeTaxTable.find(
       (i) => tableValue >= i.start && tableValue <= i.end
@@ -825,7 +1474,8 @@ export class PayrollCalculations {
       throw new Error("Tabla de la renta no encontrada");
     }
 
-    const isr = (tableValue - range.start) * (range.value / 100) + range.value2;
+    const isr =
+      (tableValue - range.start) * (Number(range.value) / 100) + range.value2;
 
     const isrTotalValueLast =
       await this.payrollGenerateRepository.getTotalValueISRLast(
@@ -838,17 +1488,21 @@ export class PayrollCalculations {
 
     const isrValue = Number(isrValueCurrent) - isrTotalValueLast;
 
+    const isrValueValid = this.payrollGenerateRepository.validNumberNegative(
+      Number(isrValue)
+    );
+
     this.payrollGenerateRepository.createDeduction({
-      value: Number(isrValue),
-      idEmployment: employment.id || 0,
-      idTypePayroll: formPeriod.id || 0,
+      value: Number(isrValueValid),
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     });
     return {
-      value: Number(isrValue),
-      idEmployment: employment.id || 0,
-      idTypePayroll: formPeriod.id || 0,
+      value: Number(isrValueValid),
+      idEmployment: employment.id ?? 0,
+      idTypePayroll: formPeriod.id ?? 0,
       idTypeDeduction: EDeductionTypes.incomeTax,
       patronalValue: 0,
     };
@@ -1148,7 +1802,7 @@ export class PayrollCalculations {
       salary: salary,
       totalIncome: incomes,
       totalDeduction: deductions,
-      total: Number(incomes) + Number(deductions),
+      total: Number(incomes) - Number(deductions),
       state: state,
       observation: error ?? "",
     });
@@ -1171,6 +1825,19 @@ export class PayrollCalculations {
     salary: number,
     vacationDays: number
   ): Promise<IIncome[]> {
+    const vacations =
+      await this.payrollGenerateRepository.getVacationsPeriodByEmployment(
+        employment.id ?? 0,
+        formPeriod.dateStart,
+        formPeriod.dateEnd
+      );
+    if (vacations.length > 0) {
+      const vacationsId = vacations.map((vacation) => vacation.id ?? 0);
+      await this.payrollGenerateRepository.updateVacationPayroll(
+        vacationsId,
+        formPeriod.id ?? 0
+      );
+    }
     const lastServiceBonus =
       await this.payrollGenerateRepository.getLastIncomeType(
         employment.id ?? 0,
@@ -1214,7 +1881,7 @@ export class PayrollCalculations {
         idTypeIncome: EIncomeTypes.bonusRecreation,
         value: Math.round(calculatedBonusRecreation),
       },
-    ] as Income[];
+    ] as IIncome[];
 
     const vacationsBonus =
       await this.payrollGenerateRepository.createManyIncome(

@@ -51,6 +51,12 @@ export default class Employment extends BaseModel {
   public idTypeContract: number;
 
   @column({
+    columnName: "EMP_TOTAL_VALUE",
+    serializeAs: "totalValue",
+  })
+  public totalValue: number;
+
+  @column({
     columnName: "EMP_NUMERO_CONTRATO",
     serializeAs: "contractNumber",
   })
@@ -111,6 +117,14 @@ export default class Employment extends BaseModel {
   public retirementDate: DateTime;
 
   @column({
+    columnName: "EMP_LIQUIDACION_PAGADA",
+    serializeAs: "settlementPaid",
+    prepare: (val) => (String(val) === "true" ? 1 : 0),
+    serialize: (val) => Boolean(val),
+  })
+  public settlementPaid: boolean;
+
+  @column({
     columnName: "EMP_USUARIO_MODIFICO",
     serializeAs: "userModified",
   })
@@ -137,6 +151,12 @@ export default class Employment extends BaseModel {
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
+
+  @column({
+    columnName: "EMP_OBSERVACION",
+    serializeAs: "observation",
+  })
+  public observation: string;
 
   @belongsTo(() => Dependence, {
     localKey: "id",

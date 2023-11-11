@@ -7,6 +7,7 @@ import IncomeType from "App/Models/IncomeType";
 import ReserveType from "App/Models/ReserveType";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import FormsPeriod from "App/Models/FormsPeriod";
+import { Document, Packer, Paragraph, TextRun } from "docx";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -14,6 +15,7 @@ export interface IReportsRepository {
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
   generateXlsx(rows: any): Promise<any>;
+  generateWordReport(): Promise<any>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -57,6 +59,32 @@ export default class ReportsRepository implements IReportsRepository {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
 
     const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+    return buffer;
+  }
+
+  async generateWordReport(): Promise<any> {
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [
+                new TextRun({
+                  text: "Reporte de ejemplo",
+                  bold: true,
+                  font: "Arial",
+                }),
+              ],
+            }),
+            // Puedes agregar más contenido según tus necesidades
+          ],
+        },
+      ],
+    });
+
+    // Guardar el documento en un archivo
+    const buffer = await Packer.toBuffer(doc);
     return buffer;
   }
 }

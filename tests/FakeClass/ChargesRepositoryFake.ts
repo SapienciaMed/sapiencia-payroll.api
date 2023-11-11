@@ -1,6 +1,7 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
-import { ICharge } from "App/Interfaces/ChargeInterfaces";
+import { ICharge, IChargeFilters } from "App/Interfaces/ChargeInterfaces";
 import ChargesRepository from "App/Repositories/ChargesRepository";
+import { IPagingData } from "App/Utils/ApiResponses";
 
 const chargeFake: ICharge = {
   id: 1,
@@ -12,6 +13,15 @@ const chargeFake: ICharge = {
 };
 
 export class ChargesRepositoryFake implements ChargesRepository {
+  createCharge(_charge: ICharge): Promise<ICharge> {
+    throw new Error("Method not implemented.");
+  }
+  updateCharge(_charge: ICharge, _id: number): Promise<ICharge | null> {
+    throw new Error("Method not implemented.");
+  }
+  getChargesPaginate(_filters: IChargeFilters): Promise<IPagingData<ICharge>> {
+    throw new Error("Method not implemented.");
+  }
   updateChargeSalary(
     _id: number,
     _salary: number,

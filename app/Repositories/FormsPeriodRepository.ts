@@ -71,8 +71,8 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
         formTypeQuery.where("name", "Quincenal");
       }
     });
-
-    return (await res) as IFormPeriod[];
+    const result = await res 
+    return result.map((i) => i.serialize() as IFormPeriod);
   }
 
   async getFormPeriod(): Promise<IFormPeriod[] | null> {
@@ -80,7 +80,8 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     res.preload("formsType", (formTypeQuery) => {
       formTypeQuery.whereIn("name", ["Quincenal", "Mensual"]);
     });
-    return (await res) as IFormPeriod[];
+    const result = await res 
+    return result.map((i) => i.serialize() as IFormPeriod);
   }
   async getFormPeriodById(id: number): Promise<IFormPeriod | null> {
     const queryFormPeriod = FormsPeriod.query().where("id", id);

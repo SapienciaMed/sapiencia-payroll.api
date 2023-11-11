@@ -70,6 +70,20 @@ export default class extends BaseSchema {
         .date("EMP_FECHA_RETIRO")
         .comment("Fecha en que se retiro el empleado");
       table
+        .boolean("EMP_LIQUIDACION_PAGADA")
+        .comment(
+          "Indicador de que a la persona ya se le calculo y autorizo la liquidacion"
+        );
+      table
+        .decimal("EMP_TOTAL_VALUE", 15, 2)
+        .notNullable()
+        .comment(
+          "Valor total que recibira empleado por prestacion de servicio"
+        );
+      // table
+      // .string("EMP_OBSERVACION")
+      // .comment("observacion retiro");
+      table
         .string("EMP_USUARIO_MODIFICO", 10)
         .comment(
           "Numero del documento del ultimo usuario que hizo una modificacion"

@@ -1,6 +1,6 @@
 import { BaseModel, column } from "@ioc:Adonis/Lucid/Orm";
 
-export default class Dependencies extends BaseModel {
+export default class Dependence extends BaseModel {
   public static table = "DEP_DEPENDENCIAS";
 
   @column({ isPrimary: true, columnName: "DEP_CODIGO", serializeAs: "id" })

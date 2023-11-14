@@ -74,6 +74,12 @@ export default class extends BaseSchema {
         .comment(
           "Indicador de que a la persona ya se le calculo y autorizo la liquidacion"
         );
+      table
+        .decimal("EMP_TOTAL_VALUE", 15, 2)
+        .notNullable()
+        .comment(
+          "Valor total que recibira empleado por prestacion de servicio"
+        );
       // table
       // .string("EMP_OBSERVACION")
       // .comment("observacion retiro");

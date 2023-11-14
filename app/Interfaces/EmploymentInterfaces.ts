@@ -20,6 +20,7 @@ export interface IEmployment {
   idReasonRetirement?: number;
   retirementDate?: DateTime;
   settlementPaid?: boolean;
+  totalValue?: number;
   userModified?: string;
   dateModified?: DateTime;
   userCreate?: string;

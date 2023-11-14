@@ -1,5 +1,6 @@
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ICharge, IChargeFilters } from "App/Interfaces/ChargeInterfaces";
+import { ITypesCharges } from "App/Interfaces/TypesChargesInterfaces";
 import { IChargesRepository } from "App/Repositories/ChargesRepository";
 import { ApiResponse, IPagingData } from "App/Utils/ApiResponses";
 
@@ -13,6 +14,7 @@ export interface IChargeService {
     filters: IChargeFilters
   ): Promise<ApiResponse<IPagingData<ICharge>>>;
   getChargeById(id: number): Promise<ApiResponse<ICharge>>;
+  getTypesChargesList(): Promise<ApiResponse<ITypesCharges[]>>
 }
 
 export default class ChargeService implements IChargeService {
@@ -61,6 +63,19 @@ export default class ChargeService implements IChargeService {
     if (!res) {
       return new ApiResponse(
         {} as ICharge,
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getTypesChargesList(): Promise<ApiResponse<ITypesCharges[]>> {
+    const res = await this.chargeRepository.getTypesChargesList();
+    if (!res) {
+      return new ApiResponse(
+        {} as ITypesCharges[],
         EResponseCodes.FAIL,
         "Registro no encontrado"
       );

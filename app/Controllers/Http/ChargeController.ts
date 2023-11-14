@@ -56,4 +56,14 @@ export default class ChargeController {
       );
     }
   }
+
+  public async getTypesChargesList({ response }: HttpContextContract) {
+    try {
+      return response.send(await ChargeProvider.getTypesChargesList());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

@@ -180,10 +180,11 @@ Route.group(() => {
   .middleware("auth");
 
 Route.group(() => {
+  Route.get("/types", "ChargeController.getTypesChargesList");
   Route.get("/:id", "ChargeController.getChargeById");
   Route.post("/", "ChargeController.createCharge");
   Route.post("get-paginated", "ChargeController.getChargePaginate");
   Route.put("/", "ChargeController.updateCharge");
 })
   .prefix("/api/v1/charges")
-  .middleware("auth");
+  // .middleware("auth");

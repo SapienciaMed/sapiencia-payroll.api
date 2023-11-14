@@ -14,7 +14,8 @@ export interface ICharge {
 }
 
 export interface IChargeFilters {
-  id?: number;
+  codChargeType?: number;
+  name?: string;
   page: number;
   perPage: number;
 }

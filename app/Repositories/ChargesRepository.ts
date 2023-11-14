@@ -1,6 +1,8 @@
 import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { ICharge, IChargeFilters } from "App/Interfaces/ChargeInterfaces";
+import { ITypesCharges } from "App/Interfaces/TypesChargesInterfaces";
 import Charge from "App/Models/Charge";
+import TypesCharge from "App/Models/TypesCharge";
 import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IChargesRepository {
@@ -13,9 +15,8 @@ export interface IChargesRepository {
   ): Promise<ICharge | null>;
   createCharge(charge: ICharge): Promise<ICharge>;
   updateCharge(charge: ICharge, id: number): Promise<ICharge | null>;
-  getChargesPaginate(
-    filters: IChargeFilters
-  ): Promise<IPagingData<ICharge>>;
+  getChargesPaginate(filters: IChargeFilters): Promise<IPagingData<ICharge>>;
+  getTypesChargesList(): Promise<ITypesCharges[]>;
 }
 
 export default class ChargesRepository implements IChargesRepository {
@@ -30,6 +31,10 @@ export default class ChargesRepository implements IChargesRepository {
     return res as ICharge[];
   }
 
+  async getTypesChargesList(): Promise<ITypesCharges[]> {
+    const res = await TypesCharge.all();
+    return res as ITypesCharges[];
+  }
   async createCharge(charge: ICharge): Promise<ICharge> {
     const toCreate = new Charge();
 
@@ -73,9 +78,50 @@ export default class ChargesRepository implements IChargesRepository {
     filters: IChargeFilters
   ): Promise<IPagingData<ICharge>> {
     const res = Charge.query();
-    if (filters.id) {
-      res.where("id", filters.id);
+    if (filters.codChargeType) {
+      res.where("codChargeType", filters.codChargeType);
     }
+    if (filters.name) {
+      res.whereRaw(
+        `UPPER(REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                CRG_NOMBRE,
+                'Á', 'A'
+              ),
+              'É', 'E'
+            ),
+            'Í', 'I'
+          ),
+          'Ó', 'O'
+        ),
+        'Ú', 'U'
+      )
+    ) like
+    UPPER(
+      REPLACE(
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(
+                (?),
+                'Á', 'A'
+              ),
+              'É', 'E'
+            ),
+            'Í', 'I'
+          ),
+          'Ó', 'O'
+        ),
+        'Ú', 'U'
+      )
+    )`,
+        [`%${filters.name}%`]
+      );
+    }
+    res.preload('typeCharge')
     const chargePaginated = await res.paginate(filters.page, filters.perPage);
 
     const { data, meta } = chargePaginated.serialize();

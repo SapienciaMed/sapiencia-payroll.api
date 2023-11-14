@@ -187,4 +187,4 @@ Route.group(() => {
   Route.put("/", "ChargeController.updateCharge");
 })
   .prefix("/api/v1/charges")
-  // .middleware("auth");
+  .middleware("auth");

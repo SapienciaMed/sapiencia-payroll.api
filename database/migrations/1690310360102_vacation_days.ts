@@ -16,8 +16,10 @@ export default class extends BaseSchema {
         .unique();
       table
         .integer("DVA_CODVAC_VACACION")
-        .unsigned().references("VAC_CODIGO")
-        .inTable("VAC_VACACIONES").unsigned()
+        .unsigned()
+        .references("VAC_CODIGO")
+        .inTable("VAC_VACACIONES")
+        .unsigned()
         .comment("codigo del periodo de vacaciones (FK VAC_VACIONES)");
       table
         .date("DVA_FECHA_DESDE")
@@ -39,8 +41,9 @@ export default class extends BaseSchema {
         );
       table
         .integer("DVA_CODPPL_PLANILLA")
-        .unsigned().references("VAC_CODIGO")
-        .inTable("VAC_VACACIONES")
+        .unsigned()
+        .references("PPL_CODIGO")
+        .inTable("PPL_PERIODOS_PLANILLA")
         .nullable()
         .comment("codigo del periodo de vacaciones (FK PPL_PERIODOS_PLANILLA)");
       table

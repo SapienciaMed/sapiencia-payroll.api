@@ -4,13 +4,14 @@ import { IReportsRepository } from "App/Repositories/ReportsRepository";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
-  generateWordReport():Promise<ApiResponse<any>>;
+  generateWordReport(): Promise<ApiResponse<any>>;
+  generatePDFStub(): Promise<Buffer>;
 }
 
 export default class ReportService implements IReportService {
   constructor(public reportRepository: IReportsRepository) {}
 
-  async generateWordReport():Promise<ApiResponse<any>>{
+  async generateWordReport(): Promise<ApiResponse<any>> {
     const result = this.reportRepository.generateWordReport();
     return result;
   }
@@ -120,5 +121,34 @@ export default class ReportService implements IReportService {
     console.log(toSend);
     const result = this.reportRepository.generateXlsx(toSend);
     return result;
+  }
+
+  async generatePDFStub(): Promise<Buffer> {
+    const htmlPDF = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Rubik:wght@300;400&display=swap" rel="stylesheet">
+      <title>Document</title>
+      <style>
+        body {
+          margin: 0;
+          font-family: 'Rubik';
+          padding: 0;
+       }
+      </style>
+    </head>
+    <body>
+       <h1>Hola mundo</h1>
+    </body>
+    </html>`;
+
+    const bufferPDF = await this.reportRepository.generatePdf(htmlPDF, false);
+
+    return bufferPDF;
+    // return new ApiResponse(bufferPDF, EResponseCodes.OK);
   }
 }

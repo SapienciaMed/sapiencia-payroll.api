@@ -1,13 +1,16 @@
-import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import * as XLSX from "xlsx";
-import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
-import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
+import { Document, Packer, Paragraph, TextRun } from "docx";
+import puppeteer from "puppeteer";
+
 import DeductionType from "App/Models/DeductionType";
 import IncomeType from "App/Models/IncomeType";
 import ReserveType from "App/Models/ReserveType";
-import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import FormsPeriod from "App/Models/FormsPeriod";
-import { Document, Packer, Paragraph, TextRun } from "docx";
+
+import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
+import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
+import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
+import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -16,6 +19,12 @@ export interface IReportsRepository {
   getAllReservesTypes(): Promise<IReserveType[]>;
   generateXlsx(rows: any): Promise<any>;
   generateWordReport(): Promise<any>;
+  generatePdf(
+    contentPDFHtml: string,
+    headerAndFooter: boolean,
+    headerPDFHtml?: string,
+    footerPDFHtml?: string
+  ): Promise<Buffer>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -86,5 +95,44 @@ export default class ReportsRepository implements IReportsRepository {
     // Guardar el documento en un archivo
     const buffer = await Packer.toBuffer(doc);
     return buffer;
+  }
+
+  async generatePdf(
+    contentPDFHtml: string,
+    headerAndFooter: boolean,
+    headerPDFHtml?: string,
+    footerPDFHtml?: string
+  ): Promise<Buffer> {
+    // Configuracion para pruebas
+    // const browser = await puppeteer.launch({
+    //   headless: "new",
+    //   args: ["--no-sandbox"],
+    //   executablePath: "/usr/bin/chromium",
+    // });
+
+    //Configuracion local proyecto
+    const browser = await puppeteer.launch({
+      headless: "new",
+      //slowMo: 100,
+    });
+
+    const page = await browser.newPage();
+
+    await page.setContent(contentPDFHtml, {
+      waitUntil: "load",
+    });
+
+    await new Promise((r) => setTimeout(r, 1000));
+
+    const bufferPDF = await page.pdf({
+      format: "A4",
+      displayHeaderFooter: headerAndFooter,
+      headerTemplate: headerPDFHtml,
+      footerTemplate: footerPDFHtml,
+    });
+
+    await browser.close();
+
+    return bufferPDF;
   }
 }

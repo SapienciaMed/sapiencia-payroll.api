@@ -52,6 +52,10 @@ Route.group(() => {
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {
+  Route.get("/generateReportStub", "ReportController.generatePDFStub");
+}).prefix("/api/v1/reports");
+
+Route.group(() => {
   Route.get("/typesContracts", "VinculationController.getTypesContracts");
   Route.get("/charges", "VinculationController.getCharges");
   Route.get(

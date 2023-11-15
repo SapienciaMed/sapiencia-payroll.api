@@ -39,4 +39,24 @@ export default class ReportController {
       );
     }
   }
+
+  public async generatePDFStub({ response }: HttpContextContract) {
+    try {
+      // response.header(
+      //   "Content-Disposition",
+      //   "attachment;filename=reporte.docx"
+      // );
+      // response.type(
+      //   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      // );
+
+      response.header("Content-Type", "application/pdf");
+      response.header("Content-Disposition", `inline; filename=archivo.pdf`);
+      response.send(await ReportProvider.generatePDFStub());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

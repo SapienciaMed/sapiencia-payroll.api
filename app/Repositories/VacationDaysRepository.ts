@@ -36,7 +36,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
   async createVacation(vacation: IVacationDay): Promise<IVacationDay> {
     const toCreate = new VacationDay();
 
-    toCreate.fill({ ...vacation });
+    toCreate.fill({ ...vacation, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as VacationDay;
   }
@@ -50,6 +50,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
         return {
           ...vacation,
           observation: vacation.observation ? vacation.observation : "",
+          userCreate: undefined,
         };
       }),
       { client: trx }
@@ -63,7 +64,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
       return null;
     }
 
-    toUpdate.merge({ ...toUpdate, ...data });
+    toUpdate.merge({ ...toUpdate, ...data, userModified: undefined });
     await toUpdate.save();
     return toUpdate.serialize() as VacationDay;
   }
@@ -91,6 +92,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
     if (daysVacation.observation) {
       toUpdate.observation = daysVacation.observation;
     }
+    toUpdate.userModified = "";
     (await toUpdate.save()).useTransaction(trx);
     return toUpdate.serialize() as IVacationDay;
   }

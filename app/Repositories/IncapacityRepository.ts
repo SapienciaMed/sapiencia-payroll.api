@@ -32,7 +32,7 @@ export default class IncapacityRepository implements IIncapacityRepository {
   //?CREAR INCAPACIDAD
   async createIncapacity(incapacity: IIncapacity): Promise<IIncapacity> {
     const toCreate = new Incapacity();
-    toCreate.fill({ ...incapacity });
+    toCreate.fill({ ...incapacity, userCreate: undefined });
 
     await toCreate.save();
     return toCreate.serialize() as IIncapacity;

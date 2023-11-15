@@ -23,7 +23,6 @@ export default class OtherIncomeRepository implements IOtherIncomeRepository {
   async getOtherIncomePaginate(
     filters: IFilterOtherIncome
   ): Promise<IPagingData<IGetOtherIncome>> {
-
     const res = OtherIncome.query();
 
     if (filters.codEmployment) {
@@ -65,6 +64,7 @@ export default class OtherIncomeRepository implements IOtherIncomeRepository {
 
     toCreate.fill({
       ...data,
+      userCreate: undefined,
     });
 
     await toCreate.save();
@@ -82,6 +82,7 @@ export default class OtherIncomeRepository implements IOtherIncomeRepository {
     toUpdate.fill({
       ...toUpdate,
       ...data,
+      userModified: undefined,
     });
 
     await toUpdate.save();

@@ -454,7 +454,7 @@ export default class WorkerRepository implements IWorkerRepository {
   ): Promise<IWorker> {
     const toCreate = new Worker().useTransaction(trx);
 
-    toCreate.fill({ ...worker });
+    toCreate.fill({ ...worker, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as IWorker;
   }
@@ -469,7 +469,9 @@ export default class WorkerRepository implements IWorkerRepository {
       return null;
     }
 
-    toUpdate.merge({ ...toUpdate, ...worker }).useTransaction(trx);
+    toUpdate
+      .merge({ ...toUpdate, ...worker, userModified: undefined })
+      .useTransaction(trx);
 
     await toUpdate.save();
 

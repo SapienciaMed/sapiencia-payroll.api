@@ -10,6 +10,7 @@ import {
 import Employment from "./Employment";
 import IncomeType from "./IncomeType";
 import FormsPeriod from "./FormsPeriod";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class OtherIncome extends BaseModel {
   public static table = "OIN_OTROS_INGRESOS";
@@ -38,6 +39,7 @@ export default class OtherIncome extends BaseModel {
   @column({
     columnName: "OIN_USUARIO_MODIFICO",
     serializeAs: "userModified",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userModified: string;
 
@@ -52,6 +54,7 @@ export default class OtherIncome extends BaseModel {
   @column({
     columnName: "OIN_USUARIO_CREO",
     serializeAs: "userCreate",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userCreate: string;
 

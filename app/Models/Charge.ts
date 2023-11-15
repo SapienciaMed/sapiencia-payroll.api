@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import TypesCharge from "./TypesCharge";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class Charge extends BaseModel {
   public static table = "CRG_CARGOS";
@@ -37,6 +38,7 @@ export default class Charge extends BaseModel {
   @column({
     columnName: "CRG_USUARIO_MODIFICO",
     serializeAs: "userModify",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userModify: string;
 
@@ -51,6 +53,7 @@ export default class Charge extends BaseModel {
   @column({
     columnName: "CRG_USUARIO_CREO",
     serializeAs: "userCreate",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userCreate: string;
 
@@ -61,7 +64,6 @@ export default class Charge extends BaseModel {
     prepare: (value: DateTime) => new Date(value?.toJSDate()),
   })
   public dateCreate: DateTime;
-
 
   @hasOne(() => TypesCharge, {
     localKey: "codChargeType",

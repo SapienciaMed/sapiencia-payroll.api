@@ -70,6 +70,7 @@ export default class FormsPeriod extends BaseModel {
   @column({
     columnName: "PPL_USUARIO_MODIFICO",
     serializeAs: "userModified",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userModified: string;
 
@@ -84,6 +85,7 @@ export default class FormsPeriod extends BaseModel {
   @column({
     columnName: "PPL_USUARIO_CREO",
     serializeAs: "userCreate",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userCreate: string | undefined = Env.get("USER_ID");
 

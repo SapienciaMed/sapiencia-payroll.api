@@ -38,7 +38,7 @@ export default class ChargesRepository implements IChargesRepository {
   async createCharge(charge: ICharge): Promise<ICharge> {
     const toCreate = new Charge();
 
-    toCreate.fill({ ...charge });
+    toCreate.fill({ ...charge, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as ICharge;
   }
@@ -50,7 +50,7 @@ export default class ChargesRepository implements IChargesRepository {
       return null;
     }
 
-    toUpdate.fill({ ...toUpdate, ...charge });
+    toUpdate.fill({ ...toUpdate, ...charge, userModify: undefined });
 
     await toUpdate.save();
 
@@ -121,7 +121,7 @@ export default class ChargesRepository implements IChargesRepository {
         [`%${filters.name}%`]
       );
     }
-    res.preload('typeCharge')
+    res.preload("typeCharge");
     const chargePaginated = await res.paginate(filters.page, filters.perPage);
 
     const { data, meta } = chargePaginated.serialize();

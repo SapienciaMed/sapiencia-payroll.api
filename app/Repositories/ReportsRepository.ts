@@ -25,6 +25,14 @@ export interface IReportsRepository {
     headerPDFHtml?: string,
     footerPDFHtml?: string
   ): Promise<Buffer>;
+  getPayrollInformationEmployment(
+    codPayroll: number,
+    codEmployment: number
+  ): Promise<IFormPeriod | null>;
+  getPayrollInformationYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IFormPeriod | null>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -38,6 +46,54 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("historicalPayroll", (subq) =>
         subq.preload("employment", (subq2) => subq2.preload("worker"))
       )
+      .where("id", codPayroll)
+      .first();
+
+    if (!res) {
+      return null;
+    }
+
+    return res.serialize() as IFormPeriod;
+  }
+
+  async getPayrollInformationYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IFormPeriod | null> {
+    const res = await FormsPeriod.query()
+      .preload("deductions")
+      .preload("incomes")
+      .preload("reserves")
+      .preload("historicalPayroll", (history) => {
+        history.where("idEmployment", codEmployment),
+          history.preload("employment", (employment) => {
+            employment.preload("worker");
+          });
+      })
+      .where("year", year)
+      .first();
+
+    if (!res) {
+      return null;
+    }
+
+    return res.serialize() as IFormPeriod;
+  }
+
+  async getPayrollInformationEmployment(
+    codPayroll: number,
+    codEmployment: number
+  ): Promise<IFormPeriod | null> {
+    const res = await FormsPeriod.query()
+      .preload("deductions")
+      .preload("incomes")
+      .preload("reserves")
+      .preload("historicalPayroll", (history) => {
+        history.where("idEmployment", codEmployment),
+          history.preload("employment", (employment) => {
+            employment.preload("worker");
+          });
+      })
       .where("id", codPayroll)
       .first();
 

@@ -1,8 +1,10 @@
 // import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import ReportProvider from "@ioc:core.ReportProvider";
+import { ETypeReport } from "App/Constants/Report.Enum";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ApiResponse } from "App/Utils/ApiResponses";
+import GenerateReportValidator from "App/Validators/GenerateReportValidator";
 
 export default class ReportController {
   public async payrollDownloadById({ response, request }: HttpContextContract) {
@@ -40,19 +42,11 @@ export default class ReportController {
     }
   }
 
-  public async generatePDFStub({ response }: HttpContextContract) {
+  public async generateReport({ request, response }: HttpContextContract) {
     try {
-      // response.header(
-      //   "Content-Disposition",
-      //   "attachment;filename=reporte.docx"
-      // );
-      // response.type(
-      //   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      // );
+      const body = await request.validate(GenerateReportValidator);
 
-      response.header("Content-Type", "application/pdf");
-      response.header("Content-Disposition", `inline; filename=archivo.pdf`);
-      response.send(await ReportProvider.generatePDFStub());
+      response.send(await ReportProvider.generateReport(body));
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

@@ -1,11 +1,16 @@
+import fsPromises from "fs/promises";
+import path from "path";
+
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
 import { IReportsRepository } from "App/Repositories/ReportsRepository";
+import { IReport, IReportResponse } from "App/Interfaces/ReportInterfaces";
+import { ETypeReport } from "App/Constants/Report.Enum";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
   generateWordReport(): Promise<ApiResponse<any>>;
-  generatePDFStub(): Promise<Buffer>;
+  generateReport(report: IReport): Promise<ApiResponse<IReportResponse>>;
 }
 
 export default class ReportService implements IReportService {
@@ -123,32 +128,57 @@ export default class ReportService implements IReportService {
     return result;
   }
 
-  async generatePDFStub(): Promise<Buffer> {
-    const htmlPDF = `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Rubik:wght@300;400&display=swap" rel="stylesheet">
-      <title>Document</title>
-      <style>
-        body {
-          margin: 0;
-          font-family: 'Rubik';
-          padding: 0;
-       }
-      </style>
-    </head>
-    <body>
-       <h1>Hola mundo</h1>
-    </body>
-    </html>`;
+  async generateReport(report: IReport): Promise<ApiResponse<IReportResponse>> {
+    const response = {} as IReportResponse;
 
-    const bufferPDF = await this.reportRepository.generatePdf(htmlPDF, false);
+    if (report.typeReport === ETypeReport.Colilla) {
+      const data = {
+        logoSapiencia: await fsPromises.readFile(
+          path.join(
+            process.cwd(),
+            "app",
+            "resources",
+            "img",
+            "logoSapiencia.png"
+          ),
+          "base64"
+        ),
+      };
 
-    return bufferPDF;
-    // return new ApiResponse(bufferPDF, EResponseCodes.OK);
+      const bufferPDF = await this.reportRepository.generatePdf(
+        "colilla.hbs",
+        data,
+        true,
+        "colilla.css"
+      );
+
+      response.bufferFile = bufferPDF;
+      response.nameFile = "colilla.pdf";
+
+      return new ApiResponse(response, EResponseCodes.OK);
+    }
+
+    const data = {
+      logoDian: await fsPromises.readFile(
+        path.join(process.cwd(), "app", "resources", "img", "logoDian.jpeg"),
+        "base64"
+      ),
+      logo220: await fsPromises.readFile(
+        path.join(process.cwd(), "app", "resources", "img", "220Dian.jpeg"),
+        "base64"
+      ),
+    };
+
+    const bufferPDF = await this.reportRepository.generatePdf(
+      "retencionFuente.hbs",
+      data,
+      true,
+      "retencion.css"
+    );
+
+    response.bufferFile = bufferPDF;
+    response.nameFile = "retencion.pdf";
+
+    return new ApiResponse(response, EResponseCodes.OK);
   }
 }

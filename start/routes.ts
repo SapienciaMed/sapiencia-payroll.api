@@ -52,7 +52,7 @@ Route.group(() => {
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {
-  Route.get("/generateReportStub", "ReportController.generatePDFStub");
+  Route.post("/generateReport", "ReportController.generateReport");
 }).prefix("/api/v1/reports");
 
 Route.group(() => {

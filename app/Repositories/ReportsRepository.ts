@@ -1,6 +1,9 @@
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import puppeteer from "puppeteer";
+import Handlebars from "handlebars";
+import path from "path";
+import fsPromise from "fs/promises";
 
 import DeductionType from "App/Models/DeductionType";
 import IncomeType from "App/Models/IncomeType";
@@ -20,10 +23,12 @@ export interface IReportsRepository {
   generateXlsx(rows: any): Promise<any>;
   generateWordReport(): Promise<any>;
   generatePdf(
-    contentPDFHtml: string,
-    headerAndFooter: boolean,
-    headerPDFHtml?: string,
-    footerPDFHtml?: string
+    nameTemplate: string,
+    dataContentPDF: object,
+    printBackground: boolean,
+    nameCssFile?: string,
+    nameTemplateHeaderPDF?: string,
+    nameTemplateFooterPDF?: string
   ): Promise<Buffer>;
   getPayrollInformationEmployment(
     codPayroll: number,
@@ -154,11 +159,22 @@ export default class ReportsRepository implements IReportsRepository {
   }
 
   async generatePdf(
-    contentPDFHtml: string,
-    headerAndFooter: boolean,
-    headerPDFHtml?: string,
-    footerPDFHtml?: string
+    nameTemplate: string,
+    dataContentPDF: object,
+    printBackground: boolean,
+    nameCssFile?: string,
+    nameTemplateHeaderPDF?: string,
+    nameTemplateFooterPDF?: string
   ): Promise<Buffer> {
+    const templateHtml = await fsPromise.readFile(
+      path.join(process.cwd(), "app", "resources", "template", nameTemplate),
+      "utf-8"
+    );
+
+    const template = Handlebars.compile(templateHtml);
+
+    const contentPDFHtml = template(dataContentPDF);
+
     // Configuracion para pruebas
     // const browser = await puppeteer.launch({
     //   headless: "new",
@@ -169,7 +185,7 @@ export default class ReportsRepository implements IReportsRepository {
     //Configuracion local proyecto
     const browser = await puppeteer.launch({
       headless: "new",
-      //slowMo: 100,
+      // slowMo: 400,
     });
 
     const page = await browser.newPage();
@@ -178,13 +194,46 @@ export default class ReportsRepository implements IReportsRepository {
       waitUntil: "load",
     });
 
+    if (nameCssFile) {
+      const contentCss = await fsPromise.readFile(
+        path.join(process.cwd(), "app", "resources", "css", nameCssFile),
+        "utf-8"
+      );
+
+      await page.addStyleTag({ content: contentCss });
+    }
+
     await new Promise((r) => setTimeout(r, 1000));
 
     const bufferPDF = await page.pdf({
       format: "A4",
-      displayHeaderFooter: headerAndFooter,
-      headerTemplate: headerPDFHtml,
-      footerTemplate: footerPDFHtml,
+      displayHeaderFooter: !!nameTemplateHeaderPDF || !!nameTemplateFooterPDF,
+      headerTemplate: nameTemplateHeaderPDF
+        ? await fsPromise.readFile(
+            path.join(
+              process.cwd(),
+              "app",
+              "resources",
+              "template",
+              nameTemplateHeaderPDF
+            ),
+            "utf-8"
+          )
+        : undefined,
+      footerTemplate: nameTemplateFooterPDF
+        ? await fsPromise.readFile(
+            path.join(
+              process.cwd(),
+              "app",
+              "resources",
+              "template",
+              nameTemplateFooterPDF
+            ),
+            "utf-8"
+          )
+        : undefined,
+      printBackground,
+      margin: { top: 10, bottom: 30, left: 35, right: 35 },
     });
 
     await browser.close();

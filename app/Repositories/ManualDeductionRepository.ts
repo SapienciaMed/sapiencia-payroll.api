@@ -36,7 +36,7 @@ export default class ManualDeductionRepository
   ): Promise<IManualDeduction> {
     const toCreate = new ManualDeduction();
 
-    toCreate.fill({ ...manualDeduction });
+    toCreate.fill({ ...manualDeduction, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as IManualDeduction;
   }
@@ -74,6 +74,7 @@ export default class ManualDeductionRepository
     if (manualDeduction.state) {
       toUpdate.state = manualDeduction.state;
     }
+    toUpdate.userCreate = undefined;
 
     await toUpdate.save();
 

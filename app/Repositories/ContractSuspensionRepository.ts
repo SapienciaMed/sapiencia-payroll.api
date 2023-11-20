@@ -32,7 +32,7 @@ export default class ContractSuspensionRepository
   ): Promise<IcontractSuspension> {
     const toCreate = new ContractSuspension().useTransaction(trx);
 
-    toCreate.fill({ ...contractSuspension });
+    toCreate.fill({ ...contractSuspension, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as IcontractSuspension;
   }
@@ -55,7 +55,7 @@ export default class ContractSuspensionRepository
         employmentQuery.where("id", filters.codEmployment);
       }
       employmentQuery.preload("worker");
-      employmentQuery.preload("typesContracts")
+      employmentQuery.preload("typesContracts");
     });
 
     const workerEmploymentPaginated = await res.paginate(

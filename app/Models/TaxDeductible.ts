@@ -1,6 +1,7 @@
 import { BaseModel, BelongsTo, belongsTo, column } from "@ioc:Adonis/Lucid/Orm";
 import { DateTime } from "luxon";
 import Employment from "./Employment";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class TaxDeductible extends BaseModel {
   public static table = "DER_DEDUCIBLES_RENTA";
@@ -26,6 +27,7 @@ export default class TaxDeductible extends BaseModel {
   @column({
     columnName: "DER_USUARIO_MODIFICO",
     serializeAs: "userModified",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userModified: string;
 
@@ -40,6 +42,7 @@ export default class TaxDeductible extends BaseModel {
   @column({
     columnName: "DER_USUARIO_CREO",
     serializeAs: "userCreate",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userCreate: string;
 

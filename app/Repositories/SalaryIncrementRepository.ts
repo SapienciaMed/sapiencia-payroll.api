@@ -35,7 +35,7 @@ export default class SalaryIncrementRepository
   ): Promise<ISalaryIncrement> {
     const toCreate = new SalaryIncrement().useTransaction(trx);
 
-    toCreate.fill({ ...salaryIncrement });
+    toCreate.fill({ ...salaryIncrement, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as ISalaryIncrement;
   }
@@ -50,7 +50,9 @@ export default class SalaryIncrementRepository
       return null;
     }
 
-    toUpdate.fill({ ...toUpdate,...salaryIncrement }).useTransaction(trx);
+    toUpdate
+      .fill({ ...toUpdate, ...salaryIncrement, userModified: undefined })
+      .useTransaction(trx);
 
     await toUpdate.save();
 
@@ -69,7 +71,8 @@ export default class SalaryIncrementRepository
     idCharge: number
   ): Promise<ISalaryEditIncrement | null> {
     const res = await SalaryIncrement.query()
-      .where("codCharge", idCharge).orderBy("id","desc")
+      .where("codCharge", idCharge)
+      .orderBy("id", "desc")
       .first();
 
     return res ? (res.serialize() as ISalaryEditIncrement) : null;

@@ -27,7 +27,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
   async createFormPeriod(formPeriod: IFormPeriod): Promise<IFormPeriod> {
     const toCreate = new FormsPeriod();
 
-    toCreate.fill({ ...formPeriod });
+    toCreate.fill({ ...formPeriod, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as IFormPeriod;
   }
@@ -42,7 +42,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       return null;
     }
 
-    toUpdate.fill({ ...toUpdate, ...formPeriod });
+    toUpdate.fill({ ...toUpdate, ...formPeriod, userModified: undefined });
 
     await toUpdate.save();
 
@@ -71,7 +71,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
         formTypeQuery.where("name", "Quincenal");
       }
     });
-    const result = await res 
+    const result = await res;
     return result.map((i) => i.serialize() as IFormPeriod);
   }
 
@@ -80,7 +80,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     res.preload("formsType", (formTypeQuery) => {
       formTypeQuery.whereIn("name", ["Quincenal", "Mensual"]);
     });
-    const result = await res 
+    const result = await res;
     return result.map((i) => i.serialize() as IFormPeriod);
   }
   async getFormPeriodById(id: number): Promise<IFormPeriod | null> {
@@ -104,7 +104,7 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
       res.where("idFormType", filters.idFormType);
     }
     if (filters.state) {
-      res.where("state",'=', filters.state);
+      res.where("state", "=", filters.state);
     }
     if (filters.paidDate) {
       res.where("paidDate", "=", new Date(filters.paidDate.toString()));

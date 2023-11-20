@@ -62,6 +62,7 @@ export default class TaxDeductibleRepository
 
     toCreate.fill({
       ...data,
+      userCreate: undefined,
     });
 
     await toCreate.save();
@@ -81,6 +82,7 @@ export default class TaxDeductibleRepository
     toUpdate.fill({
       ...toUpdate,
       ...data,
+      userModified: undefined,
     });
 
     await toUpdate.save();

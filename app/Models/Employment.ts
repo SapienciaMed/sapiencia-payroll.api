@@ -16,6 +16,7 @@ import ReasonsForWithdrawal from "./ReasonsForWithdrawal";
 import SalaryHistory from "./SalaryHistory";
 import Dependence from "./Dependence";
 import ManualDeduction from "./ManualDeduction";
+import Env from "@ioc:Adonis/Core/Env";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -127,6 +128,7 @@ export default class Employment extends BaseModel {
   @column({
     columnName: "EMP_USUARIO_MODIFICO",
     serializeAs: "userModified",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userModified: string;
 
@@ -141,6 +143,7 @@ export default class Employment extends BaseModel {
   @column({
     columnName: "EMP_USUARIO_CREO",
     serializeAs: "userCreate",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
   })
   public userCreate: string;
 

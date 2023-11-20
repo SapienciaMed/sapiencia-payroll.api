@@ -97,7 +97,7 @@ export default class EmploymentRepository implements IEmploymentRepository {
   ): Promise<IEmployment> {
     const toCreate = new Employment().useTransaction(trx);
 
-    toCreate.fill({ ...employment });
+    toCreate.fill({ ...employment, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as IEmployment;
   }
@@ -111,7 +111,9 @@ export default class EmploymentRepository implements IEmploymentRepository {
 
     if (!toUpdate) return null;
 
-    await toUpdate.merge({ ...toUpdate, ...dataRetirement }).save();
+    await toUpdate
+      .merge({ ...toUpdate, ...dataRetirement, userModified: undefined })
+      .save();
 
     return toUpdate.serialize() as IEmployment;
   }
@@ -124,7 +126,7 @@ export default class EmploymentRepository implements IEmploymentRepository {
     // Realiza la actualización
     const employment = await Employment.query()
       .where("id", idEmployment)
-      .update({endDate: new Date(date?.toJSDate()),dateModified: new Date()})
+      .update({ endDate: new Date(date?.toJSDate()), dateModified: new Date() })
       .useTransaction(trx);
 
     if (employment) {

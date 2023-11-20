@@ -66,7 +66,11 @@ export default class Incapacity extends BaseModel {
   })
   public isComplete: boolean;
 
-  @column({ columnName: "INC_USUARIO_MODIFICO", serializeAs: "userModified" })
+  @column({
+    columnName: "INC_USUARIO_MODIFICO",
+    serializeAs: "userModified",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
+  })
   public userModified: string;
 
   @column.dateTime({
@@ -77,7 +81,11 @@ export default class Incapacity extends BaseModel {
   })
   public dateModified: DateTime;
 
-  @column({ columnName: "INC_USUARIO_CREO", serializeAs: "userCreate" })
+  @column({
+    columnName: "INC_USUARIO_CREO",
+    serializeAs: "userCreate",
+    prepare: (value: string) => value ?? Env.get("CURRENT_USER_DOCUMENT"),
+  })
   public userCreate: string | undefined = Env.get("USER_ID");
 
   @column.dateTime({

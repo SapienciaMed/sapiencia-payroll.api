@@ -1,7 +1,7 @@
 // import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import ReportProvider from "@ioc:core.ReportProvider";
-// import { ETypeReport } from "App/Constants/Report.Enum";
+import { ETypeReport } from "App/Constants/Report.Enum";
 import { EResponseCodes } from "App/Constants/ResponseCodesEnum";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import GenerateReportValidator from "App/Validators/GenerateReportValidator";

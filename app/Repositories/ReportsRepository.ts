@@ -37,7 +37,7 @@ export interface IReportsRepository {
   getPayrollInformationYear(
     year: number,
     codEmployment: number
-  ): Promise<IFormPeriod | null>;
+  ): Promise<IFormPeriod[] | null>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -64,7 +64,7 @@ export default class ReportsRepository implements IReportsRepository {
   async getPayrollInformationYear(
     year: number,
     codEmployment: number
-  ): Promise<IFormPeriod | null> {
+  ): Promise<IFormPeriod[] | null> {
     const res = await FormsPeriod.query()
       .preload("deductions")
       .preload("incomes")
@@ -75,14 +75,13 @@ export default class ReportsRepository implements IReportsRepository {
             employment.preload("worker");
           });
       })
-      .where("year", year)
-      .first();
+      .where("year", year);
 
     if (!res) {
       return null;
     }
 
-    return res.serialize() as IFormPeriod;
+    return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
   }
 
   async getPayrollInformationEmployment(

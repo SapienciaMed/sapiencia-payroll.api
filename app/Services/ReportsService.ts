@@ -6,6 +6,7 @@ import { EResponseCodes } from "../Constants/ResponseCodesEnum";
 import { IReportsRepository } from "App/Repositories/ReportsRepository";
 import { IReport, IReportResponse } from "App/Interfaces/ReportInterfaces";
 import { ETypeReport } from "App/Constants/Report.Enum";
+import CoreService from "./External/CoreService";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -14,7 +15,10 @@ export interface IReportService {
 }
 
 export default class ReportService implements IReportService {
-  constructor(public reportRepository: IReportsRepository) {}
+  constructor(
+    public reportRepository: IReportsRepository,
+    public coreService: CoreService
+  ) {}
 
   async generateWordReport(): Promise<ApiResponse<any>> {
     const result = this.reportRepository.generateWordReport();
@@ -157,6 +161,46 @@ export default class ReportService implements IReportService {
 
       return new ApiResponse(response, EResponseCodes.OK);
     }
+
+    const reportInformation =
+      await this.reportRepository.getPayrollInformationYear(2023, 11);
+    const parameters = await this.coreService.getParametersByCodes([
+      "NIT",
+      "RAZON_SOCIAL_REPORTES",
+      "COD_TIPO_DOCUMENTO",
+      "COD_DEPARTAMENTO",
+      "COD_CIUDAD",
+      "CIUDAD_REP",
+    ]);
+
+    const nit = Number(parameters.find((i) => (i.id = "NIT"))?.value || 0);
+
+    const socialReason = Number(
+      parameters.find((i) => (i.id = "RAZON_SOCIAL_REPORTES"))?.value || 0
+    );
+
+    const codeTypeDocument = Number(
+      parameters.find((i) => (i.id = "COD_TIPO_DOCUMENTO"))?.value || 0
+    );
+
+    const codeDeparment = Number(
+      parameters.find((i) => (i.id = "COD_DEPARTAMENTO"))?.value || 0
+    );
+
+    const codeCity = Number(
+      parameters.find((i) => (i.id = "COD_CIUDAD"))?.value || 0
+    );
+
+    const city = Number(
+      parameters.find((i) => (i.id = "CIUDAD_REP"))?.value || 0
+    );
+    
+    reportInformation?.map((info)=>{
+      info.incomes?.map(()=>{
+        
+      })
+    })
+
 
     const data = {
       logoDian: await fsPromises.readFile(

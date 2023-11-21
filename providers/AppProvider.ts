@@ -208,7 +208,11 @@ export default class AppProvider {
     );
     this.app.container.singleton(
       "core.ReportProvider",
-      () => new ReportService.default(new ReportRepository.default())
+      () =>
+        new ReportService.default(
+          new ReportRepository.default(),
+          new CoreService.default()
+        )
     );
 
     this.app.container.singleton(

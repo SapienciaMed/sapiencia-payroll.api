@@ -34,7 +34,7 @@ export default class extends BaseSchema {
         .string("TRA_SEGUNDO_APELLIDO", 50)
         .comment("Segundo apellido del colaborador");
       table
-        .timestamp("TRA_FECHA_NACIMIENTO")
+        .dateTime("TRA_FECHA_NACIMIENTO")
         .notNullable()
         .comment("Fecha de nacimiento");
       table

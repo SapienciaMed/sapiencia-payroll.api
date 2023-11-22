@@ -10,7 +10,6 @@ import CoreService from "./External/CoreService";
 import {
   EDeductionTypes,
   EIncomeTypes,
-  EPayrollTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { EIncomeType } from "App/Constants/OtherIncome.enum";
 

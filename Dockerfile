@@ -4,9 +4,8 @@ COPY package*.json /app/
 COPY . .
 # COPY .envdeploy$$environment$$ /app/.env
 
-ENV NODE_ENV production
-
 RUN apk add --no-cache chromium
+RUN rm -rf /var/cache/apk/*
 
 RUN npm install --production 
 RUN npm install -g @adonisjs/cli

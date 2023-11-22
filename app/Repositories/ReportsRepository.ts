@@ -1,4 +1,3 @@
-import Env from "@ioc:Adonis/Core/Env";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import puppeteer, { Browser } from "puppeteer";
@@ -189,8 +188,6 @@ export default class ReportsRepository implements IReportsRepository {
     const template = Handlebars.compile(templateHtml);
 
     const contentPDFHtml = template(dataContentPDF);
-
-    const nodeEnv = Env.get("NODE_ENV");
 
     let browser: Browser;
 

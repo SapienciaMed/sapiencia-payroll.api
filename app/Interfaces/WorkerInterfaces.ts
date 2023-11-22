@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { IRelative } from "./RelativeInterfaces";
 
 export interface IWorker {
   id?: number;
@@ -33,6 +34,7 @@ export interface IWorker {
   dateModified?: DateTime;
   userCreate?: string;
   dateCreate?: DateTime;
+  relatives?: IRelative[];
 }
 
 export interface IWorkerFilters {

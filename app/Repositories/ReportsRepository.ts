@@ -72,7 +72,9 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("historicalPayroll", (history) => {
         history.where("idEmployment", codEmployment),
           history.preload("employment", (employment) => {
-            employment.preload("worker");
+            employment.preload("worker", (workerQuery) => {
+              workerQuery.preload("relatives");
+            });
           });
       })
       .where("year", year);

@@ -5,8 +5,8 @@ export default class GenerateReportValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    period: schema.string([rules.minLength(4), rules.maxLength(4)]),
-    codEmployment: schema.string(),
+    period: schema.number(),
+    codEmployment: schema.number(),
     typeReport: schema.number(),
   });
 

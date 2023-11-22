@@ -1,10 +1,17 @@
 export interface IReport {
-  period: string;
-  codEmployment: string;
+  period: number;
+  codEmployment: number;
   typeReport: number;
 }
 
 export interface IReportResponse {
   bufferFile: Buffer;
   nameFile: string;
+}
+
+export interface IDetailColillaPDF {
+  name: string;
+  type: string;
+  days: string;
+  value: string;
 }

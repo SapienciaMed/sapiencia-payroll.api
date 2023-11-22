@@ -19,11 +19,13 @@
         <img src="data:image/png;base64, {{logoSapiencia}}" />
       </div>
       <div class="container-info_bank">
-        <p>NIT 900.602.106</p>
-        <p>De [Fecha inicio del periodo] Al [Fecha fin del periodo]</p>
+        <p>NIT {{nit}}</p>
+        <p>De {{fechaInicio}} Al {{fechaFin}}</p>
 
-        <p>Consignado en [Nombre del Banco] &nbsp;&nbsp; Cuenta No. [Número
-          cuenta bancaria]</p>
+        <p>Consignado en
+          {{nombreBanco}}
+          &nbsp;&nbsp; Cuenta No.
+          {{numeroCuentaBanco}}</p>
       </div>
     </div>
 
@@ -33,25 +35,25 @@
           <tr>
             <td>
               <p>Número documento</p>
-              <p>[Número documento]</p>
+              <p>{{numeroDocument}}</p>
             </td>
             <td colspan="5">
               <p>Nombre completo</p>
-              <p>[Nombre completo]</p>
+              <p>{{nombreCompleto}}</p>
             </td>
             <td>
               <p>Sueldo básico</p>
-              <p>[Sueldo básico]</p>
+              <p>{{sueldoBasico}}</p>
             </td>
           </tr>
           <tr>
             <td colspan="3">
               <p>Cargo</p>
-              <p>[Nombre del cargo]</p>
+              <p>{{cargo}}</p>
             </td>
             <td colspan="4">
               <p>Dependencia</p>
-              <p>[Nombre de la dependencia]</p>
+              <p>{{dependencia}}</p>
             </td>
           </tr>
           <tr>
@@ -68,22 +70,22 @@
               <p>Deducido</p>
             </td>
           </tr>
-          <tr>
-            <td colspan="2">
-              <p>[detalle de lo devengado y detalle deducido, primero se lista
-                lo devengado y luego lo deducido]</p>
-            </td>
-            <td colspan="2">
-              <p>[Nro. de días]</p>
-            </td>
-            <td>
-              <p>[Valor en pesos de lo devengado]
-              </p>
-            </td>
-            <td colspan="2">
-              <p>[Valor en pesos de lo Deducido]</p>
-            </td>
-          </tr>
+          {{#each arrIncomeAndDeductionsFormated}}
+            <tr>
+              <td colspan="2">
+                <p>{{name}}</p>
+              </td>
+              <td colspan="2">
+                <p>{{days}}</p>
+              </td>
+              <td>
+                <p>{{#if (eq type "Income")}}{{value}}{{/if}}</p>
+              </td>
+              <td colspan="2">
+                <p>{{#if (eq type "Deduction")}}{{value}}{{/if}}</p>
+              </td>
+            </tr>
+          {{/each}}
           <tr>
             <td colspan="2">
               <p>Firma</p>
@@ -92,10 +94,10 @@
               <p>Totales</p>
             </td>
             <td>
-              <p>[Sumatoria devengado]</p>
+              <p>{{totalIncomes}}</p>
             </td>
             <td colspan="2">
-              <p>[Sumatoria deducido]</p>
+              <p>{{totalDeductions}}</p>
             </td>
           </tr>
           <tr>
@@ -105,7 +107,7 @@
               </p>
             </td>
             <td>
-              <p>[Valor en nro. del total]</p>
+              <p>{{restaIncomesDeductions}}</p>
             </td>
           </tr>
         </tbody>

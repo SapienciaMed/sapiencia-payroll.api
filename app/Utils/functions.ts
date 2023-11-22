@@ -25,3 +25,13 @@ export function addCalendarDays(
     return newDate;
   }
 }
+
+export function formaterNumberToCurrency(number) {
+  const formatter = new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 2,
+  });
+
+  return formatter.format(number);
+}

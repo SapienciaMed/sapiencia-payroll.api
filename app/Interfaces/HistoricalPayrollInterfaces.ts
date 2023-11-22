@@ -12,5 +12,5 @@ export interface IHistoricalPayroll {
   state: string;
   observation: string;
 
-  employment?: IEmployment
+  employment?: IEmployment;
 }

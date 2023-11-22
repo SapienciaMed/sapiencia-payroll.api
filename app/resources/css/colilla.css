@@ -33,9 +33,10 @@ body {
   text-align: center;
   font-size: 11px;
   border-collapse: collapse;
+  width: 100%;
 }
 
 .table-info_colilla td {
   border: 1px solid rgb(0, 0, 0);
-  padding: 2rem 1.5rem;
+  padding: 0.8rem;
 }

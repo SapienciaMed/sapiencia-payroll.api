@@ -1,4 +1,11 @@
-import { BaseModel, HasMany, column, hasMany } from "@ioc:Adonis/Lucid/Orm";
+import {
+  BaseModel,
+  HasMany,
+  HasOne,
+  column,
+  hasMany,
+  hasOne,
+} from "@ioc:Adonis/Lucid/Orm";
 import Employment from "./Employment";
 import FormsPeriod from "./FormsPeriod";
 import DeductionType from "./DeductionType";
@@ -68,4 +75,10 @@ export default class Deduction extends BaseModel {
     foreignKey: "id",
   })
   public deductionType: HasMany<typeof DeductionType>;
+
+  @hasOne(() => DeductionType, {
+    localKey: "idTypeDeduction",
+    foreignKey: "id",
+  })
+  public deductionTypeOne: HasOne<typeof DeductionType>;
 }

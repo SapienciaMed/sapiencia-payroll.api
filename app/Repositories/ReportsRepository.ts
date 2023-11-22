@@ -70,8 +70,9 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("incomes")
       .preload("reserves")
       .preload("historicalPayroll", (history) => {
-        history.where("idEmployment", codEmployment),
-          history.preload("employment", (employment) => {
+        history
+          .where("idEmployment", codEmployment)
+          .preload("employment", (employment) => {
             employment.preload("worker", (workerQuery) => {
               workerQuery.preload("relatives");
             });
@@ -91,13 +92,23 @@ export default class ReportsRepository implements IReportsRepository {
     codEmployment: number
   ): Promise<IFormPeriod | null> {
     const res = await FormsPeriod.query()
-      .preload("deductions")
-      .preload("incomes")
+      .preload("deductions", (deductionsQuery) => {
+        deductionsQuery
+          .where("idEmployment", codEmployment)
+          .preload("deductionTypeOne");
+      })
+      .preload("incomes", (incomesQuery) => {
+        incomesQuery.where("idEmployment", codEmployment).preload("incomeType");
+      })
       .preload("reserves")
       .preload("historicalPayroll", (history) => {
-        history.where("idEmployment", codEmployment),
-          history.preload("employment", (employment) => {
+        history
+          .where("idEmployment", codEmployment)
+          .whereNot("state", "Fallido")
+          .preload("employment", (employment) => {
             employment.preload("worker");
+            employment.preload("charge");
+            employment.preload("dependence");
           });
       })
       .where("id", codPayroll)
@@ -171,6 +182,8 @@ export default class ReportsRepository implements IReportsRepository {
       path.join(process.cwd(), "app", "resources", "template", nameTemplate),
       "utf-8"
     );
+
+    Handlebars.registerHelper("eq", (a, b) => a == b);
 
     const template = Handlebars.compile(templateHtml);
 

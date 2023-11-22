@@ -4,7 +4,11 @@ import path from "path";
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
 import { IReportsRepository } from "App/Repositories/ReportsRepository";
-import { IReport, IReportResponse } from "App/Interfaces/ReportInterfaces";
+import {
+  IDetailColillaPDF,
+  IReport,
+  IReportResponse,
+} from "App/Interfaces/ReportInterfaces";
 import { ETypeReport } from "App/Constants/Report.Enum";
 import CoreService from "./External/CoreService";
 import {
@@ -12,6 +16,9 @@ import {
   EIncomeTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { EIncomeType } from "App/Constants/OtherIncome.enum";
+import { formaterNumberToCurrency } from "../Utils/functions";
+import { IIncome } from "App/Interfaces/IncomeInterfaces";
+import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -140,7 +147,100 @@ export default class ReportService implements IReportService {
   async generateReport(report: IReport): Promise<ApiResponse<IReportResponse>> {
     const response = {} as IReportResponse;
 
+    const parameters = await this.coreService.getParametersByCodes([
+      "NIT",
+      "RAZON_SOCIAL_REPORTES",
+      "COD_TIPO_DOCUMENTO",
+      "COD_DEPARTAMENTO",
+      "COD_CIUDAD",
+      "CIUDAD_REP",
+    ]);
+
+    const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
+
+    const socialReason =
+      parameters.find((i) => i.id == "RAZON_SOCIAL_REPORTES")?.value ?? "";
+
+    const codeTypeDocument =
+      parameters.find((i) => i.id == "COD_TIPO_DOCUMENTO")?.value ?? "";
+
+    const codeDeparment =
+      parameters.find((i) => i.id == "COD_DEPARTAMENTO")?.value ?? "";
+
+    const codeCity = parameters.find((i) => i.id == "COD_CIUDAD")?.value ?? "";
+
+    const city = parameters.find((i) => i.id == "CIUDAD_REP")?.value ?? "";
+
     if (report.typeReport === ETypeReport.Colilla) {
+      const reportInformationColilla =
+        await this.reportRepository.getPayrollInformationEmployment(
+          Number(report.period),
+          report.codEmployment
+        );
+
+      const numberDocument =
+        reportInformationColilla?.historicalPayroll?.[0].employment?.worker
+          ?.numberDocument ?? "Sin documento";
+
+      const nombreBanco =
+        reportInformationColilla?.historicalPayroll?.[0].employment?.worker
+          ?.bank;
+
+      const numeroCuentaBanco =
+        reportInformationColilla?.historicalPayroll?.[0].employment?.worker
+          ?.accountBankNumber;
+
+      const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
+
+      const salaryBasic =
+        reportInformationColilla?.historicalPayroll?.[0].employment?.charge
+          .baseSalary;
+
+      const charge =
+        reportInformationColilla?.historicalPayroll?.[0].employment?.charge
+          .name;
+
+      const dependence =
+        reportInformationColilla?.historicalPayroll?.[0].employment?.dependence
+          .name;
+
+      const arrIncomeAndDeductions = [
+        ...(reportInformationColilla?.incomes ?? []),
+        ...(reportInformationColilla?.deductions ?? []),
+      ];
+
+      const arrIncomeAndDeductionsFormated = arrIncomeAndDeductions.map(
+        (i: IIncome | IDeduction) => {
+          let objectReturn = {} as IDetailColillaPDF;
+
+          if ("incomeType" in i) {
+            objectReturn.name = i.incomeType?.name ?? "No hay detalle";
+            objectReturn.type = "Income";
+          } else if ("deductionTypeOne" in i) {
+            objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+            objectReturn.type = "Deduction";
+          }
+
+          objectReturn.value = formaterNumberToCurrency(i.value);
+          objectReturn.days = String(i.time ?? "0");
+
+          return objectReturn;
+        }
+      );
+
+      const totalIncomes = reportInformationColilla?.incomes?.reduce(
+        (sum, i) => sum + Number(i.value),
+        0
+      );
+
+      const totalDeductions = reportInformationColilla?.deductions?.reduce(
+        (sum, i) => sum + Number(i.value),
+        0
+      );
+
+      const restaIncomesDeductions =
+        (totalIncomes ?? 0) - (totalDeductions ?? 0);
+
       const data = {
         logoSapiencia: await fsPromises.readFile(
           path.join(
@@ -151,6 +251,22 @@ export default class ReportService implements IReportService {
             "logoSapiencia.png"
           ),
           "base64"
+        ),
+        nit,
+        fechaInicio: reportInformationColilla?.dateStart,
+        fechaFin: reportInformationColilla?.dateEnd,
+        numeroDocument: numberDocument,
+        nombreCompleto: fullName,
+        nombreBanco,
+        numeroCuentaBanco,
+        sueldoBasico: formaterNumberToCurrency(salaryBasic),
+        cargo: charge,
+        dependencia: dependence,
+        arrIncomeAndDeductionsFormated,
+        totalIncomes: formaterNumberToCurrency(totalIncomes),
+        totalDeductions: formaterNumberToCurrency(totalDeductions),
+        restaIncomesDeductions: formaterNumberToCurrency(
+          restaIncomesDeductions
         ),
       };
 
@@ -167,253 +283,236 @@ export default class ReportService implements IReportService {
       return new ApiResponse(response, EResponseCodes.OK);
     }
 
-    const reportInformation =
-      await this.reportRepository.getPayrollInformationYear(
-        Number(report.period),
-        Number(report.codEmployment)
-      );
-    const parameters = await this.coreService.getParametersByCodes([
-      "NIT",
-      "RAZON_SOCIAL_REPORTES",
-      "COD_TIPO_DOCUMENTO",
-      "COD_DEPARTAMENTO",
-      "COD_CIUDAD",
-      "CIUDAD_REP",
-    ]);
+    if (report.typeReport === ETypeReport.CertificadoIngresosRetenciones) {
+      const reportInformation =
+        await this.reportRepository.getPayrollInformationYear(
+          Number(report.period),
+          Number(report.codEmployment)
+        );
 
-    const nit = Number(parameters.find((i) => i.id == "NIT")?.value || 0);
+      const relevantIncomeTypes = [
+        EIncomeTypes.salary,
+        EIncomeTypes.bonusRecreation,
+        EIncomeTypes.serviceBonus,
+        EIncomeTypes.primaVacations,
+        EIncomeTypes.license,
+        EIncomeTypes.incapacity,
+      ];
+      let paidsSalary = 0;
+      let paidsFee = 0;
+      let paidsSocialBenefits = 0;
+      let paidsOtherIncomes = 0;
+      let totalSeverancePaids = 0;
+      let severancePaid = 0;
+      let totalIncomes = 0;
+      let pensionSolidarityPaid = 0;
+      let healthPaid = 0;
+      let voluntaryPensionPaid = 0;
+      let AfpPaid = 0;
+      let incometaxPaid = 0;
+      let firstName =
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
+          ?.firstName ?? "";
+      let document =
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
+          ?.numberDocument ?? "";
+      let secondName =
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
+          ?.secondName ?? "";
+      let surName =
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
+          ?.surname ?? "";
+      let secondSurname =
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
+          ?.secondSurname ?? "";
+      const dependent =
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker?.relatives?.filter(
+          (dependent) => {
+            dependent.dependent;
+          }
+        ) ?? [];
+      let nameDependent = "";
+      let relationDependent = "";
+      if (dependent.length > 0) {
+        dependent[0].name ?? "";
+        const relationshipMapping = {
+          "1": "Espos@",
+          "2": "Hij@",
+          "3": "Hijastr@",
+        };
 
-    const socialReason =
-      parameters.find((i) => i.id == "RAZON_SOCIAL_REPORTES")?.value || "";
+        relationDependent =
+          relationshipMapping[dependent[0].relationship] ?? "";
+      }
 
-    const codeTypeDocument =
-      parameters.find((i) => i.id == "COD_TIPO_DOCUMENTO")?.value || "";
+      let startDate =
+        new Date().getFullYear() === Number(report.period)
+          ? `01/01/${new Date().getFullYear()}`
+          : `01/01/${report.period}`;
+      let endDate =
+        new Date().getFullYear() === Number(report.period)
+          ? `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`
+          : `31/12/${report.period}`;
+      let expeditionDate = `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`;
 
-    const codeDeparment =
-      parameters.find((i) => i.id == "COD_DEPARTAMENTO")?.value || "";
+      reportInformation?.map((info) => {
+        paidsSalary =
+          info.incomes?.reduce(
+            (sum, i) =>
+              relevantIncomeTypes.includes(i.idTypeIncome)
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+        paidsSocialBenefits =
+          info.incomes?.reduce(
+            (sum, i) =>
+              i.idTypeIncome === EIncomeTypes.primaService ||
+              i.idTypeIncome === EIncomeTypes.vacation
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+        paidsOtherIncomes =
+          info.incomes?.reduce(
+            (sum, i) =>
+              i.idTypeIncome === EIncomeType.ApoyoEstudiantil ||
+              i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+        totalSeverancePaids =
+          info.incomes?.reduce(
+            (sum, i) =>
+              i.idTypeIncome === EIncomeTypes.severancePay ||
+              i.idTypeIncome === EIncomeTypes.severancePayInterest
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
 
-    const codeCity = parameters.find((i) => i.id == "COD_CIUDAD")?.value || "";
+        severancePaid =
+          info.incomes?.reduce(
+            (sum, i) =>
+              i.idTypeIncome === EIncomeTypes.severancePay
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
 
-    const city = parameters.find((i) => i.id == "CIUDAD_REP")?.value || "";
+        totalIncomes =
+          Number(paidsSalary ?? 0) +
+          Number(paidsSocialBenefits ?? 0) +
+          Number(paidsOtherIncomes ?? 0) +
+          Number(totalSeverancePaids ?? 0) +
+          Number(severancePaid ?? 0);
 
-    const relevantIncomeTypes = [
-      EIncomeTypes.salary,
-      EIncomeTypes.bonusRecreation,
-      EIncomeTypes.serviceBonus,
-      EIncomeTypes.primaVacations,
-      EIncomeTypes.license,
-      EIncomeTypes.incapacity,
-    ];
-    let paidsSalary = 0;
-    let paidsFee = 0;
-    let paidsSocialBenefits = 0;
-    let paidsOtherIncomes = 0;
-    let totalSeverancePaids = 0;
-    let severancePaid = 0;
-    let totalIncomes = 0;
-    let pensionSolidarityPaid = 0;
-    let healthPaid = 0;
-    let voluntaryPensionPaid = 0;
-    let AfpPaid = 0;
-    let incometaxPaid = 0;
-    let firstName =
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
-        ?.firstName ?? "";
-    let document =
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
-        ?.numberDocument ?? "";
-    let secondName =
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
-        ?.secondName ?? "";
-    let surName =
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
-        ?.surname ?? "";
-    let secondSurname =
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker
-        ?.secondSurname ?? "";
-    const dependent =
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment?.worker?.relatives?.filter(
-        (dependent) => {
-          dependent.dependent;
-        }
-      ) ?? [];
-    let nameDependent = "";
-    let relationDependent = "";
-    if (dependent.length > 0) {
-      dependent[0].name ?? "";
-      const relationshipMapping = {
-        "1": "Espos@",
-        "2": "Hij@",
-        "3": "Hijastr@",
+        healthPaid =
+          info.deductions?.reduce(
+            (sum, i) =>
+              i.idTypeDeduction === EDeductionTypes.SocialSecurity
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+
+        pensionSolidarityPaid =
+          info.deductions?.reduce(
+            (sum, i) =>
+              i.idTypeDeduction === EDeductionTypes.retirementFund ||
+              i.idTypeDeduction === EDeductionTypes.solidarityFund
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+
+        voluntaryPensionPaid =
+          info.deductions?.reduce(
+            (sum, i) =>
+              i.idTypeDeduction ===
+              EDeductionTypes.voluntaryPensionContributions
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+
+        AfpPaid =
+          info.deductions?.reduce(
+            (sum, i) =>
+              i.idTypeDeduction === EDeductionTypes.contributionsAFC
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+        incometaxPaid =
+          info.deductions?.reduce(
+            (sum, i) =>
+              i.idTypeDeduction === EDeductionTypes.incomeTax
+                ? Number(sum) + Number(i.value)
+                : Number(sum),
+            0
+          ) ?? 0;
+      });
+
+      if (
+        reportInformation?.[0]?.historicalPayroll?.[0]?.employment
+          ?.typesContracts?.[0].temporary
+      ) {
+        paidsFee = paidsSalary;
+        paidsSalary = 0;
+      }
+      const data = {
+        logoDian: await fsPromises.readFile(
+          path.join(process.cwd(), "app", "resources", "img", "logoDian.jpeg"),
+          "base64"
+        ),
+        logo220: await fsPromises.readFile(
+          path.join(process.cwd(), "app", "resources", "img", "220Dian.jpeg"),
+          "base64"
+        ),
+        paidsSalary,
+        paidsFee,
+        paidsSocialBenefits,
+        paidsOtherIncomes,
+        totalSeverancePaids,
+        severancePaid,
+        totalIncomes,
+        pensionSolidarityPaid,
+        healthPaid,
+        voluntaryPensionPaid,
+        AfpPaid,
+        incometaxPaid,
+        document,
+        firstName,
+        secondName,
+        surName,
+        secondSurname,
+        nameDependent,
+        relationDependent,
+        nit,
+        socialReason,
+        codeTypeDocument,
+        codeDeparment,
+        codeCity,
+        city,
+        startDate,
+        endDate,
+        expeditionDate,
       };
 
-      relationDependent = relationshipMapping[dependent[0].relationship] ?? "";
+      const bufferPDF = await this.reportRepository.generatePdf(
+        "retencionFuente.hbs",
+        data,
+        true,
+        "retencion.css"
+      );
+
+      response.bufferFile = bufferPDF;
+      response.nameFile = "retencion.pdf";
+
+      return new ApiResponse(response, EResponseCodes.OK);
     }
-
-    let startDate =
-      new Date().getFullYear() === Number(report.period)
-        ? `01/01/${new Date().getFullYear()}`
-        : `01/01/${report.period}`;
-    let endDate =
-      new Date().getFullYear() === Number(report.period)
-        ? `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`
-        : `31/12/${report.period}`;
-    let expeditionDate = `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`;
-
-    reportInformation?.map((info) => {
-      paidsSalary =
-        info.incomes?.reduce(
-          (sum, i) =>
-            relevantIncomeTypes.includes(i.idTypeIncome)
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-      paidsSocialBenefits =
-        info.incomes?.reduce(
-          (sum, i) =>
-            i.idTypeIncome === EIncomeTypes.primaService ||
-            i.idTypeIncome === EIncomeTypes.vacation
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-      paidsOtherIncomes =
-        info.incomes?.reduce(
-          (sum, i) =>
-            i.idTypeIncome === EIncomeType.ApoyoEstudiantil ||
-            i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-      totalSeverancePaids =
-        info.incomes?.reduce(
-          (sum, i) =>
-            i.idTypeIncome === EIncomeTypes.severancePay ||
-            i.idTypeIncome === EIncomeTypes.severancePayInterest
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-
-      severancePaid =
-        info.incomes?.reduce(
-          (sum, i) =>
-            i.idTypeIncome === EIncomeTypes.severancePay
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-
-      totalIncomes =
-        Number(paidsSalary ?? 0) +
-        Number(paidsSocialBenefits ?? 0) +
-        Number(paidsOtherIncomes ?? 0) +
-        Number(totalSeverancePaids ?? 0) +
-        Number(severancePaid ?? 0);
-
-      healthPaid =
-        info.deductions?.reduce(
-          (sum, i) =>
-            i.idTypeDeduction === EDeductionTypes.SocialSecurity
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-
-      pensionSolidarityPaid =
-        info.deductions?.reduce(
-          (sum, i) =>
-            i.idTypeDeduction === EDeductionTypes.retirementFund ||
-            i.idTypeDeduction === EDeductionTypes.solidarityFund
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-
-      voluntaryPensionPaid =
-        info.deductions?.reduce(
-          (sum, i) =>
-            i.idTypeDeduction === EDeductionTypes.voluntaryPensionContributions
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-
-      AfpPaid =
-        info.deductions?.reduce(
-          (sum, i) =>
-            i.idTypeDeduction === EDeductionTypes.contributionsAFC
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-      incometaxPaid =
-        info.deductions?.reduce(
-          (sum, i) =>
-            i.idTypeDeduction === EDeductionTypes.incomeTax
-              ? Number(sum) + Number(i.value)
-              : Number(sum),
-          0
-        ) ?? 0;
-    });
-
-    if (
-      reportInformation?.[0]?.historicalPayroll?.[0]?.employment
-        ?.typesContracts?.[0].temporary
-    ) {
-      paidsFee = paidsSalary;
-      paidsSalary = 0;
-    }
-    const data = {
-      logoDian: await fsPromises.readFile(
-        path.join(process.cwd(), "app", "resources", "img", "logoDian.jpeg"),
-        "base64"
-      ),
-      logo220: await fsPromises.readFile(
-        path.join(process.cwd(), "app", "resources", "img", "220Dian.jpeg"),
-        "base64"
-      ),
-      paidsSalary,
-      paidsFee,
-      paidsSocialBenefits,
-      paidsOtherIncomes,
-      totalSeverancePaids,
-      severancePaid,
-      totalIncomes,
-      pensionSolidarityPaid,
-      healthPaid,
-      voluntaryPensionPaid,
-      AfpPaid,
-      incometaxPaid,
-      document,
-      firstName,
-      secondName,
-      surName,
-      secondSurname,
-      nameDependent,
-      relationDependent,
-      nit,
-      socialReason,
-      codeTypeDocument,
-      codeDeparment,
-      codeCity,
-      city,
-      startDate,
-      endDate,
-      expeditionDate,
-    };
-
-    const bufferPDF = await this.reportRepository.generatePdf(
-      "retencionFuente.hbs",
-      data,
-      true,
-      "retencion.css"
-    );
-
-    response.bufferFile = bufferPDF;
-    response.nameFile = "retencion.pdf";
 
     return new ApiResponse(response, EResponseCodes.OK);
   }

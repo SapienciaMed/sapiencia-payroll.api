@@ -3,6 +3,7 @@ import { IWorker } from "./WorkerInterfaces";
 import { ITypesContracts } from "./TypesContractsInterfaces";
 import { ICharge } from "./ChargeInterfaces";
 import { ISalaryHistory } from "./SalaryHistoryInterfaces";
+import { IDependence } from "./DependenceInterfaces";
 
 export interface IEmployment {
   id?: number;
@@ -27,6 +28,8 @@ export interface IEmployment {
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
   worker?: IWorker;
+  charge: ICharge;
+  dependence: IDependence;
 }
 
 export interface IEmploymentResult {

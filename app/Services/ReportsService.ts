@@ -181,27 +181,20 @@ export default class ReportService implements IReportService {
       "CIUDAD_REP",
     ]);
 
-    const nit = Number(parameters.find((i) => (i.id = "NIT"))?.value || 0);
+    const nit = Number(parameters.find((i) => i.id == "NIT")?.value || 0);
 
-    const socialReason = Number(
-      parameters.find((i) => (i.id = "RAZON_SOCIAL_REPORTES"))?.value || 0
-    );
+    const socialReason =
+      parameters.find((i) => i.id == "RAZON_SOCIAL_REPORTES")?.value || "";
 
-    const codeTypeDocument = Number(
-      parameters.find((i) => (i.id = "COD_TIPO_DOCUMENTO"))?.value || 0
-    );
+    const codeTypeDocument =
+      parameters.find((i) => i.id == "COD_TIPO_DOCUMENTO")?.value || "";
 
-    const codeDeparment = Number(
-      parameters.find((i) => (i.id = "COD_DEPARTAMENTO"))?.value || 0
-    );
+    const codeDeparment =
+      parameters.find((i) => i.id == "COD_DEPARTAMENTO")?.value || "";
 
-    const codeCity = Number(
-      parameters.find((i) => (i.id = "COD_CIUDAD"))?.value || 0
-    );
+    const codeCity = parameters.find((i) => i.id == "COD_CIUDAD")?.value || "";
 
-    const city = Number(
-      parameters.find((i) => (i.id = "CIUDAD_REP"))?.value || 0
-    );
+    const city = parameters.find((i) => i.id == "CIUDAD_REP")?.value || "";
 
     const relevantIncomeTypes = [
       EIncomeTypes.salary,
@@ -259,7 +252,7 @@ export default class ReportService implements IReportService {
 
     let startDate =
       new Date().getFullYear() === Number(report.period)
-        ? `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`
+        ? `01/01/${new Date().getFullYear()}`
         : `01/01/${report.period}`;
     let endDate =
       new Date().getFullYear() === Number(report.period)

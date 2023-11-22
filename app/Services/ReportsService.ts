@@ -192,17 +192,23 @@ export default class ReportService implements IReportService {
 
       const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
 
-      const salaryBasic =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.charge
-          .baseSalary;
+      const salaryBasic = reportInformationColilla?.historicalPayroll?.[0]
+        .employment?.charge
+        ? reportInformationColilla?.historicalPayroll?.[0].employment?.charge
+            .baseSalary ?? ""
+        : "";
 
-      const charge =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.charge
-          .name;
+      const charge = reportInformationColilla?.historicalPayroll?.[0].employment
+        ?.charge
+        ? reportInformationColilla?.historicalPayroll?.[0].employment?.charge
+            .name ?? ""
+        : "";
 
-      const dependence =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.dependence
-          .name;
+      const dependence = reportInformationColilla?.historicalPayroll?.[0]
+        .employment?.dependence
+        ? reportInformationColilla?.historicalPayroll?.[0].employment
+            ?.dependence.name ?? ""
+        : "";
 
       const arrIncomeAndDeductions = [
         ...(reportInformationColilla?.incomes ?? []),

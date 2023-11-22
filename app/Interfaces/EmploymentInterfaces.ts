@@ -28,8 +28,8 @@ export interface IEmployment {
   dateCreate?: DateTime;
   typesContracts?: ITypesContracts[];
   worker?: IWorker;
-  charge: ICharge;
-  dependence: IDependence;
+  charge?: ICharge;
+  dependence?: IDependence;
 }
 
 export interface IEmploymentResult {

@@ -1,6 +1,7 @@
+import Env from "@ioc:Adonis/Core/Env";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun } from "docx";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
 import path from "path";
 import fsPromise from "fs/promises";
@@ -189,18 +190,24 @@ export default class ReportsRepository implements IReportsRepository {
 
     const contentPDFHtml = template(dataContentPDF);
 
-    // Configuracion para pruebas
-    const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox"],
-      executablePath: "/usr/bin/chromium",
-    });
+    const nodeEnv = Env.get("NODE_ENV");
 
-    //Configuracion local proyecto
-    // const browser = await puppeteer.launch({
-    //   headless: "new",
-    //   // slowMo: 400,
-    // });
+    let browser: Browser;
+
+    if (nodeEnv === "production") {
+      //Configuracion para pruebas
+      browser = await puppeteer.launch({
+        headless: "new",
+        args: ["--no-sandbox"],
+        executablePath: "/usr/bin/chromium",
+      });
+    } else {
+      //Configuracion local proyecto
+      browser = await puppeteer.launch({
+        headless: "new",
+        // slowMo: 400,
+      });
+    }
 
     const page = await browser.newPage();
 

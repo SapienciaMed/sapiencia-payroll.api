@@ -11,7 +11,7 @@
 
     <div class="container-title_principal">
       <p>Agencia de Educación Postsecundaria de Medellín - Sapiencia</p>
-      <p class="not-margin">Comprobante de Nómina No [consecutivo colilla]</p>
+      <p class="not-margin">Comprobante de Nómina No {{consecutivo}}</p>
     </div>
 
     <div class="container-img_infoBanco">
@@ -102,8 +102,8 @@
           </tr>
           <tr>
             <td colspan="6">
-              <p>Neto a Pagar [valor en letras del total (Sumatoria devengado-
-                Sumatoria deducido)]
+              <p>Neto a Pagar: &nbsp;
+                {{textRestIncomesDeductions}}
               </p>
             </td>
             <td>

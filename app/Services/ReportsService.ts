@@ -1,5 +1,6 @@
 import fsPromises from "fs/promises";
 import path from "path";
+import { numberToColombianPesosWord } from "@isildur1/number-to-word";
 
 import { ApiResponse } from "App/Utils/ApiResponses";
 import { EResponseCodes } from "../Constants/ResponseCodesEnum";
@@ -9,16 +10,19 @@ import {
   IReport,
   IReportResponse,
 } from "App/Interfaces/ReportInterfaces";
+import { IIncome } from "App/Interfaces/IncomeInterfaces";
+import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
+
 import { ETypeReport } from "App/Constants/Report.Enum";
-import CoreService from "./External/CoreService";
 import {
   EDeductionTypes,
   EIncomeTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { EIncomeType } from "App/Constants/OtherIncome.enum";
+
+import CoreService from "./External/CoreService";
+
 import { formaterNumberToCurrency } from "../Utils/functions";
-import { IIncome } from "App/Interfaces/IncomeInterfaces";
-import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -247,7 +251,12 @@ export default class ReportService implements IReportService {
       const restaIncomesDeductions =
         (totalIncomes ?? 0) - (totalDeductions ?? 0);
 
+      const textRestIncomesDeductions = numberToColombianPesosWord(
+        restaIncomesDeductions
+      );
+
       const data = {
+        consecutivo: report.period,
         logoSapiencia: await fsPromises.readFile(
           path.join(
             process.cwd(),
@@ -274,6 +283,7 @@ export default class ReportService implements IReportService {
         restaIncomesDeductions: formaterNumberToCurrency(
           restaIncomesDeductions
         ),
+        textRestIncomesDeductions,
       };
 
       const bufferPDF = await this.reportRepository.generatePdf(

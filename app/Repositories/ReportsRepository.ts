@@ -194,20 +194,18 @@ export default class ReportsRepository implements IReportsRepository {
 
     let browser: Browser;
 
-    if (nodeEnv === "production") {
-      //Configuracion para pruebas
-      browser = await puppeteer.launch({
-        headless: "new",
-        args: ["--no-sandbox"],
-        executablePath: "/usr/bin/chromium",
-      });
-    } else {
-      //Configuracion local proyecto
-      browser = await puppeteer.launch({
-        headless: "new",
-        // slowMo: 400,
-      });
-    }
+    //Configuracion para pruebas
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox"],
+      executablePath: "/usr/bin/chromium",
+    });
+
+    //Configuracion local proyecto
+    // browser = await puppeteer.launch({
+    //   headless: "new",
+    //   // slowMo: 400,
+    // });
 
     const page = await browser.newPage();
 

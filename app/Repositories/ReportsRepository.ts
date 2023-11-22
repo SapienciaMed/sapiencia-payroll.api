@@ -190,17 +190,17 @@ export default class ReportsRepository implements IReportsRepository {
     const contentPDFHtml = template(dataContentPDF);
 
     // Configuracion para pruebas
-    // const browser = await puppeteer.launch({
-    //   headless: "new",
-    //   args: ["--no-sandbox"],
-    //   executablePath: "/usr/bin/chromium",
-    // });
-
-    //Configuracion local proyecto
     const browser = await puppeteer.launch({
       headless: "new",
-      // slowMo: 400,
+      args: ["--no-sandbox"],
+      executablePath: "/usr/bin/chromium",
     });
+
+    //Configuracion local proyecto
+    // const browser = await puppeteer.launch({
+    //   headless: "new",
+    //   // slowMo: 400,
+    // });
 
     const page = await browser.newPage();
 

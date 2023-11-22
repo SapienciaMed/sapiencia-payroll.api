@@ -272,7 +272,9 @@ export default class ReportService implements IReportService {
       paidsSalary =
         info.incomes?.reduce(
           (sum, i) =>
-            relevantIncomeTypes.includes(i.idTypeIncome) ? sum + i.value : sum,
+            relevantIncomeTypes.includes(i.idTypeIncome)
+              ? Number(sum) + Number(i.value)
+              : Number(sum),
           0
         ) ?? 0;
       paidsSocialBenefits =

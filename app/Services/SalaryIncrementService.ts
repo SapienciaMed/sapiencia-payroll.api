@@ -94,7 +94,7 @@ export default class SalaryIncrementService implements ISalaryIncrementService {
             codIncrement: i.codIncrement,
             previousSalary: salaryIncrement.previousSalary,
             salary: salaryIncrement.newSalary,
-            validity: false,
+            validity: i.validity,
             effectiveDate: salaryIncrement.effectiveDate,
           } as ISalaryHistory;
         }),

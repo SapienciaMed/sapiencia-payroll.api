@@ -361,9 +361,13 @@ export default class ReportService implements IReportService {
           : `01/01/${report.period}`;
       let endDate =
         new Date().getFullYear() === Number(report.period)
-          ? `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`
+          ? `${new Date().getDate()}/${
+              new Date().getMonth() + 1
+            }/${new Date().getFullYear()}`
           : `31/12/${report.period}`;
-      let expeditionDate = `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()}`;
+      let expeditionDate = `${new Date().getDate()}/${
+        new Date().getMonth() + 1
+      }/${new Date().getFullYear()}`;
 
       reportInformation?.map((info) => {
         paidsSalary =

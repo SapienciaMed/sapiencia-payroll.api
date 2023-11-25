@@ -1,0 +1,2245 @@
+import { Document, Packer, Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, BorderStyle, VerticalAlign, HorizontalPositionAlign, Table, TableRow, TableCell, Footer } from 'docx';
+import * as fs from "fs";
+
+interface IWordHeader {
+    typeDocument: string;
+    title: string;
+    code: string;
+    version: string;
+    logo?: string;
+}
+
+interface IWordFooter {
+    elaborated: {
+        position: string;
+        date: string;
+    },
+    revised: {
+        position: string;
+        date: string;
+    },
+    approved: {
+        position: string;
+        date: string;
+    }
+}
+
+interface IWordSubTitle {
+    text: string;
+    bold?: boolean;
+    size?: number;
+}
+interface IWordSubTitleDobleLine {
+    text: '',
+    textOne: string;
+    boldOne?: boolean;
+    sizeOne?: number;
+    textTwo: string;
+    boldTwo?: boolean;
+    sizeTwo?: number;
+}
+
+interface IWordParagraph {
+    text: string;
+    bold?: boolean;
+    size?: number;
+}
+
+interface IWordParagraphFirstBold {
+    text: string;
+    textOne: string;
+    textTwo: string;
+    bold?: boolean;
+    size?: number;
+}
+
+interface ITableAprovedTrazability {
+    text: string;
+    nameTH:string
+    nameContador:string
+    nameAdministrativa:string
+    nameJuridica:string
+    nameFinanciera:string
+    nameJefeJuridica:string
+}
+
+
+interface ISettlementOfSocialBenefits {
+    fechaResolucion:string,
+    valorTotalResolucion:string,
+    nombre:string,
+    noDocumento:string,
+    fechaIngreso:string,
+    fechaRetiro:string,
+    diasCesantias:string,
+    diasInteresesCesantias:string,
+    diasPrimaNavidad:string,
+    diasVacionesYPrimaVacaciones:string,
+    diasBonificacionServicios:string,
+    diasPrimaServicio:string,
+    cesantias:string,
+    interesesCesantias:string,
+    vacaciones:string,
+    bonificacionRecreacion:string,
+    primaNavidad:string,
+    bonificacionServicios:string,
+    primaServicios:string,
+    salarios:string,
+    aportesSeguridadSocial:string,
+}
+
+export class ComponentsWord {
+    async generateHeader(data: IWordHeader): Promise<any> {
+        return new Header({
+            children: [
+                new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    width: { size: 20, type: WidthType.PERCENTAGE },
+                                    rowSpan: 2,
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new ImageRun({
+                                                    data: fs.readFileSync(`./app/resources/img/${data.logo}`),
+                                                    transformation: {
+                                                        width: 100,
+                                                        height: 70,
+                                                    },
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    width: { size: 60, type: WidthType.PERCENTAGE },
+                                    verticalAlign: VerticalAlign.CENTER,
+                                    rowSpan: 2,
+                                    children: [
+                                        new Paragraph({
+                                            text: data.typeDocument,
+                                            alignment: AlignmentType.CENTER,
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    width: { size: 20, type: WidthType.PERCENTAGE },
+                                    verticalAlign: VerticalAlign.CENTER,
+                                    children: [
+                                        new Paragraph({
+                                            children: [
+                                                new TextRun({
+                                                    text: `Código: ${data.code}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                            ]
+                        }),
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    verticalAlign: VerticalAlign.CENTER,
+                                    children: [
+                                        new Paragraph({
+                                            children: [
+                                                new TextRun({
+                                                    text: `Version: ${data.version}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                            ]
+                        }),
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    columnSpan: 2,
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: data.title,
+                                                    bold: true,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    verticalAlign: VerticalAlign.CENTER,
+                                    children: [
+                                        new Paragraph({
+                                            children: [
+                                                new TextRun({
+                                                    children: ["Página: ", PageNumber.CURRENT, " de ", PageNumber.TOTAL_PAGES],
+                                                }),
+                                            ],
+                                        }),
+                                    ]
+                                }),
+                            ]
+                        })
+                    ]
+                }),
+                new Paragraph({
+                    spacing: {
+                        after: 200, // Ajusta el valor según tus necesidades
+                    },
+                })
+            ]
+        })
+    }
+
+    async generateFooter(data: IWordFooter): Promise<any> {
+        return new Footer({
+            children: [
+                new Table({
+                    width: { size: 100, type: WidthType.PERCENTAGE },
+                    rows: [
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: `Elaboró: ${data.elaborated.position} `,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: `Revisó: ${data.revised.position}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: `Aprobó: ${data.approved.position}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                            ]
+                        }),
+                        new TableRow({
+                            children: [
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: `Fecha: ${data.elaborated.date}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: `Fecha: ${data.revised.date}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                new TableCell({
+                                    children: [
+                                        new Paragraph({
+                                            alignment: AlignmentType.CENTER,
+                                            children: [
+                                                new TextRun({
+                                                    text: `Fecha: ${data.approved.date}`,
+                                                    bold: false,
+                                                    font: "Arial"
+                                                }),
+                                            ]
+                                        })
+                                    ]
+                                }),
+                            ]
+                        }),
+                    ]
+                })
+            ]
+        })
+    }
+
+    async subTitle(data: IWordSubTitle): Promise<any> {
+        return new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+                new TextRun({
+                    text: data.text,
+                    bold: data.bold ?? true,
+                    font: 'Arial',
+                    size: data.size ?? 23
+                })
+            ],
+            spacing: {
+                before: 400, // Espacio antes del párrafo en unidades twips
+                after: 400,  // Espacio después del párrafo en unidades twips
+            },
+        })
+    }
+
+    async subTitleDoubleLine(data: IWordSubTitleDobleLine): Promise<any> {
+        return new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+                new TextRun({
+                    text: data.textOne,
+                    bold: data.boldOne ?? true,
+                    font: 'Arial',
+                    size: data.sizeOne ?? 23,
+                    break: 1,
+                }),
+                new TextRun({
+                    text: data.textTwo,
+                    bold: data.boldTwo ?? true,
+                    font: 'Arial',
+                    size: data.sizeTwo ?? 23,
+                    break: 1,
+                })
+            ],
+            spacing: {
+                before: 400, // Espacio antes del párrafo en unidades twips
+                after: 400,  // Espacio después del párrafo en unidades twips
+            },
+        })
+    }
+
+    async generateParagraph(data: IWordParagraph): Promise<any> {
+        return new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            children: [
+                new TextRun({
+                    text: data.text,
+                    bold: data.bold ?? false,
+                    font: 'Arial',
+                    size: data.size ?? 20
+                })
+            ],
+            spacing: {
+                before: 200, // Espacio antes del párrafo en unidades twips
+                after: 200,  // Espacio después del párrafo en unidades twips
+            },
+        })
+    }
+
+    async generateParagraphWithInitialBold(data: IWordParagraphFirstBold): Promise<any> {
+        return new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            children: [
+                new TextRun({
+                    text: data.textOne,
+                    bold: true,
+                    font: 'Arial',
+                    size: data.size ?? 20
+                }),
+                new TextRun({
+                    text: data.textTwo,
+                    bold: false,
+                    font: 'Arial',
+                    size: data.size ?? 20
+                })
+            ],
+            spacing: {
+                before: 200, // Espacio antes del párrafo en unidades twips
+                after: 200,  // Espacio después del párrafo en unidades twips
+            },
+        })
+    }
+
+    async generateDocumentTraceabilityAproved(data: ITableAprovedTrazability): Promise<any> {
+        return new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `Proyectó: Profesional Universitaria - Talento Humano`,
+                                            bold: false,
+                                            font: "Arial",
+                                            size:13
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `Revisó: Profesional Universitaria - Contabilidad`,
+                                            bold: false,
+                                            font: "Arial",
+                                            size:13
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `Revisó: Abogado - contratista Sub Administrativa`,
+                                            bold: false,
+                                            font: "Arial",
+                                            size:13
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `Revisó: Abogada – Contratista. Oficina Asesora Jurídica`,
+                                            bold: false,
+                                            font: "Arial",
+                                            size:13
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `Aprobó: Subdirectora Administrativa -Financiera y de Apoyo a la Gestión`,
+                                            bold: false,
+                                            font: "Arial",
+                                            size:13
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `Aprobó: Jefe Oficina  -Asesora Jurídica`,
+                                            bold: false,
+                                            font: "Arial",
+                                            size:13
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            margins: {
+                                top: 200, // Ajusta el valor según tus necesidades
+                                bottom: 200, // Ajusta el valor según tus necesidades
+                            },
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: ``,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: ``,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: ``,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: ``,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: ``,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: ``,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nameTH,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nameContador,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nameAdministrativa,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nameJuridica,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nameFinanciera,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nameJefeJuridica,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                    ]
+                }),
+            ]
+        })
+    }
+
+    async generateSettlementOfSocialBenefits(data: any): Promise<any> {
+           return new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows:[
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:3,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'LIQUIDACIÓN PRESTACIONES SOCIALES',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'N° Resolución',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Fecha Resolución',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.fechaResolucion,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$ ${data.valorTotalResolucion}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Nombre',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.nombre,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'N° de Cédula',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.noDocumento,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Fecha de ingreso',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.fechaIngreso,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Fecha de Retiro',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.fechaRetiro,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Dias Cesantias',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.diasCesantias,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Dias Intereses Cesantias',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.diasInteresesCesantias,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Dias Prima de Navidad',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.diasPrimaNavidad,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Dias Vacaciones y Prima de Vacaciones',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.diasVacionesYPrimaVacaciones,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Dias bonificación por servicios',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.diasBonificacionServicios,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Dias prima de servicio',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: data.diasPrimaServicio,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:3,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'CESANTIAS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL * DIAS LABORADOS ',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.cesantias}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '360',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'INTERESES CESANTIAS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'CESANTIAS * DIAS LABORADOS * 0.12 ',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.interesesCesantias}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '360',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'VACACIONES',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.vacaciones}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '720',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'BONIFICACIÓN POR RECREACIÓN',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL BÁSICO * 2',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.bonificacionRecreacion}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '30',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'PRIMA DE NAVIDAD',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.primaNavidad}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '360',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'BONIFICACIÓN POR SERVICIOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL BÁSICO * 2',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.bonificacionServicios}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '360',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'PRIMA DE SERVICIOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.primaServicios}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '720',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            rowSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `$${data.salarios}`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:2,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '30',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:3,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            columnSpan:3,
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'DEDUCCIONES',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'APORTES SEGURIDAD SOCIAL',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: '',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: `(${data.aportesSeguridadSocial})`,
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children:[
+                        new TableCell({
+                            children:[
+                                new Paragraph({
+                                    alignment: AlignmentType.CENTER,
+                                    children: [
+                                        new TextRun({
+                                            text: 'prueba1',
+                                            bold: false,
+                                            font: "Arial"
+                                        }),
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+            ]
+           }) 
+    }
+}

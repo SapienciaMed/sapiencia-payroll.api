@@ -23,10 +23,11 @@ import { EIncomeType } from "App/Constants/OtherIncome.enum";
 import CoreService from "./External/CoreService";
 
 import { formaterNumberToCurrency } from "../Utils/functions";
+import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
-  generateWordReport(): Promise<ApiResponse<any>>;
+  generateWordReport(doc:any): Promise<ApiResponse<any>>;
   generateReport(report: IReport): Promise<ApiResponse<IReportResponse>>;
 }
 
@@ -37,9 +38,12 @@ export default class ReportService implements IReportService {
   ) {}
 
   async generateWordReport(): Promise<ApiResponse<any>> {
-    const result = this.reportRepository.generateWordReport();
+    const administrativeActReport = new AdministrativeActReport();
+    const report = await administrativeActReport.generateReport();
+    const result = this.reportRepository.generateWordReport(report);
     return result;
   }
+
   async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
     const toSend: any[] = [];
     const incomeTypeList = await this.reportRepository.getAllIncomesTypes();

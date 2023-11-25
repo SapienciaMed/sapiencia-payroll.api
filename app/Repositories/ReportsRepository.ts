@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
-import { Document, Packer, Paragraph, TextRun } from "docx";
+import { Document, Packer, Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, BorderStyle, VerticalAlign, HorizontalPositionAlign, Table, TableRow, TableCell } from 'docx';
+
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
 import path from "path";
@@ -14,6 +15,8 @@ import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
+import * as fs from 'fs/promises';
+
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -21,7 +24,7 @@ export interface IReportsRepository {
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
   generateXlsx(rows: any): Promise<any>;
-  generateWordReport(): Promise<any>;
+  generateWordReport(doc: any): Promise<any>;
   generatePdf(
     nameTemplate: string,
     dataContentPDF: object,
@@ -40,8 +43,10 @@ export interface IReportsRepository {
   ): Promise<IFormPeriod[] | null>;
 }
 
+
+
 export default class ReportsRepository implements IReportsRepository {
-  constructor() {}
+  constructor() { }
 
   async getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null> {
     const res = await FormsPeriod.query()
@@ -144,29 +149,15 @@ export default class ReportsRepository implements IReportsRepository {
     return buffer;
   }
 
-  async generateWordReport(): Promise<any> {
-    const doc = new Document({
-      sections: [
-        {
-          properties: {},
-          children: [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Reporte de ejemplo",
-                  bold: true,
-                  font: "Arial",
-                }),
-              ],
-            }),
-            // Puedes agregar más contenido según tus necesidades
-          ],
-        },
-      ],
-    });
 
+  async generateWordReport(doc: any): Promise<any> {
     // Guardar el documento en un archivo
     const buffer = await Packer.toBuffer(doc);
+    // Definir la ruta del archivo y el nombre
+    const filePath = './tmp/reportWord.docx';
+    fs.unlink(filePath)
+    // Escribir el buffer en el archivo
+    await fs.writeFile(filePath, buffer);
     return buffer;
   }
 
@@ -226,27 +217,27 @@ export default class ReportsRepository implements IReportsRepository {
       displayHeaderFooter: !!nameTemplateHeaderPDF || !!nameTemplateFooterPDF,
       headerTemplate: nameTemplateHeaderPDF
         ? await fsPromise.readFile(
-            path.join(
-              process.cwd(),
-              "app",
-              "resources",
-              "template",
-              nameTemplateHeaderPDF
-            ),
-            "utf-8"
-          )
+          path.join(
+            process.cwd(),
+            "app",
+            "resources",
+            "template",
+            nameTemplateHeaderPDF
+          ),
+          "utf-8"
+        )
         : undefined,
       footerTemplate: nameTemplateFooterPDF
         ? await fsPromise.readFile(
-            path.join(
-              process.cwd(),
-              "app",
-              "resources",
-              "template",
-              nameTemplateFooterPDF
-            ),
-            "utf-8"
-          )
+          path.join(
+            process.cwd(),
+            "app",
+            "resources",
+            "template",
+            nameTemplateFooterPDF
+          ),
+          "utf-8"
+        )
         : undefined,
       printBackground,
       margin: { top: 10, bottom: 30, left: 35, right: 35 },

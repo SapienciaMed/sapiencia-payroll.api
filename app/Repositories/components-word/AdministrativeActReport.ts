@@ -376,6 +376,9 @@ export class AdministrativeActReport {
                     primaServicios:'2.804.643',
                     salarios:'2.219.643',
                     aportesSeguridadSocial:'346.643',
+                    aportesAFC:'3643',
+                    retencionFuenteRenta:'53645',
+                    totalPagarPrestacionesSociales:'30.099.100',
                 },
                 placeholders: [
                     {

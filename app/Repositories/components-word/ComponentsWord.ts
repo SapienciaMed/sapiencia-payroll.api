@@ -96,17 +96,22 @@ interface ITablePerContract {
     noContracto: string;
     objeto: string;
     obligacionesContractuales: IItemContractualObligation[];
-    valorContrato:string;
-    fechaInicio:string;
-    fechaTerminacion:string;
-    lugarEjecucion:string;
-    cumplimiento:string;
-    sanciones:string;
+    valorContrato: string;
+    fechaInicio: string;
+    fechaTerminacion: string;
+    lugarEjecucion: string;
+    cumplimiento: string;
+    sanciones: string;
 }
 
 interface IItemContractualObligation {
     text: string;
 }
+
+interface ILogosOnly {
+    logo: any;
+}
+
 export class ComponentsWord {
     async generateHeader(data: IWordHeader): Promise<any> {
         return new Header({
@@ -2014,7 +2019,7 @@ export class ComponentsWord {
                                             text: 'Objeto',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2029,7 +2034,7 @@ export class ComponentsWord {
                                             text: data.objeto,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2048,22 +2053,22 @@ export class ComponentsWord {
                                             text: 'Obligaciones contractuales',
                                             bold: false,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children: data.obligacionesContractuales.map((item:any, index:number) => (
+                            children: data.obligacionesContractuales.map((item: any, index: number) => (
                                 new Paragraph({
                                     alignment: AlignmentType.JUSTIFIED,
                                     children: [
                                         new TextRun({
-                                            text: `${index+1}. ${item.text}`,
+                                            text: `${index + 1}. ${item.text}`,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2083,7 +2088,7 @@ export class ComponentsWord {
                                             text: 'Valor del contrato',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2098,7 +2103,7 @@ export class ComponentsWord {
                                             text: data.valorContrato,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2117,7 +2122,7 @@ export class ComponentsWord {
                                             text: 'Fecha de Inicio',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2132,7 +2137,7 @@ export class ComponentsWord {
                                             text: data.fechaInicio,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2151,7 +2156,7 @@ export class ComponentsWord {
                                             text: 'Fecha de Terminación',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2166,7 +2171,7 @@ export class ComponentsWord {
                                             text: data.fechaTerminacion,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2185,7 +2190,7 @@ export class ComponentsWord {
                                             text: 'Cumplimiento',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2200,7 +2205,7 @@ export class ComponentsWord {
                                             text: data.cumplimiento,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2219,7 +2224,7 @@ export class ComponentsWord {
                                             text: 'Lugar de ejecución',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2234,7 +2239,7 @@ export class ComponentsWord {
                                             text: data.lugarEjecucion,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2253,7 +2258,7 @@ export class ComponentsWord {
                                             text: 'Sanciones',
                                             bold: true,
                                             size: 20,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2268,7 +2273,7 @@ export class ComponentsWord {
                                             text: data.sanciones,
                                             bold: false,
                                             size: 18,
-                                            font:'Arial'
+                                            font: 'Arial'
                                         })
                                     ]
                                 })
@@ -2276,6 +2281,108 @@ export class ComponentsWord {
                         })
                     ]
                 }),
+            ]
+        })
+
+    }
+
+
+
+
+    async getHeaderLogoOnly(data: ILogosOnly): Promise<any> {
+        return new Header({
+            children: [
+                new Paragraph({
+                    alignment:AlignmentType.LEFT,
+                    children: [
+                        new ImageRun({
+                            data: fs.readFileSync(`./app/resources/img/${data.logo}`),
+                            transformation: {
+                                width: 200,
+                                height: 100,
+                            },
+                        })
+                    ]
+                }),
+                new Paragraph({
+                    spacing: {
+                        after: 200, // Ajusta el valor según tus necesidades
+                    },
+                })
+            ]
+        })
+
+    }
+
+    async getFooterLogoOnly(data:ILogosOnly): Promise<any> { 
+        return new Footer({
+            children: [
+                new Paragraph({
+                    alignment:AlignmentType.RIGHT,
+                    children: [
+                        new ImageRun({
+                            data: fs.readFileSync(`./app/resources/img/${data.logo}`),
+                            transformation: {
+                                width: 200,
+                                height: 100,
+                            },
+                        })
+                    ]
+                })
+            ]
+        })
+
+    }
+
+    async getComponentFirm(data:any): Promise<any> { 
+        return new Paragraph({
+            spacing: {
+                before: 1400,
+            },
+            indent: { left: 2020/* , right: 920 */ }, // La indentación se mide en twips (1 pulgada = 1440 twips)
+            children:[
+                new TextRun({
+                    text:'JUAN DAVID GARCÍA',
+                    bold:true,
+                    font:'Arial',
+                    size:20,
+                    break:1
+                }),
+                new TextRun({
+                    text:'Profesional Universitario-Gestión Humana',
+                    bold:false,
+                    font:'Arial',
+                    size:18,
+                    break:1
+                }),
+                new TextRun({
+                    text:'Subdirección Administrativa, financiera y de apoyo a la gestión',
+                    bold:false,
+                    font:'Arial',
+                    size:18,
+                    break:1
+                }),
+                new TextRun({
+                    text:'Teléfono: (4) 4447947',
+                    bold:false,
+                    font:'Arial',
+                    size:18,
+                    break:1
+                }),
+                new TextRun({
+                    text:'Correo electrónico:',
+                    bold:false,
+                    font:'Arial',
+                    size:18,
+                    break:1,
+                }),
+                new TextRun({
+                    text:'gestionhumana@sapiencia.gov.co',
+                    bold:false,
+                    font:'Arial',
+                    size:18,
+                    style: "Hyperlink",
+                })
             ]
         })
 

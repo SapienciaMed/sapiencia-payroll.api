@@ -1,13 +1,12 @@
 import { ComponentsWord } from "./ComponentsWord"
-import { Document, Packer, Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, BorderStyle, VerticalAlign, HorizontalPositionAlign, Table, TableRow, TableCell } from 'docx';
-
+import { Document} from 'docx';
 
 export class ProofOfContracts {
 
     async generateReport(): Promise<any> {
 
         const componentsWord = new ComponentsWord();
-        const { subTitle, generateParagraph, generateFooter, generateHeader, subTitleDoubleLine, generateParagraphWithInitialBold, generateDocumentTraceabilityAproved, generateSettlementOfSocialBenefits, generateTablePerContract } = componentsWord
+        const { subTitle, generateParagraph, generateTablePerContract, getHeaderLogoOnly, getFooterLogoOnly,getComponentFirm } = componentsWord
 
         const replacePlaceholders = (text: string, placeholders: any[]) => {
             let modifiedText = text;
@@ -164,6 +163,21 @@ export class ProofOfContracts {
                     }
                 ]
             },
+            {
+                consecutive: 7,
+                componentWordProp: getComponentFirm.bind({ text: '' }),
+                argumentsComponent: {
+                    text: "Esta constancia se expide a solicitud del interesado en Medellín, a los [letra del día actual] ([número del día actual]) días de [mes actual] de [año actual]",
+                    size: 20
+                },
+                placeholders: [
+                    {
+                        key: '[letra del día actual]',
+                        newText: 'seis'
+                    },
+                ]
+                
+            }
         ]
 
 
@@ -181,19 +195,13 @@ export class ProofOfContracts {
                 {
                     properties: {},
                     headers: {
-                        default: await generateHeader({
-                            title: "ACTO ADMINISTRATIVO",
-                            typeDocument: 'FORMATO',
-                            code: 'F-AP-GJ-011',
-                            version: '2',
-                            logo: 'logoSapiencia.png'
+                        default: await getHeaderLogoOnly({
+                            logo: "logos_(sap-med).png",
                         })
                     },
                     footers: {
-                        default: await generateFooter({
-                            elaborated: { position: 'Profesional de Apoyo Jurídico', date: '12 de diciembre de 2016' },
-                            revised: { position: 'Jefe Oficina Jurídica', date: '12 de diciembre de 2016' },
-                            approved: { position: 'Sistema Integrado de Gestión', date: '14 de diciembre de 2016' },
+                        default: await getFooterLogoOnly({
+                            logo: "logoDian.jpeg",
                         })
                     },
                     children: await Promise.all(content)

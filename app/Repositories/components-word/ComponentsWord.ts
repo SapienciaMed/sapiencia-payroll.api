@@ -55,42 +55,58 @@ interface IWordParagraphFirstBold {
 
 interface ITableAprovedTrazability {
     text: string;
-    nameTH:string
-    nameContador:string
-    nameAdministrativa:string
-    nameJuridica:string
-    nameFinanciera:string
-    nameJefeJuridica:string
+    nameTH: string
+    nameContador: string
+    nameAdministrativa: string
+    nameJuridica: string
+    nameFinanciera: string
+    nameJefeJuridica: string
 }
 
 
 interface ISettlementOfSocialBenefits {
-    fechaResolucion:string,
-    valorTotalResolucion:string,
-    nombre:string,
-    noDocumento:string,
-    fechaIngreso:string,
-    fechaRetiro:string,
-    diasCesantias:string,
-    diasInteresesCesantias:string,
-    diasPrimaNavidad:string,
-    diasVacionesYPrimaVacaciones:string,
-    diasBonificacionServicios:string,
-    diasPrimaServicio:string,
-    cesantias:string,
-    interesesCesantias:string,
-    vacaciones:string,
-    bonificacionRecreacion:string,
-    primaNavidad:string,
-    bonificacionServicios:string,
-    primaServicios:string,
-    salarios:string,
-    aportesSeguridadSocial:string,
-    aportesAFC:string,
-    retencionFuenteRenta:string,
-    totalPagarPrestacionesSociales:string,
+    fechaResolucion: string,
+    valorTotalResolucion: string,
+    nombre: string,
+    noDocumento: string,
+    fechaIngreso: string,
+    fechaRetiro: string,
+    diasCesantias: string,
+    diasInteresesCesantias: string,
+    diasPrimaNavidad: string,
+    diasVacionesYPrimaVacaciones: string,
+    diasBonificacionServicios: string,
+    diasPrimaServicio: string,
+    cesantias: string,
+    interesesCesantias: string,
+    vacaciones: string,
+    bonificacionRecreacion: string,
+    primaNavidad: string,
+    bonificacionServicios: string,
+    primaServicios: string,
+    salarios: string,
+    aportesSeguridadSocial: string,
+    aportesAFC: string,
+    retencionFuenteRenta: string,
+    totalPagarPrestacionesSociales: string,
 }
 
+
+interface ITablePerContract {
+    noContracto: string;
+    objeto: string;
+    obligacionesContractuales: IItemContractualObligation[];
+    valorContrato:string;
+    fechaInicio:string;
+    fechaTerminacion:string;
+    lugarEjecucion:string;
+    cumplimiento:string;
+    sanciones:string;
+}
+
+interface IItemContractualObligation {
+    text: string;
+}
 export class ComponentsWord {
     async generateHeader(data: IWordHeader): Promise<any> {
         return new Header({
@@ -411,7 +427,7 @@ export class ComponentsWord {
                                             text: `Proyectó: Profesional Universitaria - Talento Humano`,
                                             bold: false,
                                             font: "Arial",
-                                            size:13
+                                            size: 13
                                         }),
                                     ]
                                 })
@@ -426,7 +442,7 @@ export class ComponentsWord {
                                             text: `Revisó: Profesional Universitaria - Contabilidad`,
                                             bold: false,
                                             font: "Arial",
-                                            size:13
+                                            size: 13
                                         }),
                                     ]
                                 })
@@ -441,7 +457,7 @@ export class ComponentsWord {
                                             text: `Revisó: Abogado - contratista Sub Administrativa`,
                                             bold: false,
                                             font: "Arial",
-                                            size:13
+                                            size: 13
                                         }),
                                     ]
                                 })
@@ -456,7 +472,7 @@ export class ComponentsWord {
                                             text: `Revisó: Abogada – Contratista. Oficina Asesora Jurídica`,
                                             bold: false,
                                             font: "Arial",
-                                            size:13
+                                            size: 13
                                         }),
                                     ]
                                 })
@@ -471,7 +487,7 @@ export class ComponentsWord {
                                             text: `Aprobó: Subdirectora Administrativa -Financiera y de Apoyo a la Gestión`,
                                             bold: false,
                                             font: "Arial",
-                                            size:13
+                                            size: 13
                                         }),
                                     ]
                                 })
@@ -486,7 +502,7 @@ export class ComponentsWord {
                                             text: `Aprobó: Jefe Oficina  -Asesora Jurídica`,
                                             bold: false,
                                             font: "Arial",
-                                            size:13
+                                            size: 13
                                         }),
                                     ]
                                 })
@@ -679,14 +695,14 @@ export class ComponentsWord {
     }
 
     async generateSettlementOfSocialBenefits(data: any): Promise<any> {
-           return new Table({
+        return new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
-            rows:[
+            rows: [
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:3,
-                            children:[
+                            columnSpan: 3,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -694,7 +710,7 @@ export class ComponentsWord {
                                             text: 'LIQUIDACIÓN PRESTACIONES SOCIALES',
                                             bold: true,
                                             font: "Arial",
-                                            size:30
+                                            size: 30
                                         }),
                                     ]
                                 })
@@ -703,9 +719,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -719,8 +735,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -736,9 +752,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -752,8 +768,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -769,9 +785,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -785,7 +801,7 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -799,7 +815,7 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -815,9 +831,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -831,8 +847,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -848,9 +864,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -864,8 +880,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -881,9 +897,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -897,8 +913,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -914,9 +930,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -930,8 +946,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -947,9 +963,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -963,8 +979,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -980,9 +996,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -996,8 +1012,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1013,9 +1029,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1029,8 +1045,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1046,9 +1062,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1062,8 +1078,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1079,9 +1095,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1095,8 +1111,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1112,9 +1128,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1128,8 +1144,8 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1145,10 +1161,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:3,
-                            children:[
+                            columnSpan: 3,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1164,10 +1180,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1175,14 +1191,14 @@ export class ComponentsWord {
                                             text: 'CESANTIAS',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1190,14 +1206,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL * DIAS LABORADOS ',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1213,10 +1229,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1224,7 +1240,7 @@ export class ComponentsWord {
                                             text: '360',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1233,10 +1249,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1244,14 +1260,14 @@ export class ComponentsWord {
                                             text: 'INTERESES CESANTIAS',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1259,14 +1275,14 @@ export class ComponentsWord {
                                             text: 'CESANTIAS * DIAS LABORADOS * 0.12 ',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1282,10 +1298,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1293,7 +1309,7 @@ export class ComponentsWord {
                                             text: '360',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1302,10 +1318,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1319,7 +1335,7 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1327,14 +1343,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1350,10 +1366,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1361,7 +1377,7 @@ export class ComponentsWord {
                                             text: '720',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1370,10 +1386,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1381,14 +1397,14 @@ export class ComponentsWord {
                                             text: 'BONIFICACIÓN POR RECREACIÓN',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1396,14 +1412,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL BÁSICO * 2',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1419,10 +1435,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1430,7 +1446,7 @@ export class ComponentsWord {
                                             text: '30',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1439,10 +1455,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1450,14 +1466,14 @@ export class ComponentsWord {
                                             text: 'PRIMA DE NAVIDAD',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1465,14 +1481,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1488,10 +1504,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1499,7 +1515,7 @@ export class ComponentsWord {
                                             text: '360',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1508,10 +1524,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1519,14 +1535,14 @@ export class ComponentsWord {
                                             text: 'BONIFICACIÓN POR SERVICIOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1534,14 +1550,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL BÁSICO * 2',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1557,10 +1573,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1568,7 +1584,7 @@ export class ComponentsWord {
                                             text: '360',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1577,10 +1593,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1588,14 +1604,14 @@ export class ComponentsWord {
                                             text: 'PRIMA DE SERVICIOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1603,14 +1619,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1626,10 +1642,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1637,7 +1653,7 @@ export class ComponentsWord {
                                             text: '720',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1646,10 +1662,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            rowSpan:2,
-                            children:[
+                            rowSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1657,14 +1673,14 @@ export class ComponentsWord {
                                             text: 'SALARIOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1672,14 +1688,14 @@ export class ComponentsWord {
                                             text: 'SALARIO MENSUAL BÁSICO * DIAS LABORADOS',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1695,10 +1711,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1706,7 +1722,7 @@ export class ComponentsWord {
                                             text: '30',
                                             bold: false,
                                             font: "Arial",
-                                            size:18
+                                            size: 18
                                         }),
                                     ]
                                 })
@@ -1715,10 +1731,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:3,
-                            children:[
+                            columnSpan: 3,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1734,10 +1750,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:3,
-                            children:[
+                            columnSpan: 3,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1745,7 +1761,7 @@ export class ComponentsWord {
                                             text: 'DEDUCCIONES',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
@@ -1754,9 +1770,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1764,14 +1780,14 @@ export class ComponentsWord {
                                             text: 'APORTES SEGURIDAD SOCIAL',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1785,7 +1801,7 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1801,9 +1817,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1811,14 +1827,14 @@ export class ComponentsWord {
                                             text: 'APORTES AFC',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1832,7 +1848,7 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1848,9 +1864,9 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1858,14 +1874,14 @@ export class ComponentsWord {
                                             text: 'RETENCIÓN EN LA FUENTE POR RENTA',
                                             bold: false,
                                             font: "Arial",
-                                            size:20
+                                            size: 20
                                         }),
                                     ]
                                 })
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.CENTER,
                                     children: [
@@ -1879,7 +1895,7 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
@@ -1887,7 +1903,7 @@ export class ComponentsWord {
                                             text: data.retencionFuenteRenta,
                                             bold: false,
                                             font: "Arial",
-                                         }),
+                                        }),
                                     ]
                                 })
                             ]
@@ -1895,10 +1911,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:3,
-                            children:[
+                            columnSpan: 3,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1914,10 +1930,10 @@ export class ComponentsWord {
                     ]
                 }),
                 new TableRow({
-                    children:[
+                    children: [
                         new TableCell({
-                            columnSpan:2,
-                            children:[
+                            columnSpan: 2,
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.LEFT,
                                     children: [
@@ -1931,12 +1947,12 @@ export class ComponentsWord {
                             ]
                         }),
                         new TableCell({
-                            children:[
+                            children: [
                                 new Paragraph({
                                     alignment: AlignmentType.RIGHT,
                                     children: [
                                         new TextRun({
-                                            text:  data.totalPagarPrestacionesSociales,
+                                            text: data.totalPagarPrestacionesSociales,
                                             bold: false,
                                             font: "Arial"
                                         }),
@@ -1947,6 +1963,322 @@ export class ComponentsWord {
                     ]
                 }),
             ]
-           }) 
+        })
     }
+
+    async generateTablePerContract(data: ITablePerContract): Promise<any> {
+
+        return new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'N° de contrato',
+                                            bold: true,
+                                            size: 20
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: '379-2023',
+                                            bold: false,
+                                            size: 20
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Objeto',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.objeto,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Obligaciones contractuales',
+                                            bold: false,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: data.obligacionesContractuales.map((item:any, index:number) => (
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: `${index+1}. ${item.text}`,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ))
+                        }),
+
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Valor del contrato',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.valorContrato,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Fecha de Inicio',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.fechaInicio,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Fecha de Terminación',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.fechaTerminacion,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Cumplimiento',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.cumplimiento,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Lugar de ejecución',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.lugarEjecucion,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+                new TableRow({
+                    children: [
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.LEFT,
+                                    children: [
+                                        new TextRun({
+                                            text: 'Sanciones',
+                                            bold: true,
+                                            size: 20,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        }),
+                        new TableCell({
+                            children: [
+                                new Paragraph({
+                                    alignment: AlignmentType.JUSTIFIED,
+                                    children: [
+                                        new TextRun({
+                                            text: data.sanciones,
+                                            bold: false,
+                                            size: 18,
+                                            font:'Arial'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+            ]
+        })
+
+    }
+
 }

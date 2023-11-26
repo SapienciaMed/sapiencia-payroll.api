@@ -24,6 +24,7 @@ import CoreService from "./External/CoreService";
 
 import { formaterNumberToCurrency } from "../Utils/functions";
 import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
+import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -39,8 +40,10 @@ export default class ReportService implements IReportService {
 
   async generateWordReport(): Promise<ApiResponse<any>> {
     const administrativeActReport = new AdministrativeActReport();
+    const proofOfContracts = new ProofOfContracts();
     const report = await administrativeActReport.generateReport();
-    const result = this.reportRepository.generateWordReport(report);
+    const report2 = await proofOfContracts.generateReport();
+    const result = this.reportRepository.generateWordReport(report2);
     return result;
   }
 

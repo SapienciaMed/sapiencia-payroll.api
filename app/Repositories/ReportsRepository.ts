@@ -1,13 +1,5 @@
 import * as XLSX from "xlsx";
-import {
-  Document,
-  Packer,
-  Paragraph,
-  Table,
-  TableCell,
-  TableRow,
-  WidthType,
-} from "docx";
+import { Packer } from "docx";
 
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
@@ -18,14 +10,21 @@ import DeductionType from "App/Models/DeductionType";
 import IncomeType from "App/Models/IncomeType";
 import ReserveType from "App/Models/ReserveType";
 import FormsPeriod from "App/Models/FormsPeriod";
-import Employment from "App/Models/Employment";
 
-import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
+import {
+  EDeductionTypes,
+  EPayrollTypes,
+} from "App/Constants/PayrollGenerateEnum";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
+import * as fs from "fs/promises";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import Employment from "App/Models/Employment";
+import { EPayrollState } from "App/Constants/States.enum";
+import Vacation from "App/Models/Vacation";
+import { IVacation } from "App/Interfaces/VacationsInterfaces";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -34,7 +33,7 @@ export interface IReportsRepository {
   getAllReservesTypes(): Promise<IReserveType[]>;
   getVinculationInformation(employmentId: number): Promise<IEmployment | null>;
   generateXlsx(rows: any): Promise<any>;
-  generateWordReport(): Promise<any>;
+  generateWordReport(doc: any): Promise<any>;
   generatePdf(
     nameTemplate: string,
     dataContentPDF: object,
@@ -55,6 +54,18 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IFormPeriod[] | null>;
+  getPayrollInformationLiquidationYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IFormPeriod[] | null>;
+  getPayrollInformationContractsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IEmployment[] | null>;
+  getPayrollVacationsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IVacation[] | null>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -102,6 +113,90 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
+  }
+
+  async getPayrollVacationsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IVacation[] | null> {
+    const res = await Vacation.query()
+      .preload("vacationDay", (vacationDayQuery) => {
+        vacationDayQuery.preload("formPeriod", (formPeriodQuery) => {
+          formPeriodQuery
+            .preload("historicalPayroll")
+            .preload("deductions")
+            .preload("incomes")
+            .preload("reserves");
+        });
+      })
+      .preload("employment", (employmentQuery) => {
+        employmentQuery
+          .preload("worker")
+          .preload("salaryHistories", (salaryQuery) => {
+            salaryQuery.where("validity", true);
+          });
+      })
+      .where("codEmployment", codEmployment)
+      .andWhere("period", year);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.map((formPeriod) => formPeriod.serialize() as IVacation);
+  }
+
+  async getPayrollInformationLiquidationYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IFormPeriod[] | null> {
+    const res = await FormsPeriod.query()
+      .preload("deductions")
+      .preload("incomes")
+      .preload("reserves")
+      .preload("historicalPayroll", (history) => {
+        history
+          .where("idEmployment", codEmployment)
+          .preload("employment", (employment) => {
+            employment.preload("worker");
+            employment.preload("charge");
+            employment.preload("dependence");
+            employment.preload("typesContracts");
+          });
+      })
+      .where("year", year)
+      .andWhere("idFormType", EPayrollTypes.liquidation)
+      .andWhere("state", EPayrollState.authorized);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
+  }
+
+  async getPayrollInformationContractsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IEmployment[] | null> {
+    const res = await Employment.query()
+      .preload("worker")
+      .preload("typesContracts")
+      .where("id", codEmployment)
+      .whereBetween("startDate", [
+        new Date(`01/01/${year}`),
+        new Date(`31/12/${year}`),
+      ])
+      .andWhereBetween("endDate", [
+        new Date(`01/01/${year}`),
+        new Date(`31/12/${year}`),
+      ]);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.map((formPeriod) => formPeriod.serialize() as IEmployment);
   }
 
   async getPayrollInformationEmployment(
@@ -180,137 +275,14 @@ export default class ReportsRepository implements IReportsRepository {
     return buffer;
   }
 
-  async generateWordReport(): Promise<any> {
-    const table = new Table({
-      columnWidths: [3505, 5505],
-      rows: [
-        new TableRow({
-          children: [
-            new TableCell({
-              width: {
-                size: 3505,
-                type: WidthType.DXA,
-              },
-              children: [new Paragraph("Hello")],
-            }),
-            new TableCell({
-              width: {
-                size: 5505,
-                type: WidthType.DXA,
-              },
-              children: [],
-            }),
-          ],
-        }),
-        new TableRow({
-          children: [
-            new TableCell({
-              width: {
-                size: 3505,
-                type: WidthType.DXA,
-              },
-              children: [],
-            }),
-            new TableCell({
-              width: {
-                size: 5505,
-                type: WidthType.DXA,
-              },
-              children: [new Paragraph("World")],
-            }),
-          ],
-        }),
-      ],
-    });
-
-    const table2 = new Table({
-      columnWidths: [4505, 4505],
-      rows: [
-        new TableRow({
-          children: [
-            new TableCell({
-              width: {
-                size: 4505,
-                type: WidthType.DXA,
-              },
-              children: [new Paragraph("Hello")],
-            }),
-            new TableCell({
-              width: {
-                size: 4505,
-                type: WidthType.DXA,
-              },
-              children: [],
-            }),
-          ],
-        }),
-        new TableRow({
-          children: [
-            new TableCell({
-              width: {
-                size: 4505,
-                type: WidthType.DXA,
-              },
-              children: [],
-            }),
-            new TableCell({
-              width: {
-                size: 4505,
-                type: WidthType.DXA,
-              },
-              children: [new Paragraph("World")],
-            }),
-          ],
-        }),
-      ],
-    });
-
-    const table3 = new Table({
-      rows: [
-        new TableRow({
-          children: [
-            new TableCell({
-              children: [new Paragraph("Hello")],
-            }),
-            new TableCell({
-              children: [],
-            }),
-          ],
-        }),
-        new TableRow({
-          children: [
-            new TableCell({
-              children: [],
-            }),
-            new TableCell({
-              children: [new Paragraph("World")],
-            }),
-          ],
-        }),
-      ],
-    });
-
-    const doc = new Document({
-      sections: [
-        {
-          children: [
-            new Paragraph({ text: "Table with skewed widths" }),
-            table,
-            new Paragraph({ text: "Table with equal widths" }),
-            table2,
-            new Paragraph({ text: "Table without setting widths" }),
-            table3,
-          ],
-        },
-      ],
-    });
-
+  async generateWordReport(doc: any): Promise<any> {
     // Guardar el documento en un archivo
-    const buffer = await Packer.toBuffer(doc).then(async (buffer) => {
-      await fsPromise.writeFile("document.docx", buffer);
-
-      return buffer;
-    });
+    const buffer = await Packer.toBuffer(doc);
+    // Definir la ruta del archivo y el nombre
+    const filePath = "./tmp/reportWord.docx";
+    fs.unlink(filePath);
+    // Escribir el buffer en el archivo
+    await fs.writeFile(filePath, buffer);
     return buffer;
   }
 

@@ -1,21 +1,5 @@
 import * as XLSX from "xlsx";
-import {
-  Document,
-  Packer,
-  Header,
-  Paragraph,
-  TextRun,
-  WidthType,
-  PageNumber,
-  ImageRun,
-  AlignmentType,
-  BorderStyle,
-  VerticalAlign,
-  HorizontalPositionAlign,
-  Table,
-  TableRow,
-  TableCell,
-} from "docx";
+import { Packer } from "docx";
 
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
@@ -26,15 +10,16 @@ import DeductionType from "App/Models/DeductionType";
 import IncomeType from "App/Models/IncomeType";
 import ReserveType from "App/Models/ReserveType";
 import FormsPeriod from "App/Models/FormsPeriod";
-import Employment from "App/Models/Employment";
 
-import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
+import {
+  EDeductionTypes,
+  EPayrollTypes,
+} from "App/Constants/PayrollGenerateEnum";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import * as fs from "fs/promises";
-import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 import Employment from "App/Models/Employment";
 import { EPayrollState } from "App/Constants/States.enum";

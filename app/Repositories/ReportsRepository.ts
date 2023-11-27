@@ -1,5 +1,21 @@
 import * as XLSX from "xlsx";
-import { Packer } from 'docx';
+import {
+  Document,
+  Packer,
+  Header,
+  Paragraph,
+  TextRun,
+  WidthType,
+  PageNumber,
+  ImageRun,
+  AlignmentType,
+  BorderStyle,
+  VerticalAlign,
+  HorizontalPositionAlign,
+  Table,
+  TableRow,
+  TableCell,
+} from "docx";
 
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
@@ -15,7 +31,11 @@ import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
-
+import * as fs from "fs/promises";
+import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
+import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
+import Employment from "App/Models/Employment";
+import { EPayrollState } from "App/Constants/States.enum";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -23,7 +43,7 @@ export interface IReportsRepository {
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
   generateXlsx(rows: any): Promise<any>;
-  generateWordReport(doc?: any): Promise<any>;
+  generateWordReport(doc: any): Promise<any>;
   generatePdf(
     nameTemplate: string,
     dataContentPDF: object,
@@ -40,12 +60,18 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IFormPeriod[] | null>;
+  getPayrollInformationLiquidationYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IFormPeriod[] | null>;
+  getPayrollInformationContractsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IEmployment[] | null>;
 }
 
-
-
 export default class ReportsRepository implements IReportsRepository {
-  constructor() { }
+  constructor() {}
 
   async getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null> {
     const res = await FormsPeriod.query()
@@ -89,6 +115,59 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
+  }
+
+  async getPayrollInformationLiquidationYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IFormPeriod[] | null> {
+    const res = await FormsPeriod.query()
+      .preload("deductions")
+      .preload("incomes")
+      .preload("reserves")
+      .preload("historicalPayroll", (history) => {
+        history
+          .where("idEmployment", codEmployment)
+          .preload("employment", (employment) => {
+            employment.preload("worker");
+            employment.preload("charge");
+            employment.preload("dependence");
+            employment.preload("typesContracts");
+          });
+      })
+      .where("year", year)
+      .andWhere("idFormType", EPayrollTypes.liquidation)
+      .andWhere("state", EPayrollState.authorized);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
+  }
+
+  async getPayrollInformationContractsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IEmployment[] | null> {
+    const res = await Employment.query()
+      .preload("worker")
+      .preload("typesContracts")
+      .where("id", codEmployment)
+      .whereBetween("startDate", [
+        new Date(`01/01/${year}`),
+        new Date(`31/12/${year}`),
+      ])
+      .andWhereBetween("endDate", [
+        new Date(`01/01/${year}`),
+        new Date(`31/12/${year}`),
+      ]);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.map((formPeriod) => formPeriod.serialize() as IEmployment);
   }
 
   async getPayrollInformationEmployment(
@@ -148,15 +227,14 @@ export default class ReportsRepository implements IReportsRepository {
     return buffer;
   }
 
-
   async generateWordReport(doc: any): Promise<any> {
     // Guardar el documento en un archivo
     const buffer = await Packer.toBuffer(doc);
     // Definir la ruta del archivo y el nombre
-    const filePath = './tmp/reportWord.docx';
-    fsPromise.unlink(filePath)
+    const filePath = "./tmp/reportWord.docx";
+    fs.unlink(filePath);
     // Escribir el buffer en el archivo
-    await fsPromise.writeFile(filePath, buffer);
+    await fs.writeFile(filePath, buffer);
     return buffer;
   }
 
@@ -216,27 +294,27 @@ export default class ReportsRepository implements IReportsRepository {
       displayHeaderFooter: !!nameTemplateHeaderPDF || !!nameTemplateFooterPDF,
       headerTemplate: nameTemplateHeaderPDF
         ? await fsPromise.readFile(
-          path.join(
-            process.cwd(),
-            "app",
-            "resources",
-            "template",
-            nameTemplateHeaderPDF
-          ),
-          "utf-8"
-        )
+            path.join(
+              process.cwd(),
+              "app",
+              "resources",
+              "template",
+              nameTemplateHeaderPDF
+            ),
+            "utf-8"
+          )
         : undefined,
       footerTemplate: nameTemplateFooterPDF
         ? await fsPromise.readFile(
-          path.join(
-            process.cwd(),
-            "app",
-            "resources",
-            "template",
-            nameTemplateFooterPDF
-          ),
-          "utf-8"
-        )
+            path.join(
+              process.cwd(),
+              "app",
+              "resources",
+              "template",
+              nameTemplateFooterPDF
+            ),
+            "utf-8"
+          )
         : undefined,
       printBackground,
       margin: { top: 10, bottom: 30, left: 35, right: 35 },

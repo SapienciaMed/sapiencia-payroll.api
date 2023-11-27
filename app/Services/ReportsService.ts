@@ -50,7 +50,6 @@ export default class ReportService implements IReportService {
     const vacationResolution = new VacationResolution();
     const report = await administrativeActReport.generateReport();
     const report2 = await proofOfContracts.generateReport();
-    const report3 = await vacationResolution.generateReport();
     const result = this.reportRepository.generateWordReport(report2);
     return result;
   }
@@ -174,166 +173,187 @@ export default class ReportService implements IReportService {
       "COD_CIUDAD",
       "CIUDAD_REP",
       "PROF_TALENTOH",
+      "PRIMER_PARAM_VACACIONES",
+      "SEG_PARAM_VACACIONES",
+      "TERCER_PARAM_VACACIONES"
     ]);
 
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
-
-    const socialReason =
-      parameters.find((i) => i.id == "RAZON_SOCIAL_REPORTES")?.value ?? "";
-
-    const codeTypeDocument =
-      parameters.find((i) => i.id == "COD_TIPO_DOCUMENTO")?.value ?? "";
-
-    const codeDeparment =
-      parameters.find((i) => i.id == "COD_DEPARTAMENTO")?.value ?? "";
-
-    const codeCity = parameters.find((i) => i.id == "COD_CIUDAD")?.value ?? "";
-
-    const city = parameters.find((i) => i.id == "CIUDAD_REP")?.value ?? "";
-
     const nameProfesional =
       parameters.find((i) => i.id == "PROF_TALENTOH")?.value ?? "";
 
     if (report.typeReport === ETypeReport.Colilla) {
-      const reportInformationColilla =
-        await this.reportRepository.getPayrollInformationEmployment(
-          Number(report.period),
-          report.codEmployment
-        );
-
-      const numberDocument =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.worker
-          ?.numberDocument ?? "Sin documento";
-
-      const nombreBanco =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.worker
-          ?.bank;
-
-      const numeroCuentaBanco =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.worker
-          ?.accountBankNumber;
-
-      const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
-
-      const salaryBasic =
-        reportInformationColilla?.historicalPayroll?.[0].employment?.charge
-          ?.baseSalary ?? "";
-
-      const charge =
-        reportInformationColilla?.historicalPayroll?.[0]?.employment?.charge
-          ?.name ?? "";
-
-      const dependence =
-        reportInformationColilla?.historicalPayroll?.[0]?.employment?.dependence
-          ?.name ?? "";
-
-      const arrIncomeAndDeductions = [
-        ...(reportInformationColilla?.incomes ?? []),
-        ...(reportInformationColilla?.deductions ?? []),
-      ];
-
-      const arrIncomeAndDeductionsFormated = arrIncomeAndDeductions.map(
-        (i: IIncome | IDeduction) => {
-          let objectReturn = {} as IDetailColillaPDF;
-
-          if ("incomeType" in i) {
-            objectReturn.name = i.incomeType?.name ?? "No hay detalle";
-            objectReturn.type = "Income";
-          } else if ("deductionTypeOne" in i) {
-            if (i.deductionTypeOne?.type === "Ciclica") {
-              objectReturn.name = i.deductionTypeOne?.name
-                ? `Deducciones cíclicas ${i.deductionTypeOne?.name}`
-                : "No hay detalle";
-            } else if (i.deductionTypeOne?.type === "Eventual") {
-              objectReturn.name = i.deductionTypeOne?.name
-                ? `Deducciones eventuales ${i.deductionTypeOne?.name}`
-                : "No hay detalle";
-            } else {
-              objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
-            }
-
-            objectReturn.type = "Deduction";
-          }
-
-          objectReturn.value = formaterNumberToCurrency(i.value ?? 0);
-          objectReturn.days = String(i.time ?? "0");
-
-          return objectReturn;
-        }
-      );
-
-      const totalIncomes = reportInformationColilla?.incomes?.reduce(
-        (sum, i) => sum + Number(i.value),
-        0
-      );
-
-      const totalDeductions = reportInformationColilla?.deductions?.reduce(
-        (sum, i) => sum + Number(i.value),
-        0
-      );
-
-      const restaIncomesDeductions =
-        (totalIncomes ?? 0) - (totalDeductions ?? 0);
-
-      const textRestIncomesDeductions = numberToColombianPesosWord(
-        Number(restaIncomesDeductions.toFixed(2) ?? 0)
-      );
-
-      const data = {
-        consecutivo: report.period,
-        logoSapiencia: await fsPromises.readFile(
-          path.join(
-            process.cwd(),
-            "app",
-            "resources",
-            "img",
-            "logoSapiencia.png"
-          ),
-          "base64"
-        ),
-        nit: formaterNumberSeparatorMiles(nit),
-        fechaInicio: reportInformationColilla?.dateStart,
-        fechaFin: reportInformationColilla?.dateEnd,
-        numeroDocument: numberDocument,
-        nombreCompleto: fullName,
-        nombreBanco,
-        numeroCuentaBanco,
-        sueldoBasico: formaterNumberToCurrency(salaryBasic ?? 0),
-        cargo: charge,
-        dependencia: dependence,
-        arrIncomeAndDeductionsFormated,
-        totalIncomes: formaterNumberToCurrency(totalIncomes ?? 0),
-        totalDeductions: formaterNumberToCurrency(totalDeductions ?? 0),
-        restaIncomesDeductions: formaterNumberToCurrency(
-          restaIncomesDeductions
-        ),
-        textRestIncomesDeductions,
-      };
-
-      const bufferPDF = await this.reportRepository.generatePdf(
-        "colilla.hbs",
-        data,
-        true,
-        "colilla.css"
-      );
-
-      response.bufferFile = bufferPDF;
-      response.nameFile = `${Date.now()}.pdf`;
-
-      return new ApiResponse(response, EResponseCodes.OK);
-    }
-
-    if (report.typeReport === ETypeReport.CertificadoIngresosRetenciones) {
+      await this.vaucherPay(report, response, nit);
+    } else if (
+      report.typeReport === ETypeReport.CertificadoIngresosRetenciones
+    ) {
       await this.generateIncomesWithholdingsCertificate(
         report,
         parameters,
         response
       );
-    }
-
-    if (report.typeReport === ETypeReport.CertificadoLaboral) {
+    } else if (report.typeReport === ETypeReport.CertificadoLaboral) {
       await this.generateWorkCertificate(report, response, nameProfesional);
+    } else if (report.typeReport === ETypeReport.ResolucionVacaciones) {
+      const firstParam =
+      parameters.find((i) => i.id == "PRIMER_PARAM_VACACIONES")?.value ?? "";
+      const secondParam =
+      parameters.find((i) => i.id == "SEG_PARAM_VACACIONES")?.value ?? "";
+      const thirdParam =
+      parameters.find((i) => i.id == "TERCER_PARAM_VACACIONES")?.value ?? "";
+      const param ={firstParam,secondParam,thirdParam}
+      const dataReport = await this.reportRepository.getPayrollVacationsYear(
+        report.period,
+        report.codEmployment
+      );
+      const vacationResolution = new VacationResolution();
+      const vacationResolutionGenerate =
+        await vacationResolution.generateReport(dataReport,param);
+      const result = this.reportRepository.generateWordReport(
+        vacationResolutionGenerate
+      );
+      return result;
+    } else if (
+      report.typeReport === ETypeReport.ResolucionLiquidacionDefinitiva
+    ) {
+      const administrativeActReport = new AdministrativeActReport();
+      const reportLiquidation = await administrativeActReport.generateReport();
+      const result =
+        this.reportRepository.generateWordReport(reportLiquidation);
+      return result;
+    } else if (report.typeReport === ETypeReport.ConstanciaContratos) {
+      const proofOfContracts = new ProofOfContracts();
+      const reportContracts = await proofOfContracts.generateReport();
+      const result = this.reportRepository.generateWordReport(reportContracts);
+      return result;
+    } else {
+      return new ApiResponse(response, EResponseCodes.FAIL);
     }
+    return new ApiResponse(response, EResponseCodes.OK);
+  }
+
+  async vaucherPay(report, response, nit) {
+    const reportInformationColilla =
+      await this.reportRepository.getPayrollInformationEmployment(
+        Number(report.period),
+        report.codEmployment
+      );
+
+    const numberDocument =
+      reportInformationColilla?.historicalPayroll?.[0].employment?.worker
+        ?.numberDocument ?? "Sin documento";
+
+    const nombreBanco =
+      reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.bank;
+
+    const numeroCuentaBanco =
+      reportInformationColilla?.historicalPayroll?.[0].employment?.worker
+        ?.accountBankNumber;
+
+    const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
+
+    const salaryBasic =
+      reportInformationColilla?.historicalPayroll?.[0].employment?.charge
+        ?.baseSalary ?? "";
+
+    const charge =
+      reportInformationColilla?.historicalPayroll?.[0]?.employment?.charge
+        ?.name ?? "";
+
+    const dependence =
+      reportInformationColilla?.historicalPayroll?.[0]?.employment?.dependence
+        ?.name ?? "";
+
+    const arrIncomeAndDeductions = [
+      ...(reportInformationColilla?.incomes ?? []),
+      ...(reportInformationColilla?.deductions ?? []),
+    ];
+
+    const arrIncomeAndDeductionsFormated = arrIncomeAndDeductions.map(
+      (i: IIncome | IDeduction) => {
+        let objectReturn = {} as IDetailColillaPDF;
+
+        if ("incomeType" in i) {
+          objectReturn.name = i.incomeType?.name ?? "No hay detalle";
+          objectReturn.type = "Income";
+        } else if ("deductionTypeOne" in i) {
+          if (i.deductionTypeOne?.type === "Ciclica") {
+            objectReturn.name = i.deductionTypeOne?.name
+              ? `Deducciones cíclicas ${i.deductionTypeOne?.name}`
+              : "No hay detalle";
+          } else if (i.deductionTypeOne?.type === "Eventual") {
+            objectReturn.name = i.deductionTypeOne?.name
+              ? `Deducciones eventuales ${i.deductionTypeOne?.name}`
+              : "No hay detalle";
+          } else {
+            objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+          }
+
+          objectReturn.type = "Deduction";
+        }
+
+        objectReturn.value = formaterNumberToCurrency(i.value ?? 0);
+        objectReturn.days = String(i.time ?? "0");
+
+        return objectReturn;
+      }
+    );
+
+    const totalIncomes = reportInformationColilla?.incomes?.reduce(
+      (sum, i) => sum + Number(i.value),
+      0
+    );
+
+    const totalDeductions = reportInformationColilla?.deductions?.reduce(
+      (sum, i) => sum + Number(i.value),
+      0
+    );
+
+    const restaIncomesDeductions = (totalIncomes ?? 0) - (totalDeductions ?? 0);
+
+    const textRestIncomesDeductions = numberToColombianPesosWord(
+      Number(restaIncomesDeductions.toFixed(2) ?? 0)
+    );
+
+    const data = {
+      consecutivo: report.period,
+      logoSapiencia: await fsPromises.readFile(
+        path.join(
+          process.cwd(),
+          "app",
+          "resources",
+          "img",
+          "logoSapiencia.png"
+        ),
+        "base64"
+      ),
+      nit: formaterNumberSeparatorMiles(nit),
+      fechaInicio: reportInformationColilla?.dateStart,
+      fechaFin: reportInformationColilla?.dateEnd,
+      numeroDocument: numberDocument,
+      nombreCompleto: fullName,
+      nombreBanco,
+      numeroCuentaBanco,
+      sueldoBasico: formaterNumberToCurrency(salaryBasic ?? 0),
+      cargo: charge,
+      dependencia: dependence,
+      arrIncomeAndDeductionsFormated,
+      totalIncomes: formaterNumberToCurrency(totalIncomes ?? 0),
+      totalDeductions: formaterNumberToCurrency(totalDeductions ?? 0),
+      restaIncomesDeductions: formaterNumberToCurrency(restaIncomesDeductions),
+      textRestIncomesDeductions,
+    };
+
+    const bufferPDF = await this.reportRepository.generatePdf(
+      "colilla.hbs",
+      data,
+      true,
+      "colilla.css"
+    );
+
+    response.bufferFile = bufferPDF;
+    response.nameFile = `${Date.now()}.pdf`;
+
     return new ApiResponse(response, EResponseCodes.OK);
   }
 

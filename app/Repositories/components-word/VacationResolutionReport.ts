@@ -1,8 +1,12 @@
+import { IVacation } from "App/Interfaces/VacationsInterfaces";
 import { ComponentsWord } from "./ComponentsWord";
 import { Document } from "docx";
 
 export class VacationResolution {
-  async generateReport(): Promise<any> {
+  async generateReport(
+    data: IVacation[] | null,
+    param: { firstParam: string; secondParam: string; thirdParam: string }
+  ): Promise<any> {
     const componentsWord = new ComponentsWord();
     const {
       subTitle,
@@ -35,7 +39,7 @@ export class VacationResolution {
           textTwo: "",
         }),
         argumentsComponent: {
-          text: "[Observaciones de vacaciones]",
+          text: `${data?.[0]?.vacationDay?.[0].observation}`,
           bold: false,
         },
         placeholders: [
@@ -63,7 +67,7 @@ export class VacationResolution {
         consecutive: 3,
         componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
         argumentsComponent: {
-          text: "[parametro1]",
+          text: `${param.thirdParam}`,
           size: 20,
         },
         placeholders: [

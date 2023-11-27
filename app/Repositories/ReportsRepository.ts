@@ -18,18 +18,21 @@ import DeductionType from "App/Models/DeductionType";
 import IncomeType from "App/Models/IncomeType";
 import ReserveType from "App/Models/ReserveType";
 import FormsPeriod from "App/Models/FormsPeriod";
+import Employment from "App/Models/Employment";
 
+import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
-import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
+import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
   getAllIncomesTypes(): Promise<IIncomeType[]>;
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
+  getVinculationInformation(employmentId: number): Promise<IEmployment | null>;
   generateXlsx(rows: any): Promise<any>;
   generateWordReport(): Promise<any>;
   generatePdf(
@@ -37,6 +40,10 @@ export interface IReportsRepository {
     dataContentPDF: object,
     printBackground: boolean,
     nameCssFile?: string,
+    top?: number,
+    bottom?: number,
+    left?: number,
+    right?: number,
     nameTemplateHeaderPDF?: string,
     nameTemplateFooterPDF?: string
   ): Promise<Buffer>;
@@ -145,6 +152,23 @@ export default class ReportsRepository implements IReportsRepository {
   async getAllReservesTypes(): Promise<IReserveType[]> {
     const res = await ReserveType.query();
     return res.map((i) => i.serialize() as IReserveType);
+  }
+
+  async getVinculationInformation(
+    employmentId: number
+  ): Promise<IEmployment | null> {
+    const res = await Employment.query()
+      .preload("dependence")
+      .preload("charge")
+      .preload("worker")
+      .preload("typesContracts")
+      .where("id", employmentId)
+      .andWhere("state", true)
+      .first();
+    if (!res) {
+      return null;
+    }
+    return res.serialize() as IEmployment;
   }
 
   async generateXlsx(rows: any): Promise<any> {
@@ -295,9 +319,16 @@ export default class ReportsRepository implements IReportsRepository {
     dataContentPDF: object,
     printBackground: boolean,
     nameCssFile?: string,
+    top: number = 10,
+    bottom: number = 30,
+    left: number = 35,
+    right: number = 35,
     nameTemplateHeaderPDF?: string,
     nameTemplateFooterPDF?: string
   ): Promise<Buffer> {
+    let headerHtml = "";
+    let headerTemplates;
+    let contentHeaderPDFHtml;
     const templateHtml = await fsPromise.readFile(
       path.join(process.cwd(), "app", "resources", "template", nameTemplate),
       "utf-8"
@@ -340,22 +371,24 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     await new Promise((r) => setTimeout(r, 1000));
-
+    if (nameTemplateHeaderPDF) {
+      headerHtml = await fsPromise.readFile(
+        path.join(
+          process.cwd(),
+          "app",
+          "resources",
+          "template",
+          nameTemplateHeaderPDF
+        ),
+        "utf-8"
+      );
+      headerTemplates = Handlebars.compile(headerHtml);
+      contentHeaderPDFHtml = headerTemplates(dataContentPDF);
+    }
     const bufferPDF = await page.pdf({
       format: "A4",
       displayHeaderFooter: !!nameTemplateHeaderPDF || !!nameTemplateFooterPDF,
-      headerTemplate: nameTemplateHeaderPDF
-        ? await fsPromise.readFile(
-            path.join(
-              process.cwd(),
-              "app",
-              "resources",
-              "template",
-              nameTemplateHeaderPDF
-            ),
-            "utf-8"
-          )
-        : undefined,
+      headerTemplate: nameTemplateHeaderPDF ? contentHeaderPDFHtml : undefined,
       footerTemplate: nameTemplateFooterPDF
         ? await fsPromise.readFile(
             path.join(
@@ -369,7 +402,7 @@ export default class ReportsRepository implements IReportsRepository {
           )
         : undefined,
       printBackground,
-      margin: { top: 10, bottom: 30, left: 35, right: 35 },
+      margin: { top: top, bottom: bottom, left: left, right: right },
     });
 
     await browser.close();

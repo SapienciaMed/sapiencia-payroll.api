@@ -22,7 +22,10 @@ import { EIncomeType } from "App/Constants/OtherIncome.enum";
 
 import CoreService from "./External/CoreService";
 
-import { formaterNumberToCurrency } from "../Utils/functions";
+import {
+  formaterNumberSeparatorMiles,
+  formaterNumberToCurrency,
+} from "../Utils/functions";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -221,11 +224,22 @@ export default class ReportService implements IReportService {
             objectReturn.name = i.incomeType?.name ?? "No hay detalle";
             objectReturn.type = "Income";
           } else if ("deductionTypeOne" in i) {
-            objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+            if (i.deductionTypeOne?.type === "Ciclica") {
+              objectReturn.name = i.deductionTypeOne?.name
+                ? `Deducciones cíclicas ${i.deductionTypeOne?.name}`
+                : "No hay detalle";
+            } else if (i.deductionTypeOne?.type === "Eventual") {
+              objectReturn.name = i.deductionTypeOne?.name
+                ? `Deducciones eventuales ${i.deductionTypeOne?.name}`
+                : "No hay detalle";
+            } else {
+              objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+            }
+
             objectReturn.type = "Deduction";
           }
 
-          objectReturn.value = formaterNumberToCurrency(i.value);
+          objectReturn.value = formaterNumberToCurrency(i.value ?? 0);
           objectReturn.days = String(i.time ?? "0");
 
           return objectReturn;
@@ -261,19 +275,19 @@ export default class ReportService implements IReportService {
           ),
           "base64"
         ),
-        nit,
+        nit: formaterNumberSeparatorMiles(nit),
         fechaInicio: reportInformationColilla?.dateStart,
         fechaFin: reportInformationColilla?.dateEnd,
         numeroDocument: numberDocument,
         nombreCompleto: fullName,
         nombreBanco,
         numeroCuentaBanco,
-        sueldoBasico: formaterNumberToCurrency(salaryBasic),
+        sueldoBasico: formaterNumberToCurrency(salaryBasic ?? 0),
         cargo: charge,
         dependencia: dependence,
         arrIncomeAndDeductionsFormated,
-        totalIncomes: formaterNumberToCurrency(totalIncomes),
-        totalDeductions: formaterNumberToCurrency(totalDeductions),
+        totalIncomes: formaterNumberToCurrency(totalIncomes ?? 0),
+        totalDeductions: formaterNumberToCurrency(totalDeductions ?? 0),
         restaIncomesDeductions: formaterNumberToCurrency(
           restaIncomesDeductions
         ),
@@ -288,7 +302,7 @@ export default class ReportService implements IReportService {
       );
 
       response.bufferFile = bufferPDF;
-      response.nameFile = "colilla.pdf";
+      response.nameFile = `${Date.now()}.pdf`;
 
       return new ApiResponse(response, EResponseCodes.OK);
     }

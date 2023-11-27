@@ -32,6 +32,15 @@ export default class extends BaseSchema {
         .comment(
           "Indicador de que si el familiar es dependiente y aplicar como deducible de renta"
         );
+      table
+        .string("FAM_TIPO_DOCUMENTO", 4)
+        .notNullable()
+        .comment("Tipo de documento del familiar (Listados Genericos)");
+      table
+        .string("FAM_NUMERO_DOCUMENTO", 15)
+        .notNullable()
+        .unique()
+        .comment("Numero de documento de identidad");
     });
   }
 

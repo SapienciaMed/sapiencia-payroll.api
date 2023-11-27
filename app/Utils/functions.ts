@@ -26,12 +26,18 @@ export function addCalendarDays(
   }
 }
 
-export function formaterNumberToCurrency(number) {
+export function formaterNumberToCurrency(number: number | string): string {
   const formatter = new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 2,
   });
 
-  return formatter.format(number);
+  return formatter.format(Number(number));
+}
+
+export function formaterNumberSeparatorMiles(numberFormated: number): string {
+  const numeroFormateado = numberFormated.toLocaleString();
+
+  return numeroFormateado;
 }

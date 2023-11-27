@@ -1,5 +1,14 @@
 import * as XLSX from "xlsx";
-import { Document, Packer, Paragraph, TextRun } from "docx";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  WidthType,
+} from "docx";
+
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
 import path from "path";
@@ -14,6 +23,7 @@ import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
+import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -95,6 +105,8 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("deductions", (deductionsQuery) => {
         deductionsQuery
           .where("idEmployment", codEmployment)
+          .whereNot("idTypeDeduction", EDeductionTypes.dependentPeople)
+          .whereNot("idTypeDeduction", EDeductionTypes.rentExempt)
           .preload("deductionTypeOne");
       })
       .preload("incomes", (incomesQuery) => {
@@ -145,28 +157,136 @@ export default class ReportsRepository implements IReportsRepository {
   }
 
   async generateWordReport(): Promise<any> {
+    const table = new Table({
+      columnWidths: [3505, 5505],
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 3505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("Hello")],
+            }),
+            new TableCell({
+              width: {
+                size: 5505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 3505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+            new TableCell({
+              width: {
+                size: 5505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("World")],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const table2 = new Table({
+      columnWidths: [4505, 4505],
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("Hello")],
+            }),
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("World")],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const table3 = new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph("Hello")],
+            }),
+            new TableCell({
+              children: [],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [],
+            }),
+            new TableCell({
+              children: [new Paragraph("World")],
+            }),
+          ],
+        }),
+      ],
+    });
+
     const doc = new Document({
       sections: [
         {
-          properties: {},
           children: [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Reporte de ejemplo",
-                  bold: true,
-                  font: "Arial",
-                }),
-              ],
-            }),
-            // Puedes agregar más contenido según tus necesidades
+            new Paragraph({ text: "Table with skewed widths" }),
+            table,
+            new Paragraph({ text: "Table with equal widths" }),
+            table2,
+            new Paragraph({ text: "Table without setting widths" }),
+            table3,
           ],
         },
       ],
     });
 
     // Guardar el documento en un archivo
-    const buffer = await Packer.toBuffer(doc);
+    const buffer = await Packer.toBuffer(doc).then(async (buffer) => {
+      await fsPromise.writeFile("document.docx", buffer);
+
+      return buffer;
+    });
     return buffer;
   }
 
@@ -192,17 +312,17 @@ export default class ReportsRepository implements IReportsRepository {
     let browser: Browser;
 
     //Configuracion para pruebas
-    browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox"],
-      executablePath: "/usr/bin/chromium",
-    });
-
-    //Configuracion local proyecto
     // browser = await puppeteer.launch({
     //   headless: "new",
-    //   // slowMo: 400,
+    //   args: ["--no-sandbox"],
+    //   executablePath: "/usr/bin/chromium",
     // });
+
+    //Configuracion local proyecto
+    browser = await puppeteer.launch({
+      headless: "new",
+      // slowMo: 400,
+    });
 
     const page = await browser.newPage();
 

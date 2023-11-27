@@ -1,5 +1,14 @@
 import * as XLSX from "xlsx";
-import { Document, Packer, Paragraph, TextRun } from "docx";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  WidthType,
+} from "docx";
+
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
 import path from "path";
@@ -9,17 +18,21 @@ import DeductionType from "App/Models/DeductionType";
 import IncomeType from "App/Models/IncomeType";
 import ReserveType from "App/Models/ReserveType";
 import FormsPeriod from "App/Models/FormsPeriod";
+import Employment from "App/Models/Employment";
 
+import { EDeductionTypes } from "App/Constants/PayrollGenerateEnum";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
+import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
   getAllIncomesTypes(): Promise<IIncomeType[]>;
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
+  getVinculationInformation(employmentId: number): Promise<IEmployment | null>;
   generateXlsx(rows: any): Promise<any>;
   generateWordReport(): Promise<any>;
   generatePdf(
@@ -27,6 +40,10 @@ export interface IReportsRepository {
     dataContentPDF: object,
     printBackground: boolean,
     nameCssFile?: string,
+    top?: number,
+    bottom?: number,
+    left?: number,
+    right?: number,
     nameTemplateHeaderPDF?: string,
     nameTemplateFooterPDF?: string
   ): Promise<Buffer>;
@@ -95,6 +112,8 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("deductions", (deductionsQuery) => {
         deductionsQuery
           .where("idEmployment", codEmployment)
+          .whereNot("idTypeDeduction", EDeductionTypes.dependentPeople)
+          .whereNot("idTypeDeduction", EDeductionTypes.rentExempt)
           .preload("deductionTypeOne");
       })
       .preload("incomes", (incomesQuery) => {
@@ -135,6 +154,23 @@ export default class ReportsRepository implements IReportsRepository {
     return res.map((i) => i.serialize() as IReserveType);
   }
 
+  async getVinculationInformation(
+    employmentId: number
+  ): Promise<IEmployment | null> {
+    const res = await Employment.query()
+      .preload("dependence")
+      .preload("charge")
+      .preload("worker")
+      .preload("typesContracts")
+      .where("id", employmentId)
+      .andWhere("state", true)
+      .first();
+    if (!res) {
+      return null;
+    }
+    return res.serialize() as IEmployment;
+  }
+
   async generateXlsx(rows: any): Promise<any> {
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
@@ -145,28 +181,136 @@ export default class ReportsRepository implements IReportsRepository {
   }
 
   async generateWordReport(): Promise<any> {
+    const table = new Table({
+      columnWidths: [3505, 5505],
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 3505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("Hello")],
+            }),
+            new TableCell({
+              width: {
+                size: 5505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 3505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+            new TableCell({
+              width: {
+                size: 5505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("World")],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const table2 = new Table({
+      columnWidths: [4505, 4505],
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("Hello")],
+            }),
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [],
+            }),
+            new TableCell({
+              width: {
+                size: 4505,
+                type: WidthType.DXA,
+              },
+              children: [new Paragraph("World")],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const table3 = new Table({
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph("Hello")],
+            }),
+            new TableCell({
+              children: [],
+            }),
+          ],
+        }),
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [],
+            }),
+            new TableCell({
+              children: [new Paragraph("World")],
+            }),
+          ],
+        }),
+      ],
+    });
+
     const doc = new Document({
       sections: [
         {
-          properties: {},
           children: [
-            new Paragraph({
-              children: [
-                new TextRun({
-                  text: "Reporte de ejemplo",
-                  bold: true,
-                  font: "Arial",
-                }),
-              ],
-            }),
-            // Puedes agregar más contenido según tus necesidades
+            new Paragraph({ text: "Table with skewed widths" }),
+            table,
+            new Paragraph({ text: "Table with equal widths" }),
+            table2,
+            new Paragraph({ text: "Table without setting widths" }),
+            table3,
           ],
         },
       ],
     });
 
     // Guardar el documento en un archivo
-    const buffer = await Packer.toBuffer(doc);
+    const buffer = await Packer.toBuffer(doc).then(async (buffer) => {
+      await fsPromise.writeFile("document.docx", buffer);
+
+      return buffer;
+    });
     return buffer;
   }
 
@@ -175,9 +319,16 @@ export default class ReportsRepository implements IReportsRepository {
     dataContentPDF: object,
     printBackground: boolean,
     nameCssFile?: string,
+    top: number = 10,
+    bottom: number = 30,
+    left: number = 35,
+    right: number = 35,
     nameTemplateHeaderPDF?: string,
     nameTemplateFooterPDF?: string
   ): Promise<Buffer> {
+    let headerHtml = "";
+    let headerTemplates;
+    let contentHeaderPDFHtml;
     const templateHtml = await fsPromise.readFile(
       path.join(process.cwd(), "app", "resources", "template", nameTemplate),
       "utf-8"
@@ -192,17 +343,17 @@ export default class ReportsRepository implements IReportsRepository {
     let browser: Browser;
 
     //Configuracion para pruebas
-    browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox"],
-      executablePath: "/usr/bin/chromium",
-    });
-
-    //Configuracion local proyecto
     // browser = await puppeteer.launch({
     //   headless: "new",
-    //   // slowMo: 400,
+    //   args: ["--no-sandbox"],
+    //   executablePath: "/usr/bin/chromium",
     // });
+
+    //Configuracion local proyecto
+    browser = await puppeteer.launch({
+      headless: "new",
+      // slowMo: 400,
+    });
 
     const page = await browser.newPage();
 
@@ -220,22 +371,24 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     await new Promise((r) => setTimeout(r, 1000));
-
+    if (nameTemplateHeaderPDF) {
+      headerHtml = await fsPromise.readFile(
+        path.join(
+          process.cwd(),
+          "app",
+          "resources",
+          "template",
+          nameTemplateHeaderPDF
+        ),
+        "utf-8"
+      );
+      headerTemplates = Handlebars.compile(headerHtml);
+      contentHeaderPDFHtml = headerTemplates(dataContentPDF);
+    }
     const bufferPDF = await page.pdf({
       format: "A4",
       displayHeaderFooter: !!nameTemplateHeaderPDF || !!nameTemplateFooterPDF,
-      headerTemplate: nameTemplateHeaderPDF
-        ? await fsPromise.readFile(
-            path.join(
-              process.cwd(),
-              "app",
-              "resources",
-              "template",
-              nameTemplateHeaderPDF
-            ),
-            "utf-8"
-          )
-        : undefined,
+      headerTemplate: nameTemplateHeaderPDF ? contentHeaderPDFHtml : undefined,
       footerTemplate: nameTemplateFooterPDF
         ? await fsPromise.readFile(
             path.join(
@@ -249,7 +402,7 @@ export default class ReportsRepository implements IReportsRepository {
           )
         : undefined,
       printBackground,
-      margin: { top: 10, bottom: 30, left: 35, right: 35 },
+      margin: { top: top, bottom: bottom, left: left, right: right },
     });
 
     await browser.close();

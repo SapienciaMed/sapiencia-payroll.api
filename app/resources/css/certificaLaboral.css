@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  font-family: "Rubik", sans-serif;
+  padding: 0;
+}
+
+p {
+  font-family: "Rubik", sans-serif;
+}
+
+.table-retencion {
+  border-collapse: collapse;
+}
+
+.table-retencion td {
+  border-style: solid;
+  vertical-align: top;
+  font-size: 10px;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  gap: 20px;
+}

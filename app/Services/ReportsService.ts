@@ -22,7 +22,10 @@ import { EIncomeType } from "App/Constants/OtherIncome.enum";
 
 import CoreService from "./External/CoreService";
 
-import { formaterNumberToCurrency } from "../Utils/functions";
+import {
+  formaterNumberSeparatorMiles,
+  formaterNumberToCurrency,
+} from "../Utils/functions";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -158,6 +161,7 @@ export default class ReportService implements IReportService {
       "COD_DEPARTAMENTO",
       "COD_CIUDAD",
       "CIUDAD_REP",
+      "PROF_TALENTOH",
     ]);
 
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
@@ -174,6 +178,9 @@ export default class ReportService implements IReportService {
     const codeCity = parameters.find((i) => i.id == "COD_CIUDAD")?.value ?? "";
 
     const city = parameters.find((i) => i.id == "CIUDAD_REP")?.value ?? "";
+
+    const nameProfesional =
+      parameters.find((i) => i.id == "PROF_TALENTOH")?.value ?? "";
 
     if (report.typeReport === ETypeReport.Colilla) {
       const reportInformationColilla =
@@ -221,11 +228,22 @@ export default class ReportService implements IReportService {
             objectReturn.name = i.incomeType?.name ?? "No hay detalle";
             objectReturn.type = "Income";
           } else if ("deductionTypeOne" in i) {
-            objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+            if (i.deductionTypeOne?.type === "Ciclica") {
+              objectReturn.name = i.deductionTypeOne?.name
+                ? `Deducciones cíclicas ${i.deductionTypeOne?.name}`
+                : "No hay detalle";
+            } else if (i.deductionTypeOne?.type === "Eventual") {
+              objectReturn.name = i.deductionTypeOne?.name
+                ? `Deducciones eventuales ${i.deductionTypeOne?.name}`
+                : "No hay detalle";
+            } else {
+              objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+            }
+
             objectReturn.type = "Deduction";
           }
 
-          objectReturn.value = formaterNumberToCurrency(i.value);
+          objectReturn.value = formaterNumberToCurrency(i.value ?? 0);
           objectReturn.days = String(i.time ?? "0");
 
           return objectReturn;
@@ -261,19 +279,19 @@ export default class ReportService implements IReportService {
           ),
           "base64"
         ),
-        nit,
+        nit: formaterNumberSeparatorMiles(nit),
         fechaInicio: reportInformationColilla?.dateStart,
         fechaFin: reportInformationColilla?.dateEnd,
         numeroDocument: numberDocument,
         nombreCompleto: fullName,
         nombreBanco,
         numeroCuentaBanco,
-        sueldoBasico: formaterNumberToCurrency(salaryBasic),
+        sueldoBasico: formaterNumberToCurrency(salaryBasic ?? 0),
         cargo: charge,
         dependencia: dependence,
         arrIncomeAndDeductionsFormated,
-        totalIncomes: formaterNumberToCurrency(totalIncomes),
-        totalDeductions: formaterNumberToCurrency(totalDeductions),
+        totalIncomes: formaterNumberToCurrency(totalIncomes ?? 0),
+        totalDeductions: formaterNumberToCurrency(totalDeductions ?? 0),
         restaIncomesDeductions: formaterNumberToCurrency(
           restaIncomesDeductions
         ),
@@ -288,7 +306,7 @@ export default class ReportService implements IReportService {
       );
 
       response.bufferFile = bufferPDF;
-      response.nameFile = "colilla.pdf";
+      response.nameFile = `${Date.now()}.pdf`;
 
       return new ApiResponse(response, EResponseCodes.OK);
     }
@@ -524,6 +542,110 @@ export default class ReportService implements IReportService {
 
       response.bufferFile = bufferPDF;
       response.nameFile = "retencion.pdf";
+
+      return new ApiResponse(response, EResponseCodes.OK);
+    }
+
+    if (report.typeReport === ETypeReport.CertificadoLaboral) {
+      const reportInformation =
+        await this.reportRepository.getVinculationInformation(
+          Number(report.codEmployment)
+        );
+
+      const treatment =
+        reportInformation?.worker?.gender == "H"
+          ? "El señor"
+          : reportInformation?.worker?.gender == "M"
+          ? "La señora"
+          : "E@ señor@";
+      const name = `${
+        reportInformation?.worker?.firstName +
+        " " +
+        reportInformation?.worker?.secondName +
+        " " +
+        reportInformation?.worker?.surname +
+        " " +
+        reportInformation?.worker?.secondSurname
+      }`;
+      const documentTypeMapping = {
+        CC: "Cédula de Ciudadanía",
+        CE: "Cédula de Extranjería",
+        TI: "Tarjeta de Identidad",
+        NIT: "NIT",
+        AN: "Anónimo",
+      };
+
+      const documentType =
+        documentTypeMapping[reportInformation?.worker?.typeDocument ?? "CC"];
+
+      const numberDocument = reportInformation?.worker?.numberDocument;
+
+      const vinculationDate = `${new Date(
+        reportInformation?.startDate.toString() ?? new Date().toString()
+      ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+        month: "long",
+      }).format(
+        new Date(
+          reportInformation?.startDate.toString() ?? new Date().toString()
+        )
+      )} ${new Date(
+        reportInformation?.startDate.toString() ?? new Date().toString()
+      ).getFullYear()}`;
+
+      const vinculationType = reportInformation?.typesContracts?.[0].name;
+
+      const charge = reportInformation?.charge?.name;
+
+      const dependency = reportInformation?.dependence?.name;
+
+      const specificObligations = reportInformation?.specificObligations;
+
+      const date = `${new Date().getDate()} de ${new Intl.DateTimeFormat(
+        "es-ES",
+        {
+          month: "long",
+        }
+      ).format(new Date())} ${new Date().getFullYear()}`;
+
+      const data = {
+        logoSapiencia: await fsPromises.readFile(
+          path.join(
+            process.cwd(),
+            "app",
+            "resources",
+            "img",
+            "logoSapiencia.png"
+          ),
+          "base64"
+        ),
+        treatment,
+        name,
+        documentType,
+        numberDocument,
+        vinculationDate,
+        vinculationType,
+        charge,
+        dependency,
+        specificObligations,
+        date,
+        nameProfesional,
+      };
+
+      const bufferPDF = await this.reportRepository.generatePdf(
+        "certificadoLaboral.hbs",
+        data,
+        false,
+        "certificaLaboral.css",
+        200,
+        150,
+        35,
+        35,
+        "Header.hbs",
+        "Footer.hbs"
+      );
+
+      response.bufferFile = bufferPDF;
+      response.nameFile = "certificadoLaboral.pdf";
 
       return new ApiResponse(response, EResponseCodes.OK);
     }

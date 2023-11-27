@@ -36,4 +36,16 @@ export default class Relative extends BaseModel {
     serialize: (val) => Boolean(val),
   })
   public dependent: boolean;
+
+  @column({
+    columnName: "FAM_TIPO_DOCUMENTO",
+    serializeAs: "typeDocument",
+  })
+  public typeDocument: string;
+
+  @column({
+    columnName: "FAM_NUMERO_DOCUMENTO",
+    serializeAs: "numberDocument",
+  })
+  public numberDocument: string;
 }

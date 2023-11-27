@@ -40,3 +40,7 @@ body {
   border: 1px solid rgb(0, 0, 0);
   padding: 0.8rem;
 }
+
+.cell-left {
+  text-align: left;
+}

@@ -36,6 +36,8 @@ import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 import Employment from "App/Models/Employment";
 import { EPayrollState } from "App/Constants/States.enum";
+import Vacation from "App/Models/Vacation";
+import { IVacation } from "App/Interfaces/VacationsInterfaces";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -68,6 +70,10 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IEmployment[] | null>;
+  getPayrollVacationsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IVacation[] | null>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -115,6 +121,37 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
+  }
+
+  async getPayrollVacationsYear(
+    year: number,
+    codEmployment: number
+  ): Promise<IVacation[] | null> {
+    const res = await Vacation.query()
+      .preload("vacationDay", (vacationDayQuery) => {
+        vacationDayQuery.preload("formPeriod", (formPeriodQuery) => {
+          formPeriodQuery
+            .preload("historicalPayroll")
+            .preload("deductions")
+            .preload("incomes")
+            .preload("reserves");
+        });
+      })
+      .preload("employment", (employmentQuery) => {
+        employmentQuery
+          .preload("worker")
+          .preload("salaryHistories", (salaryQuery) => {
+            salaryQuery.where("validity", true);
+          });
+      })
+      .where("codEmployment", codEmployment)
+      .andWhere("period", year);
+
+    if (!res) {
+      return null;
+    }
+
+    return res.map((formPeriod) => formPeriod.serialize() as IVacation);
   }
 
   async getPayrollInformationLiquidationYear(

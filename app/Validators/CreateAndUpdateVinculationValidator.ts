@@ -65,6 +65,8 @@ export default class CreateAndUpdateWorkerValidator {
         gender: schema.string.optional([rules.maxLength(10)]),
         birthDate: schema.date.optional({ format: "yyyy/MM/dd" }),
         dependent: schema.boolean(),
+        typeDocument: schema.string([rules.maxLength(4)]),
+        numberDocument: schema.string([rules.maxLength(15)]),
       })
     ),
     employment: schema.object().members({

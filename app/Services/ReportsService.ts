@@ -26,6 +26,10 @@ import {
   formaterNumberSeparatorMiles,
   formaterNumberToCurrency,
 } from "../Utils/functions";
+import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
+import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
+import { VacationResolution } from "App/Repositories/components-word/VacationResolutionReport";
+import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -36,13 +40,21 @@ export interface IReportService {
 export default class ReportService implements IReportService {
   constructor(
     public reportRepository: IReportsRepository,
-    public coreService: CoreService
+    public coreService: CoreService,
+    private workerRepository: IWorkerRepository
   ) {}
 
   async generateWordReport(): Promise<ApiResponse<any>> {
-    const result = this.reportRepository.generateWordReport();
+    const administrativeActReport = new AdministrativeActReport();
+    const proofOfContracts = new ProofOfContracts();
+    const vacationResolution = new VacationResolution();
+    const report = await administrativeActReport.generateReport();
+    const report2 = await proofOfContracts.generateReport();
+    const report3 = await vacationResolution.generateReport();
+    const result = this.reportRepository.generateWordReport(report2);
     return result;
   }
+
   async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
     const toSend: any[] = [];
     const incomeTypeList = await this.reportRepository.getAllIncomesTypes();

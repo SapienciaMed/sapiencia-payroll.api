@@ -25,25 +25,42 @@ import CoreService from "./External/CoreService";
 import { formaterNumberToCurrency } from "../Utils/functions";
 import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
 import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
+import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
-  generateWordReport(doc:any): Promise<ApiResponse<any>>;
+  generateWordReport(): Promise<ApiResponse<any>>;
   generateReport(report: IReport): Promise<ApiResponse<IReportResponse>>;
 }
 
 export default class ReportService implements IReportService {
+
+
   constructor(
     public reportRepository: IReportsRepository,
-    public coreService: CoreService
-  ) {}
+    public coreService: CoreService,
+    private workerRepository: IWorkerRepository,
+  ) { }
 
   async generateWordReport(): Promise<ApiResponse<any>> {
-    const administrativeActReport = new AdministrativeActReport();
-    const proofOfContracts = new ProofOfContracts();
-    const report = await administrativeActReport.generateReport();
-    const report2 = await proofOfContracts.generateReport();
-    const result = this.reportRepository.generateWordReport(report2);
+
+    let reportNumber = 1;
+    let report
+    if (reportNumber == 1) {
+      const administrativeActReport = new AdministrativeActReport();
+        const worker = await this.workerRepository.getWorkerById(16)
+        console.log({worker})    
+        report = await administrativeActReport.generateReport();
+    }
+    if (reportNumber == 2) {
+      const proofOfContracts = new ProofOfContracts();
+      report = await proofOfContracts.generateReport();
+    }
+    if (reportNumber == 3) {
+      const proofOfContracts = new ProofOfContracts();
+      report = await proofOfContracts.generateReport();
+    }
+    const result = await this.reportRepository.generateWordReport(report);
     return result;
   }
 
@@ -87,11 +104,9 @@ export default class ReportService implements IReportService {
 
     for (const historical of formPeriod.historicalPayroll) {
       let temp = {
-        Nombre: `${historical.employment?.worker?.firstName} ${
-          historical.employment?.worker?.secondName ?? ""
-        } ${historical.employment?.worker?.surname} ${
-          historical.employment?.worker?.secondSurname
-        }`,
+        Nombre: `${historical.employment?.worker?.firstName} ${historical.employment?.worker?.secondName ?? ""
+          } ${historical.employment?.worker?.surname} ${historical.employment?.worker?.secondSurname
+          }`,
         Identificación: historical.employment?.worker?.numberDocument,
         "Código fiscal": historical.employment?.worker?.fiscalIdentification,
         "Nro. Contrato": historical.employment?.contractNumber,
@@ -385,7 +400,7 @@ export default class ReportService implements IReportService {
           info.incomes?.reduce(
             (sum, i) =>
               i.idTypeIncome === EIncomeTypes.primaService ||
-              i.idTypeIncome === EIncomeTypes.vacation
+                i.idTypeIncome === EIncomeTypes.vacation
                 ? Number(sum) + Number(i.value)
                 : Number(sum),
             0
@@ -394,7 +409,7 @@ export default class ReportService implements IReportService {
           info.incomes?.reduce(
             (sum, i) =>
               i.idTypeIncome === EIncomeType.ApoyoEstudiantil ||
-              i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
+                i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
                 ? Number(sum) + Number(i.value)
                 : Number(sum),
             0
@@ -403,7 +418,7 @@ export default class ReportService implements IReportService {
           info.incomes?.reduce(
             (sum, i) =>
               i.idTypeIncome === EIncomeTypes.severancePay ||
-              i.idTypeIncome === EIncomeTypes.severancePayInterest
+                i.idTypeIncome === EIncomeTypes.severancePayInterest
                 ? Number(sum) + Number(i.value)
                 : Number(sum),
             0
@@ -438,7 +453,7 @@ export default class ReportService implements IReportService {
           info.deductions?.reduce(
             (sum, i) =>
               i.idTypeDeduction === EDeductionTypes.retirementFund ||
-              i.idTypeDeduction === EDeductionTypes.solidarityFund
+                i.idTypeDeduction === EDeductionTypes.solidarityFund
                 ? Number(sum) + Number(i.value)
                 : Number(sum),
             0
@@ -448,7 +463,7 @@ export default class ReportService implements IReportService {
           info.deductions?.reduce(
             (sum, i) =>
               i.idTypeDeduction ===
-              EDeductionTypes.voluntaryPensionContributions
+                EDeductionTypes.voluntaryPensionContributions
                 ? Number(sum) + Number(i.value)
                 : Number(sum),
             0

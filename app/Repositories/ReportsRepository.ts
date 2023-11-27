@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { Document, Packer, Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, BorderStyle, VerticalAlign, HorizontalPositionAlign, Table, TableRow, TableCell } from 'docx';
+import { Packer } from 'docx';
 
 import puppeteer, { Browser } from "puppeteer";
 import Handlebars from "handlebars";
@@ -15,7 +15,6 @@ import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
 import { IIncomeType } from "App/Interfaces/IncomeTypesInterfaces";
 import { IReserveType } from "App/Interfaces/ReserveTypesInterfaces";
 import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
-import * as fs from 'fs/promises';
 
 
 export interface IReportsRepository {
@@ -24,7 +23,7 @@ export interface IReportsRepository {
   getAllDeductionsTypes(): Promise<IDeductionType[]>;
   getAllReservesTypes(): Promise<IReserveType[]>;
   generateXlsx(rows: any): Promise<any>;
-  generateWordReport(doc: any): Promise<any>;
+  generateWordReport(doc?: any): Promise<any>;
   generatePdf(
     nameTemplate: string,
     dataContentPDF: object,
@@ -155,9 +154,9 @@ export default class ReportsRepository implements IReportsRepository {
     const buffer = await Packer.toBuffer(doc);
     // Definir la ruta del archivo y el nombre
     const filePath = './tmp/reportWord.docx';
-    fs.unlink(filePath)
+    fsPromise.unlink(filePath)
     // Escribir el buffer en el archivo
-    await fs.writeFile(filePath, buffer);
+    await fsPromise.writeFile(filePath, buffer);
     return buffer;
   }
 

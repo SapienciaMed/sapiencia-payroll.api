@@ -1,10 +1,9 @@
 import { ComponentsWord } from "./ComponentsWord"
-import { Document, Packer, Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, BorderStyle, VerticalAlign, HorizontalPositionAlign, Table, TableRow, TableCell } from 'docx';
+import { Document } from 'docx';
 
 export class AdministrativeActReport {
 
     async generateReport(): Promise<any> {
-
 
         const componentsWord = new ComponentsWord();
         const { subTitle, generateParagraph, generateFooter, generateHeader, subTitleDoubleLine, generateParagraphWithInitialBold, generateDocumentTraceabilityAproved, generateSettlementOfSocialBenefits } = componentsWord

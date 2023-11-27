@@ -1,4 +1,4 @@
-import { Document, Packer, Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, BorderStyle, VerticalAlign, HorizontalPositionAlign, Table, TableRow, TableCell, Footer } from 'docx';
+import { Header, Paragraph, TextRun, WidthType, PageNumber, ImageRun, AlignmentType, VerticalAlign, Table, TableRow, TableCell, Footer } from 'docx';
 import * as fs from "fs";
 
 interface IWordHeader {
@@ -699,7 +699,7 @@ export class ComponentsWord {
         })
     }
 
-    async generateSettlementOfSocialBenefits(data: any): Promise<any> {
+    async generateSettlementOfSocialBenefits(data: ISettlementOfSocialBenefits): Promise<any> {
         return new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
@@ -2334,7 +2334,7 @@ export class ComponentsWord {
 
     }
 
-    async getComponentFirm(data:any): Promise<any> { 
+    async getComponentFirm(_data:any): Promise<any> { 
         return new Paragraph({
             spacing: {
                 before: 1400,

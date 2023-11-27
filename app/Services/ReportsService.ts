@@ -264,7 +264,7 @@ export default class ReportService implements IReportService {
         (totalIncomes ?? 0) - (totalDeductions ?? 0);
 
       const textRestIncomesDeductions = numberToColombianPesosWord(
-        restaIncomesDeductions
+        Number(restaIncomesDeductions.toFixed(2) ?? 0)
       );
 
       const data = {

@@ -64,6 +64,10 @@ Route.group(() => {
   );
   Route.get("/worker", "VinculationController.getActiveWorkers");
   Route.get(
+    "/employmentByPayroll/:idPayroll",
+    "VinculationController.getEmploymentsByPayroll"
+  );
+  Route.get(
     "/contractors",
     "VinculationController.getActivesContractorworkers"
   );
@@ -89,9 +93,8 @@ Route.group(() => {
     "/employment/retirement",
     "VinculationController.retirementEmployment"
   );
-})
-  .prefix("/api/v1/vinculation")
-  .middleware("auth");
+}).prefix("/api/v1/vinculation");
+// .middleware("auth");
 
 Route.group(() => {
   Route.get("/", "VacationsController.getVacations");

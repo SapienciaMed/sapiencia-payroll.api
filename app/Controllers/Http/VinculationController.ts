@@ -224,4 +224,20 @@ export default class VinculationController {
       }
     });
   }
+
+  public async getEmploymentsByPayroll({
+    request,
+    response,
+  }: HttpContextContract) {
+    try {
+      const { idPayroll } = request.params();
+      return response.send(
+        await VinculationProvider.getEmploymentByPayroll(idPayroll)
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 }

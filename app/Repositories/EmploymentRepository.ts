@@ -7,8 +7,10 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
+import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import Charge from "App/Models/Charge";
 import Employment from "App/Models/Employment";
+import HistoricalPayroll from "App/Models/HistoricalPayroll";
 import ReasonsForWithdrawal from "App/Models/ReasonsForWithdrawal";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
@@ -34,6 +36,7 @@ export interface IEmploymentRepository {
     date: DateTime,
     trx: TransactionClientContract
   ): Promise<IEmployment | null>;
+  getEmploymentByPayroll(idPayroll: number): Promise<IHistoricalPayroll[]>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
@@ -143,5 +146,18 @@ export default class EmploymentRepository implements IEmploymentRepository {
   async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
     const res = await ReasonsForWithdrawal.all();
     return res as IReasonsForWithdrawal[];
+  }
+
+  async getEmploymentByPayroll(
+    idPayroll: number
+  ): Promise<IHistoricalPayroll[]> {
+    const historico = await HistoricalPayroll.query()
+      .preload("employment", (employmentQuery) => {
+        employmentQuery.preload("worker");
+      })
+      .where("idTypePayroll", idPayroll)
+      .whereNot("state", "Fallido");
+
+    return historico.map((i) => i.serialize()) as IHistoricalPayroll[];
   }
 }

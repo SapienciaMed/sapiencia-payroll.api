@@ -29,6 +29,7 @@ import {
 import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
 import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
 import { VacationResolution } from "App/Repositories/components-word/VacationResolutionReport";
+import { Packer } from "docx";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -204,10 +205,14 @@ export default class ReportService implements IReportService {
       const vacationResolution = new VacationResolution();
       const vacationResolutionGenerate =
         await vacationResolution.generateReport(dataReport, param);
-      const result = this.reportRepository.generateWordReport(
-        vacationResolutionGenerate
-      );
-      return result;
+        const buffer = await Packer.toBuffer(vacationResolutionGenerate);
+      // const result = this.reportRepository.generateWordReport(
+      //   vacationResolutionGenerate
+      // );
+      response.bufferFile = buffer;
+      response.nameFile = "resolucion_vacaciones.docx";
+
+    return new ApiResponse(response, EResponseCodes.OK);
     } else if (
       report.typeReport === ETypeReport.ResolucionLiquidacionDefinitiva
     ) {

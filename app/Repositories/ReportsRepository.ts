@@ -126,6 +126,7 @@ export default class ReportsRepository implements IReportsRepository {
   ): Promise<IVacation[] | null> {
     const res = await Vacation.query()
       .preload("vacationDay", (vacationDayQuery) => {
+        vacationDayQuery.whereNotNull("codForm");
         vacationDayQuery.preload("formPeriod", (formPeriodQuery) => {
           formPeriodQuery
             .preload("historicalPayroll", (history) => {

@@ -33,7 +33,7 @@ export default class VacationRepository implements IVacationRepository {
 
   async getVacations(): Promise<IVacation[]> {
     const res = await Vacation.all();
-    return res as IVacation[];
+    return res.map((i) => i.serialize() as IVacation);
   }
 
   async getVacationsByParams(

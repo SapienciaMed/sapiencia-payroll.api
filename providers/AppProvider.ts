@@ -211,8 +211,7 @@ export default class AppProvider {
       () =>
         new ReportService.default(
           new ReportRepository.default(),
-          new CoreService.default(),
-          new WorkerRepository.default(),
+          new CoreService.default()
         )
     );
 

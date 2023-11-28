@@ -29,7 +29,6 @@ import {
 import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
 import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
 import { VacationResolution } from "App/Repositories/components-word/VacationResolutionReport";
-import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
@@ -40,15 +39,11 @@ export interface IReportService {
 export default class ReportService implements IReportService {
   constructor(
     public reportRepository: IReportsRepository,
-    public coreService: CoreService,
-    private workerRepository: IWorkerRepository
+    public coreService: CoreService
   ) {}
 
   async generateWordReport(): Promise<ApiResponse<any>> {
-    const administrativeActReport = new AdministrativeActReport();
     const proofOfContracts = new ProofOfContracts();
-    const vacationResolution = new VacationResolution();
-    const report = await administrativeActReport.generateReport();
     const report2 = await proofOfContracts.generateReport();
     const result = this.reportRepository.generateWordReport(report2);
     return result;
@@ -175,7 +170,7 @@ export default class ReportService implements IReportService {
       "PROF_TALENTOH",
       "PRIMER_PARAM_VACACIONES",
       "SEG_PARAM_VACACIONES",
-      "TERCER_PARAM_VACACIONES"
+      "TERCER_PARAM_VACACIONES",
     ]);
 
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
@@ -196,19 +191,19 @@ export default class ReportService implements IReportService {
       await this.generateWorkCertificate(report, response, nameProfesional);
     } else if (report.typeReport === ETypeReport.ResolucionVacaciones) {
       const firstParam =
-      parameters.find((i) => i.id == "PRIMER_PARAM_VACACIONES")?.value ?? "";
+        parameters.find((i) => i.id == "PRIMER_PARAM_VACACIONES")?.value ?? "";
       const secondParam =
-      parameters.find((i) => i.id == "SEG_PARAM_VACACIONES")?.value ?? "";
+        parameters.find((i) => i.id == "SEG_PARAM_VACACIONES")?.value ?? "";
       const thirdParam =
-      parameters.find((i) => i.id == "TERCER_PARAM_VACACIONES")?.value ?? "";
-      const param ={firstParam,secondParam,thirdParam}
+        parameters.find((i) => i.id == "TERCER_PARAM_VACACIONES")?.value ?? "";
+      const param = { firstParam, secondParam, thirdParam };
       const dataReport = await this.reportRepository.getPayrollVacationsYear(
         report.period,
         report.codEmployment
       );
       const vacationResolution = new VacationResolution();
       const vacationResolutionGenerate =
-        await vacationResolution.generateReport(dataReport,param);
+        await vacationResolution.generateReport(dataReport, param);
       const result = this.reportRepository.generateWordReport(
         vacationResolutionGenerate
       );

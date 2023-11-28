@@ -7,6 +7,13 @@ export class VacationResolution {
     data: IVacation[] | null,
     param: { firstParam: string; secondParam: string; thirdParam: string }
   ): Promise<any> {
+    const documentTypeMapping = {
+      CC: "Cédula de Ciudadanía",
+      CE: "Cédula de Extranjería",
+      TI: "Tarjeta de Identidad",
+      NIT: "NIT",
+      AN: "Anónimo",
+    };
     const componentsWord = new ComponentsWord();
     const {
       subTitle,
@@ -67,7 +74,7 @@ export class VacationResolution {
         consecutive: 3,
         componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
         argumentsComponent: {
-          text: `${param.thirdParam}`,
+          text: `${param.firstParam}`,
           size: 20,
         },
         placeholders: [
@@ -96,7 +103,27 @@ export class VacationResolution {
         consecutive: 5,
         componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
         argumentsComponent: {
-          text: "[apelativo] [nombre completo], identificada con [nombre tipo documento], número [numero documento], quien se desempeña como [cargo]-[dependencia] de la Agencia de Educación Postsecundaria de Medellín-Sapiencia, mediante oficio radicado interno [observaciones vacaciones] solicita vacaciones del período comprendido entre [fecha inicial del periodo a pagar]  y  [fecha fin del periodo a pagar]",
+          text: `${
+            data?.[0].employment?.worker?.gender == "H"
+              ? "El servidor Público"
+              : data?.[0].employment?.worker?.gender == "M"
+              ? "La servidora Pública"
+              : "L@ servidor@ Públic@"
+          } ${
+            data?.[0].employment?.worker?.firstName +
+            " " +
+            data?.[0].employment?.worker?.firstName +
+            " " +
+            data?.[0].employment?.worker?.secondName +
+            " " +
+            data?.[0].employment?.worker?.surname +
+            " " +
+            data?.[0].employment?.worker?.secondSurname
+          } identificada con ${
+            documentTypeMapping[
+              data?.[0].employment?.worker?.typeDocument ?? "CC"
+            ]
+          }, número ${data?.[0].employment?.worker?.numberDocument}, por el término de`,
           size: 20,
         },
         placeholders: [

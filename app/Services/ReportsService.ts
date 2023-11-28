@@ -245,7 +245,7 @@ export default class ReportService implements IReportService {
       reportInformationColilla?.historicalPayroll?.[0].employment?.worker
         ?.accountBankNumber;
 
-    const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
+    const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.surname} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
 
     const salaryBasic =
       reportInformationColilla?.historicalPayroll?.[0].employment?.charge

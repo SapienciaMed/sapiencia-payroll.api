@@ -1,6 +1,11 @@
 import { IVacation } from "App/Interfaces/VacationsInterfaces";
 import { ComponentsWord } from "./ComponentsWord";
 import { Document } from "docx";
+import writtenNumber from "written-number";
+import {
+  EDeductionTypes,
+  EIncomeTypes,
+} from "App/Constants/PayrollGenerateEnum";
 
 export class VacationResolution {
   async generateReport(
@@ -123,7 +128,29 @@ export class VacationResolution {
             documentTypeMapping[
               data?.[0].employment?.worker?.typeDocument ?? "CC"
             ]
-          }, número ${data?.[0].employment?.worker?.numberDocument}, por el término de`,
+          }, número ${
+            data?.[0].employment?.worker?.numberDocument
+          },  quien se desempeña como ${data?.[0].employment?.charge?.name} - ${
+            data?.[0].employment?.dependence?.name
+          } de la Agencia de Educación Postsecundaria de Medellín-Sapiencia, mediante oficio radicado interno ${
+            data?.[0].vacationDay?.[0].observation
+          } solicita vacaciones del período comprendido entre ${new Date(
+            data?.[0].dateFrom.toString() ?? new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(data?.[0].dateFrom.toString() ?? new Date().toString())
+          )} ${new Date(
+            data?.[0].dateFrom.toString() ?? new Date().toString()
+          ).getFullYear()} y ${new Date(
+            data?.[0].dateUntil.toString() ?? new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(data?.[0].dateUntil.toString() ?? new Date().toString())
+          )} ${new Date(
+            data?.[0].dateUntil.toString() ?? new Date().toString()
+          ).getFullYear()}`,
           size: 20,
         },
         placeholders: [
@@ -169,7 +196,28 @@ export class VacationResolution {
         consecutive: 6,
         componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
         argumentsComponent: {
-          text: "El tiempo para el disfrute de vacaciones del referido período lo solicitó a partir del [fecha inicial de los días disfrutados] y [fecha fin de los días disfrutados], ambas fechas inclusive.",
+          text: `El tiempo para el disfrute de vacaciones del referido período lo solicitó a partir del ${new Date(
+            data?.[0].dateFrom.toString() ?? new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(data?.[0].dateFrom.toString() ?? new Date().toString())
+          )} ${new Date(
+            data?.[0].dateFrom.toString() ?? new Date().toString()
+          ).getFullYear()} y ${new Date(
+            data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+              new Date().toString()
+          ).getFullYear()}, ambas fechas inclusive.`,
           size: 20,
         },
         placeholders: [
@@ -187,7 +235,7 @@ export class VacationResolution {
         consecutive: 7,
         componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
         argumentsComponent: {
-          text: "[parametro2]",
+          text: `${param.secondParam}`,
           size: 20,
         },
         placeholders: [
@@ -232,8 +280,86 @@ export class VacationResolution {
         argumentsComponent: {
           text: "",
           textOne: "ARTÍCULO PRIMERO:",
-          textTwo:
-            "Conceder vacaciones a [apelativo] [nombre completo], identificada con [nombre tipo documento], número [numero documento], por el término de [total de dias a disfrutar en letras] ([total de dias a disfrutar en numero]) días hábiles contados a partir del día [fecha inicial de los dias disfrutados]  , hasta el [fecha fin de los dias disfrutados], reintegrándose a sus labores el [dia habil]",
+          textTwo: `Conceder vacaciones a${
+            data?.[0].employment?.worker?.gender == "H"
+              ? "El servidor Público"
+              : data?.[0].employment?.worker?.gender == "M"
+              ? "La servidora Pública"
+              : "L@ servidor@ Públic@"
+          } ${
+            data?.[0].employment?.worker?.firstName +
+            " " +
+            data?.[0].employment?.worker?.firstName +
+            " " +
+            data?.[0].employment?.worker?.secondName +
+            " " +
+            data?.[0].employment?.worker?.surname +
+            " " +
+            data?.[0].employment?.worker?.secondSurname
+          } identificada con ${
+            documentTypeMapping[
+              data?.[0].employment?.worker?.typeDocument ?? "CC"
+            ]
+          }, número ${
+            data?.[0].employment?.worker?.numberDocument
+          }, por el término de ${writtenNumber(
+            Number(data?.[0].vacationDay?.[0].enjoyedDays ?? 0),
+            { lang: "es" }
+          )} (${
+            data?.[0].vacationDay?.[0].enjoyedDays ?? 0
+          }) días hábiles contados a partir del día ${new Date(
+            data?.[0].vacationDay?.[0].dateFrom.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0].vacationDay?.[0].dateFrom.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0].vacationDay?.[0].dateFrom.toString() ??
+              new Date().toString()
+          ).getFullYear()}, hasta el ${new Date(
+            data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+              new Date().toString()
+          ).getFullYear()} reintegrándose a sus labores el ${new Date(
+            data?.[0].vacationDay?.[0].dateFrom.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0].vacationDay?.[0].dateFrom.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0].vacationDay?.[0].dateFrom.toString() ??
+              new Date().toString()
+          ).getFullYear()}, hasta el ${new Date(
+            data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0]?.vacationDay?.[0]?.dateUntil?.toString() ??
+              new Date().toString()
+          ).getFullYear()}`,
           size: 20,
         },
         placeholders: [
@@ -281,8 +407,23 @@ export class VacationResolution {
         argumentsComponent: {
           text: "",
           textOne: "ARTÍCULO SEGUNDO:",
-          textTwo:
-            " Liquidar, por concepto de vacaciones otorgadas a [nombre completo], identificada con [nombre tipo documento], número [numero documento], los siguientes rubros:",
+          textTwo: `Liquidar, por concepto de vacaciones otorgadas a ${
+            data?.[0].employment?.worker?.firstName +
+            " " +
+            data?.[0].employment?.worker?.firstName +
+            " " +
+            data?.[0].employment?.worker?.secondName +
+            " " +
+            data?.[0].employment?.worker?.surname +
+            " " +
+            data?.[0].employment?.worker?.secondSurname
+          } identificada con ${
+            documentTypeMapping[
+              data?.[0].employment?.worker?.typeDocument ?? "CC"
+            ]
+          }, número ${
+            data?.[0].employment?.worker?.numberDocument
+          }, los siguientes rubros:`,
           size: 20,
         },
         placeholders: [
@@ -305,17 +446,95 @@ export class VacationResolution {
         componentWordProp: generateTableVacationResolution.bind({ text: "" }),
         argumentsComponent: {
           text: "",
-          totalEnjoyedDays: 5,
-          starDateEnjoyedDays: "10 de noviembre 2023",
-          nextBussinesDay: "16 de noviembre 2023",
-          salary: 1160000,
-          salaryPaid: 1160000,
-          startPayroll: "01 de noviembre 2023",
-          endPayroll: "15 de noviembre 2023",
-          bonusVacation: 700000,
-          recreationBounty: 250000,
-          deductionlegal: 160000,
-          totalPaid: 1500000,
+          totalEnjoyedDays: data?.[0].vacationDay?.[0].enjoyedDays,
+          starDateEnjoyedDays: `${new Date(
+            data?.[0].vacationDay?.[0].dateFrom.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0].vacationDay?.[0].dateFrom.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0].vacationDay?.[0].dateFrom.toString() ??
+              new Date().toString()
+          ).getFullYear()}`,
+          nextBussinesDay: `${new Date(
+            data?.[0].vacationDay?.[0].dateUntil?.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0].vacationDay?.[0].dateUntil?.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0].vacationDay?.[0].dateUntil?.toString() ??
+              new Date().toString()
+          ).getFullYear()}`,
+          salary:
+            data?.[0].vacationDay?.[0].formPeriod?.historicalPayroll?.[0]
+              .salary,
+          salaryPaid:
+            data?.[0].vacationDay?.[0].formPeriod?.historicalPayroll?.[0]
+              .salary,
+          startPayroll: `${new Date(
+            data?.[0].vacationDay?.[0].formPeriod?.dateStart.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0].vacationDay?.[0].formPeriod?.dateStart.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0].vacationDay?.[0].formPeriod?.dateStart.toString() ??
+              new Date().toString()
+          ).getFullYear()}`,
+          endPayroll: `${new Date(
+            data?.[0].vacationDay?.[0].formPeriod?.dateEnd.toString() ??
+              new Date().toString()
+          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+            month: "long",
+          }).format(
+            new Date(
+              data?.[0].vacationDay?.[0].formPeriod?.dateEnd.toString() ??
+                new Date().toString()
+            )
+          )} ${new Date(
+            data?.[0].vacationDay?.[0].formPeriod?.dateEnd.toString() ??
+              new Date().toString()
+          ).getFullYear()}`,
+          bonusVacation: data?.[0].vacationDay?.[0].formPeriod?.incomes?.find(
+            (i) => i.idTypeIncome == EIncomeTypes.primaVacations
+          )?.value,
+          recreationBounty:
+            data?.[0].vacationDay?.[0].formPeriod?.incomes?.find(
+              (i) => i.idTypeIncome == EIncomeTypes.bonusRecreation
+            )?.value,
+          deductionlegal:
+            data?.[0]?.vacationDay?.[0]?.formPeriod?.deductions?.reduce(
+              (sum, deduction) => {
+                const isSocialSecurityOrRetirementFund =
+                  deduction?.idTypeDeduction ===
+                    EDeductionTypes.SocialSecurity ||
+                  deduction.idTypeDeduction === EDeductionTypes.retirementFund;
+
+                return (
+                  sum +
+                  (isSocialSecurityOrRetirementFund
+                    ? Number(deduction.value)
+                    : 0)
+                );
+              },
+              0
+            ),
+          totalPaid:
+            data?.[0].vacationDay?.[0].formPeriod?.historicalPayroll?.[0].total,
         },
         placeholders: [
           {
@@ -398,7 +617,7 @@ export class VacationResolution {
         }),
         argumentsComponent: {
           text: "",
-          textOne: "[parametro3]",
+          textOne: `${param.thirdParam}`,
           textTwo: "Director General ",
           boldTwo: false,
         },

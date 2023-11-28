@@ -94,9 +94,15 @@ export default class ReportsRepository implements IReportsRepository {
     codEmployment: number
   ): Promise<IFormPeriod[] | null> {
     const res = await FormsPeriod.query()
-      .preload("deductions")
-      .preload("incomes")
-      .preload("reserves")
+      .preload("deductions", (deductionQuery) => {
+        deductionQuery.where("idEmployment", codEmployment);
+      })
+      .preload("incomes", (incomeQuery) => {
+        incomeQuery.where("idEmployment", codEmployment);
+      })
+      .preload("reserves", (reservesQuery) => {
+        reservesQuery.where("idEmployment", codEmployment);
+      })
       .preload("historicalPayroll", (history) => {
         history
           .where("idEmployment", codEmployment)
@@ -107,7 +113,6 @@ export default class ReportsRepository implements IReportsRepository {
           });
       })
       .where("year", year);
-
     if (!res) {
       return null;
     }
@@ -123,10 +128,18 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("vacationDay", (vacationDayQuery) => {
         vacationDayQuery.preload("formPeriod", (formPeriodQuery) => {
           formPeriodQuery
-            .preload("historicalPayroll")
-            .preload("deductions")
-            .preload("incomes")
-            .preload("reserves");
+            .preload("historicalPayroll", (history) => {
+              history.where("idEmployment", codEmployment);
+            })
+            .preload("deductions", (deductionQuery) => {
+              deductionQuery.where("idEmployment", codEmployment);
+            })
+            .preload("incomes", (incomeQuery) => {
+              incomeQuery.where("idEmployment", codEmployment);
+            })
+            .preload("reserves", (reservesQuery) => {
+              reservesQuery.where("idEmployment", codEmployment);
+            });
         });
       })
       .preload("employment", (employmentQuery) => {
@@ -151,9 +164,15 @@ export default class ReportsRepository implements IReportsRepository {
     codEmployment: number
   ): Promise<IFormPeriod[] | null> {
     const res = await FormsPeriod.query()
-      .preload("deductions")
-      .preload("incomes")
-      .preload("reserves")
+      .preload("deductions", (deductionQuery) => {
+        deductionQuery.where("idEmployment", codEmployment);
+      })
+      .preload("incomes", (incomeQuery) => {
+        incomeQuery.where("idEmployment", codEmployment);
+      })
+      .preload("reserves", (reservesQuery) => {
+        reservesQuery.where("idEmployment", codEmployment);
+      })
       .preload("historicalPayroll", (history) => {
         history
           .where("idEmployment", codEmployment)
@@ -321,7 +340,7 @@ export default class ReportsRepository implements IReportsRepository {
       executablePath: "/usr/bin/chromium",
     });
 
-    //Configuracion local proyecto
+    // Configuracion local proyecto
     // browser = await puppeteer.launch({
     //   headless: "new",
     //   // slowMo: 400,

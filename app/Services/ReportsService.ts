@@ -205,14 +205,14 @@ export default class ReportService implements IReportService {
       const vacationResolution = new VacationResolution();
       const vacationResolutionGenerate =
         await vacationResolution.generateReport(dataReport, param);
-        const buffer = await Packer.toBuffer(vacationResolutionGenerate);
+      const buffer = await Packer.toBuffer(vacationResolutionGenerate);
       // const result = this.reportRepository.generateWordReport(
       //   vacationResolutionGenerate
       // );
       response.bufferFile = buffer;
       response.nameFile = "resolucion_vacaciones.docx";
 
-    return new ApiResponse(response, EResponseCodes.OK);
+      return new ApiResponse(response, EResponseCodes.OK);
     } else if (
       report.typeReport === ETypeReport.ResolucionLiquidacionDefinitiva
     ) {
@@ -422,14 +422,26 @@ export default class ReportService implements IReportService {
       ) ?? [];
     let nameDependent = "";
     let relationDependent = "";
+    let typeDocumentDependent = "";
+    let numberDocumentDependent = "";
     if (dependent.length > 0) {
-      dependent[0].name ?? "";
+      nameDependent = dependent[0].name ?? "";
       const relationshipMapping = {
         "1": "Espos@",
         "2": "Hij@",
         "3": "Hijastr@",
       };
+      const documentTypeMapping = {
+        CC: "Cédula de Ciudadanía",
+        CE: "Cédula de Extranjería",
+        TI: "Tarjeta de Identidad",
+        NIT: "NIT",
+        AN: "Anónimo",
+      };
 
+      typeDocumentDependent =
+        documentTypeMapping[dependent[0].typeDocument ?? "CC"];
+      numberDocumentDependent = dependent[0].numberDocument;
       relationDependent = relationshipMapping[dependent[0].relationship] ?? "";
     }
 
@@ -579,6 +591,8 @@ export default class ReportService implements IReportService {
       secondName,
       surName,
       secondSurname,
+      typeDocumentDependent,
+      numberDocumentDependent,
       nameDependent,
       relationDependent,
       nit,

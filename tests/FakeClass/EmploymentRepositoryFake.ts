@@ -5,6 +5,7 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
+import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import { IFilterVinculation } from "App/Interfaces/VinculationInterfaces";
 import EmploymentRepository from "App/Repositories/EmploymentRepository";
 import { IPagingData } from "App/Utils/ApiResponses";
@@ -31,6 +32,9 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  getEmploymentByPayroll(): Promise<IHistoricalPayroll[]> {
+    throw new Error("Method not implemented.");
+  }
   getChargeEmployment(_idEmployment: number): Promise<ICharge> {
     throw new Error("Method not implemented.");
   }

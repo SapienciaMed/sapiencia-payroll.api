@@ -66,6 +66,8 @@ test.group("VinculationService TEST for createVinculation", () => {
         gender: "F",
         relationship: "2",
         dependent: true,
+        typeDocument: "CC",
+        numberDocument: "4989854",
       },
     ],
     employment: {
@@ -149,6 +151,8 @@ test.group("VinculationService TEST for editVinculation", () => {
         gender: "F",
         relationship: "2",
         dependent: true,
+        typeDocument: "CC",
+        numberDocument: "4478578",
       },
     ],
     employment: {

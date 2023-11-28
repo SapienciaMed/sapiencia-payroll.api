@@ -10,6 +10,8 @@ const relativeFake: IRelative = {
   gender: "F",
   relationship: "2",
   dependent: true,
+  typeDocument: "CC",
+  numberDocument: "4989854",
 };
 
 export class RelativeRepositoryFake implements IRelativeRepository {

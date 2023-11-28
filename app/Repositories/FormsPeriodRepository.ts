@@ -80,9 +80,10 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     res.preload("formsType", (formTypeQuery) => {
       formTypeQuery.whereIn("name", ["Quincenal", "Mensual"]);
     });
-    const result = await res;
+    const result = await res.orderBy("dateStart", "asc");
     return result.map((i) => i.serialize() as IFormPeriod);
   }
+
   async getFormPeriodById(id: number): Promise<IFormPeriod | null> {
     const queryFormPeriod = FormsPeriod.query().where("id", id);
     queryFormPeriod.preload("formsType");

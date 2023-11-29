@@ -29,15 +29,11 @@ import { AdministrativeActReport } from "App/Repositories/components-word/Admini
 import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
 import { VacationResolution } from "App/Repositories/components-word/VacationResolutionReport";
 import { Packer } from "docx";
-import { formaterNumberToCurrency } from "../Utils/functions";
-import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
-import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
-import { VacationResolution } from "App/Repositories/components-word/VacationResolutionReport";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;
-  generateWordReport(): Promise<ApiResponse<any>>;
   generateReport(report: IReport): Promise<ApiResponse<IReportResponse>>;
+  // generateWordReport(): Promise<ApiResponse<any>>;
 }
 
 export default class ReportService implements IReportService {
@@ -46,38 +42,33 @@ export default class ReportService implements IReportService {
     public coreService: CoreService
   ) {}
 
-  async generateWordReport(): Promise<ApiResponse<any>> {
-    const proofOfContracts = new ProofOfContracts();
-    const report2 = await proofOfContracts.generateReport();
-    const result = this.reportRepository.generateWordReport(report2);
-    return result;
-  ) { }
+  // async generateWordReport(): Promise<ApiResponse<any>> {
+  //   let noReport = 2;
+  //   let report;
+  //   let result;
+  //   let data;
+  //   if (noReport == 1) {
+  //     const administrativeActReport = new AdministrativeActReport();
+  //     data = await this.reportRepository.getPayrollInformationLiquidationYear(
+  //       2023,
+  //       20
+  //     );
+  //     const dataReport = this.structureDataAdministrativeActReport(data);
+  //     report = await administrativeActReport.generateReport(dataReport);
+  //   }
+  //   if (noReport == 2) {
+  //     data = await this.reportRepository.getPayrollInformationContractsYear(
+  //       2023,
+  //       25
+  //     );
+  //     const dataReport = this.structureDataProofOfContractsReport(data);
+  //     const proofOfContracts = new ProofOfContracts();
+  //     report = await proofOfContracts.generateReport(dataReport);
+  //   }
 
-  async generateWordReport(): Promise<ApiResponse<any>> {
-
-    let noReport = 2;
-    let report;
-    let result;
-    let data;
-    if (noReport == 1) {
-      const administrativeActReport = new AdministrativeActReport();
-      data = await this.reportRepository.getPayrollInformationLiquidationYear(2023, 20)
-      const dataReport = this.structureDataAdministrativeActReport(data);
-      report = await administrativeActReport.generateReport(dataReport);
-    }
-    if (noReport == 2) {
-      data = await this.reportRepository.getPayrollInformationContractsYear(2023, 25)
-      const dataReport = this.structureDataProofOfContractsReport(data);
-      const proofOfContracts = new ProofOfContracts();
-      report = await proofOfContracts.generateReport(dataReport);
-    }
-    if (noReport == 3) {
-      const vacationResolution = new VacationResolution();
-      report = await vacationResolution.generateReport();
-    }
-    result = this.reportRepository.generateWordReport(report);
-    return data;
-  }
+  //   result = this.reportRepository.generateWordReport(report);
+  //   return data;
+  // }
 
   async payrollDownloadById(id: number): Promise<ApiResponse<any>> {
     const toSend: any[] = [];
@@ -119,9 +110,11 @@ export default class ReportService implements IReportService {
 
     for (const historical of formPeriod.historicalPayroll) {
       let temp = {
-        Nombre: `${historical.employment?.worker?.firstName} ${historical.employment?.worker?.secondName ?? ""
-          } ${historical.employment?.worker?.surname} ${historical.employment?.worker?.secondSurname
-          }`,
+        Nombre: `${historical.employment?.worker?.firstName} ${
+          historical.employment?.worker?.secondName ?? ""
+        } ${historical.employment?.worker?.surname} ${
+          historical.employment?.worker?.secondSurname
+        }`,
         Identificación: historical.employment?.worker?.numberDocument,
         "Código fiscal": historical.employment?.worker?.fiscalIdentification,
         "Nro. Contrato": historical.employment?.contractNumber,
@@ -199,6 +192,10 @@ export default class ReportService implements IReportService {
       "PRIMER_PARAM_VACACIONES",
       "SEG_PARAM_VACACIONES",
       "TERCER_PARAM_VACACIONES",
+      "PRIMER_PARAM_LIQUIDACION",
+      "SEG_PARAM_LIQUIDACION",
+      "TERCER_PARAM_LIQUIDACION",
+      "CUARTO_PARAM_LIQUIDACION",
     ]);
 
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
@@ -244,15 +241,36 @@ export default class ReportService implements IReportService {
       report.typeReport === ETypeReport.ResolucionLiquidacionDefinitiva
     ) {
       const administrativeActReport = new AdministrativeActReport();
-      const reportLiquidation = await administrativeActReport.generateReport();
-      const result =
-        this.reportRepository.generateWordReport(reportLiquidation);
-      return result;
+      const data =
+        await this.reportRepository.getPayrollInformationLiquidationYear(
+          report.period,
+          report.codEmployment
+        );
+      const dataReport = this.structureDataAdministrativeActReport(data);
+      const reportResult = await administrativeActReport.generateReport(
+        dataReport
+      );
+      const buffer = await Packer.toBuffer(reportResult);
+      response.bufferFile = buffer;
+      response.nameFile = "resolucion_liquidacion.docx";
+      return new ApiResponse(response, EResponseCodes.OK);
     } else if (report.typeReport === ETypeReport.ConstanciaContratos) {
+      const data =
+        await this.reportRepository.getPayrollInformationContractsYear(
+          report.period,
+          report.codEmployment
+        );
+      const dataReport = this.structureDataProofOfContractsReport(data);
       const proofOfContracts = new ProofOfContracts();
-      const reportContracts = await proofOfContracts.generateReport();
-      const result = this.reportRepository.generateWordReport(reportContracts);
-      return result;
+      const reportResult = await proofOfContracts.generateReport(dataReport);
+      const buffer = await Packer.toBuffer(reportResult);
+      // const result = this.reportRepository.generateWordReport(
+      //   vacationResolutionGenerate
+      // );
+      response.bufferFile = buffer;
+      response.nameFile = "constancia_contratos.docx";
+
+      return new ApiResponse(response, EResponseCodes.OK);
     } else {
       return new ApiResponse(response, EResponseCodes.FAIL);
     }
@@ -390,22 +408,15 @@ export default class ReportService implements IReportService {
         Number(report.period),
         Number(report.codEmployment)
       );
-
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
-
     const socialReason =
       parameters.find((i) => i.id == "RAZON_SOCIAL_REPORTES")?.value ?? "";
-
     const codeTypeDocument =
       parameters.find((i) => i.id == "COD_TIPO_DOCUMENTO")?.value ?? "";
-
     const codeDeparment =
       parameters.find((i) => i.id == "COD_DEPARTAMENTO")?.value ?? "";
-
     const codeCity = parameters.find((i) => i.id == "COD_CIUDAD")?.value ?? "";
-
     const city = parameters.find((i) => i.id == "CIUDAD_REP")?.value ?? "";
-
     const relevantIncomeTypes = [
       EIncomeTypes.salary,
       EIncomeTypes.bonusRecreation,
@@ -452,6 +463,7 @@ export default class ReportService implements IReportService {
     let typeDocumentDependent = "";
     let numberDocumentDependent = "";
     if (dependent.length > 0) {
+      dependent[0].name ?? "";
       nameDependent = dependent[0].name ?? "";
       const relationshipMapping = {
         "1": "Espos@",
@@ -465,13 +477,11 @@ export default class ReportService implements IReportService {
         NIT: "NIT",
         AN: "Anónimo",
       };
-
       typeDocumentDependent =
         documentTypeMapping[dependent[0].typeDocument ?? "CC"];
       numberDocumentDependent = dependent[0].numberDocument;
       relationDependent = relationshipMapping[dependent[0].relationship] ?? "";
     }
-
     let startDate =
       new Date().getFullYear() === Number(report.period)
         ? `01/01/${new Date().getFullYear()}`
@@ -485,7 +495,6 @@ export default class ReportService implements IReportService {
     let expeditionDate = `${new Date().getDate()}/${
       new Date().getMonth() + 1
     }/${new Date().getFullYear()}`;
-
     reportInformation?.map((info) => {
       paidsSalary =
         info.incomes?.reduce(
@@ -522,7 +531,6 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-
       severancePaid =
         info.incomes?.reduce(
           (sum, i) =>
@@ -531,14 +539,12 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-
       totalIncomes =
         Number(paidsSalary ?? 0) +
         Number(paidsSocialBenefits ?? 0) +
         Number(paidsOtherIncomes ?? 0) +
         Number(totalSeverancePaids ?? 0) +
         Number(severancePaid ?? 0);
-
       healthPaid =
         info.deductions?.reduce(
           (sum, i) =>
@@ -547,43 +553,6 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      reportInformation?.map((info) => {
-        paidsSalary =
-          info.incomes?.reduce(
-            (sum, i) =>
-              relevantIncomeTypes.includes(i.idTypeIncome)
-                ? Number(sum) + Number(i.value)
-                : Number(sum),
-            0
-          ) ?? 0;
-        paidsSocialBenefits =
-          info.incomes?.reduce(
-            (sum, i) =>
-              i.idTypeIncome === EIncomeTypes.primaService ||
-                i.idTypeIncome === EIncomeTypes.vacation
-                ? Number(sum) + Number(i.value)
-                : Number(sum),
-            0
-          ) ?? 0;
-        paidsOtherIncomes =
-          info.incomes?.reduce(
-            (sum, i) =>
-              i.idTypeIncome === EIncomeType.ApoyoEstudiantil ||
-                i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
-                ? Number(sum) + Number(i.value)
-                : Number(sum),
-            0
-          ) ?? 0;
-        totalSeverancePaids =
-          info.incomes?.reduce(
-            (sum, i) =>
-              i.idTypeIncome === EIncomeTypes.severancePay ||
-                i.idTypeIncome === EIncomeTypes.severancePayInterest
-                ? Number(sum) + Number(i.value)
-                : Number(sum),
-            0
-          ) ?? 0;
-
       pensionSolidarityPaid =
         info.deductions?.reduce(
           (sum, i) =>
@@ -593,7 +562,6 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-
       voluntaryPensionPaid =
         info.deductions?.reduce(
           (sum, i) =>
@@ -602,7 +570,6 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-
       AfpPaid =
         info.deductions?.reduce(
           (sum, i) =>
@@ -620,7 +587,6 @@ export default class ReportService implements IReportService {
           0
         ) ?? 0;
     });
-
     if (
       reportInformation?.[0]?.historicalPayroll?.[0]?.employment
         ?.typesContracts?.[0].temporary
@@ -668,36 +634,14 @@ export default class ReportService implements IReportService {
       endDate,
       expeditionDate,
     };
-
     const bufferPDF = await this.reportRepository.generatePdf(
       "retencionFuente.hbs",
       data,
       true,
       "retencion.css"
     );
-        pensionSolidarityPaid =
-          info.deductions?.reduce(
-            (sum, i) =>
-              i.idTypeDeduction === EDeductionTypes.retirementFund ||
-                i.idTypeDeduction === EDeductionTypes.solidarityFund
-                ? Number(sum) + Number(i.value)
-                : Number(sum),
-            0
-          ) ?? 0;
-
-        voluntaryPensionPaid =
-          info.deductions?.reduce(
-            (sum, i) =>
-              i.idTypeDeduction ===
-                EDeductionTypes.voluntaryPensionContributions
-                ? Number(sum) + Number(i.value)
-                : Number(sum),
-            0
-          ) ?? 0;
-
     response.bufferFile = bufferPDF;
     response.nameFile = "retencion.pdf";
-
     return new ApiResponse(response, EResponseCodes.OK);
   }
 
@@ -706,7 +650,6 @@ export default class ReportService implements IReportService {
       await this.reportRepository.getVinculationInformation(
         Number(report.codEmployment)
       );
-
     const treatment =
       reportInformation?.worker?.gender == "H"
         ? "El señor"
@@ -729,12 +672,9 @@ export default class ReportService implements IReportService {
       NIT: "NIT",
       AN: "Anónimo",
     };
-
     const documentType =
       documentTypeMapping[reportInformation?.worker?.typeDocument ?? "CC"];
-
     const numberDocument = reportInformation?.worker?.numberDocument;
-
     const vinculationDate = `${new Date(
       reportInformation?.startDate.toString() ?? new Date().toString()
     ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
@@ -744,22 +684,16 @@ export default class ReportService implements IReportService {
     )} ${new Date(
       reportInformation?.startDate.toString() ?? new Date().toString()
     ).getFullYear()}`;
-
     const vinculationType = reportInformation?.typesContracts?.[0].name;
-
     const charge = reportInformation?.charge?.name;
-
     const dependency = reportInformation?.dependence?.name;
-
     const specificObligations = reportInformation?.specificObligations;
-
     const date = `${new Date().getDate()} de ${new Intl.DateTimeFormat(
       "es-ES",
       {
         month: "long",
       }
     ).format(new Date())} ${new Date().getFullYear()}`;
-
     const data = {
       logoSapiencia: await fsPromises.readFile(
         path.join(
@@ -783,7 +717,6 @@ export default class ReportService implements IReportService {
       date,
       nameProfesional,
     };
-
     const bufferPDF = await this.reportRepository.generatePdf(
       "certificadoLaboral.hbs",
       data,
@@ -796,125 +729,203 @@ export default class ReportService implements IReportService {
       "Header.hbs",
       "Footer.hbs"
     );
-
     response.bufferFile = bufferPDF;
     response.nameFile = "certificadoLaboral.pdf";
-
     return new ApiResponse(response, EResponseCodes.OK);
   }
-
 
   // Estructuración de datos para generar reporte en word
 
   structureDataAdministrativeActReport = (data: any) => {
-    const { total: totalValueInNumberToPay, salary } = data[0].historicalPayroll[0];
+    const { total: totalValueInNumberToPay, salary } =
+      data[0].historicalPayroll[0];
 
-    const cesantiasData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.severancePay);
-    const cesantiasDataAccumulative = cesantiasData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
+    const cesantiasData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.severancePay
+    );
+    const cesantiasDataAccumulative = cesantiasData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
     const { time: daysCesantias, value: cesantias } = cesantiasDataAccumulative;
 
-    const interestCesantiasData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.severancePayInterest);
-    const interesCesantiasDataAccumulative = interestCesantiasData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
-    const { time: daysInterestSeverancePay, value: interestCesantias } = interesCesantiasDataAccumulative;
+    const interestCesantiasData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.severancePayInterest
+    );
+    const interesCesantiasDataAccumulative = interestCesantiasData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
+    const { time: daysInterestSeverancePay, value: interestCesantias } =
+      interesCesantiasDataAccumulative;
 
-    const premiumChristmasDaysData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.primaChristmas);
-    const premiumChristmasDaysDataAccumulative = premiumChristmasDaysData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
+    const premiumChristmasDaysData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.primaChristmas
+    );
+    const premiumChristmasDaysDataAccumulative =
+      premiumChristmasDaysData.reduce(
+        function (result, element) {
+          result.value += parseFloat(element.value);
+          result.time += element.time;
+          return result;
+        },
+        { value: 0, time: 0 }
+      );
     const { time: premiumChristmasDays } = premiumChristmasDaysDataAccumulative;
 
+    const vacationDaysAndVacationBonusData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.primaVacations
+    );
+    const vacationDaysAndVacationBonusDataAccumulative =
+      vacationDaysAndVacationBonusData.reduce(
+        function (result, element) {
+          result.value += parseFloat(element.value);
+          result.time += element.time;
+          return result;
+        },
+        { value: 0, time: 0 }
+      );
+    const { time: vacationDaysAndVacationBonus } =
+      vacationDaysAndVacationBonusDataAccumulative;
 
-    const vacationDaysAndVacationBonusData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.primaVacations);
-    const vacationDaysAndVacationBonusDataAccumulative = vacationDaysAndVacationBonusData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
-    const { time: vacationDaysAndVacationBonus } = vacationDaysAndVacationBonusDataAccumulative;
-
-    const vacationsData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.vacation);
-    const vacationsDataAccumulative = vacationsData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
+    const vacationsData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.vacation
+    );
+    const vacationsDataAccumulative = vacationsData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
     const { value: vacations } = vacationsDataAccumulative;
 
+    const bonusServicesData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.serviceBonus
+    );
+    const bonusServicesDataAccumulative = bonusServicesData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
+    const { time: daysBonusServices, value: serviceBonus } =
+      bonusServicesDataAccumulative;
 
-    const bonusServicesData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.serviceBonus);
-    const bonusServicesDataAccumulative = bonusServicesData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
-    const { time: daysBonusServices, value: serviceBonus } = bonusServicesDataAccumulative;
+    const premiumServiceData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.primaService
+    );
+    const premiumServiceDataAccumulative = premiumServiceData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
+    const { time: daysPremiumService, value: premiunService } =
+      premiumServiceDataAccumulative;
 
-
-
-    const premiumServiceData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.primaService);
-    const premiumServiceDataAccumulative = premiumServiceData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
-    const { time: daysPremiumService, value: premiunService } = premiumServiceDataAccumulative;
-
-
-
-    const recreationBonusData = data[0].incomes.filter(e => e.idTypeIncome === EIncomeTypes.bonusRecreation);
-    const recreationBonusDataAccumulative = recreationBonusData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
+    const recreationBonusData = data[0].incomes.filter(
+      (e) => e.idTypeIncome === EIncomeTypes.bonusRecreation
+    );
+    const recreationBonusDataAccumulative = recreationBonusData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
     const { value: recreationBonus } = recreationBonusDataAccumulative;
-    
-    
-    const socialSecurityData = data[0].deductions.filter(e => e.idTypeDeduction === EDeductionTypes.SocialSecurity || e.idTypeDeduction === EDeductionTypes.retirementFund);
-    const socialSecurityDataAccumulative = socialSecurityData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
-    const { value: socialSecurityContributions } = socialSecurityDataAccumulative;
-    
-    const contributionsAFCData = data[0].deductions.filter(e => e.idTypeDeduction === EDeductionTypes.contributionsAFC);
-    const contributionsAFCDataAccumulative = contributionsAFCData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
+
+    const socialSecurityData = data[0].deductions.filter(
+      (e) =>
+        e.idTypeDeduction === EDeductionTypes.SocialSecurity ||
+        e.idTypeDeduction === EDeductionTypes.retirementFund
+    );
+    const socialSecurityDataAccumulative = socialSecurityData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
+    const { value: socialSecurityContributions } =
+      socialSecurityDataAccumulative;
+
+    const contributionsAFCData = data[0].deductions.filter(
+      (e) => e.idTypeDeduction === EDeductionTypes.contributionsAFC
+    );
+    const contributionsAFCDataAccumulative = contributionsAFCData.reduce(
+      function (result, element) {
+        result.value += parseFloat(element.value);
+        result.time += element.time;
+        return result;
+      },
+      { value: 0, time: 0 }
+    );
     const { value: contributionsAFC } = contributionsAFCDataAccumulative;
-    
-    const retentionSourceIncomeData = data[0].deductions.filter(e => e.idTypeDeduction === EDeductionTypes.incomeTax);
-    const retentionSourceIncomeDataAccumulative = retentionSourceIncomeData.reduce(function (result, element) {
-      result.value += parseFloat(element.value);
-      result.time += element.time;
-      return result;
-    }, { value: 0, time: 0 });
-    const { value: retentionSourceIncome } = retentionSourceIncomeDataAccumulative;
 
-    const { worker, startDate: initialDateContract, endDate: finalDateContract, charge, dependence, typesContracts, observation } = data[0].historicalPayroll[0].employment
-    const { name: chargeName, } = charge;
-    const { name: dependenceName, } = dependence;
+    const retentionSourceIncomeData = data[0].deductions.filter(
+      (e) => e.idTypeDeduction === EDeductionTypes.incomeTax
+    );
+    const retentionSourceIncomeDataAccumulative =
+      retentionSourceIncomeData.reduce(
+        function (result, element) {
+          result.value += parseFloat(element.value);
+          result.time += element.time;
+          return result;
+        },
+        { value: 0, time: 0 }
+      );
+    const { value: retentionSourceIncome } =
+      retentionSourceIncomeDataAccumulative;
+
+    const {
+      worker,
+      startDate: initialDateContract,
+      endDate: finalDateContract,
+      charge,
+      dependence,
+      typesContracts,
+      observation,
+    } = data[0].historicalPayroll[0].employment;
+    const { name: chargeName } = charge;
+    const { name: dependenceName } = dependence;
     const { name: linkageType } = typesContracts;
-    const { gender, typeDocument, numberDocument, firstName, secondName, surname, secondSurname } = worker;
+    const {
+      gender,
+      typeDocument,
+      numberDocument,
+      firstName,
+      secondName,
+      surname,
+      secondSurname,
+    } = worker;
 
-    const apelative = gender == 'H' ? "El señor" : gender == 'M' ? "La señora" : "l@ señor@";
-    const server = gender == 'H' ? "El servidor" : gender == 'M' ? "La servidora" : "l@ servidor@";
-    const completeName = `${firstName} ${secondName} ${surname} ${secondSurname}`
+    const apelative =
+      gender == "H" ? "El señor" : gender == "M" ? "La señora" : "l@ señor@";
+    const server =
+      gender == "H"
+        ? "El servidor"
+        : gender == "M"
+        ? "La servidora"
+        : "l@ servidor@";
+    const completeName = `${firstName} ${secondName} ${surname} ${secondSurname}`;
 
-    
     let dataReport = {
       apelative,
       completeName,
@@ -929,10 +940,12 @@ export default class ReportService implements IReportService {
       server,
       filed: observation,
       settlementObservation: observation,
-      totalValueInLettersPayable: "valor total en letras a pagar: VEINTIDOS MILLONES DOSCIENTOS OCHENTA Y NUEVE MIL SETECIENTOS CINCO PESOS M.L",
+      totalValueInLettersPayable: numberToColombianPesosWord(
+        Number(totalValueInNumberToPay).toFixed(2)
+      ),
       totalValueInNumberToPay,
       dateResolution: "",
-      valueTotalResolution: totalValueInNumberToPay, 
+      valueTotalResolution: totalValueInNumberToPay,
       daysCesantias: `${daysCesantias}`,
       daysInterestSeverancePay: `${daysInterestSeverancePay}`,
       premiumChristmasDays: `${premiumChristmasDays}`,
@@ -950,39 +963,44 @@ export default class ReportService implements IReportService {
       contributionsAFC,
       retentionSourceIncome,
       totalPagarPrestacionesSociales: totalValueInNumberToPay, // confirmar
-      paragraphOne:"El Director General de la Agencia de Educación Postsecundaria de Medellín - Sapiencia, en uso de sus facultades legales y estatutarias contenidas en el Decreto con fuerza de Acuerdo 1364 de 2012, modificado por el Decreto con fuerza de Acuerdo 883 de 2015, el Acuerdo Municipal 019 de 2020 y las señaladas en el Estatuto General de la entidad contenido en el Acuerdo Directivo 003 de 2013, el Acuerdo Directivo 014 de 2015, modificados por el Acuerdo Directivo 29 de 2021 – Por el cual se expide el Estatuto General de la Agencia de Educación Postsecundaria de Medellín – Sapiencia, y",
-      paragraphTwo:"La Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, es una unidad administrativa especial, del orden municipal, con personería jurídica, adscrita, según el Acuerdo 01 de 2016 al despacho del Alcalde, creada por Decreto con facultades especiales No. 1364 de 2012, modificado por el Decreto 883 de 2015 y su administración corresponde al Director General, quien será el representante legal.",
-      nameFirmDocument:"CARLOS ALBERTO CHAPARRO SANCHEZ",
-    }
+      paragraphOne:
+        "El Director General de la Agencia de Educación Postsecundaria de Medellín - Sapiencia, en uso de sus facultades legales y estatutarias contenidas en el Decreto con fuerza de Acuerdo 1364 de 2012, modificado por el Decreto con fuerza de Acuerdo 883 de 2015, el Acuerdo Municipal 019 de 2020 y las señaladas en el Estatuto General de la entidad contenido en el Acuerdo Directivo 003 de 2013, el Acuerdo Directivo 014 de 2015, modificados por el Acuerdo Directivo 29 de 2021 – Por el cual se expide el Estatuto General de la Agencia de Educación Postsecundaria de Medellín – Sapiencia, y",
+      paragraphTwo:
+        "La Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, es una unidad administrativa especial, del orden municipal, con personería jurídica, adscrita, según el Acuerdo 01 de 2016 al despacho del Alcalde, creada por Decreto con facultades especiales No. 1364 de 2012, modificado por el Decreto 883 de 2015 y su administración corresponde al Director General, quien será el representante legal.",
+      nameFirmDocument: "CARLOS ALBERTO CHAPARRO SANCHEZ",
+    };
     return dataReport;
-  }
-
+  };
 
   structureDataProofOfContractsReport = (data: any) => {
-
-    const contracts = data.map(contract => {
-      return ({
+    const contracts = data.map((contract) => {
+      return {
         numberContract: contract.contractNumber,
         objectContract: contract.contractualObject,
-        contractualObligations: [
-          { text: contract.specificObligations },
-        ],
+        contractualObligations: [{ text: contract.specificObligations }],
         contractValue: contract.totalValue,
         startDate: contract.startDate,
         endDate: contract.endDate,
-        executionPlace: '',
-        compliance: '',
-        sanctions: ''
-      })
-    })
+        executionPlace: "",
+        compliance: "",
+        sanctions: "",
+      };
+    });
 
-    const { typeDocument, numberDocument, firstName, secondName, surname, secondSurname } = data[0].worker;
+    const {
+      typeDocument,
+      numberDocument,
+      firstName,
+      secondName,
+      surname,
+      secondSurname,
+    } = data[0].worker;
     const actualDate = new Date();
     const year = actualDate.getFullYear();
     // El mes es devuelto de 0 a 11, por lo que se suma 1 para obtener el mes actual
-    const day = actualDate.getDate().toString().padStart(2, '0');
-    const monthName = actualDate.toLocaleDateString('es-ES', { month: 'long' });
-    let dayLetters = this.convertNumberDayInLetters(day)
+    const day = actualDate.getDate().toString().padStart(2, "0");
+    const monthName = actualDate.toLocaleDateString("es-ES", { month: "long" });
+    let dayLetters = this.convertNumberDayInLetters(day);
 
     const dataReport = {
       contracts,
@@ -993,13 +1011,12 @@ export default class ReportService implements IReportService {
       numberActualDay: `${day}`,
       actualMonth: `${monthName}`,
       actualYear: `${year}`,
-      universityProfessionalName: "Daniela Perez"
-    }
+      universityProfessionalName: "Daniela Perez",
+    };
     return dataReport;
-  }
+  };
 
   convertNumberDayInLetters(numero: string) {
-
     let days = {
       "01": "Uno",
       "02": "Dos",
@@ -1032,10 +1049,8 @@ export default class ReportService implements IReportService {
       "29": "Veintinueve",
       "30": "treinta",
       "31": "treinta y Uno",
-    }
+    };
 
-    return days[numero]
+    return days[numero];
   }
-
-
 }

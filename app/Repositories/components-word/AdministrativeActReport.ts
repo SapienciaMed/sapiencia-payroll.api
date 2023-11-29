@@ -3,7 +3,7 @@ import { Document } from 'docx';
 
 export class AdministrativeActReport {
 
-    async generateReport(): Promise<any> {
+    async generateReport(dataReport:any): Promise<any> {
 
         const componentsWord = new ComponentsWord();
         const { subTitle, generateParagraph, generateFooter, generateHeader, subTitleDoubleLine, generateParagraphWithInitialBold, generateDocumentTraceabilityAproved, generateSettlementOfSocialBenefits } = componentsWord
@@ -22,14 +22,14 @@ export class AdministrativeActReport {
                 consecutive: 1,
                 componentWordProp: subTitleDoubleLine.bind({ text:'',textOne: '', textTwo:'' }),
                 argumentsComponent: {
-                    text:'',
-                    textOne: "Resolución N. XXX",
-                    textTwo: "(XXX de junio de 2023)"
+                    text:'[observación de liquidación]',
+                    textOne: "",
+                    textTwo: ""
                 },
                 placeholders: [
                     {
-                        key: '',
-                        newText: ''
+                        key: '[observación de liquidación]',
+                        newText: dataReport.settlementObservation
                     }
                 ]
             },
@@ -37,7 +37,7 @@ export class AdministrativeActReport {
                 consecutive: 2,
                 componentWordProp: generateParagraph.bind({ text: '', size: 20 }),
                 argumentsComponent: {
-                    text: "El Director General de la Agencia de Educación Postsecundaria de Medellín - Sapiencia, en uso de sus facultades legales y estatutarias contenidas en el Decreto con fuerza de Acuerdo 1364 de 2012, modificado por el Decreto con fuerza de Acuerdo 883 de 2015, el Acuerdo Municipal 019 de 2020 y las señaladas en el Estatuto General de la entidad contenido en el Acuerdo Directivo 003 de 2013, el Acuerdo Directivo 014 de 2015, modificados por el Acuerdo Directivo 29 de 2021 – Por el cual se expide el Estatuto General de la Agencia de Educación Postsecundaria de Medellín – Sapiencia, y",
+                    text: dataReport.paragraphOne,
                     size: 20
                 },
                 placeholders: [
@@ -64,7 +64,7 @@ export class AdministrativeActReport {
                 consecutive: 4,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "La Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, es una unidad administrativa especial, del orden municipal, con personería jurídica, adscrita, según el Acuerdo 01 de 2016 al despacho del Alcalde, creada por Decreto con facultades especiales No. 1364 de 2012, modificado por el Decreto 883 de 2015 y su administración corresponde al Director General, quien será el representante legal.",
+                    text: paragraphTwo,
                     size:20
                 },
                 placeholders: [
@@ -92,45 +92,45 @@ export class AdministrativeActReport {
                 consecutive: 6,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "La [apelativo] [nombre completo], identificada con [nombre tipo documento] Nro. [no documento], estuvo vinculada a la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, del [fecha inicial del contrato] al [fecha final del contrato], se desempeñó en el cargo denominado [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, [tipo de vinculación].",
+                    text: "[apelativo] [nombre completo], identificada con [nombre tipo documento] Nro. [no documento], estuvo vinculada a la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, del [fecha inicial del contrato] al [fecha final del contrato], se desempeñó en el cargo denominado [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, [tipo de vinculación].",
                     size:20,
                 },
                 placeholders: [
                     {
                         key: '[apelativo]',
-                        newText: 'Señora'
+                        newText: dataReport.apelative
                     },
                     {
                         key: '[nombre completo]',
-                        newText: 'Luna Lorena'
+                        newText: dataReport.completeName
                     },
                     {
                         key: '[nombre tipo documento]',
-                        newText: 'cedula de ciudadanía'
+                        newText: dataReport.typeDocument
                     },
                     {
                         key: '[no documento]',
-                        newText: '39.211.104'
+                        newText: dataReport.numberDocument
                     },
                     {
                         key: '[fecha inicial del contrato]',
-                        newText: '31 de enero de 2023'
+                        newText: dataReport.initialDateContract
                     },
                     {
                         key: '[fecha final del contrato]',
-                        newText: '05 de junio de 2023'
+                        newText: dataReport.finalDateContract
                     },
                     {
                         key: '[cargo]',
-                        newText: 'Subdirector'
+                        newText: dataReport.chargeName
                     },
                     {
                         key: '[dependencia]',
-                        newText: 'Subdirector'
+                        newText: dataReport.dependenceName
                     },
                     {
                         key: '[tipo de vinculación]',
-                        newText: 'Código 084, Grado 2, cargo de libre nombramiento y remoción de la Entidad'
+                        newText: dataReport.linkageType
                     }
                 ]
             },
@@ -138,49 +138,49 @@ export class AdministrativeActReport {
                 consecutive: 7,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "A través de la [observación de liquidación], “por medio de la cual se acepta la renuncia a un servidor de la Agencia de Educación Postsecundaria de Medellín - SAPIENCIA”, se aceptó la renuncia presentada mediante oficio con radicado [radicado], por la [servidor@] [nombre completo], identificado con [nombre tipo documento] número [número documento] al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [Directivo] para [dependencia] Postsecundaria, Código 084, Grado 02.",
+                    text: "A través de la [observación de liquidación], “por medio de la cual se acepta la renuncia a un servidor de la Agencia de Educación Postsecundaria de Medellín - SAPIENCIA”, se aceptó la renuncia presentada mediante oficio con radicado [observación de liquidación], por [servidor@] [nombre completo], identificado con [nombre tipo documento] número [número documento] al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [Directivo] para [dependencia] Postsecundaria, Código 084, Grado 02.",
                     size:20,
                 },
                 placeholders: [
                     {
                         key: '[observación de liquidación]',
-                        newText: 'Resolución Nro. 1946 de junio 05 de 2023'
+                        newText: dataReport.settlementObservation
                     },
                     {
                         key: '[radicado]',
-                        newText: 'Nro. I I202301000162 del 05 de junio de 2023'
+                        newText: dataReport.filed
                     },
                     {
                         key: '[servidor@]',
-                        newText: 'servidora'
+                        newText: dataReport.server
                     },
                     {
                         key: '[nombre completo]',
-                        newText: 'ALINA MARCELA RESTREPO RODRÍGUEZ'
+                        newText: dataReport.completeName
                     },
                     {
                         key: '[nombre tipo documento]',
-                        newText: 'cédula de ciudadanía'
+                        newText: dataReport.typeDocument
                     },
                     {
                         key: '[número documento]',
-                        newText: '39.211.104'
+                        newText: dataReport.numberDocument
                     },
                     {
                         key: '[tipo de vinculación]',
-                        newText: 'libre nombramiento y remoción'
+                        newText: dataReport.linkageType
                     },
                     {
                         key: '[nivel]',
-                        newText: 'Directivo'
+                        newText: dataReport.levelCharge
                     },
                     {
                         key: '[cargo]',
-                        newText: 'Subdirector'
+                        newText: dataReport.chargeName
                     },
                     {
                         key: '[dependencia]',
-                        newText: 'la Gestión de Educación'
+                        newText: dataReport.dependenceName
                     }
                 ]
             },
@@ -194,19 +194,19 @@ export class AdministrativeActReport {
                 placeholders: [
                     {
                         key: '[apelativo]',
-                        newText: 'La señora'
+                        newText: dataReport.apelative
                     },
                     {
                         key: '[nombre completo]',
-                        newText: 'ALINA MARCELA RESTREPO RODRÍGUEZ'
+                        newText: dataReport.completeName
                     },
                     {
                         key: '[tipo documento]',
-                        newText: 'cedula de ciudadanía'
+                        newText: dataReport.typeDocument
                     },
                     {
                         key: '[numero documento]',
-                        newText: '39.211.104'
+                        newText: dataReport.numberDocument
                     }
                 ]
             },
@@ -301,51 +301,51 @@ export class AdministrativeActReport {
                 consecutive: 15,
                 componentWordProp: generateParagraphWithInitialBold.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "",
+                    text: "Reconocer a [apelativo] [nombre completo], identificada con [tipo documento] Nro. [numero documento], por concepto de prestaciones sociales definitivas la suma de [valor total en letras a pagar] ([valor total en número a pagar]) correspondientes al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, Código 084, Grado 02",
                     textOne:'ARTÍCULO PRIMERO:',
-                    textTwo:'Reconocer a [apelativo] [nombre completo], identificada con [tipo documento] Nro. [numero documento], por concepto de prestaciones sociales definitivas la suma de [valor total en letras a pagar] ([valor total en número a pagar]) correspondientes al cargo de [tipo de vinculación], Nivel: [nivel], denominado: [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, Código 084, Grado 02',
+                    textTwo:'',
                     size:20,
                 },
                 placeholders: [
                     {
                         key: '[apelativo]',
-                        newText: 'la señora'
+                        newText: dataReport.apelative
                     },
                     {
                         key: '[nombre completo]',
-                        newText: 'ALINA MARCELA RESTREPO RODRÍGUEZ'
+                        newText: dataReport.completeName
                     },
                     {
                         key: '[tipo documento]',
-                        newText: 'cedula de ciudadanía'
+                        newText: dataReport.typeDocument
                     },
                     {
                         key: '[numero documento]',
-                        newText: '39.211.104'
+                        newText: dataReport.numberDocument
                     },
                     {
                         key: '[valor total en letras a pagar]',
-                        newText: 'VEINTIDOS MILLONES DOSCIENTOS OCHENTA Y NUEVE MIL SETECIENTOS CINCO PESOS M.L'
+                        newText: dataReport.totalValueInLettersPayable
                     },
                     {
                         key: '[valor total en número a pagar]',
-                        newText: '$22.289.705'
+                        newText: dataReport.totalValueInNumberToPay
                     },
                     {
                         key: '[tipo de vinculación]',
-                        newText: 'libre nombramiento y remoción'
+                        newText: dataReport.linkageType
                     },
                     {
                         key: '[nivel]',
-                        newText: 'Directivo'
+                        newText: dataReport.levelCharge
                     },
                     {
                         key: '[cargo]',
-                        newText: 'Subdirector'
+                        newText: dataReport.chargeName
                     },
                     {
                         key: '[dependencia]',
-                        newText: 'Directivo'
+                        newText: dataReport.dependenceName
                     }
                 ]
             },
@@ -354,30 +354,30 @@ export class AdministrativeActReport {
                 componentWordProp:  generateSettlementOfSocialBenefits.bind({ text: '' }),
                 argumentsComponent: {
                     text:'',
-                    fechaResolucion:'25 Noviembre 2023',
-                    valorTotalResolucion:'22.334.343',
-                    nombre:'Alina Marcela Restrepo Rodriguez',
-                    noDocumento:'87.456.454',
-                    fechaIngreso:'Enero 31 de 2023',
-                    fechaRetiro:'Junio 05 de 2023',
-                    diasCesantias:'126',
-                    diasInteresesCesantias:'126',
-                    diasPrimaNavidad:'126',
-                    diasVacionesYPrimaVacaciones:'126',
-                    diasBonificacionServicios:'126',
-                    diasPrimaServicio:'126',
-                    cesantias:'5.823.345',
-                    interesesCesantias:'234.456',
-                    vacaciones:'2.434.456',
-                    bonificacionRecreacion:'30',
-                    primaNavidad:'5.204.643',
-                    bonificacionServicios:'1.604.643',
-                    primaServicios:'2.804.643',
-                    salarios:'2.219.643',
-                    aportesSeguridadSocial:'346.643',
-                    aportesAFC:'3643',
-                    retencionFuenteRenta:'53645',
-                    totalPagarPrestacionesSociales:'30.099.100',
+                    fechaResolucion:dataReport.dateResolution,
+                    valorTotalResolucion:dataReport.valueTotalResolution,
+                    nombre: dataReport.completeName,
+                    noDocumento:dataReport.numberDocument,
+                    fechaIngreso: dataReport.initialDateContract,
+                    fechaRetiro: dataReport.finalDateContract,
+                    diasCesantias: dataReport.daysCesantias,
+                    diasInteresesCesantias: dataReport.daysInterestSeverancePay,
+                    diasPrimaNavidad: dataReport.premiumChristmasDays,
+                    diasVacionesYPrimaVacaciones: dataReport.vacationDaysAndVacationBonus,
+                    diasBonificacionServicios: dataReport.daysBonusServices,
+                    diasPrimaServicio: dataReport.daysPremiumService,
+                    cesantias: dataReport.cesantias,
+                    interesesCesantias: dataReport.interestCesantias,
+                    vacaciones: dataReport.vacations,
+                    bonificacionRecreacion:dataReport.recreationBonus,
+                    primaNavidad:dataReport.vacations,
+                    bonificacionServicios: dataReport.serviceBonus,
+                    primaServicios:dataReport.premiunService,
+                    salarios: dataReport.salary,
+                    aportesSeguridadSocial: dataReport.socialSecurityContributions,
+                    aportesAFC:dataReport.contributionsAFC,
+                    retencionFuenteRenta: dataReport.retentionSourceIncome,
+                    totalPagarPrestacionesSociales: dataReport.totalPagarPrestacionesSociales,
                 },
                 placeholders: [
                     {
@@ -436,7 +436,7 @@ export class AdministrativeActReport {
                 componentWordProp: subTitleDoubleLine.bind({ text:'',textOne: '', textTwo:'' }),
                 argumentsComponent: {
                     text:'',
-                    textOne: "CARLOS ALBERTO CHAPARRO SANCHEZ",
+                    textOne: dataReport.nameFirmDocument,
                     textTwo: "Director General ",
                     boldTwo: false
                 },

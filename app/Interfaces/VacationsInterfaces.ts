@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { IVacationDay } from "./VacationDaysInterface";
+import { IEmployment } from "./EmploymentInterfaces";
 
 export interface IVacation {
   id?: number;
@@ -13,6 +14,8 @@ export interface IVacation {
   available: number;
   days?: number;
   periodClosed: boolean;
+  employment?: IEmployment;
+  vacationDay?: IVacationDay[];
 }
 
 export interface IVacationResult {

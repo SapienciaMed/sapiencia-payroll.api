@@ -25,6 +25,7 @@ import Employment from "App/Models/Employment";
 import { EPayrollState } from "App/Constants/States.enum";
 import Vacation from "App/Models/Vacation";
 import { IVacation } from "App/Interfaces/VacationsInterfaces";
+import { PDFDocument } from "pdf-lib";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -335,17 +336,17 @@ export default class ReportsRepository implements IReportsRepository {
     let browser: Browser;
 
     //Configuracion para pruebas
-    browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox"],
-      executablePath: "/usr/bin/chromium",
-    });
-
-    // Configuracion local proyecto
     // browser = await puppeteer.launch({
     //   headless: "new",
-    //   // slowMo: 400,
+    //   args: ["--no-sandbox"],
+    //   executablePath: "/usr/bin/chromium",
     // });
+
+    // Configuracion local proyecto
+    browser = await puppeteer.launch({
+      headless: "new",
+      // slowMo: 400,
+    });
 
     const page = await browser.newPage();
 
@@ -400,5 +401,18 @@ export default class ReportsRepository implements IReportsRepository {
     await browser.close();
 
     return bufferPDF;
+  }
+
+  async combinarPDFs(certificados) {
+    const pdfDoc = await PDFDocument.create();
+  
+    for (const certificado of certificados) {
+      const certificadoDoc = await PDFDocument.load(certificado.buffer);
+      const copiedPages = await pdfDoc.copyPages(certificadoDoc, certificadoDoc.getPageIndices());
+      copiedPages.forEach((page) => pdfDoc.addPage(page));
+    }
+  
+    const combinedBuffer = await pdfDoc.save();
+    return combinedBuffer;
   }
 }

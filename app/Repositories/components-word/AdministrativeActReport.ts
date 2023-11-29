@@ -64,7 +64,7 @@ export class AdministrativeActReport {
                 consecutive: 4,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: paragraphTwo,
+                    text: dataReport.paragraphTwo,
                     size:20
                 },
                 placeholders: [

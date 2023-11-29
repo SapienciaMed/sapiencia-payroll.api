@@ -22,7 +22,6 @@ import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import * as fs from "fs/promises";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 import Employment from "App/Models/Employment";
-import { EPayrollState } from "App/Constants/States.enum";
 import Vacation from "App/Models/Vacation";
 import { IVacation } from "App/Interfaces/VacationsInterfaces";
 import { PDFDocument } from "pdf-lib";
@@ -67,6 +66,7 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IVacation[] | null>;
+  combinarPDFs(certificados):Promise<Uint8Array>
 }
 
 export default class ReportsRepository implements IReportsRepository {

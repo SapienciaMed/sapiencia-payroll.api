@@ -19,14 +19,11 @@ import {
   EIncomeTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { EIncomeType } from "App/Constants/OtherIncome.enum";
-
 import CoreService from "./External/CoreService";
-
 import { formaterNumberToCurrency } from "../Utils/functions";
 import { AdministrativeActReport } from "App/Repositories/components-word/AdministrativeActReport";
 import { ProofOfContracts } from "App/Repositories/components-word/ProofOfContracts";
 import { VacationResolution } from "App/Repositories/components-word/VacationResolutionReport";
-import { IWorkerRepository } from "App/Repositories/WorkerRepository";
 
 export interface IReportService {
   payrollDownloadById(id: number): Promise<ApiResponse<any>>;

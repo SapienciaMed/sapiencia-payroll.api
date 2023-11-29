@@ -3,7 +3,7 @@ import { Document} from 'docx';
 
 export class ProofOfContracts {
 
-    async generateReport(): Promise<any> {
+    async generateReport(dataReport:any): Promise<any> {
 
         const componentsWord = new ComponentsWord();
         const { subTitle, generateParagraph, generateTablePerContract, getHeaderLogoOnly, getFooterLogoOnly,getComponentFirm } = componentsWord
@@ -17,73 +17,30 @@ export class ProofOfContracts {
         };
 
 
-        const contracts = [
-            {
-            consecutive: 4,
-            componentWordProp: generateTablePerContract.bind({ text: '' }),
-            argumentsComponent: {
-                text: "",
-                noContracto:'379-2023',
-                objeto:"Prestación de servicios para apoyar la gestión financiera del área contable de la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA",
-                obligacionesContractuales:[
-                    {text: "Elaborar de manera oportuna las cuentas de cobro requeridas por las diferentes áreas de la Agencia para el reintegro de recursos y rendimientos financieros de los diferentes convenios suscritos por la Agencia. "},
-                    {text: "Radicar y hacer seguimiento a los oficios, cartas, cuentas de cobro y demás documentos generados desde el proceso de contabilidad en lo referente a generación de cuentas de cobro. "},
-                    {text: "Radicar y hacer seguimiento a los oficios, cartas, cuentas de cobro y demás documentos generados desde el proceso de contabilidad en lo referente a generación de cuentas de cobro. "},
-                ],
-                valorContrato:'23.333.535',
-                fechaInicio:'Junio 05 de 2023',
-                fechaTerminacion:'Junio 05 de 2023',
-                lugarEjecucion:'Medellín',
-                cumplimiento:'En ejecución',
-                sanciones:'N/A',
-            },
-            placeholders: [
-                {
-                    key: '',
-                    newText: ''
-                }
-            ]
-        },
-        {
-            consecutive: 1,
-            componentWordProp: subTitle.bind({ text: '' }),
-            argumentsComponent: {
-                text: '',
-            },
-            placeholders: [
-                {
-                    key: '',
-                    newText: ''
-                }
-            ]
-        },
-        {
-            consecutive: 4,
-            componentWordProp: generateTablePerContract.bind({ text: '' }),
-            argumentsComponent: {
-                text: "",
-                noContracto:'379-2023',
-                objeto:"Prestación de servicios para apoyar la gestión financiera del área contable de la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA",
-                obligacionesContractuales:[
-                    {text: "Elaborar de manera oportuna las cuentas de cobro requeridas por las diferentes áreas de la Agencia para el reintegro de recursos y rendimientos financieros de los diferentes convenios suscritos por la Agencia. "},
-                    {text: "Radicar y hacer seguimiento a los oficios, cartas, cuentas de cobro y demás documentos generados desde el proceso de contabilidad en lo referente a generación de cuentas de cobro. "},
-                    {text: "Radicar y hacer seguimiento a los oficios, cartas, cuentas de cobro y demás documentos generados desde el proceso de contabilidad en lo referente a generación de cuentas de cobro. "},
-                ],
-                valorContrato:'23.333.535',
-                fechaInicio:'Junio 05 de 2023',
-                fechaTerminacion:'Junio 05 de 2023',
-                lugarEjecucion:'Medellín',
-                cumplimiento:'En ejecución',
-                sanciones:'N/A',
-            },
-            placeholders: [
-                {
-                    key: '',
-                    newText: ''
-                }
-            ]
-        }
-    ]
+        const contracts = dataReport.contracts.map((element:any, index:number)=>{
+            return ({
+                consecutive: 4,
+                componentWordProp: generateTablePerContract.bind({ text: '' }),
+                argumentsComponent: {
+                    text: "",
+                    nosContracto:element.numberContract,
+                    objeto:element.objectContract,
+                    obligacionesContractuales:element.contractualObligations,
+                    valorContrato:element.contractValue,
+                    fechaInicio:element.startDate,
+                    fechaTerminacion:element.endDate,
+                    lugarEjecucion:element.executionPlace,
+                    cumplimiento:element.compliance,
+                    sanciones:element.sanctions,
+                },
+                placeholders: [
+                    {
+                        key: '',
+                        newText: ''
+                    }
+                ]
+            })
+        })
 
         const dataContentReport = [
             {
@@ -124,15 +81,15 @@ export class ProofOfContracts {
                 placeholders: [
                     {
                         key: '[nombre completo]',
-                        newText: 'Luis Daniel Garces'
+                        newText: dataReport.completeName
                     },
                     {
                         key: '[tipo documento]',
-                        newText: 'C.C.'
+                        newText: dataReport.typeDocument
                     },
                     {
                         key: '[número documento]',
-                        newText: '71.215.127'
+                        newText: dataReport.numberDocument
                     }
                 ]
             },
@@ -147,19 +104,19 @@ export class ProofOfContracts {
                 placeholders: [
                     {
                         key: '[letra del día actual]',
-                        newText: 'seis'
+                        newText: dataReport.letterActualDay
                     },
                     {
                         key: '[número del día actual]',
-                        newText: '06'
+                        newText: dataReport.numberActualDay
                     },
                     {
                         key: '[mes actual]',
-                        newText: 'Junio'
+                        newText: dataReport.actualMonth
                     },
                     {
                         key: '[año actual]',
-                        newText: '2023'
+                        newText: dataReport.actualYear
                     }
                 ]
             },
@@ -167,14 +124,15 @@ export class ProofOfContracts {
                 consecutive: 7,
                 componentWordProp: getComponentFirm.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "Esta constancia se expide a solicitud del interesado en Medellín, a los [letra del día actual] ([número del día actual]) días de [mes actual] de [año actual]",
-                    size: 20
+                    text: "",
+                    name:dataReport.universityProfessionalName,
+                    size: 25
                 },
                 placeholders: [
                     {
-                        key: '[letra del día actual]',
-                        newText: 'seis'
-                    },
+                        key: '',
+                        newText: ''
+                    }
                 ]
                 
             }

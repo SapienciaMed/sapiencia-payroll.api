@@ -187,12 +187,11 @@ export default class ReportsRepository implements IReportsRepository {
       })
       .where("year", year)
       .andWhere("idFormType", EPayrollTypes.liquidation)
-      .andWhere("state", EPayrollState.authorized);
+      /* .andWhere("state", EPayrollState.authorized); */
 
     if (!res) {
       return null;
     }
-
     return res.map((formPeriod) => formPeriod.serialize() as IFormPeriod);
   }
 
@@ -204,14 +203,14 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("worker")
       .preload("typesContracts")
       .where("id", codEmployment)
-      .whereBetween("startDate", [
+      /* .whereBetween("startDate", [
         new Date(`01/01/${year}`),
         new Date(`31/12/${year}`),
       ])
       .andWhereBetween("endDate", [
         new Date(`01/01/${year}`),
         new Date(`31/12/${year}`),
-      ]);
+      ]); */
 
     if (!res) {
       return null;

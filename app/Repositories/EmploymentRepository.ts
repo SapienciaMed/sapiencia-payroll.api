@@ -7,10 +7,8 @@ import {
   IReasonsForWithdrawal,
   IRetirementEmployment,
 } from "App/Interfaces/EmploymentInterfaces";
-import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import Charge from "App/Models/Charge";
 import Employment from "App/Models/Employment";
-import HistoricalPayroll from "App/Models/HistoricalPayroll";
 import ReasonsForWithdrawal from "App/Models/ReasonsForWithdrawal";
 import { IPagingData } from "App/Utils/ApiResponses";
 import { DateTime } from "luxon";
@@ -36,7 +34,7 @@ export interface IEmploymentRepository {
     date: DateTime,
     trx: TransactionClientContract
   ): Promise<IEmployment | null>;
-  getEmploymentByPayroll(idPayroll: number): Promise<IHistoricalPayroll[]>;
+  getEmploymentByPayroll(idPayroll: number): Promise<IEmployment[]>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
@@ -148,16 +146,14 @@ export default class EmploymentRepository implements IEmploymentRepository {
     return res as IReasonsForWithdrawal[];
   }
 
-  async getEmploymentByPayroll(
-    idPayroll: number
-  ): Promise<IHistoricalPayroll[]> {
-    const historico = await HistoricalPayroll.query()
-      .preload("employment", (employmentQuery) => {
-        employmentQuery.preload("worker");
+  async getEmploymentByPayroll(idPayroll: number): Promise<IEmployment[]> {
+    const employment = await Employment.query()
+      .whereHas("historicalPayroll", (historicalPayrollQuery) => {
+        historicalPayrollQuery.where("idTypePayroll", idPayroll);
+        historicalPayrollQuery.whereNot("state", "Fallido");
       })
-      .where("idTypePayroll", idPayroll)
-      .whereNot("state", "Fallido");
+      .preload("worker");
 
-    return historico.map((i) => i.serialize()) as IHistoricalPayroll[];
+    return employment.map((i) => i.serialize()) as IEmployment[];
   }
 }

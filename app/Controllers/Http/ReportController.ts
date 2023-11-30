@@ -32,7 +32,11 @@ export default class ReportController {
       response.type(
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       );
-      const result = await ReportProvider.generateWordReport();
+      const result = await ReportProvider.generateReport({
+        period: 2023,
+        codEmployment: 8,
+        typeReport: 3,
+      });
       response.send(new ApiResponse(result, EResponseCodes.OK));
     } catch (err) {
       return response.badRequest(

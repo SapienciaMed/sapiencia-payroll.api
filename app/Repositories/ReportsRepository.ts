@@ -66,7 +66,7 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IVacation[] | null>;
-  combinarPDFs(certificados):Promise<Uint8Array>
+  combinarPDFs(certificados): Promise<Uint8Array>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -199,6 +199,7 @@ export default class ReportsRepository implements IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IEmployment[] | null> {
+    console.log(year);
     const res = await Employment.query()
       .preload("worker")
       .preload("typesContracts")

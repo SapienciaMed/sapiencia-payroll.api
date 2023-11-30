@@ -820,7 +820,7 @@ export default class ReportService implements IReportService {
       },
       { value: 0, time: 0 }
     );
-    const { time: daysBonusServices, value: serviceBonus } =
+    const {  value: serviceBonus } =
       bonusServicesDataAccumulative;
 
     const premiumServiceData = data[0].incomes.filter(

@@ -22,7 +22,6 @@ import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import * as fs from "fs/promises";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 import Employment from "App/Models/Employment";
-import { EPayrollState } from "App/Constants/States.enum";
 import Vacation from "App/Models/Vacation";
 import { IVacation } from "App/Interfaces/VacationsInterfaces";
 import { PDFDocument } from "pdf-lib";
@@ -67,6 +66,7 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IVacation[] | null>;
+  combinarPDFs(certificados): Promise<Uint8Array>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -186,8 +186,8 @@ export default class ReportsRepository implements IReportsRepository {
           });
       })
       .where("year", year)
-      .andWhere("idFormType", EPayrollTypes.liquidation)
-      /* .andWhere("state", EPayrollState.authorized); */
+      .andWhere("idFormType", EPayrollTypes.liquidation);
+    /* .andWhere("state", EPayrollState.authorized); */
 
     if (!res) {
       return null;
@@ -199,11 +199,12 @@ export default class ReportsRepository implements IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IEmployment[] | null> {
+    console.log(year);
     const res = await Employment.query()
       .preload("worker")
       .preload("typesContracts")
-      .where("id", codEmployment)
-      /* .whereBetween("startDate", [
+      .where("id", codEmployment);
+    /* .whereBetween("startDate", [
         new Date(`01/01/${year}`),
         new Date(`31/12/${year}`),
       ])
@@ -402,15 +403,18 @@ export default class ReportsRepository implements IReportsRepository {
     return bufferPDF;
   }
 
-  async combinarPDFs(certificados) {
+  async combinarPDFs(certificados): Promise<Uint8Array> {
     const pdfDoc = await PDFDocument.create();
-  
+
     for (const certificado of certificados) {
       const certificadoDoc = await PDFDocument.load(certificado.buffer);
-      const copiedPages = await pdfDoc.copyPages(certificadoDoc, certificadoDoc.getPageIndices());
+      const copiedPages = await pdfDoc.copyPages(
+        certificadoDoc,
+        certificadoDoc.getPageIndices()
+      );
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
-  
+
     const combinedBuffer = await pdfDoc.save();
     return combinedBuffer;
   }

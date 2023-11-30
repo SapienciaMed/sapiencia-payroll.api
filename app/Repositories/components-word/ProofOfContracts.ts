@@ -159,7 +159,7 @@ export class ProofOfContracts {
                     },
                     footers: {
                         default: await getFooterLogoOnly({
-                            logo: "logoDian.jpeg",
+                            logo: "pie-pagina_sapiencia.jpg",
                         })
                     },
                     children: await Promise.all(content)

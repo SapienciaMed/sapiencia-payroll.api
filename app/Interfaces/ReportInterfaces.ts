@@ -1,6 +1,6 @@
 export interface IReport {
   period: number;
-  codEmployment: number;
+  codEmployment?: number;
   typeReport: number;
 }
 
@@ -14,4 +14,9 @@ export interface IDetailColillaPDF {
   type: string;
   days: string;
   value: string;
+}
+
+export interface IReportCombinePDFs {
+  bufferFile: Buffer;
+  name: string;
 }

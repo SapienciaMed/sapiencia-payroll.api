@@ -6,7 +6,7 @@ export default class GenerateReportValidator {
 
   public schema = schema.create({
     period: schema.number(),
-    codEmployment: schema.number(),
+    codEmployment: schema.number.optional(),
     typeReport: schema.number(),
   });
 

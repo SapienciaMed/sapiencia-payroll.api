@@ -32,7 +32,6 @@ import { ISalaryHistoryRepository } from "App/Repositories/SalaryHistoryReposito
 import { ISalaryHistory } from "App/Interfaces/SalaryHistoryInterfaces";
 //import { ISalaryIncrementRepository } from "App/Repositories/SalaryIncrementRepository";
 import { DateTime } from "luxon";
-import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 
 export interface IVinculationService {
   getWorkersByFilters(filters: IWorkerFilters): Promise<ApiResponse<IWorker[]>>;
@@ -71,7 +70,7 @@ export interface IVinculationService {
   ): Promise<ApiResponse<IcontractSuspension>>;
   getEmploymentByPayroll(
     idPayroll: number
-  ): Promise<ApiResponse<IHistoricalPayroll[]>>;
+  ): Promise<ApiResponse<IEmployment[]>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -429,7 +428,7 @@ export default class VinculationService implements IVinculationService {
 
   async getEmploymentByPayroll(
     idPayroll: number
-  ): Promise<ApiResponse<IHistoricalPayroll[]>> {
+  ): Promise<ApiResponse<IEmployment[]>> {
     const res = await this.employmentRepository.getEmploymentByPayroll(
       idPayroll
     );

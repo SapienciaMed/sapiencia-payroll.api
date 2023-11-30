@@ -25,6 +25,7 @@ import Employment from "App/Models/Employment";
 import Vacation from "App/Models/Vacation";
 import { IVacation } from "App/Interfaces/VacationsInterfaces";
 import { PDFDocument } from "pdf-lib";
+import { IReportCombinePDFs } from "App/Interfaces/ReportInterfaces";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -48,8 +49,8 @@ export interface IReportsRepository {
   ): Promise<Buffer>;
   getPayrollInformationEmployment(
     codPayroll: number,
-    codEmployment: number
-  ): Promise<IFormPeriod | null>;
+    codEmployment: number | null
+  ): Promise<IFormPeriod[]>;
   getPayrollInformationYear(
     year: number,
     codEmployment: number
@@ -66,7 +67,7 @@ export interface IReportsRepository {
     year: number,
     codEmployment: number
   ): Promise<IVacation[] | null>;
-  combinarPDFs(certificados): Promise<Uint8Array>;
+  combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer>;
 }
 
 export default class ReportsRepository implements IReportsRepository {
@@ -223,22 +224,31 @@ export default class ReportsRepository implements IReportsRepository {
   async getPayrollInformationEmployment(
     codPayroll: number,
     codEmployment: number
-  ): Promise<IFormPeriod | null> {
+  ): Promise<IFormPeriod[]> {
     const res = await FormsPeriod.query()
       .preload("deductions", (deductionsQuery) => {
+        if (codEmployment) {
+          deductionsQuery.where("idEmployment", codEmployment);
+        }
         deductionsQuery
-          .where("idEmployment", codEmployment)
           .whereNot("idTypeDeduction", EDeductionTypes.dependentPeople)
           .whereNot("idTypeDeduction", EDeductionTypes.rentExempt)
           .preload("deductionTypeOne");
       })
       .preload("incomes", (incomesQuery) => {
-        incomesQuery.where("idEmployment", codEmployment).preload("incomeType");
+        if (codEmployment) {
+          incomesQuery.where("idEmployment", codEmployment);
+        }
+
+        incomesQuery.preload("incomeType");
       })
       .preload("reserves")
-      .preload("historicalPayroll", (history) => {
-        history
-          .where("idEmployment", codEmployment)
+      .preload("historicalPayroll", (historicalPayrollQuery) => {
+        if (codEmployment) {
+          historicalPayrollQuery.where("idEmployment", codEmployment);
+        }
+
+        historicalPayrollQuery
           .whereNot("state", "Fallido")
           .preload("employment", (employment) => {
             employment.preload("worker");
@@ -246,14 +256,9 @@ export default class ReportsRepository implements IReportsRepository {
             employment.preload("dependence");
           });
       })
-      .where("id", codPayroll)
-      .first();
+      .where("id", codPayroll);
 
-    if (!res) {
-      return null;
-    }
-
-    return res.serialize() as IFormPeriod;
+    return res.map((i) => i.serialize()) as IFormPeriod[];
   }
   async getAllIncomesTypes(): Promise<IIncomeType[]> {
     const res = await IncomeType.query();
@@ -364,6 +369,7 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     await new Promise((r) => setTimeout(r, 1000));
+
     if (nameTemplateHeaderPDF) {
       headerHtml = await fsPromise.readFile(
         path.join(
@@ -403,19 +409,19 @@ export default class ReportsRepository implements IReportsRepository {
     return bufferPDF;
   }
 
-  async combinarPDFs(certificados): Promise<Uint8Array> {
+  async combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
 
-    for (const certificado of certificados) {
-      const certificadoDoc = await PDFDocument.load(certificado.buffer);
+    for (const PDF of PDFs) {
+      const PDFDoc = await PDFDocument.load(PDF.bufferFile);
       const copiedPages = await pdfDoc.copyPages(
-        certificadoDoc,
-        certificadoDoc.getPageIndices()
+        PDFDoc,
+        PDFDoc.getPageIndices()
       );
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
 
-    const combinedBuffer = await pdfDoc.save();
+    const combinedBuffer = Buffer.from(await pdfDoc.save());
     return combinedBuffer;
   }
 }

@@ -22,10 +22,10 @@ import { IFormPeriod } from "App/Interfaces/FormPeriodInterface";
 import * as fs from "fs/promises";
 import { IEmployment } from "App/Interfaces/EmploymentInterfaces";
 import Employment from "App/Models/Employment";
-import Vacation from "App/Models/Vacation";
-import { IVacation } from "App/Interfaces/VacationsInterfaces";
 import { PDFDocument } from "pdf-lib";
 import { IReportCombinePDFs } from "App/Interfaces/ReportInterfaces";
+import VacationDay from "App/Models/VacationDay";
+import { IVacationDay } from "App/Interfaces/VacationDaysInterface";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -64,9 +64,9 @@ export interface IReportsRepository {
     codEmployment: number
   ): Promise<IEmployment[] | null>;
   getPayrollVacationsYear(
-    year: number,
+    codVacationDays: number,
     codEmployment: number
-  ): Promise<IVacation[] | null>;
+  ): Promise<IVacationDay[] | null>;
   combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer>;
 }
 
@@ -123,43 +123,44 @@ export default class ReportsRepository implements IReportsRepository {
   }
 
   async getPayrollVacationsYear(
-    year: number,
+    codVacationDays: number,
     codEmployment: number
-  ): Promise<IVacation[] | null> {
-    const res = await Vacation.query()
-      .preload("vacationDay", (vacationDayQuery) => {
-        vacationDayQuery.whereNotNull("codForm");
-        vacationDayQuery.preload("formPeriod", (formPeriodQuery) => {
-          formPeriodQuery
-            .preload("historicalPayroll", (history) => {
-              history.where("idEmployment", codEmployment);
-            })
-            .preload("deductions", (deductionQuery) => {
-              deductionQuery.where("idEmployment", codEmployment);
-            })
-            .preload("incomes", (incomeQuery) => {
-              incomeQuery.where("idEmployment", codEmployment);
-            })
-            .preload("reserves", (reservesQuery) => {
-              reservesQuery.where("idEmployment", codEmployment);
-            });
-        });
-      })
-      .preload("employment", (employmentQuery) => {
-        employmentQuery
-          .preload("worker")
-          .preload("salaryHistories", (salaryQuery) => {
-            salaryQuery.where("validity", true);
+  ): Promise<IVacationDay[] | null> {
+    const res = await VacationDay.query()
+      .preload("formPeriod", (formPeriodQuery) => {
+        formPeriodQuery
+          .preload("historicalPayroll", (history) => {
+            history.where("idEmployment", codEmployment);
+          })
+          .preload("deductions", (deductionQuery) => {
+            deductionQuery.where("idEmployment", codEmployment);
+          })
+          .preload("incomes", (incomeQuery) => {
+            incomeQuery.where("idEmployment", codEmployment);
+          })
+          .preload("reserves", (reservesQuery) => {
+            reservesQuery.where("idEmployment", codEmployment);
           });
       })
-      .where("codEmployment", codEmployment)
-      .andWhere("period", year);
+      .preload("vacation", (vacationQuery) => {
+        vacationQuery.preload("employment", (employmentQuery) => {
+          employmentQuery
+            .preload("worker")
+            .preload("charge")
+            .preload("dependence")
+            .preload("salaryHistories", (salaryQuery) => {
+              salaryQuery.where("validity", true);
+            });
+        });
+        // vacationQuery.where("codEmployment", codEmployment);
+      })
+      .where("id", codVacationDays);
 
     if (!res) {
       return null;
     }
 
-    return res.map((formPeriod) => formPeriod.serialize() as IVacation);
+    return res.map((formPeriod) => formPeriod.serialize() as IVacationDay);
   }
 
   async getPayrollInformationLiquidationYear(

@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { IFormPeriod } from "./FormPeriodInterface";
+import { IVacation } from "./VacationsInterfaces";
 
 export interface IVacationDay {
   id?: number;
@@ -16,6 +17,7 @@ export interface IVacationDay {
   userCreate?: string;
   dateCreate?: DateTime;
   formPeriod?: IFormPeriod;
+  vacation?: IVacation;
 }
 
 export interface IVacationDayValidator {

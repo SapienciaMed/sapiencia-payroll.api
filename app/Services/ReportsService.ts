@@ -299,6 +299,7 @@ export default class ReportService implements IReportService {
     }
 
     console.time("TimerMapPdf");
+
     const bufferFiles = (await Promise.all(
       reportInformationColilla[0].historicalPayroll.map(async (i) => {
         const numberDocument =
@@ -434,7 +435,7 @@ export default class ReportService implements IReportService {
     );
 
     response.bufferFile = bufferPDFCombinado;
-    response.nameFile = `${Date.now()}.pdf`;
+    response.nameFile = `colilla.pdf`;
 
     return new ApiResponse(response, EResponseCodes.OK);
   }

@@ -4,7 +4,10 @@ import { IcontractSuspension } from "App/Interfaces/ContractSuspensionInterfaces
 import { ICyclicalDeductionInstallment } from "App/Interfaces/CyclicalDeductionInstallmentInterface";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
-import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IEmployment,
+  IEmploymentResult,
+} from "App/Interfaces/EmploymentInterfaces";
 import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import {
@@ -207,6 +210,9 @@ export interface IPayrollGenerateRepository {
     ids: number[],
     payrollId: number
   ): Promise<IVacationDay[]>;
+  updateStateLiquidationEmployment(
+    codEmployment: number
+  ): Promise<IEmployment | null>;
   validNumberNegative(value: number): number;
 }
 export default class PayrollGenerateRepository
@@ -1040,6 +1046,18 @@ export default class PayrollGenerateRepository
       .whereIn("id", idIncapacity)
       .update("isComplete", true)
       .useTransaction(trx);
+    return res;
+  }
+
+  async updateStateLiquidationEmployment(
+    codEmployment: number
+  ): Promise<IEmployment | null> {
+    const res = await Employment.find(codEmployment);
+    if (!res) {
+      return null;
+    }
+    res?.merge({ settlementPaid: true });
+    res?.save();
     return res;
   }
 

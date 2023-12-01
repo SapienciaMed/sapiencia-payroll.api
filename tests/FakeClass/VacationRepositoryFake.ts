@@ -35,6 +35,9 @@ const vacationFake: IVacation[] = [{
 
 
 export class VacationRepositoryFake implements vacationRepository {
+    getVacationsPeriodsByEmployment(): Promise<IVacation[]> {
+        throw new Error("Method not implemented.");
+    }
     getVacations(): Promise<IVacation[]> {
         return Promise.resolve(vacationFake);
     }

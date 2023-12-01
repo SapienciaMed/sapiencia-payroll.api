@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { IRelative } from "./RelativeInterfaces";
+import { IEmployment } from "./EmploymentInterfaces";
 
 export interface IWorker {
   id?: number;
@@ -35,6 +36,7 @@ export interface IWorker {
   userCreate?: string;
   dateCreate?: DateTime;
   relatives?: IRelative[];
+  employment?: IEmployment;
 }
 
 export interface IWorkerFilters {

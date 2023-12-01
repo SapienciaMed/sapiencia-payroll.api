@@ -14,6 +14,7 @@ export interface IWorkerRepository {
   ): Promise<IPagingData<IGetVinculation>>;
   getWorkerById(id: number): Promise<IWorker | null>;
   getActivesWorkers(temporary: boolean): Promise<IWorker[]>;
+  getInactivesWorkers(): Promise<IWorker[]>;
   getActivesContractorworkers(): Promise<IWorker[]>;
   createWorker(
     worker: IWorker,
@@ -426,6 +427,30 @@ export default class WorkerRepository implements IWorkerRepository {
         employmentQuery.where("state", true);
         employmentQuery.preload("typesContracts", (typesContractsQuery) => {
           typesContractsQuery.where("temporary", Boolean(temporary));
+        });
+      });
+    return res as IWorker[];
+  }
+
+  async getInactivesWorkers(): Promise<IWorker[]> {
+    const res = await Worker.query()
+      .whereHas("employment", (employmentQuery) => {
+        employmentQuery
+          .where("state", false)
+          .orWhere("endDate", "<", new Date().toString())
+          .andWhere("settlementPaid", true);
+
+        employmentQuery.whereHas("typesContracts", (typesContractsQuery) => {
+          typesContractsQuery.where("temporary", false);
+        });
+      })
+      .preload("employment", (employmentQuery) => {
+        employmentQuery
+          .where("state", false)
+          .orWhere("endDate", "<", new Date().toString())
+          .andWhere("settlementPaid", true);
+        employmentQuery.preload("typesContracts", (typesContractsQuery) => {
+          typesContractsQuery.where("temporary", false);
         });
       });
     return res as IWorker[];

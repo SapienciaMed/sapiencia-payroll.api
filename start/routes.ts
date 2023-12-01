@@ -71,6 +71,8 @@ Route.group(() => {
     "/contractors",
     "VinculationController.getActivesContractorworkers"
   );
+
+  Route.get("/inactiveWorker", "VinculationController.getInactiveWorkers");
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.get("/employment/:id", "VinculationController.getEmploymentById");
   Route.post(
@@ -98,6 +100,7 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get("/", "VacationsController.getVacations");
+  Route.get("/periods", "VacationsController.getVacationsPeriods");
   Route.post("/create", "VacationsController.createVacationDays");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
   Route.post("/get-paginated", "VacationsController.getVacationsPaginate");

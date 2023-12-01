@@ -111,6 +111,9 @@ const employmentFake: IEmployment = {
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
+  getInactivesWorkers(): Promise<IWorker[]> {
+    throw new Error("Method not implemented.");
+  }
   getWorkersByFilters(_filters: IWorkerFilters): Promise<IWorker[]> {
     return new Promise((res) => {
       res([]);

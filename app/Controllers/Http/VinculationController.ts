@@ -161,6 +161,16 @@ export default class VinculationController {
     }
   }
 
+  public async getInactiveWorkers({ response }: HttpContextContract) {
+    try {
+      return response.send(await VinculationProvider.getInactivesWorkers());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
   public async getActivesContractorworkers({ response }: HttpContextContract) {
     try {
       return response.send(

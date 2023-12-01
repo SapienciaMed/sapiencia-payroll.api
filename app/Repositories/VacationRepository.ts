@@ -26,6 +26,7 @@ export interface IVacationRepository {
     params: IVacationSearchParams
   ): Promise<IVacation | null>;
   getVacation(filters: IVacationFilters): Promise<IPagingData<IVacation>>;
+  getVacationsPeriodsByEmployment(): Promise<IVacation[]>;
 }
 
 export default class VacationRepository implements IVacationRepository {
@@ -150,5 +151,17 @@ export default class VacationRepository implements IVacationRepository {
     toUpdate.useTransaction(trx);
     await toUpdate.save();
     return toUpdate.serialize() as IVacation;
+  }
+
+  async getVacationsPeriodsByEmployment(): Promise<IVacation[]> {
+    const res = await Vacation.query()
+      .whereHas("vacationDay", (vacationQuery) => {
+        vacationQuery.whereNotNull("codForm");
+      })
+      .preload("vacationDay", (vacationQuery) => {
+        vacationQuery.whereNotNull("codForm");
+      });
+
+    return res.map((i) => i.serialize() as IVacation);
   }
 }

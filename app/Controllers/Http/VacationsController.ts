@@ -9,7 +9,10 @@ import {
   IVacationFilters,
   IVacationSearchParams,
 } from "App/Interfaces/VacationsInterfaces";
-import { IEditVacation, IVacationDay } from "App/Interfaces/VacationDaysInterface";
+import {
+  IEditVacation,
+  IVacationDay,
+} from "App/Interfaces/VacationDaysInterface";
 import Database from "@ioc:Adonis/Lucid/Database";
 
 export default class VacationsController {
@@ -29,7 +32,11 @@ export default class VacationsController {
   }: HttpContextContract) {
     const params = request.all();
     try {
-      return response.send(await VacationProvider.getVacationsByParams(params as IVacationSearchParams));
+      return response.send(
+        await VacationProvider.getVacationsByParams(
+          params as IVacationSearchParams
+        )
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))
@@ -54,16 +61,21 @@ export default class VacationsController {
     response,
   }: HttpContextContract) {
     await Database.transaction(async (trx) => {
-    try {
-      const  vacationEdit  = await request.validate(UpdateVacationValidator);
-      return response.send(await VacationProvider.updateVacation(vacationEdit as IEditVacation,trx));
-    } catch (err) {
-      await trx.rollback();
-      return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
-      );
-    }
-  })
+      try {
+        const vacationEdit = await request.validate(UpdateVacationValidator);
+        return response.send(
+          await VacationProvider.updateVacation(
+            vacationEdit as IEditVacation,
+            trx
+          )
+        );
+      } catch (err) {
+        await trx.rollback();
+        return response.badRequest(
+          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        );
+      }
+    });
   }
 
   public async updateVacation({ request, response }: HttpContextContract) {
@@ -101,6 +113,17 @@ export default class VacationsController {
     try {
       const data = request.body() as IVacationFilters;
       return response.send(await VacationProvider.getVacationPaginate(data));
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+  public async getVacationsPeriods({ response }: HttpContextContract) {
+    try {
+      return response.send(
+        await VacationProvider.getVacationsPeriodsByEmployment()
+      );
     } catch (err) {
       return response.badRequest(
         new ApiResponse(null, EResponseCodes.FAIL, String(err))

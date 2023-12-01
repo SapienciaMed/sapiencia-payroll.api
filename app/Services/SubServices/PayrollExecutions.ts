@@ -1190,6 +1190,10 @@ export class PayrollExecutions extends PayrollCalculations {
             EPayrollState.generated
           );
 
+          await this.payrollGenerateRepository.updateStateLiquidationEmployment(
+            employment.id ?? 0
+          );
+
           return {
             salaryLiquidation,
             calculateSeverancePay,

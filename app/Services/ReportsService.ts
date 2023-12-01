@@ -8,6 +8,7 @@ import { IReportsRepository } from "App/Repositories/ReportsRepository";
 import {
   IDetailColillaPDF,
   IReport,
+  IReportCombinePDFs,
   IReportResponse,
 } from "App/Interfaces/ReportInterfaces";
 import { IIncome } from "App/Interfaces/IncomeInterfaces";
@@ -224,7 +225,7 @@ export default class ReportService implements IReportService {
       const param = { firstParam, secondParam, thirdParam };
       const dataReport = await this.reportRepository.getPayrollVacationsYear(
         report.period,
-        report.codEmployment
+        report.codEmployment ?? 0
       );
       const vacationResolution = new VacationResolution();
       const vacationResolutionGenerate =
@@ -244,9 +245,12 @@ export default class ReportService implements IReportService {
       const data =
         await this.reportRepository.getPayrollInformationLiquidationYear(
           report.period,
-          report.codEmployment
+          report.codEmployment ?? 0
         );
-      const dataReport = this.structureDataAdministrativeActReport(data);
+      const dataReport = this.structureDataAdministrativeActReport(
+        data,
+        parameters
+      );
       const reportResult = await administrativeActReport.generateReport(
         dataReport
       );
@@ -258,9 +262,12 @@ export default class ReportService implements IReportService {
       const data =
         await this.reportRepository.getPayrollInformationContractsYear(
           report.period,
-          report.codEmployment
+          report.codEmployment ?? 0
         );
-      const dataReport = this.structureDataProofOfContractsReport(data);
+      const dataReport = this.structureDataProofOfContractsReport(
+        data,
+        parameters
+      );
       const proofOfContracts = new ProofOfContracts();
       const reportResult = await proofOfContracts.generateReport(dataReport);
       const buffer = await Packer.toBuffer(reportResult);
@@ -277,127 +284,158 @@ export default class ReportService implements IReportService {
     return new ApiResponse(response, EResponseCodes.OK);
   }
 
-  async vaucherPay(report, response, nit) {
+  async vaucherPay(report: IReport, response: IReportResponse, nit: number) {
     const reportInformationColilla =
       await this.reportRepository.getPayrollInformationEmployment(
         Number(report.period),
-        report.codEmployment
+        report.codEmployment ?? null
       );
 
-    const numberDocument =
-      reportInformationColilla?.historicalPayroll?.[0].employment?.worker
-        ?.numberDocument ?? "Sin documento";
+    if (
+      !reportInformationColilla[0].historicalPayroll ||
+      reportInformationColilla[0].historicalPayroll.length <= 0
+    ) {
+      throw new Error("No tiene historico de planilla");
+    }
 
-    const nombreBanco =
-      reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.bank;
+    console.time("TimerMapPdf");
 
-    const numeroCuentaBanco =
-      reportInformationColilla?.historicalPayroll?.[0].employment?.worker
-        ?.accountBankNumber;
+    const bufferFiles = (await Promise.all(
+      reportInformationColilla[0].historicalPayroll.map(async (i) => {
+        const numberDocument =
+          i.employment?.worker?.numberDocument ?? "Sin documento";
 
-    const fullName = `${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.firstName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondName} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.surname} ${reportInformationColilla?.historicalPayroll?.[0].employment?.worker?.secondSurname}`;
+        const nombreBanco = i.employment?.worker?.bank ?? "Sin banco asociado";
 
-    const salaryBasic =
-      reportInformationColilla?.historicalPayroll?.[0].employment?.charge
-        ?.baseSalary ?? "";
+        const numeroCuentaBanco =
+          i.employment?.worker?.accountBankNumber ??
+          "Sin cuenta de banco asociada";
 
-    const charge =
-      reportInformationColilla?.historicalPayroll?.[0]?.employment?.charge
-        ?.name ?? "";
+        const fullName = `${i.employment?.worker?.firstName} ${i.employment?.worker?.secondName} ${i.employment?.worker?.surname} ${i.employment?.worker?.secondSurname}`;
 
-    const dependence =
-      reportInformationColilla?.historicalPayroll?.[0]?.employment?.dependence
-        ?.name ?? "";
+        const salaryBasic = i.employment?.charge?.baseSalary ?? "";
 
-    const arrIncomeAndDeductions = [
-      ...(reportInformationColilla?.incomes ?? []),
-      ...(reportInformationColilla?.deductions ?? []),
-    ];
+        const charge = i.employment?.charge?.name ?? "";
 
-    const arrIncomeAndDeductionsFormated = arrIncomeAndDeductions.map(
-      (i: IIncome | IDeduction) => {
-        let objectReturn = {} as IDetailColillaPDF;
+        const dependence = i.employment?.dependence?.name ?? "";
 
-        if ("incomeType" in i) {
-          objectReturn.name = i.incomeType?.name ?? "No hay detalle";
-          objectReturn.type = "Income";
-        } else if ("deductionTypeOne" in i) {
-          if (i.deductionTypeOne?.type === "Ciclica") {
-            objectReturn.name = i.deductionTypeOne?.name
-              ? `Deducciones cíclicas ${i.deductionTypeOne?.name}`
-              : "No hay detalle";
-          } else if (i.deductionTypeOne?.type === "Eventual") {
-            objectReturn.name = i.deductionTypeOne?.name
-              ? `Deducciones eventuales ${i.deductionTypeOne?.name}`
-              : "No hay detalle";
-          } else {
-            objectReturn.name = i.deductionTypeOne?.name ?? "No hay detalle";
+        const incomesEmployment =
+          reportInformationColilla?.[0]?.incomes?.filter(
+            (income) => Number(income.idEmployment) === Number(i.employment?.id)
+          ) ?? [];
+
+        const deductionsEmployment =
+          reportInformationColilla?.[0]?.deductions?.filter(
+            (deduction) =>
+              Number(deduction.idEmployment) === Number(i.employment?.id)
+          ) ?? [];
+
+        const arrIncomeAndDeductions = [
+          ...incomesEmployment,
+          ...deductionsEmployment,
+        ];
+
+        const arrIncomeAndDeductionsFormated = arrIncomeAndDeductions.map(
+          (i: IIncome | IDeduction) => {
+            let objectReturn = {} as IDetailColillaPDF;
+
+            if ("incomeType" in i) {
+              objectReturn.name = i.incomeType?.name ?? "No hay detalle";
+              objectReturn.type = "Income";
+            } else if ("deductionTypeOne" in i) {
+              if (i.deductionTypeOne?.type === "Ciclica") {
+                objectReturn.name = i.deductionTypeOne?.name
+                  ? `Deducciones cíclicas ${i.deductionTypeOne?.name}`
+                  : "No hay detalle";
+              } else if (i.deductionTypeOne?.type === "Eventual") {
+                objectReturn.name = i.deductionTypeOne?.name
+                  ? `Deducciones eventuales ${i.deductionTypeOne?.name}`
+                  : "No hay detalle";
+              } else {
+                objectReturn.name =
+                  i.deductionTypeOne?.name ?? "No hay detalle";
+              }
+
+              objectReturn.type = "Deduction";
+            }
+
+            objectReturn.value = formaterNumberToCurrency(i.value ?? 0);
+            objectReturn.days = String(i.time ?? "0");
+
+            return objectReturn;
           }
+        );
 
-          objectReturn.type = "Deduction";
-        }
+        const totalIncomes = incomesEmployment.reduce(
+          (sum, i) => sum + Number(i.value),
+          0
+        );
 
-        objectReturn.value = formaterNumberToCurrency(i.value ?? 0);
-        objectReturn.days = String(i.time ?? "0");
+        const totalDeductions = deductionsEmployment.reduce(
+          (sum, i) => sum + Number(i.value),
+          0
+        );
 
-        return objectReturn;
-      }
+        const restaIncomesDeductions =
+          (totalIncomes ?? 0) - (totalDeductions ?? 0);
+
+        const textRestIncomesDeductions = numberToColombianPesosWord(
+          Number(restaIncomesDeductions.toFixed(2) ?? 0)
+        );
+
+        const data = {
+          consecutivo: report.period,
+          logoSapiencia: await fsPromises.readFile(
+            path.join(
+              process.cwd(),
+              "app",
+              "resources",
+              "img",
+              "logoSapiencia.png"
+            ),
+            "base64"
+          ),
+          nit: formaterNumberSeparatorMiles(nit),
+          fechaInicio: reportInformationColilla[0]?.dateStart,
+          fechaFin: reportInformationColilla[0]?.dateEnd,
+          numeroDocument: numberDocument,
+          nombreCompleto: fullName,
+          nombreBanco,
+          numeroCuentaBanco,
+          sueldoBasico: formaterNumberToCurrency(salaryBasic ?? 0),
+          cargo: charge,
+          dependencia: dependence,
+          arrIncomeAndDeductionsFormated,
+          totalIncomes: formaterNumberToCurrency(totalIncomes ?? 0),
+          totalDeductions: formaterNumberToCurrency(totalDeductions ?? 0),
+          restaIncomesDeductions: formaterNumberToCurrency(
+            restaIncomesDeductions
+          ),
+          textRestIncomesDeductions,
+        };
+
+        const bufferPDF = await this.reportRepository.generatePdf(
+          "colilla.hbs",
+          data,
+          true,
+          "colilla.css"
+        );
+
+        return {
+          bufferFile: bufferPDF,
+          name: `${Date.now()}.pdf`,
+        };
+      })
+    )) as IReportCombinePDFs[];
+
+    console.timeEnd("TimerMapPdf");
+
+    const bufferPDFCombinado = await this.reportRepository.combinePDFs(
+      bufferFiles
     );
 
-    const totalIncomes = reportInformationColilla?.incomes?.reduce(
-      (sum, i) => sum + Number(i.value),
-      0
-    );
-
-    const totalDeductions = reportInformationColilla?.deductions?.reduce(
-      (sum, i) => sum + Number(i.value),
-      0
-    );
-
-    const restaIncomesDeductions = (totalIncomes ?? 0) - (totalDeductions ?? 0);
-
-    const textRestIncomesDeductions = numberToColombianPesosWord(
-      Number(restaIncomesDeductions.toFixed(2) ?? 0)
-    );
-
-    const data = {
-      consecutivo: report.period,
-      logoSapiencia: await fsPromises.readFile(
-        path.join(
-          process.cwd(),
-          "app",
-          "resources",
-          "img",
-          "logoSapiencia.png"
-        ),
-        "base64"
-      ),
-      nit: formaterNumberSeparatorMiles(nit),
-      fechaInicio: reportInformationColilla?.dateStart,
-      fechaFin: reportInformationColilla?.dateEnd,
-      numeroDocument: numberDocument,
-      nombreCompleto: fullName,
-      nombreBanco,
-      numeroCuentaBanco,
-      sueldoBasico: formaterNumberToCurrency(salaryBasic ?? 0),
-      cargo: charge,
-      dependencia: dependence,
-      arrIncomeAndDeductionsFormated,
-      totalIncomes: formaterNumberToCurrency(totalIncomes ?? 0),
-      totalDeductions: formaterNumberToCurrency(totalDeductions ?? 0),
-      restaIncomesDeductions: formaterNumberToCurrency(restaIncomesDeductions),
-      textRestIncomesDeductions,
-    };
-
-    const bufferPDF = await this.reportRepository.generatePdf(
-      "colilla.hbs",
-      data,
-      true,
-      "colilla.css"
-    );
-
-    response.bufferFile = bufferPDF;
-    response.nameFile = `${Date.now()}.pdf`;
+    response.bufferFile = bufferPDFCombinado;
+    response.nameFile = `colilla.pdf`;
 
     return new ApiResponse(response, EResponseCodes.OK);
   }
@@ -736,7 +774,7 @@ export default class ReportService implements IReportService {
 
   // Estructuración de datos para generar reporte en word
 
-  structureDataAdministrativeActReport = (data: any) => {
+  structureDataAdministrativeActReport = (data: any, parameters: any) => {
     const { total: totalValueInNumberToPay, salary } =
       data[0].historicalPayroll[0];
 
@@ -820,8 +858,7 @@ export default class ReportService implements IReportService {
       },
       { value: 0, time: 0 }
     );
-    const {  value: serviceBonus } =
-      bonusServicesDataAccumulative;
+    const { value: serviceBonus } = bonusServicesDataAccumulative;
 
     const premiumServiceData = data[0].incomes.filter(
       (e) => e.idTypeIncome === EIncomeTypes.primaService
@@ -964,15 +1001,18 @@ export default class ReportService implements IReportService {
       retentionSourceIncome,
       totalPagarPrestacionesSociales: totalValueInNumberToPay, // confirmar
       paragraphOne:
-        "El Director General de la Agencia de Educación Postsecundaria de Medellín - Sapiencia, en uso de sus facultades legales y estatutarias contenidas en el Decreto con fuerza de Acuerdo 1364 de 2012, modificado por el Decreto con fuerza de Acuerdo 883 de 2015, el Acuerdo Municipal 019 de 2020 y las señaladas en el Estatuto General de la entidad contenido en el Acuerdo Directivo 003 de 2013, el Acuerdo Directivo 014 de 2015, modificados por el Acuerdo Directivo 29 de 2021 – Por el cual se expide el Estatuto General de la Agencia de Educación Postsecundaria de Medellín – Sapiencia, y",
+        parameters.find((i) => i.id == "PRIMER_PARAM_LIQUIDACION")?.value ?? "",
       paragraphTwo:
-        "La Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, es una unidad administrativa especial, del orden municipal, con personería jurídica, adscrita, según el Acuerdo 01 de 2016 al despacho del Alcalde, creada por Decreto con facultades especiales No. 1364 de 2012, modificado por el Decreto 883 de 2015 y su administración corresponde al Director General, quien será el representante legal.",
-      nameFirmDocument: "CARLOS ALBERTO CHAPARRO SANCHEZ",
+        parameters.find((i) => i.id == "SEG_PARAM_LIQUIDACION")?.value ?? "",
+      paragraphThree:
+        parameters.find((i) => i.id == "TERCER_PARAM_LIQUIDACION")?.value ?? "",
+      nameFirmDocument:
+        parameters.find((i) => i.id == "CUARTO_PARAM_LIQUIDACION")?.value ?? "",
     };
     return dataReport;
   };
 
-  structureDataProofOfContractsReport = (data: any) => {
+  structureDataProofOfContractsReport = (data: any, parameters: any) => {
     const contracts = data.map((contract) => {
       return {
         numberContract: contract.contractNumber,
@@ -1011,7 +1051,9 @@ export default class ReportService implements IReportService {
       numberActualDay: `${day}`,
       actualMonth: `${monthName}`,
       actualYear: `${year}`,
-      universityProfessionalName: "Daniela Perez",
+      universityProfessionalName:
+        parameters.find((i) => i.id == "PRIMER_PARAM_COSTANCIA_CONTRATO")
+          ?.value ?? "",
     };
     return dataReport;
   };

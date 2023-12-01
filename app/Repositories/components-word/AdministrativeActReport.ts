@@ -214,7 +214,7 @@ export class AdministrativeActReport {
                 consecutive: 9,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "El Decreto 1048 de 1978 en su artículo 8 establece 'De las vacaciones, los empleados públicos y trabajadores oficiales tienen derecho a quince (15) días hábiles de vacaciones por cada año de servicios...', en su artículo 17 establece 'De los factores salariales para la liquidación de vacaciones y prima de vacaciones...'. Que, el literal b) del artículo 20 del Decreto 1045 de 1978, establece que las vacaciones podrán ser compensadas en dinero cuando el empleado público quede retirado definitivamente del servicio sin haber disfrutado de las vacaciones causadas hasta entonces.",
+                    text: dataReport.paragraphThree,
                     size:20,
                 },
                 placeholders: [

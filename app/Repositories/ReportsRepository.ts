@@ -26,6 +26,7 @@ import { PDFDocument } from "pdf-lib";
 import { IReportCombinePDFs } from "App/Interfaces/ReportInterfaces";
 import VacationDay from "App/Models/VacationDay";
 import { IVacationDay } from "App/Interfaces/VacationDaysInterface";
+import { EPayrollState } from "App/Constants/States.enum";
 
 export interface IReportsRepository {
   getPayrollInformation(codPayroll: number): Promise<IFormPeriod | null>;
@@ -163,6 +164,7 @@ export default class ReportsRepository implements IReportsRepository {
     return res.map((formPeriod) => formPeriod.serialize() as IVacationDay);
   }
 
+  
   async getPayrollInformationLiquidationYear(
     year: number,
     codEmployment: number
@@ -188,8 +190,8 @@ export default class ReportsRepository implements IReportsRepository {
           });
       })
       .where("year", year)
-      .andWhere("idFormType", EPayrollTypes.liquidation);
-    /* .andWhere("state", EPayrollState.authorized); */
+      .andWhere("idFormType", EPayrollTypes.liquidation)
+      .andWhere("state", EPayrollState.authorized);
 
     if (!res) {
       return null;

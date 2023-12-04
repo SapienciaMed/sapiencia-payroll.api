@@ -1,3 +1,4 @@
+import { formaterNumberToCurrency } from "App/Utils/functions";
 import { ComponentsWord } from "./ComponentsWord"
 import { Document } from 'docx';
 
@@ -20,9 +21,9 @@ export class AdministrativeActReport {
         const dataContentReport = [
             {
                 consecutive: 1,
-                componentWordProp: subTitleDoubleLine.bind({ text:'',textOne: '', textTwo:'' }),
+                componentWordProp: subTitle.bind({ text:'' }),
                 argumentsComponent: {
-                    text:'[observación de liquidación]',
+                    text:dataReport.settlementObservation,
                     textOne: "",
                     textTwo: ""
                 },
@@ -92,13 +93,21 @@ export class AdministrativeActReport {
                 consecutive: 6,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "[apelativo] [nombre completo], identificada con [nombre tipo documento] Nro. [no documento], estuvo vinculada a la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, del [fecha inicial del contrato] al [fecha final del contrato], se desempeñó en el cargo denominado [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, [tipo de vinculación].",
+                    text: "[apelativo] [nombre completo], [text-identificado-genero] con [nombre tipo documento] Nro. [no documento], estuvo [vinculado] a la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, del [fecha inicial del contrato] al [fecha final del contrato], se desempeñó en el cargo denominado [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, [tipo de vinculación].",
                     size:20,
                 },
                 placeholders: [
                     {
                         key: '[apelativo]',
                         newText: dataReport.apelative
+                    },
+                    {
+                        key: '[text-identificado-genero]',
+                        newText: dataReport.textIdentificyGener
+                    },
+                    {
+                        key: '[vinculado]',
+                        newText: dataReport.textlinkGenter
                     },
                     {
                         key: '[nombre completo]',
@@ -138,12 +147,16 @@ export class AdministrativeActReport {
                 consecutive: 7,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "A través de la [observación de liquidación], “por medio de la cual se acepta la renuncia a un servidor de la Agencia de Educación Postsecundaria de Medellín - SAPIENCIA”, se aceptó la renuncia presentada mediante oficio con radicado [observación de liquidación], por [servidor@] [nombre completo], identificado con [nombre tipo documento] número [número documento] al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [Directivo] para [dependencia] Postsecundaria, Código 084, Grado 02.",
+                    text: "A través de la [observación de liquidación], “por medio de la cual se acepta la renuncia a un servidor de la Agencia de Educación Postsecundaria de Medellín - SAPIENCIA”, se aceptó la renuncia presentada mediante oficio con radicado [observación de liquidación2], por [servidor@] [nombre completo], identificado con [nombre tipo documento] número [número documento] al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo2] - [dependencia] para la Gestión de Educación Postsecundaria.",
                     size:20,
                 },
                 placeholders: [
                     {
                         key: '[observación de liquidación]',
+                        newText: dataReport.settlementObservation
+                    },
+                    {
+                        key: '[observación de liquidación2]',
                         newText: dataReport.settlementObservation
                     },
                     {
@@ -176,6 +189,10 @@ export class AdministrativeActReport {
                     },
                     {
                         key: '[cargo]',
+                        newText: dataReport.chargeName
+                    },
+                    {
+                        key: '[cargo2]',
                         newText: dataReport.chargeName
                     },
                     {
@@ -229,7 +246,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraphWithInitialBold.bind({ text: '' }),
                 argumentsComponent: {
                     text: "",
-                    textOne:'Prima de Navidad:',
+                    textOne:'Prima de Navidad: ',
                     textTwo:'Artículo 32 del Decreto 1045 de 1978: “Cuando el empleado o trabajador oficial no hubiere servido durante todo el año civil, tendrá derecho a la mencionada prima de navidad, en proporción al tiempo laborado, se liquidará y pagará con base en el último salario devengado, o en el último promedio mensual, si fuere variable”.',
                     size:20,
                 },
@@ -245,7 +262,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraphWithInitialBold.bind({ text: '' }),
                 argumentsComponent: {
                     text: "",
-                    textOne:'Prima de servicios:',
+                    textOne:'Prima de servicios: ',
                     textTwo:'Artículo 60 del decreto 1042 de 1978. Pago Proporcional de la prima de servicio, “Cuando el funcionario no haya trabajado el año completo en la misma entidad tendrá derecho al pago proporcional de la prima, por cada mes completo de labor y siempre que hubiere servido en el organismo por lo menos un semestre”.',
                     size:20,
                 },
@@ -301,8 +318,8 @@ export class AdministrativeActReport {
                 consecutive: 15,
                 componentWordProp: generateParagraphWithInitialBold.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "Reconocer a [apelativo] [nombre completo], identificada con [tipo documento] Nro. [numero documento], por concepto de prestaciones sociales definitivas la suma de [valor total en letras a pagar] ([valor total en número a pagar]) correspondientes al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, Código 084, Grado 02",
-                    textOne:'ARTÍCULO PRIMERO:',
+                    text: "Reconocer a [apelativo] [nombre completo], [text-identificado-genero] con [tipo documento] Nro. [numero documento], por concepto de prestaciones sociales definitivas la suma de [valor total en letras a pagar] ([valor total en número a pagar]) correspondientes al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo2] - [dependencia] para la Gestión de Educación Postsecundaria.",
+                    textOne:'ARTÍCULO PRIMERO: ',
                     textTwo:'',
                     size:20,
                 },
@@ -310,6 +327,10 @@ export class AdministrativeActReport {
                     {
                         key: '[apelativo]',
                         newText: dataReport.apelative
+                    },
+                    {
+                        key: '[text-identificado-genero]',
+                        newText: dataReport.textIdentificyGener
                     },
                     {
                         key: '[nombre completo]',
@@ -329,7 +350,7 @@ export class AdministrativeActReport {
                     },
                     {
                         key: '[valor total en número a pagar]',
-                        newText: dataReport.totalValueInNumberToPay
+                        newText: formaterNumberToCurrency(dataReport.totalValueInNumberToPay)
                     },
                     {
                         key: '[tipo de vinculación]',
@@ -341,6 +362,10 @@ export class AdministrativeActReport {
                     },
                     {
                         key: '[cargo]',
+                        newText: dataReport.chargeName
+                    },
+                    {
+                        key: '[cargo2]',
                         newText: dataReport.chargeName
                     },
                     {
@@ -366,18 +391,18 @@ export class AdministrativeActReport {
                     diasVacionesYPrimaVacaciones: dataReport.vacationDaysAndVacationBonus,
                     diasBonificacionServicios: dataReport.daysBonusServices,
                     diasPrimaServicio: dataReport.daysPremiumService,
-                    cesantias: dataReport.cesantias,
-                    interesesCesantias: dataReport.interestCesantias,
-                    vacaciones: dataReport.vacations,
-                    bonificacionRecreacion:dataReport.recreationBonus,
-                    primaNavidad:dataReport.vacations,
-                    bonificacionServicios: dataReport.serviceBonus,
-                    primaServicios:dataReport.premiunService,
-                    salarios: dataReport.salary,
-                    aportesSeguridadSocial: dataReport.socialSecurityContributions,
-                    aportesAFC:dataReport.contributionsAFC,
-                    retencionFuenteRenta: dataReport.retentionSourceIncome,
-                    totalPagarPrestacionesSociales: dataReport.totalPagarPrestacionesSociales,
+                    cesantias: formaterNumberToCurrency(dataReport.cesantias),
+                    interesesCesantias: formaterNumberToCurrency(dataReport.interestCesantias),
+                    vacaciones: formaterNumberToCurrency(dataReport.vacations),
+                    bonificacionRecreacion:formaterNumberToCurrency(dataReport.recreationBonus),
+                    primaNavidad:formaterNumberToCurrency(dataReport.vacations),
+                    bonificacionServicios: formaterNumberToCurrency(dataReport.serviceBonus),
+                    primaServicios:formaterNumberToCurrency(dataReport.premiunService),
+                    salarios: (dataReport.salary),
+                    aportesSeguridadSocial: formaterNumberToCurrency(dataReport.socialSecurityContributions),
+                    aportesAFC:formaterNumberToCurrency(dataReport.contributionsAFC),
+                    retencionFuenteRenta: formaterNumberToCurrency(dataReport.retentionSourceIncome),
+                    totalPagarPrestacionesSociales: formaterNumberToCurrency(dataReport.totalPagarPrestacionesSociales),
                 },
                 placeholders: [
                     {
@@ -391,7 +416,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraphWithInitialBold.bind({ text: '' }),
                 argumentsComponent: {
                     text: "",
-                    textOne:'ARTÍCULO SEGUNDO:',
+                    textOne:'ARTÍCULO SEGUNDO: ',
                     textTwo:'Esta liquidación puede estar sujeta a retención en la fuente la cual se aplica al momento de efectuarse el pago.',
                     size:20
                 },
@@ -407,7 +432,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraphWithInitialBold.bind({ text: '' }),
                 argumentsComponent: {
                     text: "",
-                    textOne:'ARTÍCULO TERCERO:',
+                    textOne:'ARTÍCULO TERCERO: ',
                     textTwo:'Contra la presente resolución procede el recurso de Reposición dentro de los diez (10) días hábiles siguientes a la fecha de su notificación.',
                     size:20
                 },

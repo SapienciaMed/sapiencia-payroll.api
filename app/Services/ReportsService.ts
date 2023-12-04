@@ -41,7 +41,7 @@ export default class ReportService implements IReportService {
   constructor(
     public reportRepository: IReportsRepository,
     public coreService: CoreService
-  ) {}
+  ) { }
 
   // async generateWordReport(): Promise<ApiResponse<any>> {
   //   let noReport = 2;
@@ -111,11 +111,9 @@ export default class ReportService implements IReportService {
 
     for (const historical of formPeriod.historicalPayroll) {
       let temp = {
-        Nombre: `${historical.employment?.worker?.firstName} ${
-          historical.employment?.worker?.secondName ?? ""
-        } ${historical.employment?.worker?.surname} ${
-          historical.employment?.worker?.secondSurname
-        }`,
+        Nombre: `${historical.employment?.worker?.firstName} ${historical.employment?.worker?.secondName ?? ""
+          } ${historical.employment?.worker?.surname} ${historical.employment?.worker?.secondSurname
+          }`,
         Identificación: historical.employment?.worker?.numberDocument,
         "Código fiscal": historical.employment?.worker?.fiscalIdentification,
         "Nro. Contrato": historical.employment?.contractNumber,
@@ -526,13 +524,11 @@ export default class ReportService implements IReportService {
         : `01/01/${report.period}`;
     let endDate =
       new Date().getFullYear() === Number(report.period)
-        ? `${new Date().getDate()}/${
-            new Date().getMonth() + 1
-          }/${new Date().getFullYear()}`
+        ? `${new Date().getDate()}/${new Date().getMonth() + 1
+        }/${new Date().getFullYear()}`
         : `31/12/${report.period}`;
-    let expeditionDate = `${new Date().getDate()}/${
-      new Date().getMonth() + 1
-    }/${new Date().getFullYear()}`;
+    let expeditionDate = `${new Date().getDate()}/${new Date().getMonth() + 1
+      }/${new Date().getFullYear()}`;
     reportInformation?.map((info) => {
       paidsSalary =
         info.incomes?.reduce(
@@ -546,7 +542,7 @@ export default class ReportService implements IReportService {
         info.incomes?.reduce(
           (sum, i) =>
             i.idTypeIncome === EIncomeTypes.primaService ||
-            i.idTypeIncome === EIncomeTypes.vacation
+              i.idTypeIncome === EIncomeTypes.vacation
               ? Number(sum) + Number(i.value)
               : Number(sum),
           0
@@ -555,7 +551,7 @@ export default class ReportService implements IReportService {
         info.incomes?.reduce(
           (sum, i) =>
             i.idTypeIncome === EIncomeType.ApoyoEstudiantil ||
-            i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
+              i.idTypeIncome === EIncomeType.AprovechamientoTiempoLibre
               ? Number(sum) + Number(i.value)
               : Number(sum),
           0
@@ -564,7 +560,7 @@ export default class ReportService implements IReportService {
         info.incomes?.reduce(
           (sum, i) =>
             i.idTypeIncome === EIncomeTypes.severancePay ||
-            i.idTypeIncome === EIncomeTypes.severancePayInterest
+              i.idTypeIncome === EIncomeTypes.severancePayInterest
               ? Number(sum) + Number(i.value)
               : Number(sum),
           0
@@ -595,7 +591,7 @@ export default class ReportService implements IReportService {
         info.deductions?.reduce(
           (sum, i) =>
             i.idTypeDeduction === EDeductionTypes.retirementFund ||
-            i.idTypeDeduction === EDeductionTypes.solidarityFund
+              i.idTypeDeduction === EDeductionTypes.solidarityFund
               ? Number(sum) + Number(i.value)
               : Number(sum),
           0
@@ -692,17 +688,16 @@ export default class ReportService implements IReportService {
       reportInformation?.worker?.gender == "H"
         ? "El señor"
         : reportInformation?.worker?.gender == "M"
-        ? "La señora"
-        : "E@ señor@";
-    const name = `${
-      reportInformation?.worker?.firstName +
+          ? "La señora"
+          : "E@ señor@";
+    const name = `${reportInformation?.worker?.firstName +
       " " +
       reportInformation?.worker?.secondName +
       " " +
       reportInformation?.worker?.surname +
       " " +
       reportInformation?.worker?.secondSurname
-    }`;
+      }`;
     const documentTypeMapping = {
       CC: "Cédula de Ciudadanía",
       CE: "Cédula de Extranjería",
@@ -775,9 +770,16 @@ export default class ReportService implements IReportService {
   // Estructuración de datos para generar reporte en word
 
   structureDataAdministrativeActReport = (data: any, parameters: any) => {
+    console.log({data})
+    if(data== null) {
+      console.log("No tiene historicos")
+      return;
+    };
+
     const { total: totalValueInNumberToPay, salary } =
       data[0].historicalPayroll[0];
 
+    
     const cesantiasData = data[0].incomes.filter(
       (e) => e.idTypeIncome === EIncomeTypes.severancePay
     );
@@ -942,7 +944,7 @@ export default class ReportService implements IReportService {
     } = data[0].historicalPayroll[0].employment;
     const { name: chargeName } = charge;
     const { name: dependenceName } = dependence;
-    const { name: linkageType } = typesContracts;
+    const { name: linkageType } = typesContracts[0];
     const {
       gender,
       typeDocument,
@@ -959,12 +961,14 @@ export default class ReportService implements IReportService {
       gender == "H"
         ? "El servidor"
         : gender == "M"
-        ? "La servidora"
-        : "l@ servidor@";
+          ? "La servidora"
+          : "l@ servidor@";
     const completeName = `${firstName} ${secondName} ${surname} ${secondSurname}`;
 
     let dataReport = {
       apelative,
+      textIdentificyGener: gender == 'H' ? "identificado" : gender == "M" ? "identificada" : "indentificad@",
+      textlinkGenter: gender == 'H' ? "vinculado" : gender == "M" ? "vinculada" : "vinculad@",
       completeName,
       typeDocument,
       numberDocument,
@@ -1021,9 +1025,9 @@ export default class ReportService implements IReportService {
         contractValue: contract.totalValue,
         startDate: contract.startDate,
         endDate: contract.endDate,
-        executionPlace: "",
+        executionPlace: "Medellín",
         compliance: "",
-        sanctions: "",
+        sanctions: "N/A",
       };
     });
 

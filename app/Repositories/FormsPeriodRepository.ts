@@ -1,3 +1,4 @@
+import { EPayrollTypes } from "App/Constants/PayrollGenerateEnum";
 import {
   IFormPeriod,
   IFormPeriodFilters,
@@ -20,6 +21,7 @@ export interface IFormPeriodRepository {
   getFormsPeriodPaginate(
     filters: IFormPeriodFilters
   ): Promise<IPagingData<IFormPeriod>>;
+  getPayrollVacation(): Promise<IFormPeriod[] | null>;
 }
 
 export default class FormPeriodRepository implements IFormPeriodRepository {
@@ -80,6 +82,12 @@ export default class FormPeriodRepository implements IFormPeriodRepository {
     res.preload("formsType", (formTypeQuery) => {
       formTypeQuery.whereIn("name", ["Quincenal", "Mensual"]);
     });
+    const result = await res.orderBy("dateStart", "asc");
+    return result.map((i) => i.serialize() as IFormPeriod);
+  }
+
+  async getPayrollVacation(): Promise<IFormPeriod[] | null> {
+    const res = FormsPeriod.query().where("idFormType", EPayrollTypes.vacation);
     const result = await res.orderBy("dateStart", "asc");
     return result.map((i) => i.serialize() as IFormPeriod);
   }

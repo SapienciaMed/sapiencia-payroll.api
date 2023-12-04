@@ -6,6 +6,7 @@ import {
   EIncomeTypes,
 } from "App/Constants/PayrollGenerateEnum";
 import { IVacationDay } from "App/Interfaces/VacationDaysInterface";
+import { getNextBusinessDay } from "App/Utils/functions";
 
 export class VacationResolution {
   async generateReport(
@@ -142,25 +143,41 @@ export class VacationResolution {
             data?.[0].vacation?.employment?.charge?.name
           } - ${
             data?.[0].vacation?.employment?.dependence?.name
-          } de la Agencia de Educación Postsecundaria de Medellín-Sapiencia, mediante oficio radicado interno ${
-            data?.[0].observation
-          } solicita vacaciones del período comprendido entre ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateFrom.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getFullYear()} y ${new Date(
-            data?.[0].dateUntil?.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateUntil?.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateUntil?.toString() ?? new Date().toString()
-          ).getFullYear()}`,
+          } de la Agencia de Educación Postsecundaria de Medellín-Sapiencia, mediante ${
+            data?.length ?? 0 > 0
+              ? "de los oficios radicados internos"
+              : "oficio radicado interno"
+          } ${data
+            ?.map((vacation) => {
+              return `${vacation.observation}`;
+            })
+            .join(",")} solicita vacaciones ${
+            data?.length ?? 0 > 0
+              ? "de los períodos comprendidos"
+              : "del período comprendido"
+          } entre ${data
+            ?.map((vacation) => {
+              return `${new Date(
+                vacation.dateFrom.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(vacation.dateFrom.toString() ?? new Date().toString())
+              )} ${new Date(
+                vacation.dateFrom.toString() ?? new Date().toString()
+              ).getFullYear()} y ${new Date(
+                vacation.dateUntil?.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(
+                  vacation.dateUntil?.toString() ?? new Date().toString()
+                )
+              )} ${new Date(
+                vacation.dateUntil?.toString() ?? new Date().toString()
+              ).getFullYear()}`;
+            })
+            .join(" y ")}`,
           size: 22,
         },
         placeholders: [
@@ -206,23 +223,29 @@ export class VacationResolution {
         consecutive: 6,
         componentWordProp: generateParagraph.bind({ text: "", size: 22 }),
         argumentsComponent: {
-          text: `El tiempo para el disfrute de vacaciones del referido período lo solicitó a partir del ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateFrom.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getFullYear()} y ${new Date(
-            data?.[0]?.dateUntil?.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0]?.dateUntil?.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0]?.dateUntil?.toString() ?? new Date().toString()
-          ).getFullYear()}, ambas fechas inclusive.`,
+          text: `El tiempo para el disfrute de vacaciones del referido período lo solicitó a partir del ${data
+            ?.map((vacation) => {
+              return `${new Date(
+                vacation.dateFrom.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(vacation.dateFrom.toString() ?? new Date().toString())
+              )} ${new Date(
+                vacation.dateFrom.toString() ?? new Date().toString()
+              ).getFullYear()} y hasta el ${new Date(
+                vacation.dateUntil?.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(
+                  vacation.dateUntil?.toString() ?? new Date().toString()
+                )
+              )} ${new Date(
+                vacation.dateUntil?.toString() ?? new Date().toString()
+              ).getFullYear()}, ambas fechas inclusive.`;
+            })
+            .join(" y ")}`,
           size: 22,
         },
         placeholders: [
@@ -315,37 +338,44 @@ export class VacationResolution {
           }, número ${
             data?.[0].vacation?.employment?.worker?.numberDocument
           }, por el término de ${writtenNumber(
-            Number(data?.[0].enjoyedDays ?? 0),
+            Number(
+              data?.reduce((sum, i) => sum + Number(i.enjoyedDays), 0) ?? 0
+            ),
             { lang: "es" }
-          )} (${
-            data?.[0].enjoyedDays ?? 0
-          }) días hábiles contados a partir del día ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateFrom.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getFullYear()}, hasta el ${new Date(
-            data?.[0]?.dateUntil?.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0]?.dateUntil?.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0]?.dateUntil?.toString() ?? new Date().toString()
-          ).getFullYear()} reintegrándose a sus labores el ${
-            new Date(
-              data?.[0].dateUntil?.toString() ?? new Date().toString()
-            ).getDate() + 1
-          } de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateUntil?.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateUntil?.toString() ?? new Date().toString()
-          ).getFullYear()},`,
+          )} (${Number(
+            data?.reduce((sum, i) => sum + Number(i.enjoyedDays), 0) ?? 0
+          )}) ${data
+            ?.map((vacation) => {
+              const reintegrationDay = getNextBusinessDay(vacation.dateUntil);
+              return `días hábiles contados a partir del día ${new Date(
+                vacation.dateFrom.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(vacation.dateFrom.toString() ?? new Date().toString())
+              )} ${new Date(
+                vacation.dateFrom.toString() ?? new Date().toString()
+              ).getFullYear()}, hasta el ${new Date(
+                vacation.dateUntil?.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(
+                  vacation.dateUntil?.toString() ?? new Date().toString()
+                )
+              )} ${new Date(
+                vacation.dateUntil?.toString() ?? new Date().toString()
+              ).getFullYear()} reintegrándose a sus labores el ${new Date(
+                reintegrationDay.toString() ?? new Date().toString()
+              ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+                month: "long",
+              }).format(
+                new Date(reintegrationDay.toString() ?? new Date().toString())
+              )} ${new Date(
+                reintegrationDay.toString() ?? new Date().toString()
+              ).getFullYear()}`;
+            })
+            .join(",")} ,`,
           size: 22,
         },
         placeholders: [
@@ -443,24 +473,29 @@ export class VacationResolution {
         argumentsComponent: {
           text: "",
           totalEnjoyedDays: data?.[0].enjoyedDays,
-          starDateEnjoyedDays: `${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateFrom.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateFrom.toString() ?? new Date().toString()
-          ).getFullYear()}`,
-          nextBussinesDay: `${new Date(
-            data?.[0].dateUntil?.toString() ?? new Date().toString()
-          ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
-            month: "long",
-          }).format(
-            new Date(data?.[0].dateUntil?.toString() ?? new Date().toString())
-          )} ${new Date(
-            data?.[0].dateUntil?.toString() ?? new Date().toString()
-          ).getFullYear()}`,
+          starDateEnjoyedDays: `${data?.map((vacation) => {
+            return `${new Date(
+              vacation.dateFrom.toString() ?? new Date().toString()
+            ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+              month: "long",
+            }).format(
+              new Date(vacation.dateFrom.toString() ?? new Date().toString())
+            )} ${new Date(
+              vacation.dateFrom.toString() ?? new Date().toString()
+            ).getFullYear()}`;
+          })}`,
+          nextBussinesDay: `${data?.map((vacation) => {
+            const reintegrationDay = getNextBusinessDay(vacation.dateUntil);
+            return `${new Date(
+              reintegrationDay.toString() ?? new Date().toString()
+            ).getDate()} de ${new Intl.DateTimeFormat("es-ES", {
+              month: "long",
+            }).format(
+              new Date(reintegrationDay.toString() ?? new Date().toString())
+            )} ${new Date(
+              reintegrationDay.toString() ?? new Date().toString()
+            ).getFullYear()}`;
+          })}`,
           salary: data?.[0].formPeriod?.historicalPayroll?.[0].salary,
           salaryPaid: data?.[0].formPeriod?.historicalPayroll?.[0].salary,
           startPayroll: `${new Date(
@@ -522,7 +557,7 @@ export class VacationResolution {
         }),
         argumentsComponent: {
           text: "",
-          textOne: "PARÁGRAFO:",
+          textOne: "PARÁGRAFO: ",
           textTwo:
             "Esta liquidación puede estar sujeta a retención en la fuente por renta.",
           size: 22,

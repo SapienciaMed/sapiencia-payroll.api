@@ -333,7 +333,9 @@ export default class PayrollGenerateRepository
         ((totalDeductions ?? 0) + (totalTaxDeduction ?? 0))
       );
     }
-    return (totalIncomes || 0) - (totalDeductions || 0);
+    return (
+      (totalIncomes || 0) - (this.validNumberNegative(totalDeductions) || 0)
+    );
   }
 
   async getSubTotalTwo(

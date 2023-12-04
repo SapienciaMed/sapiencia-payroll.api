@@ -1801,7 +1801,7 @@ export class PayrollCalculations {
       workedDay: daysWorked,
       salary: salary,
       totalIncome: incomes,
-      totalDeduction: deductions,
+      totalDeduction: deductions * -1,
       total: Number(incomes) - Number(deductions),
       state: state,
       observation: error ?? "",

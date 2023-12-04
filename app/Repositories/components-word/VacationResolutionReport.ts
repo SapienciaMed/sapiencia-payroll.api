@@ -1,4 +1,3 @@
-
 import { ComponentsWord } from "./ComponentsWord";
 import { Document } from "docx";
 import writtenNumber from "written-number";
@@ -50,10 +49,12 @@ export class VacationResolution {
           text: "",
           textOne: "",
           textTwo: "",
+          size: 22,
         }),
         argumentsComponent: {
           text: `${data?.[0].observation}`,
           bold: false,
+          size: 22,
         },
         placeholders: [
           {
@@ -64,10 +65,11 @@ export class VacationResolution {
       },
       {
         consecutive: 2,
-        componentWordProp: subTitle.bind({ text: "" }),
+        componentWordProp: subTitle.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: "POR LA CUAL SE CONCEDEN VACACIONES A UN SERVIDOR PUBLICO DE LA ENTIDAD",
           bold: false,
+          size: 22,
         },
         placeholders: [
           {
@@ -78,10 +80,10 @@ export class VacationResolution {
       },
       {
         consecutive: 3,
-        componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
+        componentWordProp: generateParagraph.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: `${param.firstParam}`,
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -93,10 +95,11 @@ export class VacationResolution {
       },
       {
         consecutive: 4,
-        componentWordProp: subTitle.bind({ text: "" }),
+        componentWordProp: subTitle.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: "CONSIDERANDO QUE:",
           bold: true,
+          size: 22,
         },
         placeholders: [
           {
@@ -107,17 +110,15 @@ export class VacationResolution {
       },
       {
         consecutive: 5,
-        componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
+        componentWordProp: generateParagraph.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: `${
             data?.[0].vacation?.employment?.worker?.gender == "H"
-              ? "El servidor Público"
+              ? "El servidor"
               : data?.[0].vacation?.employment?.worker?.gender == "M"
-              ? "La servidora Pública"
-              : "L@ servidor@ Públic@"
+              ? "La servidora"
+              : "L@ servidor@"
           } ${
-            data?.[0].vacation?.employment?.worker?.firstName +
-            " " +
             data?.[0].vacation?.employment?.worker?.firstName +
             " " +
             data?.[0].vacation?.employment?.worker?.secondName +
@@ -125,13 +126,19 @@ export class VacationResolution {
             data?.[0].vacation?.employment?.worker?.surname +
             " " +
             data?.[0].vacation?.employment?.worker?.secondSurname
-          } identificada con ${
+          } ${
+            data?.[0].vacation?.employment?.worker?.gender == "H"
+              ? "identificado"
+              : data?.[0].vacation?.employment?.worker?.gender == "M"
+              ? "identificada"
+              : "identificad@"
+          } con ${
             documentTypeMapping[
               data?.[0].vacation?.employment?.worker?.typeDocument ?? "CC"
             ]
           }, número ${
             data?.[0].vacation?.employment?.worker?.numberDocument
-          },  quien se desempeña como ${
+          }, quien se desempeña como ${
             data?.[0].vacation?.employment?.charge?.name
           } - ${
             data?.[0].vacation?.employment?.dependence?.name
@@ -154,7 +161,7 @@ export class VacationResolution {
           )} ${new Date(
             data?.[0].dateUntil?.toString() ?? new Date().toString()
           ).getFullYear()}`,
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -197,7 +204,7 @@ export class VacationResolution {
       },
       {
         consecutive: 6,
-        componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
+        componentWordProp: generateParagraph.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: `El tiempo para el disfrute de vacaciones del referido período lo solicitó a partir del ${new Date(
             data?.[0].dateFrom.toString() ?? new Date().toString()
@@ -216,7 +223,7 @@ export class VacationResolution {
           )} ${new Date(
             data?.[0]?.dateUntil?.toString() ?? new Date().toString()
           ).getFullYear()}, ambas fechas inclusive.`,
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -231,10 +238,10 @@ export class VacationResolution {
       },
       {
         consecutive: 7,
-        componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
+        componentWordProp: generateParagraph.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: `${param.secondParam}`,
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -246,10 +253,10 @@ export class VacationResolution {
       },
       {
         consecutive: 8,
-        componentWordProp: subTitle.bind({ text: "" }),
+        componentWordProp: generateParagraph.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: "En mérito de lo expuesto,",
-          bold: false,
+          size: 22,
         },
         placeholders: [
           {
@@ -260,7 +267,7 @@ export class VacationResolution {
       },
       {
         consecutive: 9,
-        componentWordProp: subTitle.bind({ text: "" }),
+        componentWordProp: subTitle.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: "RESUELVE",
           bold: true,
@@ -274,19 +281,20 @@ export class VacationResolution {
       },
       {
         consecutive: 10,
-        componentWordProp: generateParagraphWithInitialBold.bind({ text: "" }),
+        componentWordProp: generateParagraphWithInitialBold.bind({
+          text: "",
+          size: 22,
+        }),
         argumentsComponent: {
           text: "",
-          textOne: "ARTÍCULO PRIMERO:",
+          textOne: "ARTÍCULO PRIMERO: ",
           textTwo: `Conceder vacaciones a ${
             data?.[0].vacation?.employment?.worker?.gender == "H"
-              ? "El servidor Público"
+              ? "El servidor"
               : data?.[0].vacation?.employment?.worker?.gender == "M"
-              ? "La servidora Pública"
-              : "L@ servidor@ Públic@"
+              ? "La servidora"
+              : "L@ servidor@"
           } ${
-            data?.[0].vacation?.employment?.worker?.firstName +
-            " " +
             data?.[0].vacation?.employment?.worker?.firstName +
             " " +
             data?.[0].vacation?.employment?.worker?.secondName +
@@ -294,7 +302,13 @@ export class VacationResolution {
             data?.[0].vacation?.employment?.worker?.surname +
             " " +
             data?.[0].vacation?.employment?.worker?.secondSurname
-          } identificada con ${
+          } ${
+            data?.[0].vacation?.employment?.worker?.gender == "H"
+              ? "identificado"
+              : data?.[0].vacation?.employment?.worker?.gender == "M"
+              ? "identificada"
+              : "identificad@"
+          }  con ${
             documentTypeMapping[
               data?.[0].vacation?.employment?.worker?.typeDocument ?? "CC"
             ]
@@ -321,16 +335,18 @@ export class VacationResolution {
             new Date(data?.[0]?.dateUntil?.toString() ?? new Date().toString())
           )} ${new Date(
             data?.[0]?.dateUntil?.toString() ?? new Date().toString()
-          ).getFullYear()} reintegrándose a sus labores el ${new Date(
-            data?.[0].dateUntil?.toString() ?? new Date().toString()
-          ).getDate()+1} de ${new Intl.DateTimeFormat("es-ES", {
+          ).getFullYear()} reintegrándose a sus labores el ${
+            new Date(
+              data?.[0].dateUntil?.toString() ?? new Date().toString()
+            ).getDate() + 1
+          } de ${new Intl.DateTimeFormat("es-ES", {
             month: "long",
           }).format(
             new Date(data?.[0].dateUntil?.toString() ?? new Date().toString())
           )} ${new Date(
             data?.[0].dateUntil?.toString() ?? new Date().toString()
           ).getFullYear()},`,
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -373,13 +389,14 @@ export class VacationResolution {
       },
       {
         consecutive: 11,
-        componentWordProp: generateParagraphWithInitialBold.bind({ text: "" }),
+        componentWordProp: generateParagraphWithInitialBold.bind({
+          text: "",
+          size: 22,
+        }),
         argumentsComponent: {
           text: "",
-          textOne: "ARTÍCULO SEGUNDO:",
+          textOne: "ARTÍCULO SEGUNDO: ",
           textTwo: `Liquidar, por concepto de vacaciones otorgadas a ${
-            data?.[0].vacation?.employment?.worker?.firstName +
-            " " +
             data?.[0].vacation?.employment?.worker?.firstName +
             " " +
             data?.[0].vacation?.employment?.worker?.secondName +
@@ -387,14 +404,20 @@ export class VacationResolution {
             data?.[0].vacation?.employment?.worker?.surname +
             " " +
             data?.[0].vacation?.employment?.worker?.secondSurname
-          } identificada con ${
+          } ${
+            data?.[0].vacation?.employment?.worker?.gender == "H"
+              ? "identificado"
+              : data?.[0].vacation?.employment?.worker?.gender == "M"
+              ? "identificada"
+              : "identificad@"
+          }  con ${
             documentTypeMapping[
               data?.[0].vacation?.employment?.worker?.typeDocument ?? "CC"
             ]
           }, número ${
             data?.[0].vacation?.employment?.worker?.numberDocument
           }, los siguientes rubros:`,
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -413,7 +436,10 @@ export class VacationResolution {
       },
       {
         consecutive: 12,
-        componentWordProp: generateTableVacationResolution.bind({ text: "" }),
+        componentWordProp: generateTableVacationResolution.bind({
+          text: "",
+          size: 22,
+        }),
         argumentsComponent: {
           text: "",
           totalEnjoyedDays: data?.[0].enjoyedDays,
@@ -490,13 +516,16 @@ export class VacationResolution {
       },
       {
         consecutive: 13,
-        componentWordProp: generateParagraphWithInitialBold.bind({ text: "" }),
+        componentWordProp: generateParagraphWithInitialBold.bind({
+          text: "",
+          size: 22,
+        }),
         argumentsComponent: {
           text: "",
           textOne: "PARÁGRAFO:",
           textTwo:
             "Esta liquidación puede estar sujeta a retención en la fuente por renta.",
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -507,13 +536,16 @@ export class VacationResolution {
       },
       {
         consecutive: 14,
-        componentWordProp: generateParagraphWithInitialBold.bind({ text: "" }),
+        componentWordProp: generateParagraphWithInitialBold.bind({
+          text: "",
+          size: 22,
+        }),
         argumentsComponent: {
           text: "",
-          textOne: "ARTÍCULO TERCERO:",
+          textOne: "ARTÍCULO TERCERO: ",
           textTwo:
             "Remitir copia de la presente Resolución a la Subdirección Administrativa, Financiera y de Apoyo a la Gestión para lo de su competencia y copia a la hoja de vida del servidor.",
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -524,13 +556,16 @@ export class VacationResolution {
       },
       {
         consecutive: 15,
-        componentWordProp: generateParagraphWithInitialBold.bind({ text: "" }),
+        componentWordProp: generateParagraphWithInitialBold.bind({
+          text: "",
+          size: 22,
+        }),
         argumentsComponent: {
           text: "",
-          textOne: "ARTÍCULO CUARTO:",
+          textOne: "ARTÍCULO CUARTO: ",
           textTwo:
             "La presente Resolución rige a partir de la fecha de su expedición y contra la misma no procede ningún recurso.",
-          size: 20,
+          size: 22,
         },
         placeholders: [
           {
@@ -541,10 +576,11 @@ export class VacationResolution {
       },
       {
         consecutive: 16,
-        componentWordProp: subTitle.bind({ text: "" }),
+        componentWordProp: subTitle.bind({ text: "", size: 22 }),
         argumentsComponent: {
           text: "COMUNÍQUESE Y CÚMPLASE",
           bold: true,
+          size: 22,
         },
         placeholders: [
           {
@@ -559,12 +595,16 @@ export class VacationResolution {
           text: "",
           textOne: "",
           textTwo: "",
+          sizeOne: 22,
+          sizeTwo: 22,
         }),
         argumentsComponent: {
           text: "",
           textOne: `${param.thirdParam}`,
           textTwo: "Director General ",
           boldTwo: false,
+          sizeOne: 22,
+          sizeTwo: 22,
         },
         placeholders: [
           {

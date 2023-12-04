@@ -65,9 +65,9 @@ export interface IReportsRepository {
     codEmployment: number
   ): Promise<IEmployment[] | null>;
   getPayrollVacationsYear(
-    codVacationDays: number,
+    codPayroll: number,
     codEmployment: number
-  ): Promise<IVacationDay[] | null>;
+  ): Promise<IVacationDay[] | null> ;
   combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer>;
 }
 
@@ -97,6 +97,16 @@ export default class ReportsRepository implements IReportsRepository {
     codEmployment: number
   ): Promise<IFormPeriod[] | null> {
     const res = await FormsPeriod.query()
+      .whereHas("historicalPayroll", (history) => {
+        history
+          .where("idEmployment", codEmployment)
+          .andWhere("state", "Exitoso")
+          .preload("employment", (employment) => {
+            employment.preload("worker", (workerQuery) => {
+              workerQuery.preload("relatives");
+            });
+          });
+      })
       .preload("deductions", (deductionQuery) => {
         deductionQuery.where("idEmployment", codEmployment);
       })
@@ -109,13 +119,15 @@ export default class ReportsRepository implements IReportsRepository {
       .preload("historicalPayroll", (history) => {
         history
           .where("idEmployment", codEmployment)
+          .andWhere("state", "Exitoso")
           .preload("employment", (employment) => {
             employment.preload("worker", (workerQuery) => {
               workerQuery.preload("relatives");
             });
           });
       })
-      .where("year", year);
+      .where("year", year)
+      .andWhere("state", "<>", "Pendiente");
     if (!res) {
       return null;
     }
@@ -124,7 +136,7 @@ export default class ReportsRepository implements IReportsRepository {
   }
 
   async getPayrollVacationsYear(
-    codVacationDays: number,
+    codPayroll: number,
     codEmployment: number
   ): Promise<IVacationDay[] | null> {
     const res = await VacationDay.query()
@@ -155,7 +167,7 @@ export default class ReportsRepository implements IReportsRepository {
         });
         // vacationQuery.where("codEmployment", codEmployment);
       })
-      .where("id", codVacationDays);
+      .where("codForm", codPayroll);
 
     if (!res) {
       return null;
@@ -344,17 +356,17 @@ export default class ReportsRepository implements IReportsRepository {
     let browser: Browser;
 
     //Configuracion para pruebas
-    browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox"],
-      executablePath: "/usr/bin/chromium",
-    });
-
-    // Configuracion local proyecto
     // browser = await puppeteer.launch({
     //   headless: "new",
-    //   // slowMo: 400,
+    //   args: ["--no-sandbox"],
+    //   executablePath: "/usr/bin/chromium",
     // });
+
+    // Configuracion local proyecto
+    browser = await puppeteer.launch({
+      headless: "new",
+      // slowMo: 400,
+    });
 
     const page = await browser.newPage();
 

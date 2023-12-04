@@ -47,6 +47,15 @@ export default class FormPeriodsController {
       );
     }
   }
+  public async getPayrollVacation({ response }: HttpContextContract) {
+    try {
+      return response.send(await FormPeriodProvider.getPayrollVacation());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
 
   public async getFormPeriodPaginate({
     response,

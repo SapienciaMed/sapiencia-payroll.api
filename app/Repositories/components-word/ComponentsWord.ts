@@ -1,3 +1,4 @@
+import { formaterNumberToCurrency } from "App/Utils/functions";
 import {
   Header,
   Paragraph,
@@ -89,6 +90,7 @@ interface ITableVacationResolution {
   recreationBounty: number;
   deductionlegal: number;
   totalPaid: number;
+  size?: number;
 }
 
 interface ISettlementOfSocialBenefits {
@@ -420,7 +422,7 @@ export class ComponentsWord {
           text: data.textTwo,
           bold: data.boldTwo ?? true,
           font: "Arial",
-          size: data.sizeTwo ?? 23,
+          size: data.sizeTwo ?? 22,
           break: 1,
         }),
       ],
@@ -492,7 +494,7 @@ export class ComponentsWord {
                       text: `Días de disfrute`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -507,7 +509,7 @@ export class ComponentsWord {
                       text: `${data.totalEnjoyedDays}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -526,7 +528,7 @@ export class ComponentsWord {
                       text: `Fecha de Inicio`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -541,7 +543,7 @@ export class ComponentsWord {
                       text: `${data.starDateEnjoyedDays}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -560,7 +562,7 @@ export class ComponentsWord {
                       text: `Fecha de reintegro`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -575,7 +577,7 @@ export class ComponentsWord {
                       text: `${data.nextBussinesDay}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -594,7 +596,7 @@ export class ComponentsWord {
                       text: `Salario base: Vacaciones y prima de vacaciones`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -606,10 +608,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `${data.salary}`,
+                      text: `${formaterNumberToCurrency(data.salary)}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -628,7 +630,7 @@ export class ComponentsWord {
                       text: `Vacaciones`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -640,10 +642,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `${data.bonusVacation}`,
+                      text: `${formaterNumberToCurrency(data.bonusVacation)}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -662,7 +664,7 @@ export class ComponentsWord {
                       text: `Bonificación por recreación`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -674,10 +676,12 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `${data.recreationBounty}`,
+                      text: `${formaterNumberToCurrency(
+                        data.recreationBounty
+                      )}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -696,7 +700,7 @@ export class ComponentsWord {
                       text: `Salarios ${data.startPayroll} A ${data.endPayroll}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -708,10 +712,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `${data.salaryPaid}`,
+                      text: `${formaterNumberToCurrency(data.salaryPaid)}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -730,7 +734,7 @@ export class ComponentsWord {
                       text: `Deducciones`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -745,7 +749,7 @@ export class ComponentsWord {
                       text: ``,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -764,7 +768,7 @@ export class ComponentsWord {
                       text: `Aportes obligatorios`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -776,10 +780,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `Revisó: Profesional Universitaria - Contabilidad`,
+                      text: "",
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -798,7 +802,7 @@ export class ComponentsWord {
                       text: `Pensión, salud y fondos de pensiones`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -810,10 +814,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `${data.deductionlegal}`,
+                      text: `${formaterNumberToCurrency(data.deductionlegal)}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -832,7 +836,7 @@ export class ComponentsWord {
                       text: `Total a pagar`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -844,10 +848,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: `${data.totalPaid}`,
+                      text: `${formaterNumberToCurrency(data.totalPaid)}`,
                       bold: false,
                       font: "Arial",
-                      size: 18,
+                      size: data.size ?? 22,
                     }),
                   ],
                 }),
@@ -1148,7 +1152,9 @@ export class ComponentsWord {
     });
   }
 
-  async generateSettlementOfSocialBenefits(data: ISettlementOfSocialBenefits): Promise<any> {
+  async generateSettlementOfSocialBenefits(
+    data: ISettlementOfSocialBenefits
+  ): Promise<any> {
     return new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
       rows: [
@@ -1161,16 +1167,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'LIQUIDACIÓN PRESTACIONES SOCIALES',
+                      text: "LIQUIDACIÓN PRESTACIONES SOCIALES",
                       bold: true,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1180,14 +1186,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'N° Resolución',
+                      text: "N° Resolución",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1196,16 +1202,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1215,14 +1221,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Fecha Resolución',
+                      text: "Fecha Resolución",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1236,11 +1242,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1250,14 +1256,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Valor Total Resolución',
+                      text: "Valor Total Resolución",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1265,14 +1271,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1285,11 +1291,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1299,14 +1305,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Nombre',
+                      text: "Nombre",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1320,11 +1326,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1334,14 +1340,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'N° de Cédula',
+                      text: "N° de Cédula",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1355,11 +1361,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1369,14 +1375,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Fecha de ingreso',
+                      text: "Fecha de ingreso",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1390,11 +1396,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1404,14 +1410,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Fecha de Retiro',
+                      text: "Fecha de Retiro",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1425,11 +1431,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1444,9 +1450,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1460,11 +1466,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1479,9 +1485,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1495,11 +1501,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1514,9 +1520,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1530,11 +1536,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1549,9 +1555,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1565,11 +1571,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1584,9 +1590,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1600,11 +1606,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1619,9 +1625,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               columnSpan: 2,
@@ -1635,11 +1641,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1650,16 +1656,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1670,14 +1676,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'CESANTIAS',
+                      text: "CESANTIAS",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1690,9 +1696,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1705,11 +1711,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1720,16 +1726,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '360',
+                      text: "360",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1740,14 +1746,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'INTERESES CESANTIAS',
+                      text: "INTERESES CESANTIAS",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1760,9 +1766,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1775,11 +1781,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1790,16 +1796,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '360',
+                      text: "360",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1810,14 +1816,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'VACACIONES',
+                      text: "VACACIONES",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1830,9 +1836,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1845,11 +1851,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1860,16 +1866,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '720',
+                      text: "720",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1880,14 +1886,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'BONIFICACIÓN POR RECREACIÓN',
+                      text: "BONIFICACIÓN POR RECREACIÓN",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1895,14 +1901,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL BÁSICO * 2',
+                      text: "SALARIO MENSUAL BÁSICO * 2",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1915,11 +1921,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1930,16 +1936,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '30',
+                      text: "30",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -1950,14 +1956,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'PRIMA DE NAVIDAD',
+                      text: "PRIMA DE NAVIDAD",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1985,11 +1991,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2000,16 +2006,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '360',
+                      text: "360",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2020,14 +2026,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'BONIFICACIÓN POR SERVICIOS',
+                      text: "BONIFICACIÓN POR SERVICIOS",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2035,14 +2041,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL BÁSICO * 2',
+                      text: "SALARIO MENSUAL BÁSICO * 2",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2055,11 +2061,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2070,16 +2076,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '360',
+                      text: "360",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2090,14 +2096,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'PRIMA DE SERVICIOS',
+                      text: "PRIMA DE SERVICIOS",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2110,9 +2116,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2125,11 +2131,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2140,16 +2146,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '720',
+                      text: "720",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2160,14 +2166,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'SALARIOS',
+                      text: "SALARIOS",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2180,9 +2186,9 @@ export class ComponentsWord {
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2195,11 +2201,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2210,16 +2216,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '30',
+                      text: "30",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2230,16 +2236,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2250,16 +2256,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'DEDUCCIONES',
+                      text: "DEDUCCIONES",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2269,14 +2275,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'APORTES SEGURIDAD SOCIAL',
+                      text: "APORTES SEGURIDAD SOCIAL",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2284,14 +2290,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2304,11 +2310,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2318,14 +2324,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'APORTES AFC',
+                      text: "APORTES AFC",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2333,14 +2339,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2353,11 +2359,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2367,14 +2373,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'RETENCIÓN EN LA FUENTE POR RENTA',
+                      text: "RETENCIÓN EN LA FUENTE POR RENTA",
                       bold: false,
                       font: "Arial",
                       size: 22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2382,14 +2388,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2402,11 +2408,11 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2417,16 +2423,16 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: '',
+                      text: "",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
         new TableRow({
           children: [
@@ -2437,14 +2443,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'TOTAL A PAGAR LIQUIDACIÓN DE PRESTACIONES SOCIALES',
+                      text: "TOTAL A PAGAR LIQUIDACIÓN DE PRESTACIONES SOCIALES",
                       bold: false,
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -2457,14 +2463,14 @@ export class ComponentsWord {
                       font: "Arial",
                       size:22
                     }),
-                  ]
-                })
-              ]
-            })
-          ]
+                  ],
+                }),
+              ],
+            }),
+          ],
         }),
-      ]
-    })
+      ],
+    });
   }
 
   async generateTablePerContract(data: ITablePerContract): Promise<any> {
@@ -2838,7 +2844,7 @@ export class ComponentsWord {
       spacing: {
         before: 1400,
       },
-      indent: { left: 2020/* , right: 920 */ }, // La indentación se mide en twips (1 pulgada = 1440 twips)
+      indent: { left: 2020 /* , right: 920 */ }, // La indentación se mide en twips (1 pulgada = 1440 twips)
       children: [
         new TextRun({
           text: data.name,
@@ -2848,43 +2854,41 @@ export class ComponentsWord {
           break: 1
         }),
         new TextRun({
-          text: 'Profesional Universitario-Gestión Humana',
+          text: "Profesional Universitario-Gestión Humana",
           bold: false,
-          font: 'Arial',
-          size: 18,
-          break: 1
-        }),
-        new TextRun({
-          text: 'Subdirección Administrativa, financiera y de apoyo a la gestión',
-          bold: false,
-          font: 'Arial',
-          size: 18,
-          break: 1
-        }),
-        new TextRun({
-          text: 'Teléfono: (4) 4447947',
-          bold: false,
-          font: 'Arial',
-          size: 18,
-          break: 1
-        }),
-        new TextRun({
-          text: 'Correo electrónico:',
-          bold: false,
-          font: 'Arial',
+          font: "Arial",
           size: 18,
           break: 1,
         }),
         new TextRun({
-          text: 'gestionhumana@sapiencia.gov.co',
+          text: "Subdirección Administrativa, financiera y de apoyo a la gestión",
           bold: false,
-          font: 'Arial',
+          font: "Arial",
+          size: 18,
+          break: 1,
+        }),
+        new TextRun({
+          text: "Teléfono: (4) 4447947",
+          bold: false,
+          font: "Arial",
+          size: 18,
+          break: 1,
+        }),
+        new TextRun({
+          text: "Correo electrónico:",
+          bold: false,
+          font: "Arial",
+          size: 18,
+          break: 1,
+        }),
+        new TextRun({
+          text: "gestionhumana@sapiencia.gov.co",
+          bold: false,
+          font: "Arial",
           size: 18,
           style: "Hyperlink",
-        })
-      ]
-    })
-
+        }),
+      ],
+    });
   }
-
 }

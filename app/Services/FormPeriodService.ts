@@ -23,6 +23,7 @@ export interface IFormPeriodService {
     formPeriod: IFormPeriod,
     id: number
   ): Promise<ApiResponse<IFormPeriod | null>>;
+  getPayrollVacation(): Promise<ApiResponse<IFormPeriod[]>>;
 }
 
 export default class FormPeriodService implements IFormPeriodService {
@@ -98,6 +99,19 @@ export default class FormPeriodService implements IFormPeriodService {
 
   async getFormPeriod(): Promise<ApiResponse<IFormPeriod[]>> {
     const res = await this.formPeriodRepository.getFormPeriod();
+    if (!res) {
+      return new ApiResponse(
+        {} as IFormPeriod[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getPayrollVacation(): Promise<ApiResponse<IFormPeriod[]>> {
+    const res = await this.formPeriodRepository.getPayrollVacation();
     if (!res) {
       return new ApiResponse(
         {} as IFormPeriod[],

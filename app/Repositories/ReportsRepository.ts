@@ -64,9 +64,9 @@ export interface IReportsRepository {
     codEmployment: number
   ): Promise<IEmployment[] | null>;
   getPayrollVacationsYear(
-    codVacationDays: number,
+    codPayroll: number,
     codEmployment: number
-  ): Promise<IVacationDay[] | null>;
+  ): Promise<IVacationDay[] | null> ;
   combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer>;
 }
 
@@ -135,7 +135,7 @@ export default class ReportsRepository implements IReportsRepository {
   }
 
   async getPayrollVacationsYear(
-    codVacationDays: number,
+    codPayroll: number,
     codEmployment: number
   ): Promise<IVacationDay[] | null> {
     const res = await VacationDay.query()
@@ -166,7 +166,7 @@ export default class ReportsRepository implements IReportsRepository {
         });
         // vacationQuery.where("codEmployment", codEmployment);
       })
-      .where("id", codVacationDays);
+      .where("codForm", codPayroll);
 
     if (!res) {
       return null;

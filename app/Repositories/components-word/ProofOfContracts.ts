@@ -1,4 +1,6 @@
 import { ComponentsWord } from "./ComponentsWord";
+import { numberToColombianPesosWord } from "@isildur1/number-to-word";
+import { formaterNumberToCurrency } from "App/Utils/functions";
 import { Document } from "docx";
 
 export class ProofOfContracts {
@@ -25,15 +27,16 @@ export class ProofOfContracts {
         };
 
         const contracts = dataReport.contracts.map((element: any) => {
+            console.log({element})
             return {
                 consecutive: 4,
                 componentWordProp: generateTablePerContract.bind({ text: "" }),
                 argumentsComponent: {
                     text: "",
-                    nosContracto: element.numberContract,
+                    noContrato: `${element.numberContract}`,
                     objeto: element.objectContract,
                     obligacionesContractuales: element.contractualObligations,
-                    valorContrato: element.contractValue,
+                    valorContrato: `${numberToColombianPesosWord(element.contractValue)} (${formaterNumberToCurrency(element.contractValue)})`,//`${numberToColombianPesosWord(element.contractValue.toFixed(2))} - ${}`,
                     fechaInicio: element.startDate,
                     fechaTerminacion: element.endDate,
                     lugarEjecucion: element.executionPlace,
@@ -56,10 +59,12 @@ export class ProofOfContracts {
                     text: "",
                     textOne: "",
                     textTwo: "",
+
                 }),
                 argumentsComponent: {
                     text: "LA SUBDIRECCIÓN ADMINISTRATIVA, FINANCIERA Y DE APOYO A LA GESTIÓN DE LA AGENCIA DE EDUCACIÓN POSTSECUNDARIA DE MEDELLÍN-SAPIENCIA",
                     bold: false,
+                    size: 24
                 },
                 placeholders: [
                     {
@@ -74,6 +79,7 @@ export class ProofOfContracts {
                 argumentsComponent: {
                     text: "HACE CONSTAR:",
                     bold: false,
+                    size: 24
                 },
                 placeholders: [
                     {
@@ -87,7 +93,7 @@ export class ProofOfContracts {
                 componentWordProp: generateParagraph.bind({ text: "", size: 20 }),
                 argumentsComponent: {
                     text: "Que [nombre completo] con [tipo documento] [número documento] ha celebrado los siguientes contratos de prestación de servicios con LA AGENCIA DE EDUCACIÓN POSTSECUNDARIA DE MEDELLÍN – SAPIENCIA, entidad descentralizada en la modalidad de Unidad Administrativa Especial, del nivel territorial y del orden municipal, identificada con NIT 900.602.106-0: ",
-                    size: 20,
+                    size: 22,
                 },
                 placeholders: [
                     {
@@ -137,7 +143,7 @@ export class ProofOfContracts {
                 argumentsComponent: {
                     text: "",
                     name: dataReport.universityProfessionalName,
-                    size: 25,
+                    size: 24,
                 },
                 placeholders: [
                     {

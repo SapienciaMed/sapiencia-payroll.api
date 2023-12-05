@@ -131,6 +131,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get("/types", "FormPeriodsController.getFormTypes");
   Route.get("/available", "FormPeriodsController.getFormPeriod");
+  Route.get("/vacations-payrolls", "FormPeriodsController.getPayrollVacation");
   Route.get("/last/:id", "FormPeriodsController.getLastPeriods");
   Route.get("/:id", "FormPeriodsController.getFormPeriodById");
   Route.post("/", "FormPeriodsController.createFormPeriod");

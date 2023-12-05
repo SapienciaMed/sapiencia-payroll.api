@@ -25,6 +25,9 @@ const formTypesFake: IFormTypes = {
   frecuencyPaid: "Mensual",
 };
 export class FormPeriodRepositoryFake implements FormPeriodRepository {
+  getPayrollVacation(): Promise<IFormPeriod[] | null> {
+    throw new Error("Method not implemented.");
+  }
   getFormPeriod(): Promise<IFormPeriod[] | null> {
     throw new Error("Method not implemented.");
   }

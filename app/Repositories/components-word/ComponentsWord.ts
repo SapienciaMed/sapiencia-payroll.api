@@ -2488,7 +2488,8 @@ export class ComponentsWord {
                     new TextRun({
                       text: "N° de contrato",
                       bold: true,
-                      size: 20,
+                      size: 22,
+                      font:'Arial'
                     }),
                   ],
                 }),
@@ -2498,11 +2499,13 @@ export class ComponentsWord {
               children: [
                 new Paragraph({
                   alignment: AlignmentType.JUSTIFIED,
+                  indent:{ left:56.7},
                   children: [
                     new TextRun({
                       text: data.noContrato,
                       bold: false,
-                      size: 20,
+                      size: 22,
+                      font:'Arial'
                     }),
                   ],
                 }),
@@ -2521,7 +2524,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Objeto",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2531,12 +2534,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.objeto,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2555,8 +2559,8 @@ export class ComponentsWord {
                   children: [
                     new TextRun({
                       text: "Obligaciones contractuales",
-                      bold: false,
-                      size: 20,
+                      bold: true,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2567,12 +2571,13 @@ export class ComponentsWord {
               children: data.obligacionesContractuales.map(
                 (item: any) =>
                   new Paragraph({
+                    indent:{ left:56.7},
                     alignment: AlignmentType.JUSTIFIED,
                     children: [
                       new TextRun({
                         text: `${item.text}`,
                         bold: false,
-                        size: 18,
+                        size: 22,
                         font: "Arial",
                       }),
                     ],
@@ -2592,7 +2597,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Valor del contrato",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2602,12 +2607,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.valorContrato,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2627,7 +2633,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Fecha de Inicio",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2637,12 +2643,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.fechaInicio,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2662,7 +2669,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Fecha de Terminación",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2672,12 +2679,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.fechaTerminacion,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2697,7 +2705,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Cumplimiento",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2707,13 +2715,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.cumplimiento,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2733,7 +2741,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Lugar de ejecución",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2743,12 +2751,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.lugarEjecucion,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2768,7 +2777,7 @@ export class ComponentsWord {
                     new TextRun({
                       text: "Sanciones",
                       bold: true,
-                      size: 20,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],
@@ -2778,12 +2787,13 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
+                  indent:{ left:56.7},
                   alignment: AlignmentType.JUSTIFIED,
                   children: [
                     new TextRun({
                       text: data.sanciones,
                       bold: false,
-                      size: 18,
+                      size: 22,
                       font: "Arial",
                     }),
                   ],

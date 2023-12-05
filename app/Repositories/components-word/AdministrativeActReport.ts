@@ -36,10 +36,10 @@ export class AdministrativeActReport {
             },
             {
                 consecutive: 2,
-                componentWordProp: generateParagraph.bind({ text: '', size: 20 }),
+                componentWordProp: generateParagraph.bind({ text: '', size: 22 }),
                 argumentsComponent: {
                     text: dataReport.paragraphOne,
-                    size: 20
+                    size: 22
                 },
                 placeholders: [
                     {
@@ -66,7 +66,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
                     text: dataReport.paragraphTwo,
-                    size:20
+                    size:22
                 },
                 placeholders: [
                     {
@@ -80,7 +80,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
                     text: "Mediante el Acuerdo 019 de noviembre de 2020, se modificó el Decreto con fuerza de Acuerdo 1364 de 2012, en cuanto a la denominación, objeto, funciones y otros aspectos de la Agencia de Educación Superior de Medellín - Sapiencia, por lo que, a partir del 18 de diciembre de 2020 (fecha de entrada en vigor del precitado acuerdo), la entidad pasó a denominarse Agencia de Educación Postsecundaria de Medellín - Sapiencia.",
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -94,7 +94,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
                     text: "[apelativo] [nombre completo], [text-identificado-genero] con [nombre tipo documento] Nro. [no documento], estuvo [vinculado] a la Agencia de Educación Postsecundaria de Medellín – SAPIENCIA, del [fecha inicial del contrato] al [fecha final del contrato], se desempeñó en el cargo denominado [cargo] - [dependencia] para la Gestión de Educación Postsecundaria, [tipo de vinculación].",
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -147,8 +147,8 @@ export class AdministrativeActReport {
                 consecutive: 7,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "A través de la [observación de liquidación], “por medio de la cual se acepta la renuncia a un servidor de la Agencia de Educación Postsecundaria de Medellín - SAPIENCIA”, se aceptó la renuncia presentada mediante oficio con radicado [observación de liquidación2], por [servidor@] [nombre completo], identificado con [nombre tipo documento] número [número documento] al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo2] - [dependencia] para la Gestión de Educación Postsecundaria.",
-                    size:20,
+                    text: "A través de la [observación de liquidación], “por medio de la cual se acepta la renuncia a un servidor de la Agencia de Educación Postsecundaria de Medellín - SAPIENCIA”, se aceptó la renuncia presentada mediante oficio con radicado [observación de liquidación2], por [servidor@] [nombre completo], [text-identificado-genero] con [nombre tipo documento] número [número documento] al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo2] - [dependencia] para la Gestión de Educación Postsecundaria.",
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -158,6 +158,10 @@ export class AdministrativeActReport {
                     {
                         key: '[observación de liquidación2]',
                         newText: dataReport.settlementObservation
+                    },
+                    {
+                        key: '[text-identificado-genero]',
+                        newText: dataReport.textIdentificyGener
                     },
                     {
                         key: '[radicado]',
@@ -205,13 +209,17 @@ export class AdministrativeActReport {
                 consecutive: 8,
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
-                    text: "[apelativo] [nombre completo], identificado con [tipo documento] Nro. [numero documento], tiene derecho al pago de las siguientes prestaciones sociales de acuerdo con lo estipulado en los Decretos No. 3135 de 1968 reglamentado por el Decreto 1848 de 1969, Decreto 1042, Decreto No. 1045 de 1978 y el Decreto 404 del 2006: vacaciones, prima de vacaciones y bonificación especial de recreación proporcional.",
-                    size:20,
+                    text: "[apelativo] [nombre completo], [text-identificado-genero] con [tipo documento] Nro. [numero documento], tiene derecho al pago de las siguientes prestaciones sociales de acuerdo con lo estipulado en los Decretos No. 3135 de 1968 reglamentado por el Decreto 1848 de 1969, Decreto 1042, Decreto No. 1045 de 1978 y el Decreto 404 del 2006: vacaciones, prima de vacaciones y bonificación especial de recreación proporcional.",
+                    size:22,
                 },
                 placeholders: [
                     {
                         key: '[apelativo]',
                         newText: dataReport.apelative
+                    },
+                    {
+                        key: '[text-identificado-genero]',
+                        newText: dataReport.textIdentificyGener
                     },
                     {
                         key: '[nombre completo]',
@@ -232,7 +240,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
                     text: dataReport.paragraphThree,
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -248,7 +256,7 @@ export class AdministrativeActReport {
                     text: "",
                     textOne:'Prima de Navidad: ',
                     textTwo:'Artículo 32 del Decreto 1045 de 1978: “Cuando el empleado o trabajador oficial no hubiere servido durante todo el año civil, tendrá derecho a la mencionada prima de navidad, en proporción al tiempo laborado, se liquidará y pagará con base en el último salario devengado, o en el último promedio mensual, si fuere variable”.',
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -264,7 +272,7 @@ export class AdministrativeActReport {
                     text: "",
                     textOne:'Prima de servicios: ',
                     textTwo:'Artículo 60 del decreto 1042 de 1978. Pago Proporcional de la prima de servicio, “Cuando el funcionario no haya trabajado el año completo en la misma entidad tendrá derecho al pago proporcional de la prima, por cada mes completo de labor y siempre que hubiere servido en el organismo por lo menos un semestre”.',
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -278,7 +286,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
                     text: "La Subdirección Administrativa, Financiera y de Apoyo a la Gestión certifica la existencia de disponibilidad presupuestal en el rubro para la apropiación correspondiente.",
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -292,7 +300,7 @@ export class AdministrativeActReport {
                 componentWordProp: generateParagraph.bind({ text: '' }),
                 argumentsComponent: {
                     text: "En mérito de lo expuesto",
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -321,7 +329,7 @@ export class AdministrativeActReport {
                     text: "Reconocer a [apelativo] [nombre completo], [text-identificado-genero] con [tipo documento] Nro. [numero documento], por concepto de prestaciones sociales definitivas la suma de [valor total en letras a pagar] ([valor total en número a pagar]) correspondientes al cargo de [tipo de vinculación], Nivel: [cargo], denominado: [cargo2] - [dependencia] para la Gestión de Educación Postsecundaria.",
                     textOne:'ARTÍCULO PRIMERO: ',
                     textTwo:'',
-                    size:20,
+                    size:22,
                 },
                 placeholders: [
                     {
@@ -398,7 +406,7 @@ export class AdministrativeActReport {
                     primaNavidad:formaterNumberToCurrency(dataReport.vacations),
                     bonificacionServicios: formaterNumberToCurrency(dataReport.serviceBonus),
                     primaServicios:formaterNumberToCurrency(dataReport.premiunService),
-                    salarios: (dataReport.salary),
+                    salarios: formaterNumberToCurrency(dataReport.salary),
                     aportesSeguridadSocial: formaterNumberToCurrency(dataReport.socialSecurityContributions),
                     aportesAFC:formaterNumberToCurrency(dataReport.contributionsAFC),
                     retencionFuenteRenta: formaterNumberToCurrency(dataReport.retentionSourceIncome),
@@ -418,7 +426,7 @@ export class AdministrativeActReport {
                     text: "",
                     textOne:'ARTÍCULO SEGUNDO: ',
                     textTwo:'Esta liquidación puede estar sujeta a retención en la fuente la cual se aplica al momento de efectuarse el pago.',
-                    size:20
+                    size:22
                 },
                 placeholders: [
                     {
@@ -434,7 +442,7 @@ export class AdministrativeActReport {
                     text: "",
                     textOne:'ARTÍCULO TERCERO: ',
                     textTwo:'Contra la presente resolución procede el recurso de Reposición dentro de los diez (10) días hábiles siguientes a la fecha de su notificación.',
-                    size:20
+                    size:22
                 },
                 placeholders: [
                     {

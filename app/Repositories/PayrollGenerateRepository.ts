@@ -62,6 +62,7 @@ export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
   getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getActiveEmploymentsContracts(dateStart: Date): Promise<IEmploymentResult[]>;
+  getVacationEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getRetiredEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
   getMonthlyValuePerGrouper(
@@ -575,6 +576,28 @@ export default class PayrollGenerateRepository
       .preload("charges")
       .preload("salaryHistories", (query) => {
         query.andWhere("validity", true);
+      })
+      .whereHas("typesContracts", (contractsQuery) => {
+        contractsQuery.where("temporary", false);
+      })
+      .where("startDate", "<=", dateStart)
+      .andWhere("state", "=", true);
+
+    return res.map((i) => i.serialize() as IEmploymentResult);
+  }
+
+  async getVacationEmployments(dateStart: Date): Promise<IEmploymentResult[]> {
+    const res = await Employment.query()
+      .preload("worker")
+      .preload("charges")
+      .preload("salaryHistories", (query) => {
+        query.andWhere("validity", true);
+      })
+      .whereHas("vacation", (vacationQuery) => {
+        vacationQuery.where("periodClosed", false);
+        vacationQuery.whereHas("vacationDay", (vacationDayQuery) => {
+          vacationDayQuery.whereNull("codForm");
+        });
       })
       .whereHas("typesContracts", (contractsQuery) => {
         contractsQuery.where("temporary", false);

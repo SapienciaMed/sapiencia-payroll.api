@@ -388,7 +388,7 @@ export class AdministrativeActReport {
                 argumentsComponent: {
                     text:'',
                     fechaResolucion:dataReport.dateResolution,
-                    valorTotalResolucion:dataReport.valueTotalResolution,
+                    valorTotalResolucion:formaterNumberToCurrency(dataReport.valueTotalResolution),
                     nombre: dataReport.completeName,
                     noDocumento:dataReport.numberDocument,
                     fechaIngreso: dataReport.initialDateContract,

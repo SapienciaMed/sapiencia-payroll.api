@@ -51,10 +51,10 @@ export default class extends BaseSchema {
         .date("EMP_FECHA_FIN")
         .comment("Fecha de finalizacion del contrato ");
       table
-        .string("EMP_OBLIGACIONES_ESPECIFICAS", 500)
+        .string("EMP_OBLIGACIONES_ESPECIFICAS", 10000)
         .comment("Texto donde se definen las obligaciones de la contratacion");
       table
-        .string("EMP_OBJECTO_CONTRACTUAL", 500)
+        .string("EMP_OBJECTO_CONTRACTUAL", 5000)
         .comment("Objeto contractual del empleo");
       table
         .string("EMP_ESTADO", 10)

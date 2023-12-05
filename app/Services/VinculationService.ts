@@ -44,6 +44,7 @@ export interface IVinculationService {
   getVinculationById(id: number): Promise<ApiResponse<IGetByVinculation>>;
   getActiveWorkers(temporary: boolean): Promise<ApiResponse<IWorker[]>>;
   getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>>;
+  getInactivesWorkers(): Promise<ApiResponse<IWorker[]>>;
   createVinculation(
     data: ICreateOrUpdateVinculation,
     trx: TransactionClientContract
@@ -68,6 +69,9 @@ export interface IVinculationService {
     contractSuspension: IcontractSuspension,
     trx: TransactionClientContract
   ): Promise<ApiResponse<IcontractSuspension>>;
+  getEmploymentByPayroll(
+    idPayroll: number
+  ): Promise<ApiResponse<IEmployment[]>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -274,6 +278,19 @@ export default class VinculationService implements IVinculationService {
     return new ApiResponse(res, EResponseCodes.OK);
   }
 
+  async getInactivesWorkers(): Promise<ApiResponse<IWorker[]>> {
+    const res = await this.workerRepository.getInactivesWorkers();
+    if (!res) {
+      return new ApiResponse(
+        {} as IWorker[],
+        EResponseCodes.FAIL,
+        "Registro no encontrado"
+      );
+    }
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
   async getActivesContractorworkers(): Promise<ApiResponse<IWorker[]>> {
     const res = await this.workerRepository.getActivesContractorworkers();
     if (!res) {
@@ -421,5 +438,15 @@ export default class VinculationService implements IVinculationService {
         filters
       );
     return new ApiResponse(Employments, EResponseCodes.OK);
+  }
+
+  async getEmploymentByPayroll(
+    idPayroll: number
+  ): Promise<ApiResponse<IEmployment[]>> {
+    const res = await this.employmentRepository.getEmploymentByPayroll(
+      idPayroll
+    );
+
+    return new ApiResponse(res, EResponseCodes.OK);
   }
 }

@@ -436,7 +436,7 @@ export class PayrollExecutions extends PayrollCalculations {
     //buscar los empelados activos de la planilla quincenal.
 
     const employments =
-      await this.payrollGenerateRepository.getActiveEmployments(
+      await this.payrollGenerateRepository.getVacationEmployments(
         new Date(String(formPeriod.dateEnd))
       );
 
@@ -1190,6 +1190,10 @@ export class PayrollExecutions extends PayrollCalculations {
             EPayrollState.generated
           );
 
+          await this.payrollGenerateRepository.updateStateLiquidationEmployment(
+            employment.id ?? 0
+          );
+
           return {
             salaryLiquidation,
             calculateSeverancePay,
@@ -1208,6 +1212,7 @@ export class PayrollExecutions extends PayrollCalculations {
           };
         } catch (error) {
           // Crea historico Fallido
+
           await this.calculateHistoricalPayroll(
             employment,
             formPeriod,

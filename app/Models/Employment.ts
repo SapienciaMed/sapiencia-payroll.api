@@ -17,6 +17,8 @@ import SalaryHistory from "./SalaryHistory";
 import Dependence from "./Dependence";
 import ManualDeduction from "./ManualDeduction";
 import Env from "@ioc:Adonis/Core/Env";
+import HistoricalPayroll from "./HistoricalPayroll";
+import Vacation from "./Vacation";
 
 export default class Employment extends BaseModel {
   public static table = "EMP_EMPLEOS";
@@ -161,11 +163,11 @@ export default class Employment extends BaseModel {
   })
   public observation: string;
 
-  @belongsTo(() => Dependence, {
-    localKey: "id",
-    foreignKey: "codDependence",
+  @hasOne(() => Dependence, {
+    localKey: "codDependence",
+    foreignKey: "id",
   })
-  public dependence: BelongsTo<typeof Dependence>;
+  public dependence: HasOne<typeof Dependence>;
 
   @hasMany(() => Charge, {
     localKey: "idCharge",
@@ -208,4 +210,16 @@ export default class Employment extends BaseModel {
     foreignKey: "workerId",
   })
   public worker: BelongsTo<typeof Worker>;
+
+  @belongsTo(() => HistoricalPayroll, {
+    localKey: "idEmployment",
+    foreignKey: "id",
+  })
+  public historicalPayroll: BelongsTo<typeof HistoricalPayroll>;
+
+  @hasMany(() => Vacation, {
+    localKey: "id",
+    foreignKey: "codEmployment",
+  })
+  public vacation: HasMany<typeof Vacation>;
 }

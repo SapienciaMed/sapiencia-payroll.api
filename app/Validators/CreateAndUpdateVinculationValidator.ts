@@ -65,6 +65,8 @@ export default class CreateAndUpdateWorkerValidator {
         gender: schema.string.optional([rules.maxLength(10)]),
         birthDate: schema.date.optional({ format: "yyyy/MM/dd" }),
         dependent: schema.boolean(),
+        typeDocument: schema.string([rules.maxLength(4)]),
+        numberDocument: schema.string([rules.maxLength(15)]),
       })
     ),
     employment: schema.object().members({
@@ -75,8 +77,8 @@ export default class CreateAndUpdateWorkerValidator {
       idTypeContract: schema.number(),
       startDate: schema.date({ format: "yyyy/MM/dd" }),
       endDate: schema.date.optional({ format: "yyyy/MM/dd" }),
-      specificObligations: schema.string.optional(),
-      contractualObject: schema.string.optional([rules.maxLength(500)]),
+      specificObligations: schema.string.optional([rules.maxLength(10000)]),
+      contractualObject: schema.string.optional([rules.maxLength(5000)]),
       institutionalMail: schema.string([rules.maxLength(50), rules.email()]),
       state: schema.string([rules.maxLength(10)]),
       idReasonRetirement: schema.number.optional(),

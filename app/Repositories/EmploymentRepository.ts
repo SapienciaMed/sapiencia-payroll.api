@@ -34,6 +34,7 @@ export interface IEmploymentRepository {
     date: DateTime,
     trx: TransactionClientContract
   ): Promise<IEmployment | null>;
+  getEmploymentByPayroll(idPayroll: number): Promise<IEmployment[]>;
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
@@ -143,5 +144,16 @@ export default class EmploymentRepository implements IEmploymentRepository {
   async getReasonsForWithdrawalList(): Promise<IReasonsForWithdrawal[]> {
     const res = await ReasonsForWithdrawal.all();
     return res as IReasonsForWithdrawal[];
+  }
+
+  async getEmploymentByPayroll(idPayroll: number): Promise<IEmployment[]> {
+    const employment = await Employment.query()
+      .whereHas("historicalPayroll", (historicalPayrollQuery) => {
+        historicalPayrollQuery.where("idTypePayroll", idPayroll);
+        historicalPayrollQuery.whereNot("state", "Fallido");
+      })
+      .preload("worker");
+
+    return employment.map((i) => i.serialize()) as IEmployment[];
   }
 }

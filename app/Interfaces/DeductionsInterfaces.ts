@@ -1,3 +1,5 @@
+import { IDeductionType } from "./DeductionsTypesInterface";
+
 export interface IDeduction {
   id?: number;
   idTypePayroll: number;
@@ -7,4 +9,6 @@ export interface IDeduction {
   patronalValue: number;
   time?: number;
   unitTime?: string;
+  deductionType?: IDeductionType[];
+  deductionTypeOne?: IDeductionType;
 }

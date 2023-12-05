@@ -8,4 +8,6 @@ export interface IRelative {
   gender?: string;
   birthDate?: DateTime;
   dependent: boolean;
+  typeDocument: string;
+  numberDocument: string;
 }

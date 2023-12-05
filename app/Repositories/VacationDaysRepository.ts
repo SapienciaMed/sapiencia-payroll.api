@@ -30,7 +30,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
 
   async getVacationDays(): Promise<IVacationDay[]> {
     const res = await VacationDay.all();
-    return res as IVacationDay[];
+    return res.map((i) => i.serialize() as IVacationDay);
   }
 
   async createVacation(vacation: IVacationDay): Promise<IVacationDay> {
@@ -38,7 +38,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
 
     toCreate.fill({ ...vacation, userCreate: undefined });
     await toCreate.save();
-    return toCreate.serialize() as VacationDay;
+    return toCreate.serialize() as IVacationDay;
   }
 
   async createManyVacation(
@@ -55,7 +55,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
       }),
       { client: trx }
     );
-    return res as IVacationDay[];
+    return res.map((i) => i.serialize() as IVacationDay);
   }
 
   async updateVacationDay(data: IVacationDay): Promise<IVacationDay | null> {
@@ -66,7 +66,7 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
 
     toUpdate.merge({ ...toUpdate, ...data, userModified: undefined });
     await toUpdate.save();
-    return toUpdate.serialize() as VacationDay;
+    return toUpdate.serialize() as IVacationDay;
   }
 
   async updateVacationRefund(
@@ -113,6 +113,6 @@ export default class VacationDaysRepository implements IVacationDaysRepository {
       .andWhereBetween("dateUntil", [dateStart.toString(), dateEnd.toString()])
       .andWhere("paid", false);
 
-    return vacationFind as IVacationDay[];
+    return vacationFind.map((i) => i.serialize() as IVacationDay);
   }
 }

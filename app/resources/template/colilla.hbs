@@ -1,0 +1,117 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Rubik:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+
+    <div class="container-title_principal">
+      <p>Agencia de Educación Postsecundaria de Medellín - Sapiencia</p>
+      <p class="not-margin">Comprobante de Nómina No {{consecutivo}}</p>
+    </div>
+
+    <div class="container-img_infoBanco">
+      <div>
+        <img src="data:image/png;base64, {{logoSapiencia}}" />
+      </div>
+      <div class="container-info_bank">
+        <p>NIT {{nit}}</p>
+        <p>De {{fechaInicio}} Al {{fechaFin}}</p>
+
+        <p>Consignado en
+          {{nombreBanco}}
+          &nbsp;&nbsp; Cuenta No.
+          {{numeroCuentaBanco}}</p>
+      </div>
+    </div>
+
+    <div>
+      <table class="table-info_colilla">
+        <tbody>
+          <tr>
+            <td>
+              <p>Número documento</p>
+              <p>{{numeroDocument}}</p>
+            </td>
+            <td colspan="5">
+              <p>Nombre completo</p>
+              <p>{{nombreCompleto}}</p>
+            </td>
+            <td>
+              <p>Sueldo básico</p>
+              <p>{{sueldoBasico}}</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <p>Cargo</p>
+              <p>{{cargo}}</p>
+            </td>
+            <td colspan="4">
+              <p>Dependencia</p>
+              <p>{{dependencia}}</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <p>Descripción concepto</p>
+            </td>
+            <td colspan="2">
+              <p>Cantidad</p>
+            </td>
+            <td>
+              <p>Devengado</p>
+            </td>
+            <td colspan="2">
+              <p>Deducido</p>
+            </td>
+          </tr>
+          {{#each arrIncomeAndDeductionsFormated}}
+            <tr>
+              <td colspan="2">
+                <p>{{name}}</p>
+              </td>
+              <td colspan="2">
+                <p>{{days}}</p>
+              </td>
+              <td>
+                <p>{{#if (eq type "Income")}}{{value}}{{/if}}</p>
+              </td>
+              <td colspan="2">
+                <p>{{#if (eq type "Deduction")}}{{value}}{{/if}}</p>
+              </td>
+            </tr>
+          {{/each}}
+          <tr>
+            <td colspan="2" class="cell-left">
+              <p>Firma</p>
+            </td>
+            <td colspan="2">
+              <p>Totales</p>
+            </td>
+            <td>
+              <p>{{totalIncomes}}</p>
+            </td>
+            <td colspan="2">
+              <p>{{totalDeductions}}</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6">
+              <p>Neto a Pagar: &nbsp;
+                {{textRestIncomesDeductions}}
+              </p>
+            </td>
+            <td>
+              <p>{{restaIncomesDeductions}}</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { IVacationDay } from "./VacationDaysInterface";
+import { IEmployment } from "./EmploymentInterfaces";
 
 export interface IVacation {
   id?: number;
@@ -13,6 +14,8 @@ export interface IVacation {
   available: number;
   days?: number;
   periodClosed: boolean;
+  employment?: IEmployment;
+  vacationDay?: IVacationDay[];
 }
 
 export interface IVacationResult {
@@ -27,7 +30,7 @@ export interface IVacationResult {
   available: number;
   days?: number;
   periodClosed: boolean;
-  vacationDay:IVacationDay[]
+  vacationDay: IVacationDay[];
 }
 
 export interface IVacationFilters {
@@ -37,7 +40,13 @@ export interface IVacationFilters {
   perPage: number;
 }
 
-export interface IVacationSearchParams{
+export interface IVacationSearchParams {
   workerId: number;
   period: number;
+}
+
+export interface IVacationPeriods {
+  periods: string;
+  payroll: number;
+  employment: number;
 }

@@ -52,7 +52,7 @@ Route.group(() => {
 }).prefix("/api/v1/payroll-generate");
 
 Route.group(() => {
-  Route.get("/generateReportStub", "ReportController.generatePDFStub");
+  Route.post("/generateReport", "ReportController.generateReport");
 }).prefix("/api/v1/reports");
 
 Route.group(() => {
@@ -64,9 +64,15 @@ Route.group(() => {
   );
   Route.get("/worker", "VinculationController.getActiveWorkers");
   Route.get(
+    "/employmentByPayroll/:idPayroll",
+    "VinculationController.getEmploymentsByPayroll"
+  );
+  Route.get(
     "/contractors",
     "VinculationController.getActivesContractorworkers"
   );
+
+  Route.get("/inactiveWorker", "VinculationController.getInactiveWorkers");
   Route.get("/:id", "VinculationController.getVinculationById");
   Route.get("/employment/:id", "VinculationController.getEmploymentById");
   Route.post(
@@ -89,12 +95,12 @@ Route.group(() => {
     "/employment/retirement",
     "VinculationController.retirementEmployment"
   );
-})
-  .prefix("/api/v1/vinculation")
-  .middleware("auth");
+}).prefix("/api/v1/vinculation");
+// .middleware("auth");
 
 Route.group(() => {
   Route.get("/", "VacationsController.getVacations");
+  Route.get("/periods", "VacationsController.getVacationsPeriods");
   Route.post("/create", "VacationsController.createVacationDays");
   Route.post("/workerVacation", "VacationsController.getVacationsByParams");
   Route.post("/get-paginated", "VacationsController.getVacationsPaginate");
@@ -125,6 +131,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get("/types", "FormPeriodsController.getFormTypes");
   Route.get("/available", "FormPeriodsController.getFormPeriod");
+  Route.get("/vacations-payrolls", "FormPeriodsController.getPayrollVacation");
   Route.get("/last/:id", "FormPeriodsController.getLastPeriods");
   Route.get("/:id", "FormPeriodsController.getFormPeriodById");
   Route.post("/", "FormPeriodsController.createFormPeriod");

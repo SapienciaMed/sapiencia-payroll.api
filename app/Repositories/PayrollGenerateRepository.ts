@@ -4,7 +4,10 @@ import { IcontractSuspension } from "App/Interfaces/ContractSuspensionInterfaces
 import { ICyclicalDeductionInstallment } from "App/Interfaces/CyclicalDeductionInstallmentInterface";
 import { IDeduction } from "App/Interfaces/DeductionsInterfaces";
 import { IDeductionType } from "App/Interfaces/DeductionsTypesInterface";
-import { IEmploymentResult } from "App/Interfaces/EmploymentInterfaces";
+import {
+  IEmployment,
+  IEmploymentResult,
+} from "App/Interfaces/EmploymentInterfaces";
 import { IGrouper } from "App/Interfaces/GrouperInterfaces";
 import { IHistoricalPayroll } from "App/Interfaces/HistoricalPayrollInterfaces";
 import {
@@ -59,6 +62,7 @@ export interface IPayrollGenerateRepository {
   getRangeByGrouper(grouper: string): Promise<IRange[]>;
   getActiveEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getActiveEmploymentsContracts(dateStart: Date): Promise<IEmploymentResult[]>;
+  getVacationEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getRetiredEmployments(dateStart: Date): Promise<IEmploymentResult[]>;
   getByIdGrouper(id: number): Promise<IGrouper>;
   getMonthlyValuePerGrouper(
@@ -207,6 +211,9 @@ export interface IPayrollGenerateRepository {
     ids: number[],
     payrollId: number
   ): Promise<IVacationDay[]>;
+  updateStateLiquidationEmployment(
+    codEmployment: number
+  ): Promise<IEmployment | null>;
   validNumberNegative(value: number): number;
 }
 export default class PayrollGenerateRepository
@@ -327,7 +334,9 @@ export default class PayrollGenerateRepository
         ((totalDeductions ?? 0) + (totalTaxDeduction ?? 0))
       );
     }
-    return (totalIncomes || 0) - (totalDeductions || 0);
+    return (
+      (totalIncomes || 0) - (this.validNumberNegative(totalDeductions) || 0)
+    );
   }
 
   async getSubTotalTwo(
@@ -577,6 +586,28 @@ export default class PayrollGenerateRepository
     return res.map((i) => i.serialize() as IEmploymentResult);
   }
 
+  async getVacationEmployments(dateStart: Date): Promise<IEmploymentResult[]> {
+    const res = await Employment.query()
+      .preload("worker")
+      .preload("charges")
+      .preload("salaryHistories", (query) => {
+        query.andWhere("validity", true);
+      })
+      .whereHas("vacation", (vacationQuery) => {
+        vacationQuery.where("periodClosed", false);
+        vacationQuery.whereHas("vacationDay", (vacationDayQuery) => {
+          vacationDayQuery.whereNull("codForm");
+        });
+      })
+      .whereHas("typesContracts", (contractsQuery) => {
+        contractsQuery.where("temporary", false);
+      })
+      .where("startDate", "<=", dateStart)
+      .andWhere("state", "=", true);
+
+    return res.map((i) => i.serialize() as IEmploymentResult);
+  }
+
   async getRetiredEmployments(dateStart: Date): Promise<IEmploymentResult[]> {
     const res = await Employment.query()
       .preload("worker")
@@ -588,7 +619,8 @@ export default class PayrollGenerateRepository
         contractsQuery.where("temporary", false);
       })
       .where("startDate", "<=", dateStart)
-      .andWhere("state", "=", false);
+      .andWhere("settlementPaid", false)
+      .andWhere("state", false);
 
     return res.map((i) => i.serialize() as IEmploymentResult);
   }
@@ -1040,6 +1072,18 @@ export default class PayrollGenerateRepository
       .whereIn("id", idIncapacity)
       .update("isComplete", true)
       .useTransaction(trx);
+    return res;
+  }
+
+  async updateStateLiquidationEmployment(
+    codEmployment: number
+  ): Promise<IEmployment | null> {
+    const res = await Employment.find(codEmployment);
+    if (!res) {
+      return null;
+    }
+    res?.merge({ settlementPaid: true });
+    res?.save();
     return res;
   }
 

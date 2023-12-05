@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  font-family: "Rubik", sans-serif;
+  padding: 0;
+}
+
+.not-margin {
+  margin: 0;
+}
+
+.container-title_principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 15px;
+}
+
+.container-img_infoBanco {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px;
+}
+
+.container-info_bank {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.table-info_colilla {
+  text-align: center;
+  font-size: 11px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-info_colilla td {
+  border: 1px solid rgb(0, 0, 0);
+  padding: 0.8rem;
+}
+
+.cell-left {
+  text-align: left;
+}

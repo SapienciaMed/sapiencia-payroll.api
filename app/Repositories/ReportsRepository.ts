@@ -219,6 +219,7 @@ export default class ReportsRepository implements IReportsRepository {
     const res = await Employment.query()
       .preload("worker")
       .preload("typesContracts")
+      .preload("charge")
       .where("id", codEmployment);
     /* .whereBetween("startDate", [
         new Date(`01/01/${year}`),

@@ -23,6 +23,7 @@ import { EIncomeType } from "App/Constants/OtherIncome.enum";
 import CoreService from "./External/CoreService";
 
 import {
+  calculateDifferenceDays,
   formaterNumberSeparatorMiles,
   formaterNumberToCurrency,
 } from "../Utils/functions";
@@ -1019,11 +1020,16 @@ export default class ReportService implements IReportService {
 
   structureDataProofOfContractsReport = (data: any, parameters: any) => {
     const contracts = data.map((contract) => {
+      console.log({worker:contract.charge.baseSalary})
+      let daysWorking = calculateDifferenceDays(contract.startDate,contract.endDate)
+      
+      let contractValue = ((contract.charge.baseSalary/30)*daysWorking).toFixed(2) ;
+
       return {
         numberContract: contract.contractNumber,
         objectContract: contract.contractualObject,
         contractualObligations: [{ text: contract.specificObligations }],
-        contractValue: contract.totalValue,
+        contractValue,
         startDate: contract.startDate,
         endDate: contract.endDate,
         executionPlace: "Medellín",

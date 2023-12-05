@@ -12,6 +12,7 @@ import {
   TableRow,
   TableCell,
   Footer,
+  HeightRule,
 } from "docx";
 import * as fs from "fs";
 
@@ -141,7 +142,7 @@ interface ILogosOnly {
 }
 
 interface IUniversityProfessional {
-  name: string
+  name: string;
   size?: number;
 }
 
@@ -153,9 +154,10 @@ export class ComponentsWord {
           width: { size: 100, type: WidthType.PERCENTAGE },
           rows: [
             new TableRow({
+              height: { value: 500, rule: HeightRule.EXACT },
               children: [
                 new TableCell({
-                  width: { size: 20, type: WidthType.PERCENTAGE },
+                  width: { size: 30, type: WidthType.PERCENTAGE },
                   rowSpan: 2,
                   children: [
                     new Paragraph({
@@ -166,8 +168,8 @@ export class ComponentsWord {
                             `./app/resources/img/${data.logo}`
                           ),
                           transformation: {
-                            width: 100,
-                            height: 70,
+                            height: 80,
+                            width: 80,
                           },
                         }),
                       ],
@@ -175,7 +177,7 @@ export class ComponentsWord {
                   ],
                 }),
                 new TableCell({
-                  width: { size: 60, type: WidthType.PERCENTAGE },
+                  width: { size: 40, type: WidthType.PERCENTAGE },
                   verticalAlign: VerticalAlign.CENTER,
                   rowSpan: 2,
                   children: [
@@ -186,22 +188,23 @@ export class ComponentsWord {
                           text: data.typeDocument,
                           font: "Arial",
                           size: 20,
-                        })
-                      ]
+                        }),
+                      ],
                     }),
                   ],
                 }),
                 new TableCell({
-                  width: { size: 20, type: WidthType.PERCENTAGE },
+                  width: { size: 30, type: WidthType.PERCENTAGE },
                   verticalAlign: VerticalAlign.CENTER,
                   children: [
                     new Paragraph({
+                      alignment: AlignmentType.CENTER,
                       children: [
                         new TextRun({
                           text: `Código: ${data.code}`,
                           bold: false,
                           font: "Arial",
-                          size:20
+                          size: 20,
                         }),
                       ],
                     }),
@@ -215,12 +218,13 @@ export class ComponentsWord {
                   verticalAlign: VerticalAlign.CENTER,
                   children: [
                     new Paragraph({
+                      alignment: AlignmentType.CENTER,
                       children: [
                         new TextRun({
                           text: `Version: ${data.version}`,
                           bold: false,
                           font: "Arial",
-                          size:20
+                          size: 20,
                         }),
                       ],
                     }),
@@ -229,8 +233,10 @@ export class ComponentsWord {
               ],
             }),
             new TableRow({
+              height: { value: 500, rule: HeightRule.EXACT },
               children: [
                 new TableCell({
+                  verticalAlign: VerticalAlign.CENTER,
                   columnSpan: 2,
                   children: [
                     new Paragraph({
@@ -240,7 +246,7 @@ export class ComponentsWord {
                           text: data.title,
                           bold: true,
                           font: "Arial",
-                          size:20
+                          size: 20,
                         }),
                       ],
                     }),
@@ -250,16 +256,16 @@ export class ComponentsWord {
                   verticalAlign: VerticalAlign.CENTER,
                   children: [
                     new Paragraph({
+                      alignment: AlignmentType.CENTER,
                       children: [
                         new TextRun({
-                          size:20,
-                          font:'Arial',
+                          size: 20,
+                          font: "Arial",
                           children: [
                             "Página: ",
                             PageNumber.CURRENT,
                             " de ",
                             PageNumber.TOTAL_PAGES,
-                            
                           ],
                         }),
                       ],
@@ -296,7 +302,7 @@ export class ComponentsWord {
                           text: `Elaboró: ${data.elaborated.position} `,
                           bold: false,
                           font: "Arial",
-                          size:18
+                          size: 18,
                         }),
                       ],
                     }),
@@ -311,7 +317,7 @@ export class ComponentsWord {
                           text: `Revisó: ${data.revised.position}`,
                           bold: false,
                           font: "Arial",
-                          size:18
+                          size: 18,
                         }),
                       ],
                     }),
@@ -326,7 +332,7 @@ export class ComponentsWord {
                           text: `Aprobó: ${data.approved.position}`,
                           bold: false,
                           font: "Arial",
-                          size:18
+                          size: 18,
                         }),
                       ],
                     }),
@@ -345,7 +351,7 @@ export class ComponentsWord {
                           text: `Fecha: ${data.elaborated.date}`,
                           bold: false,
                           font: "Arial",
-                          size:18
+                          size: 18,
                         }),
                       ],
                     }),
@@ -360,7 +366,7 @@ export class ComponentsWord {
                           text: `Fecha: ${data.revised.date}`,
                           bold: false,
                           font: "Arial",
-                          size:18
+                          size: 18,
                         }),
                       ],
                     }),
@@ -375,7 +381,7 @@ export class ComponentsWord {
                           text: `Fecha: ${data.approved.date}`,
                           bold: false,
                           font: "Arial",
-                          size:18
+                          size: 18,
                         }),
                       ],
                     }),
@@ -1170,7 +1176,7 @@ export class ComponentsWord {
                       text: "LIQUIDACIÓN PRESTACIONES SOCIALES",
                       bold: true,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1189,7 +1195,7 @@ export class ComponentsWord {
                       text: "N° Resolución",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1205,7 +1211,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1224,7 +1230,7 @@ export class ComponentsWord {
                       text: "Fecha Resolución",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1240,7 +1246,7 @@ export class ComponentsWord {
                       text: data.fechaResolucion,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1259,7 +1265,7 @@ export class ComponentsWord {
                       text: "Valor Total Resolución",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1274,7 +1280,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1289,7 +1295,7 @@ export class ComponentsWord {
                       text: `${data.valorTotalResolucion}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1308,7 +1314,7 @@ export class ComponentsWord {
                       text: "Nombre",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1324,7 +1330,7 @@ export class ComponentsWord {
                       text: data.nombre,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1343,7 +1349,7 @@ export class ComponentsWord {
                       text: "N° de Cédula",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1359,7 +1365,7 @@ export class ComponentsWord {
                       text: data.noDocumento,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1378,7 +1384,7 @@ export class ComponentsWord {
                       text: "Fecha de ingreso",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1394,7 +1400,7 @@ export class ComponentsWord {
                       text: data.fechaIngreso,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1413,7 +1419,7 @@ export class ComponentsWord {
                       text: "Fecha de Retiro",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1429,7 +1435,7 @@ export class ComponentsWord {
                       text: data.fechaRetiro,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1445,10 +1451,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Días Cesantías',
+                      text: "Días Cesantías",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1464,7 +1470,7 @@ export class ComponentsWord {
                       text: data.diasCesantias,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1480,10 +1486,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Días Intereses Cesantías',
+                      text: "Días Intereses Cesantías",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1499,7 +1505,7 @@ export class ComponentsWord {
                       text: data.diasInteresesCesantias,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1515,10 +1521,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Días Prima de Navidad',
+                      text: "Días Prima de Navidad",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1534,7 +1540,7 @@ export class ComponentsWord {
                       text: data.diasPrimaNavidad,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1550,10 +1556,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Días Vacaciones y Prima de Vacaciones',
+                      text: "Días Vacaciones y Prima de Vacaciones",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1569,7 +1575,7 @@ export class ComponentsWord {
                       text: data.diasVacionesYPrimaVacaciones,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1585,10 +1591,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Días bonificación por servicios',
+                      text: "Días bonificación por servicios",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1604,7 +1610,7 @@ export class ComponentsWord {
                       text: data.diasBonificacionServicios,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1620,10 +1626,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
-                      text: 'Días prima de servicio',
+                      text: "Días prima de servicio",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1639,7 +1645,7 @@ export class ComponentsWord {
                       text: data.diasPrimaServicio,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1659,7 +1665,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1679,7 +1685,7 @@ export class ComponentsWord {
                       text: "CESANTIAS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1691,10 +1697,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL * DÍAS LABORADOS ',
+                      text: "SALARIO MENSUAL * DÍAS LABORADOS ",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1709,7 +1715,7 @@ export class ComponentsWord {
                       text: `${data.cesantias}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1729,7 +1735,7 @@ export class ComponentsWord {
                       text: "360",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1749,7 +1755,7 @@ export class ComponentsWord {
                       text: "INTERESES CESANTIAS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1761,10 +1767,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'CESANTÍAS * DÍAS LABORADOS * 0.12 ',
+                      text: "CESANTÍAS * DÍAS LABORADOS * 0.12 ",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1779,7 +1785,7 @@ export class ComponentsWord {
                       text: `${data.interesesCesantias}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1799,7 +1805,7 @@ export class ComponentsWord {
                       text: "360",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1819,7 +1825,7 @@ export class ComponentsWord {
                       text: "VACACIONES",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1831,10 +1837,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL BÁSICO * DÍAS LABORADOS',
+                      text: "SALARIO MENSUAL BÁSICO * DÍAS LABORADOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1849,7 +1855,7 @@ export class ComponentsWord {
                       text: `${data.vacaciones}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1869,7 +1875,7 @@ export class ComponentsWord {
                       text: "720",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1889,7 +1895,7 @@ export class ComponentsWord {
                       text: "BONIFICACIÓN POR RECREACIÓN",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1904,7 +1910,7 @@ export class ComponentsWord {
                       text: "SALARIO MENSUAL BÁSICO * 2",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1919,7 +1925,7 @@ export class ComponentsWord {
                       text: `${data.bonificacionRecreacion}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1939,7 +1945,7 @@ export class ComponentsWord {
                       text: "30",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1959,7 +1965,7 @@ export class ComponentsWord {
                       text: "PRIMA DE NAVIDAD",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -1971,14 +1977,14 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL BÁSICO * DÍAS LABORADOS',
+                      text: "SALARIO MENSUAL BÁSICO * DÍAS LABORADOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
-                  ]
-                })
-              ]
+                  ],
+                }),
+              ],
             }),
             new TableCell({
               children: [
@@ -1989,7 +1995,7 @@ export class ComponentsWord {
                       text: `${data.primaNavidad}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2009,7 +2015,7 @@ export class ComponentsWord {
                       text: "360",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2029,7 +2035,7 @@ export class ComponentsWord {
                       text: "BONIFICACIÓN POR SERVICIOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2044,7 +2050,7 @@ export class ComponentsWord {
                       text: "SALARIO MENSUAL BÁSICO * 2",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2059,7 +2065,7 @@ export class ComponentsWord {
                       text: `${data.bonificacionServicios}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2079,7 +2085,7 @@ export class ComponentsWord {
                       text: "360",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2099,7 +2105,7 @@ export class ComponentsWord {
                       text: "PRIMA DE SERVICIOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2111,10 +2117,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL BÁSICO * DÍAS LABORADOS',
+                      text: "SALARIO MENSUAL BÁSICO * DÍAS LABORADOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2129,7 +2135,7 @@ export class ComponentsWord {
                       text: `${data.primaServicios}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2149,7 +2155,7 @@ export class ComponentsWord {
                       text: "720",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2169,7 +2175,7 @@ export class ComponentsWord {
                       text: "SALARIOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2181,10 +2187,10 @@ export class ComponentsWord {
                   alignment: AlignmentType.CENTER,
                   children: [
                     new TextRun({
-                      text: 'SALARIO MENSUAL BÁSICO * DÍAS LABORADOS',
+                      text: "SALARIO MENSUAL BÁSICO * DÍAS LABORADOS",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2199,7 +2205,7 @@ export class ComponentsWord {
                       text: `${data.salarios}`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2219,7 +2225,7 @@ export class ComponentsWord {
                       text: "30",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2239,7 +2245,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2259,7 +2265,7 @@ export class ComponentsWord {
                       text: "DEDUCCIONES",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2278,7 +2284,7 @@ export class ComponentsWord {
                       text: "APORTES SEGURIDAD SOCIAL",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2293,7 +2299,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2308,7 +2314,7 @@ export class ComponentsWord {
                       text: `(${data.aportesSeguridadSocial})`,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2327,7 +2333,7 @@ export class ComponentsWord {
                       text: "APORTES AFC",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2342,7 +2348,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2357,7 +2363,7 @@ export class ComponentsWord {
                       text: data.aportesAFC,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2376,7 +2382,7 @@ export class ComponentsWord {
                       text: "RETENCIÓN EN LA FUENTE POR RENTA",
                       bold: false,
                       font: "Arial",
-                      size: 22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2391,7 +2397,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2406,7 +2412,7 @@ export class ComponentsWord {
                       text: data.retencionFuenteRenta,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2426,7 +2432,7 @@ export class ComponentsWord {
                       text: "",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2446,7 +2452,7 @@ export class ComponentsWord {
                       text: "TOTAL A PAGAR LIQUIDACIÓN DE PRESTACIONES SOCIALES",
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2461,7 +2467,7 @@ export class ComponentsWord {
                       text: data.totalPagarPrestacionesSociales,
                       bold: false,
                       font: "Arial",
-                      size:22
+                      size: 22,
                     }),
                   ],
                 }),
@@ -2483,7 +2489,7 @@ export class ComponentsWord {
               children: [
                 new Paragraph({
                   alignment: AlignmentType.LEFT,
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   children: [
                     new TextRun({
                       text: "N° de contrato",
@@ -2518,7 +2524,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2554,7 +2560,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2591,7 +2597,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2627,7 +2633,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2663,7 +2669,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2699,7 +2705,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2735,7 +2741,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({
@@ -2771,7 +2777,7 @@ export class ComponentsWord {
             new TableCell({
               children: [
                 new Paragraph({
-                  indent: { left: 141.75/* , right: 920 */ },
+                  indent: { left: 141.75 /* , right: 920 */ },
                   alignment: AlignmentType.LEFT,
                   children: [
                     new TextRun({

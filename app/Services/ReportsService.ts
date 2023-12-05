@@ -759,8 +759,8 @@ export default class ReportService implements IReportService {
       "certificaLaboral.css",
       200,
       150,
-      35,
-      35,
+      100,
+      100,
       "Header.hbs",
       "Footer.hbs"
     );

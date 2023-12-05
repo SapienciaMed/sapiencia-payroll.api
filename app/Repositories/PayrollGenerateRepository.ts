@@ -596,7 +596,8 @@ export default class PayrollGenerateRepository
         contractsQuery.where("temporary", false);
       })
       .where("startDate", "<=", dateStart)
-      .andWhere("state", "=", false);
+      .andWhere("settlementPaid", false)
+      .andWhere("state", false);
 
     return res.map((i) => i.serialize() as IEmploymentResult);
   }

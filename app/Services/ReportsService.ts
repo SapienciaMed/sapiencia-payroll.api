@@ -1018,6 +1018,7 @@ export default class ReportService implements IReportService {
   };
 
   structureDataProofOfContractsReport = (data: any, parameters: any) => {
+    console.log({data})
     const contracts = data.map((contract) => {
       return {
         numberContract: contract.contractNumber,

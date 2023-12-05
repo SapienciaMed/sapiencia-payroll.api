@@ -27,7 +27,6 @@ export class ProofOfContracts {
         };
 
         const contracts = dataReport.contracts.map((element: any) => {
-            console.log({element})
             return {
                 consecutive: 4,
                 componentWordProp: generateTablePerContract.bind({ text: "" }),
@@ -36,7 +35,7 @@ export class ProofOfContracts {
                     noContrato: `${element.numberContract}`,
                     objeto: element.objectContract,
                     obligacionesContractuales: element.contractualObligations,
-                    valorContrato: `${numberToColombianPesosWord(element.contractValue)} (${formaterNumberToCurrency(element.contractValue)})`,//`${numberToColombianPesosWord(element.contractValue.toFixed(2))} - ${}`,
+                    valorContrato: `${numberToColombianPesosWord(element.contractValue)} (${formaterNumberToCurrency(parseFloat(element.contractValue).toFixed(2))})`,//`${numberToColombianPesosWord(element.contractValue.toFixed(2))} - ${}`,
                     fechaInicio: element.startDate,
                     fechaTerminacion: element.endDate,
                     lugarEjecucion: element.executionPlace,

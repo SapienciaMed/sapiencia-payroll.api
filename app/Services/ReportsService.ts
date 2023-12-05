@@ -125,7 +125,8 @@ export default class ReportService implements IReportService {
         "Salario Base": historical.salary,
         "Total ingresos": historical.totalIncome,
         "Total deducciones": historical.totalDeduction,
-        Total: historical.total,
+        Total: historical.totalIncome - historical.totalDeduction,
+        // total: historical.total
       };
 
       incomeTypeToShow.forEach((iType) => {

@@ -1212,6 +1212,7 @@ export class PayrollExecutions extends PayrollCalculations {
           };
         } catch (error) {
           // Crea historico Fallido
+          
           await this.calculateHistoricalPayroll(
             employment,
             formPeriod,

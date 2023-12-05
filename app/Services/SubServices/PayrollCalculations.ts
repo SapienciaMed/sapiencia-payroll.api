@@ -832,8 +832,8 @@ export class PayrollCalculations {
     );
     if (lastSalary.formPeriod) {
       liquidationDays = calculateDifferenceDays(
-        lastSalary.formPeriod[0].paidDate ?? employment.startDate,
-        employment.retirementDate
+        employment.retirementDate,
+        lastSalary.formPeriod[0].paidDate 
       );
     }
 

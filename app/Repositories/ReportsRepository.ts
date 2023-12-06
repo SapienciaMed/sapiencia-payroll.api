@@ -67,7 +67,7 @@ export interface IReportsRepository {
   getPayrollVacationsYear(
     codPayroll: number,
     codEmployment: number
-  ): Promise<IVacationDay[] | null> ;
+  ): Promise<IVacationDay[] | null>;
   combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer>;
 }
 
@@ -176,7 +176,6 @@ export default class ReportsRepository implements IReportsRepository {
     return res.map((formPeriod) => formPeriod.serialize() as IVacationDay);
   }
 
-  
   async getPayrollInformationLiquidationYear(
     year: number,
     codEmployment: number

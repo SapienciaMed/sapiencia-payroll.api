@@ -67,7 +67,7 @@ export interface IReportsRepository {
   getPayrollVacationsYear(
     codPayroll: number,
     codEmployment: number
-  ): Promise<IVacationDay[] | null> ;
+  ): Promise<IVacationDay[] | null>;
   combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer>;
 }
 
@@ -176,7 +176,6 @@ export default class ReportsRepository implements IReportsRepository {
     return res.map((formPeriod) => formPeriod.serialize() as IVacationDay);
   }
 
-  
   async getPayrollInformationLiquidationYear(
     year: number,
     codEmployment: number
@@ -357,17 +356,17 @@ export default class ReportsRepository implements IReportsRepository {
     let browser: Browser;
 
     //Configuracion para pruebas
-    // browser = await puppeteer.launch({
-    //   headless: "new",
-    //   args: ["--no-sandbox"],
-    //   executablePath: "/usr/bin/chromium",
-    // });
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox"],
+      executablePath: "/usr/bin/chromium",
+    });
 
     // Configuracion local proyecto
-    browser = await puppeteer.launch({
-      headless: false,
-       slowMo: 400,
-    });
+    // browser = await puppeteer.launch({
+    //   headless: "new",
+    //   // slowMo: 400,
+    // });
 
     const page = await browser.newPage();
 

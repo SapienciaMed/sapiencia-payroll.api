@@ -365,8 +365,8 @@ export default class ReportsRepository implements IReportsRepository {
 
     // Configuracion local proyecto
     browser = await puppeteer.launch({
-      headless: "new",
-      // slowMo: 400,
+      headless: false,
+       slowMo: 400,
     });
 
     const page = await browser.newPage();

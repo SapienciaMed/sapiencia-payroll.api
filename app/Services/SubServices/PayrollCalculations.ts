@@ -947,7 +947,17 @@ export class PayrollCalculations {
     solidarityFundTable: IRange[],
     mountValue?: number
   ): Promise<object> {
-    const affectionValue = employment.salaryHistories[0].salary;
+    // const affectionValue = employment.salaryHistories[0].salary;
+
+    const affectionValue =
+      await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
+        EGroupers.incomeCyclicDeduction,
+        formPeriod.month,
+        formPeriod.year,
+        employment.id || 0,
+        false,
+        formPeriod.id
+      );
 
     // si tiene dependiente le restamos segun el calculo
 

@@ -1034,10 +1034,16 @@ export default class ReportService implements IReportService {
 
   structureDataProofOfContractsReport = (data: any, parameters: any) => {
     const contracts = data.map((contract) => {
-      console.log({worker:contract.charge.baseSalary})
-      let daysWorking = calculateDifferenceDays(contract.startDate,contract.endDate)
-      
-      let contractValue = ((contract.charge.baseSalary/30)*daysWorking).toFixed(2) ;
+      console.log({ worker: contract.charge.baseSalary });
+      let daysWorking = calculateDifferenceDays(
+        contract.startDate,
+        contract.endDate
+      );
+
+      let contractValue = (
+        (contract.charge.baseSalary / 30) *
+        daysWorking
+      ).toFixed(2);
 
       return {
         numberContract: contract.contractNumber,

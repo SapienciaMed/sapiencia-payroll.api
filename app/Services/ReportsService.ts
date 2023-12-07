@@ -716,6 +716,12 @@ export default class ReportService implements IReportService {
       NIT: "NIT",
       AN: "Anónimo",
     };
+    const genderIdentification =
+      reportInformation?.worker?.gender == "H"
+        ? "identificado"
+        : reportInformation?.worker?.gender == "M"
+        ? "identificada"
+        : "identificad@";
     const documentType =
       documentTypeMapping[reportInformation?.worker?.typeDocument ?? "CC"];
     const numberDocument = reportInformation?.worker?.numberDocument;
@@ -751,6 +757,7 @@ export default class ReportService implements IReportService {
       ),
       treatment,
       name,
+      genderIdentification,
       documentType,
       numberDocument,
       vinculationDate,

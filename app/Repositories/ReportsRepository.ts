@@ -427,7 +427,7 @@ export default class ReportsRepository implements IReportsRepository {
   async combinePDFs(PDFs: IReportCombinePDFs[]): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
 
-    for (const PDF of PDFs) {
+    for await (const PDF of PDFs) {
       const PDFDoc = await PDFDocument.load(PDF.bufferFile);
       const copiedPages = await pdfDoc.copyPages(
         PDFDoc,
@@ -437,6 +437,7 @@ export default class ReportsRepository implements IReportsRepository {
     }
 
     const combinedBuffer = Buffer.from(await pdfDoc.save());
+
     return combinedBuffer;
   }
 }

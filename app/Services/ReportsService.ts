@@ -716,6 +716,12 @@ export default class ReportService implements IReportService {
       NIT: "NIT",
       AN: "Anónimo",
     };
+    const genderIdentification =
+      reportInformation?.worker?.gender == "H"
+        ? "identificado"
+        : reportInformation?.worker?.gender == "M"
+        ? "identificada"
+        : "identificad@";
     const documentType =
       documentTypeMapping[reportInformation?.worker?.typeDocument ?? "CC"];
     const numberDocument = reportInformation?.worker?.numberDocument;
@@ -751,6 +757,7 @@ export default class ReportService implements IReportService {
       ),
       treatment,
       name,
+      genderIdentification,
       documentType,
       numberDocument,
       vinculationDate,
@@ -1034,10 +1041,16 @@ export default class ReportService implements IReportService {
 
   structureDataProofOfContractsReport = (data: any, parameters: any) => {
     const contracts = data.map((contract) => {
-      console.log({worker:contract.charge.baseSalary})
-      let daysWorking = calculateDifferenceDays(contract.startDate,contract.endDate)
-      
-      let contractValue = ((contract.charge.baseSalary/30)*daysWorking).toFixed(2) ;
+      console.log({ worker: contract.charge.baseSalary });
+      let daysWorking = calculateDifferenceDays(
+        contract.startDate,
+        contract.endDate
+      );
+
+      let contractValue = (
+        (contract.charge.baseSalary / 30) *
+        daysWorking
+      ).toFixed(2);
 
       return {
         numberContract: contract.contractNumber,

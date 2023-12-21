@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { BaseModel, HasOne, column, hasOne } from "@ioc:Adonis/Lucid/Orm";
 import TypesCharge from "./TypesCharge";
 import Env from "@ioc:Adonis/Core/Env";
+import TypesContract from "./TypesContract";
 
 export default class Charge extends BaseModel {
   public static table = "CRG_CARGOS";
@@ -17,6 +18,12 @@ export default class Charge extends BaseModel {
     serializeAs: "codChargeType",
   })
   public codChargeType: number;
+
+  @column({
+    columnName: "CRG_CODTCO_TIPO_CONTRATO",
+    serializeAs: "codContractType",
+  })
+  public codContractType: number;
 
   @column({ columnName: "CRG_OBSERVACIONES", serializeAs: "observations" })
   public observations: string;
@@ -70,4 +77,10 @@ export default class Charge extends BaseModel {
     foreignKey: "id",
   })
   public typeCharge: HasOne<typeof TypesCharge>;
+
+  @hasOne(() => TypesContract, {
+    localKey: "codContractType",
+    foreignKey: "id",
+  })
+  public typeContracts: HasOne<typeof TypesContract>;
 }

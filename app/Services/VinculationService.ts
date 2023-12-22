@@ -35,6 +35,10 @@ import { DateTime } from "luxon";
 
 export interface IVinculationService {
   getWorkersByFilters(filters: IWorkerFilters): Promise<ApiResponse<IWorker[]>>;
+  getWorkersByDocumentNumber(
+    documentType: string,
+    documentNumber: string
+  ): Promise<ApiResponse<IWorker[]>>;
   getVinculationPaginate(
     filters: IFilterVinculation
   ): Promise<ApiResponse<IPagingData<IGetVinculation>>>;
@@ -89,6 +93,18 @@ export default class VinculationService implements IVinculationService {
     filters: IWorkerFilters
   ): Promise<ApiResponse<IWorker[]>> {
     const workers = await this.workerRepository.getWorkersByFilters(filters);
+
+    return new ApiResponse(workers, EResponseCodes.OK);
+  }
+
+  async getWorkersByDocumentNumber(
+    documentType: string,
+    documentNumber: string
+  ): Promise<ApiResponse<IWorker[]>> {
+    const workers = await this.workerRepository.getWorkersByDocumentNumber(
+      documentType,
+      documentNumber
+    );
 
     return new ApiResponse(workers, EResponseCodes.OK);
   }

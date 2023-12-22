@@ -137,6 +137,26 @@ export default class VinculationController {
     }
   }
 
+  public async getWorkersByNumberDocument({
+    response,
+    request,
+  }: HttpContextContract) {
+    try {
+      const { documentNumber } = request.body();
+      const { documentType } = request.body();
+      return response.send(
+        await VinculationProvider.getWorkersByDocumentNumber(
+          documentType,
+          documentNumber
+        )
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+      );
+    }
+  }
+
   public async getEmploymentById({ response, request }: HttpContextContract) {
     try {
       const { id } = request.params();

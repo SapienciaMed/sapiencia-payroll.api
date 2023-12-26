@@ -111,6 +111,9 @@ const employmentFake: IEmployment = {
 };
 
 export class WorkerRepositoryFake implements IWorkerRepository {
+  getWorkersByDocumentNumber(_documentType: string, _documentNumber: string): Promise<IWorker[]> {
+    throw new Error("Method not implemented.");
+  }
   getInactivesWorkers(): Promise<IWorker[]> {
     throw new Error("Method not implemented.");
   }

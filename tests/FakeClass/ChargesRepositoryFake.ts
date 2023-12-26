@@ -9,6 +9,7 @@ const chargeFake: ICharge = {
   name: "Ejemplo",
   observations: "Ejemplo",
   codChargeType: 1,
+  codContractType: 1,
   baseSalary: 0,
   state: true,
 };

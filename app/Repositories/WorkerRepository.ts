@@ -9,6 +9,10 @@ import { IPagingData } from "App/Utils/ApiResponses";
 
 export interface IWorkerRepository {
   getWorkersByFilters(filters: IWorkerFilters): Promise<IWorker[]>;
+  getWorkersByDocumentNumber(
+    documentType: string,
+    documentNumber: string
+  ): Promise<IWorker[]>;
   getVinculation(
     filters: IFilterVinculation
   ): Promise<IPagingData<IGetVinculation>>;
@@ -36,6 +40,22 @@ export default class WorkerRepository implements IWorkerRepository {
 
     if (filters.documentList)
       query.whereIn("numberDocument", filters.documentList);
+    const res = await query;
+    return res.map((i) => i.serialize() as IWorker);
+  }
+
+  async getWorkersByDocumentNumber(
+    documentType: string,
+    documentNumber: string
+  ): Promise<IWorker[]> {
+    const query = Worker.query().preload("employment", (q1) =>
+      q1.where("state", 1)
+    );
+
+    query.whereILike("numberDocument", documentNumber);
+    if (documentType) {
+      query.andWhere("documentType", documentType);
+    }
     const res = await query;
     return res.map((i) => i.serialize() as IWorker);
   }

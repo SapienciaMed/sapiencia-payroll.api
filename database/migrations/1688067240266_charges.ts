@@ -19,6 +19,13 @@ export default class extends BaseSchema {
       //   .inTable("UNI_UNIDADES")
       //   .comment("codigo de la unidad (FK UNI_UNIDADES)"); // Pendiente de revisar
       table
+        .integer("CRG_CODTCO_TIPO_CONTRATO")
+        .notNullable()
+        .unsigned()
+        .references("TCO_CODIGO")
+        .inTable("TCO_TIPOS_CONTRATO")
+        .comment("codigo del tipo de contrato (FK TCO_TIPOS_CONTRATO)"); // Pendiente de revisar
+      table
         .integer("CRG_CODTCG_TIPO_CARGO")
         .notNullable()
         .unsigned()

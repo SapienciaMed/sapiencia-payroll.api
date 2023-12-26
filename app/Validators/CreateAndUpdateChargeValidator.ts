@@ -8,6 +8,7 @@ export default class CreateAndUpdateChargeValidator {
     id: schema.number.optional(),
     name: schema.string.optional(),
     codChargeType: schema.number(),
+    codContractType: schema.number(),
     observations: schema.string.optional([rules.maxLength(500)]),
     baseSalary: schema.number(),
     state: schema.boolean(),

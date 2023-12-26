@@ -13,7 +13,11 @@ export default class PayrollGenerateController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -30,7 +34,11 @@ export default class PayrollGenerateController {
       } catch (err) {
         await trx.rollback();
         return response.badRequest(
-          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+          new ApiResponse(
+            null,
+            EResponseCodes.FAIL,
+            "Hubo un error con el servicio"
+          )
         );
       }
     });
@@ -44,7 +52,11 @@ export default class PayrollGenerateController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }

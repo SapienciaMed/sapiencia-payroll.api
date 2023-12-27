@@ -24,7 +24,11 @@ export default class VinculationController {
       } catch (err) {
         await trx.rollback();
         return response.badRequest(
-          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+          new ApiResponse(
+            null,
+            EResponseCodes.FAIL,
+            "Hubo un error con el servicio"
+          )
         );
       }
     });
@@ -40,7 +44,11 @@ export default class VinculationController {
       } catch (err) {
         await trx.rollback();
         return response.badRequest(
-          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+          new ApiResponse(
+            null,
+            EResponseCodes.FAIL,
+            "Hubo un error con el servicio"
+          )
         );
       }
     });
@@ -57,7 +65,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -73,7 +85,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -89,7 +105,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -99,7 +119,11 @@ export default class VinculationController {
       return response.send(await VinculationProvider.getTypesContractsList());
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -109,7 +133,11 @@ export default class VinculationController {
       return response.send(await VinculationProvider.getChargesList());
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -120,7 +148,11 @@ export default class VinculationController {
       return response.send(await VinculationProvider.getVinculationById(id));
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -132,7 +164,35 @@ export default class VinculationController {
       return response.send(await VinculationProvider.getWorkersByFilters(data));
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
+      );
+    }
+  }
+
+  public async getWorkersByNumberDocument({
+    response,
+    request,
+  }: HttpContextContract) {
+    try {
+      const { documentNumber } = request.body();
+      const { documentType } = request.body();
+      return response.send(
+        await VinculationProvider.getWorkersByDocumentNumber(
+          documentType,
+          documentNumber
+        )
+      );
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -143,7 +203,11 @@ export default class VinculationController {
       return response.send(await VinculationProvider.getEmploymentById(id));
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -156,7 +220,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -166,7 +234,11 @@ export default class VinculationController {
       return response.send(await VinculationProvider.getInactivesWorkers());
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -178,7 +250,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -190,7 +266,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -206,7 +286,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -229,7 +313,11 @@ export default class VinculationController {
       } catch (err) {
         await trx.rollback();
         return response.badRequest(
-          new ApiResponse(null, EResponseCodes.FAIL, String(err))
+          new ApiResponse(
+            null,
+            EResponseCodes.FAIL,
+            "Hubo un error con el servicio"
+          )
         );
       }
     });
@@ -246,7 +334,11 @@ export default class VinculationController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }

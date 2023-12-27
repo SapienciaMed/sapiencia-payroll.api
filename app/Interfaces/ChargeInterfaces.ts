@@ -4,6 +4,7 @@ export interface ICharge {
   id?: number;
   name?: string;
   codChargeType: number;
+  codContractType: number;
   observations?: string;
   baseSalary: number;
   state: boolean;

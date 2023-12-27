@@ -12,7 +12,11 @@ export default class FormPeriodsController {
       return response.send(await FormPeriodProvider.createFormPeriod(period));
     } catch (err) {
       response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -22,7 +26,11 @@ export default class FormPeriodsController {
       return response.send(await FormPeriodProvider.getFormTypes());
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -33,7 +41,11 @@ export default class FormPeriodsController {
       return response.send(await FormPeriodProvider.getLastPeriods(id));
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -43,7 +55,11 @@ export default class FormPeriodsController {
       return response.send(await FormPeriodProvider.getFormPeriod());
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -52,7 +68,11 @@ export default class FormPeriodsController {
       return response.send(await FormPeriodProvider.getPayrollVacation());
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -68,7 +88,11 @@ export default class FormPeriodsController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -89,7 +113,11 @@ export default class FormPeriodsController {
       );
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }
@@ -99,7 +127,11 @@ export default class FormPeriodsController {
       return response.send(await FormPeriodProvider.getFormPeriodById(id));
     } catch (err) {
       return response.badRequest(
-        new ApiResponse(null, EResponseCodes.FAIL, String(err))
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
       );
     }
   }

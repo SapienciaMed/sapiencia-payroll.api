@@ -389,6 +389,8 @@ export default class VinculationService implements IVinculationService {
       trx
     );
 
+    await this.employmentRepository.updateEmployment(data.employment, trx);
+
     await trx.commit();
 
     return new ApiResponse(

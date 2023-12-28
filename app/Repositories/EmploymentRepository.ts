@@ -18,6 +18,10 @@ export interface IEmploymentRepository {
     employment: IEmployment,
     trx: TransactionClientContract
   ): Promise<IEmployment>;
+  updateEmployment(
+    employment: IEmployment,
+    trx: TransactionClientContract
+  ): Promise<IEmployment | null>;
   getEmploymentWorkerById(id: number): Promise<IEmployment[] | null>;
   getEmploymentWorker(
     filters: IFilterEmployment
@@ -101,6 +105,25 @@ export default class EmploymentRepository implements IEmploymentRepository {
     toCreate.fill({ ...employment, userCreate: undefined });
     await toCreate.save();
     return toCreate.serialize() as IEmployment;
+  }
+
+  async updateEmployment(
+    employment: IEmployment,
+    trx: TransactionClientContract
+  ): Promise<IEmployment | null> {
+    const toUpdate = await Employment.find(employment.id);
+
+    if (!toUpdate) {
+      return null;
+    }
+
+    toUpdate
+      .merge({ ...toUpdate, ...employment, userModified: undefined })
+      .useTransaction(trx);
+
+    await toUpdate.save();
+
+    return toUpdate.serialize() as IEmployment;
   }
 
   async retirementEmployment(

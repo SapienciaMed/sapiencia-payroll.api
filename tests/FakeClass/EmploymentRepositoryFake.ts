@@ -1,3 +1,4 @@
+import { TransactionClientContract } from "@ioc:Adonis/Lucid/Database";
 import { ICharge } from "App/Interfaces/ChargeInterfaces";
 import {
   IEmployment,
@@ -31,6 +32,12 @@ const reasonsForWithdrawalFake: IReasonsForWithdrawal = {
 };
 
 export class EmploymentRepositoryFake implements EmploymentRepository {
+  updateEmployment(
+    _employment: IEmployment,
+    _trx: TransactionClientContract
+  ): Promise<IEmployment | null> {
+    throw new Error("Method not implemented.");
+  }
   getEmploymentByPayroll(_idPayroll: number): Promise<IEmployment[]> {
     throw new Error("Method not implemented.");
   }

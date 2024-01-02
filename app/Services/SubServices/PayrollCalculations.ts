@@ -1485,7 +1485,7 @@ export class PayrollCalculations {
     }
 
     const isr =
-      (tableValue - range.start) * (Number(range.value) / 100) + range.value2;
+      (tableValue - range.start) * (Number(range.value) / 100) + Number(range.value2);
 
     const isrTotalValueLast =
       await this.payrollGenerateRepository.getTotalValueISRLast(
@@ -1494,7 +1494,7 @@ export class PayrollCalculations {
         employment.id ?? 0
       );
 
-    const isrValueCurrent = (isr * uvtValue).toFixed(2);
+    const isrValueCurrent = (Number(isr) * uvtValue).toFixed(2);
 
     const isrValue = Number(isrValueCurrent) - isrTotalValueLast;
 
@@ -1787,6 +1787,7 @@ export class PayrollCalculations {
     state: string,
     error?: string
   ): Promise<object> {
+    console.log("entra")
     const incomes =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,

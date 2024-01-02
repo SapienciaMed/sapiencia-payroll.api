@@ -833,7 +833,7 @@ export class PayrollCalculations {
     if (lastSalary.formPeriod) {
       liquidationDays = calculateDifferenceDays(
         employment.retirementDate,
-        lastSalary.formPeriod[0].paidDate 
+        lastSalary.formPeriod[0].paidDate
       );
     }
 
@@ -1485,7 +1485,8 @@ export class PayrollCalculations {
     }
 
     const isr =
-      (tableValue - range.start) * (Number(range.value) / 100) + Number(range.value2);
+      (tableValue - range.start) * (Number(range.value) / 100) +
+      Number(range.value2);
 
     const isrTotalValueLast =
       await this.payrollGenerateRepository.getTotalValueISRLast(
@@ -1787,7 +1788,6 @@ export class PayrollCalculations {
     state: string,
     error?: string
   ): Promise<object> {
-    console.log("entra")
     const incomes =
       await this.payrollGenerateRepository.getMonthlyValuePerGrouper(
         EGroupers.incomeCyclicDeduction,

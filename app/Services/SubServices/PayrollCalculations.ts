@@ -833,7 +833,7 @@ export class PayrollCalculations {
     if (lastSalary.formPeriod) {
       liquidationDays = calculateDifferenceDays(
         employment.retirementDate,
-        lastSalary.formPeriod[0].paidDate 
+        lastSalary.formPeriod[0].paidDate
       );
     }
 
@@ -1485,7 +1485,8 @@ export class PayrollCalculations {
     }
 
     const isr =
-      (tableValue - range.start) * (Number(range.value) / 100) + range.value2;
+      (tableValue - range.start) * (Number(range.value) / 100) +
+      Number(range.value2);
 
     const isrTotalValueLast =
       await this.payrollGenerateRepository.getTotalValueISRLast(
@@ -1494,7 +1495,7 @@ export class PayrollCalculations {
         employment.id ?? 0
       );
 
-    const isrValueCurrent = (isr * uvtValue).toFixed(2);
+    const isrValueCurrent = (Number(isr) * uvtValue).toFixed(2);
 
     const isrValue = Number(isrValueCurrent) - isrTotalValueLast;
 

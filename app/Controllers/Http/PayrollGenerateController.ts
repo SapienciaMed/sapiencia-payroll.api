@@ -16,7 +16,7 @@ export default class PayrollGenerateController {
         new ApiResponse(
           null,
           EResponseCodes.FAIL,
-          "Hubo un error con el servicio"
+          err
         )
       );
     }

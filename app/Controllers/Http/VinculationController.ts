@@ -342,4 +342,18 @@ export default class VinculationController {
       );
     }
   }
+
+  public async getEmployments({ response }: HttpContextContract) {
+    try {
+      return response.send(await VinculationProvider.getEmployments());
+    } catch (err) {
+      return response.badRequest(
+        new ApiResponse(
+          null,
+          EResponseCodes.FAIL,
+          "Hubo un error con el servicio"
+        )
+      );
+    }
+  }
 }

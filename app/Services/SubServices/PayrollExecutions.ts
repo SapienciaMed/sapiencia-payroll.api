@@ -23,6 +23,9 @@ export class PayrollExecutions extends PayrollCalculations {
         new Date(String(formPeriod.dateEnd))
       );
 
+      if (employments.length <= 0) {
+        throw "No hay empleados para esta planilla"
+      }
     // Busca los parametro o recurosos a utilizar
 
     const incomeTaxTable =
@@ -307,7 +310,9 @@ export class PayrollExecutions extends PayrollCalculations {
       await this.payrollGenerateRepository.getActiveEmploymentsContracts(
         new Date(String(formPeriod.dateEnd))
       );
-
+      if (employments.length <= 0) {
+        throw "No hay empleados para esta planilla"
+      }
     // Busca los parametro o recurosos a utilizar
 
     const incomeTaxTable =
@@ -439,7 +444,9 @@ export class PayrollExecutions extends PayrollCalculations {
       await this.payrollGenerateRepository.getVacationEmployments(
         new Date(String(formPeriod.dateEnd))
       );
-
+      if (employments.length <= 0) {
+        throw "No hay empleados para esta planilla"
+      }
     // Busca los parametro o recurosos a utilizar
 
     const incomeTaxTable =
@@ -609,7 +616,9 @@ export class PayrollExecutions extends PayrollCalculations {
       await this.payrollGenerateRepository.getActiveEmployments(
         new Date(String(formPeriod.dateEnd))
       );
-
+      if (employments.length <= 0) {
+        throw "No hay empleados para esta planilla"
+      }
     // Busca los parametro o recurosos a utilizar
 
     const incomeTaxTable =
@@ -730,7 +739,9 @@ export class PayrollExecutions extends PayrollCalculations {
       await this.payrollGenerateRepository.getActiveEmployments(
         new Date(String(formPeriod.dateEnd))
       );
-
+      if (employments.length <= 0) {
+        throw "No hay empleados para esta planilla"
+      }
     // Busca los parametro o recurosos a utilizar
 
     const incomeTaxTable =
@@ -852,7 +863,9 @@ export class PayrollExecutions extends PayrollCalculations {
         new Date(String(formPeriod.dateEnd))
       );
     // Busca los parametro o recurosos a utilizar
-
+    if (employments.length <= 0) {
+      throw "No hay empleados para esta planilla"
+    }
     const incomeTaxTable =
       await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
 
@@ -1009,6 +1022,9 @@ export class PayrollExecutions extends PayrollCalculations {
       );
     // Busca los parametro o recurosos a utilizar
 
+    if (employments.length <= 0) {
+      throw "No hay empleados para esta planilla"
+    }
     const incomeTaxTable =
       await this.payrollGenerateRepository.getRangeByGrouper("TABLA_ISR");
 

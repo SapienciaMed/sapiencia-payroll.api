@@ -63,6 +63,7 @@ Route.group(() => {
     "VinculationController.getReasonsForWithdrawalList"
   );
   Route.get("/worker", "VinculationController.getActiveWorkers");
+  Route.get("/allWorkers", "VinculationController.getEmployments");
   Route.get(
     "/employmentByPayroll/:idPayroll",
     "VinculationController.getEmploymentsByPayroll"

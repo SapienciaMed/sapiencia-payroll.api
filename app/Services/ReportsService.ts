@@ -199,6 +199,7 @@ export default class ReportService implements IReportService {
       "SEG_PARAM_LIQUIDACION",
       "TERCER_PARAM_LIQUIDACION",
       "CUARTO_PARAM_LIQUIDACION",
+      "PERIODO_GRAVABLE"
     ]);
 
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
@@ -453,6 +454,7 @@ export default class ReportService implements IReportService {
         Number(report.codEmployment)
       );
     const nit = Number(parameters.find((i) => i.id == "NIT")?.value ?? 0);
+    const year = Number(parameters.find((i) => i.id == "PERIODO_GRAVABLE")?.value ?? 0);
     const socialReason =
       parameters.find((i) => i.id == "RAZON_SOCIAL_REPORTES")?.value ?? "";
     const codeTypeDocument =
@@ -672,6 +674,7 @@ export default class ReportService implements IReportService {
       socialReason,
       codeTypeDocument,
       codeDeparment,
+      year,
       codeCity,
       city,
       startDate,

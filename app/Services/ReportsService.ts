@@ -540,7 +540,7 @@ export default class ReportService implements IReportService {
       new Date().getMonth() + 1
     }/${new Date().getFullYear()}`;
     reportInformation?.map((info) => {
-      paidsSalary =
+      paidsSalary +=
         info.incomes?.reduce(
           (sum, i) =>
             relevantIncomeTypes.includes(i.idTypeIncome)
@@ -557,7 +557,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      paidsOtherIncomes =
+      paidsOtherIncomes +=
         info.incomes?.reduce(
           (sum, i) =>
             i.idTypeIncome === EIncomeType.ApoyoEstudiantil ||
@@ -566,7 +566,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      totalSeverancePaids =
+      totalSeverancePaids +=
         info.incomes?.reduce(
           (sum, i) =>
             i.idTypeIncome === EIncomeTypes.severancePay ||
@@ -575,7 +575,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      severancePaid =
+      severancePaid +=
         info.incomes?.reduce(
           (sum, i) =>
             i.idTypeIncome === EIncomeTypes.severancePay
@@ -589,7 +589,7 @@ export default class ReportService implements IReportService {
         Number(paidsOtherIncomes ?? 0) +
         Number(totalSeverancePaids ?? 0) +
         Number(severancePaid ?? 0);
-      healthPaid =
+      healthPaid +=
         info.deductions?.reduce(
           (sum, i) =>
             i.idTypeDeduction === EDeductionTypes.SocialSecurity
@@ -597,7 +597,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      pensionSolidarityPaid =
+      pensionSolidarityPaid +=
         info.deductions?.reduce(
           (sum, i) =>
             i.idTypeDeduction === EDeductionTypes.retirementFund ||
@@ -606,7 +606,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      voluntaryPensionPaid =
+      voluntaryPensionPaid +=
         info.deductions?.reduce(
           (sum, i) =>
             i.idTypeDeduction === EDeductionTypes.voluntaryPensionContributions
@@ -614,7 +614,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      AfpPaid =
+      AfpPaid +=
         info.deductions?.reduce(
           (sum, i) =>
             i.idTypeDeduction === EDeductionTypes.contributionsAFC
@@ -622,7 +622,7 @@ export default class ReportService implements IReportService {
               : Number(sum),
           0
         ) ?? 0;
-      incometaxPaid =
+      incometaxPaid +=
         info.deductions?.reduce(
           (sum, i) =>
             i.idTypeDeduction === EDeductionTypes.incomeTax
@@ -647,18 +647,18 @@ export default class ReportService implements IReportService {
         path.join(process.cwd(), "app", "resources", "img", "220Dian.jpeg"),
         "base64"
       ),
-      paidsSalary,
-      paidsFee,
-      paidsSocialBenefits,
-      paidsOtherIncomes,
-      totalSeverancePaids,
-      severancePaid,
-      totalIncomes,
-      pensionSolidarityPaid,
-      healthPaid,
-      voluntaryPensionPaid,
-      AfpPaid,
-      incometaxPaid,
+      paidsSalary: formaterNumberToCurrency(paidsSalary),
+      paidsFee: formaterNumberToCurrency(paidsFee),
+      paidsSocialBenefits: formaterNumberToCurrency(paidsSocialBenefits),
+      paidsOtherIncomes: formaterNumberToCurrency(paidsOtherIncomes),
+      totalSeverancePaids: formaterNumberToCurrency(totalSeverancePaids),
+      severancePaid: formaterNumberToCurrency(severancePaid),
+      totalIncomes: formaterNumberToCurrency(totalIncomes),
+      pensionSolidarityPaid: formaterNumberToCurrency(pensionSolidarityPaid),
+      healthPaid: formaterNumberToCurrency(healthPaid),
+      voluntaryPensionPaid: formaterNumberToCurrency(voluntaryPensionPaid),
+      AfpPaid: formaterNumberToCurrency(AfpPaid),
+      incometaxPaid: formaterNumberToCurrency(incometaxPaid),
       document,
       firstName,
       secondName,

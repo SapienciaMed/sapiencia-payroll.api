@@ -39,6 +39,7 @@ export interface IEmploymentRepository {
     trx: TransactionClientContract
   ): Promise<IEmployment | null>;
   getEmploymentByPayroll(idPayroll: number): Promise<IEmployment[]>;
+  getEmployments(): Promise<IEmployment[]>
 }
 
 export default class EmploymentRepository implements IEmploymentRepository {
@@ -176,6 +177,12 @@ export default class EmploymentRepository implements IEmploymentRepository {
         historicalPayrollQuery.whereNot("state", "Fallido");
       })
       .preload("worker");
+
+    return employment.map((i) => i.serialize()) as IEmployment[];
+  }
+
+  async getEmployments(): Promise<IEmployment[]> {
+    const employment = await Employment.query().preload("worker");
 
     return employment.map((i) => i.serialize()) as IEmployment[];
   }

@@ -76,6 +76,7 @@ export interface IVinculationService {
   getEmploymentByPayroll(
     idPayroll: number
   ): Promise<ApiResponse<IEmployment[]>>;
+  getEmployments(): Promise<ApiResponse<IEmployment[]>>;
 }
 
 export default class VinculationService implements IVinculationService {
@@ -464,6 +465,12 @@ export default class VinculationService implements IVinculationService {
     const res = await this.employmentRepository.getEmploymentByPayroll(
       idPayroll
     );
+
+    return new ApiResponse(res, EResponseCodes.OK);
+  }
+
+  async getEmployments(): Promise<ApiResponse<IEmployment[]>> {
+    const res = await this.employmentRepository.getEmployments();
 
     return new ApiResponse(res, EResponseCodes.OK);
   }
